@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "graphql.vscode-graphql",
+    "graphql.vscode-graphql-syntax",
+    "ms-playwright.playwright",
+    "vitest.explorer"
+  ]
+}
