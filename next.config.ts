@@ -10,9 +10,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.freshterra.in" },
     ],
   },
-  experimental: {
-    typedRoutes: true,
-  },
+  typedRoutes: true,
 };
 
 export default nextConfig;

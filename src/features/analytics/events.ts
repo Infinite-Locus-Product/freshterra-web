@@ -33,6 +33,9 @@ export type AnalyticsEvent =
   | { name: "view_plp"; storeId: string; categorySlug: string }
   // Location / store
   | { name: "store_selected"; storeId: string; method: "auto" | "manual" }
-  | { name: "deeplink_redirect"; target: "ios" | "android" | "fallback" };
+  | { name: "deeplink_redirect"; target: "ios" | "android" | "fallback" }
+  // Lead capture (Coming Soon /notify)
+  | { name: "lead_form_view"; source: "coming-soon-notify" }
+  | { name: "lead_submitted"; source: "coming-soon-notify"; hasPhone: boolean };
 
 export type AnalyticsEventName = AnalyticsEvent["name"];

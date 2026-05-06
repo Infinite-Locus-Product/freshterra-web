@@ -22,6 +22,14 @@ const serverSchema = z.object({
   WIZZY_PROJECT_ID: z.string().optional(),
 
   GOOGLE_MAPS_SERVER_KEY: z.string().optional(),
+
+  // Lead capture destination — left optional. Adapter falls back to console
+  // logging when nothing is configured. Wire one of these on the first deploy
+  // that needs real lead delivery (Make/Zapier/Resend → LEAD_WEBHOOK_URL,
+  // FreshTerra services → LEAD_FRESHTERRA_API_URL + LEAD_FRESHTERRA_API_KEY).
+  LEAD_WEBHOOK_URL: z.string().url().optional(),
+  LEAD_FRESHTERRA_API_URL: z.string().url().optional(),
+  LEAD_FRESHTERRA_API_KEY: z.string().optional(),
 });
 
 const clientSchema = z.object({
