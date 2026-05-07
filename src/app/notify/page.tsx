@@ -2,17 +2,16 @@ import type { Metadata } from "next";
 
 import Image from "next/image";
 
+import {
+  FORM_IMAGE_DESKTOP_URL,
+  FORM_IMAGE_MOBILE_URL,
+} from "@/lib/constants/images";
 import { comingSoonContent } from "@/lib/MockData";
 
 import { LeadCaptureForm } from "@/components/coming-soon/LeadCaptureForm";
 import { PolicyLinks } from "@/components/coming-soon/PolicyLinks";
 import { Heading } from "@/components/ui/Heading";
 import { Logo } from "@/components/ui/Logo";
-
-const FORM_IMAGE_DESKTOP_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143864/819c0719cd5e22177f3ed471e583dd1970bb34fe_pirfxg.png";
-const FORM_IMAGE_MOBILE_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143860/Background_Phone_e54xrn.png";
 
 export const metadata: Metadata = {
   title: "Get Notified | FreshTerra",

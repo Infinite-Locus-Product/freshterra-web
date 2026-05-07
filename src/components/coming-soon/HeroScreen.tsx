@@ -1,16 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { HERO_DESKTOP_URL, HERO_MOBILE_URL } from "@/lib/constants/images";
+
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
 import { Logo } from "@/components/ui/Logo";
 
 import { PolicyLinks } from "./PolicyLinks";
-
-const HERO_DESKTOP_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143854/a0d5861924be94b5426aa6a96e75025583c1f4dc_bzuq9z.png";
-const HERO_MOBILE_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143855/ef49e1f68f7667eeaf65ae07fe69bb0da7e640d6_olcsac.png";
 
 type HeroScreenProps = {
   headline: string;
