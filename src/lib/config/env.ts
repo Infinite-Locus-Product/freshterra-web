@@ -41,20 +41,56 @@ const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: z.string().optional(),
+  NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: z
+    .string()
+    .url()
+    .default("https://api.web3forms.com/submit"),
+  NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(15_000),
 });
 
+// Coerce empty strings to undefined so zod's `.optional()` / `.default()`
+// kick in. Without this, an unset entry in `.env` (left blank) is "" not
+// undefined, which fails `.url()` and similar validators.
+const blankAsUndefined = (v: string | undefined) =>
+  v && v.length > 0 ? v : undefined;
+
 const clientEnvRaw = {
-  NEXT_PUBLIC_SALEOR_API_URL: process.env.NEXT_PUBLIC_SALEOR_API_URL,
-  NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY:
+  NEXT_PUBLIC_SALEOR_API_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_SALEOR_API_URL,
+  ),
+  NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY: blankAsUndefined(
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY,
-  NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT:
+  ),
+  NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: blankAsUndefined(
     process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
-  NEXT_PUBLIC_GA4_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID,
-  NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID:
+  ),
+  NEXT_PUBLIC_GA4_MEASUREMENT_ID: blankAsUndefined(
+    process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID,
+  ),
+  NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID: blankAsUndefined(
     process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID,
-  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  NEXT_PUBLIC_APP_STORE_URL: process.env.NEXT_PUBLIC_APP_STORE_URL,
-  NEXT_PUBLIC_PLAY_STORE_URL: process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_APP_URL: blankAsUndefined(process.env.NEXT_PUBLIC_APP_URL),
+  NEXT_PUBLIC_APP_STORE_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_APP_STORE_URL,
+  ),
+  NEXT_PUBLIC_PLAY_STORE_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: blankAsUndefined(
+    process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
+  ),
+  NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL,
+  ),
+  NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS: blankAsUndefined(
+    process.env.NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS,
+  ),
 };
 
 const isServer = typeof window === "undefined";

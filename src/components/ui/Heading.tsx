@@ -22,7 +22,7 @@ type HeadingProps = {
 
 const variantClass: Record<HeadingVariant, string> = {
   display:
-    "font-display font-medium leading-[1.25] text-[34px] md:text-[58.937px]",
+    "font-display font-medium leading-[1.25] text-[28px] md:text-[40px] md:leading-[1.2]",
   h1: "font-display font-medium leading-tight text-3xl md:text-5xl",
   h2: "font-display font-medium leading-tight text-2xl md:text-4xl",
   h3: "font-sans font-bold leading-tight text-xl md:text-2xl",

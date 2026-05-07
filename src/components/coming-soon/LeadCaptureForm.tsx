@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { env } from "@/lib/config/env";
 import { comingSoonContent } from "@/lib/MockData";
 
 import { Button } from "@/components/ui/Button";
@@ -27,9 +28,7 @@ const formSchema = z.object({
     .refine((v) => !v || v.trim() === "" || PHONE_REGEX.test(v.trim()), {
       message: "Enter a valid phone number.",
     }),
-  consent: z.boolean().refine((v) => v === true, {
-    message: "Please tick the box to receive marketing emails.",
-  }),
+  consent: z.boolean(),
   _hp: z.string().optional(),
 });
 
@@ -65,23 +64,56 @@ export function LeadCaptureForm({
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
     if (values._hp && values._hp.length > 0) return;
+
+    const accessKey = env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      setServerError(notify.errorBody);
+      return;
+    }
+
+    const phone = values.phone?.trim() ?? "";
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      env.NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS,
+    );
+
     try {
-      const res = await fetch("/api/leads", {
+      const res = await fetch(env.NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
+          access_key: accessKey,
+          subject: "FreshTerra — New launch notification signup",
+          from_name: "FreshTerra Coming Soon",
           email: values.email,
-          phone: values.phone?.trim() || undefined,
-          consent: true,
+          phone: phone || "(not provided)",
+          consent: values.consent
+            ? "Yes — agreed to receive marketing emails"
+            : "No — did not opt in",
+          source: typeof window !== "undefined" ? window.location.href : "",
         }),
+        signal: controller.signal,
       });
-      if (!res.ok) {
-        setServerError(notify.errorBody);
+
+      const result = (await res.json().catch(() => null)) as {
+        success?: boolean;
+        message?: string;
+      } | null;
+
+      if (!res.ok || !result?.success) {
+        setServerError(result?.message?.trim() || notify.errorBody);
         return;
       }
+
       router.push(successHref);
     } catch {
       setServerError(notify.errorBody);
+    } finally {
+      clearTimeout(timeoutId);
     }
   };
 
@@ -137,7 +169,7 @@ export function LeadCaptureForm({
         variant="primary"
         size="lg"
         loading={isSubmitting}
-        fullWidth
+        className="mt-2 self-center md:w-full"
       >
         {notify.cta}
       </Button>

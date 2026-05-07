@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
 import { Logo } from "@/components/ui/Logo";
 
-import heroDesktop from "../../../public/images/coming-soon/hero-desktop.png";
-import heroMobile from "../../../public/images/coming-soon/hero-mobile.png";
-
 import { PolicyLinks } from "./PolicyLinks";
+
+const HERO_DESKTOP_URL =
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143854/a0d5861924be94b5426aa6a96e75025583c1f4dc_bzuq9z.png";
+const HERO_MOBILE_URL =
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143855/ef49e1f68f7667eeaf65ae07fe69bb0da7e640d6_olcsac.png";
 
 type HeroScreenProps = {
   headline: string;
@@ -49,7 +51,7 @@ export function HeroScreen({
   return (
     <section className="bg-cream-50 relative min-h-screen w-full overflow-hidden">
       <Image
-        src={heroDesktop}
+        src={HERO_DESKTOP_URL}
         alt=""
         priority
         fill
@@ -57,7 +59,7 @@ export function HeroScreen({
         className="hidden object-cover md:block"
       />
       <Image
-        src={heroMobile}
+        src={HERO_MOBILE_URL}
         alt=""
         priority
         fill
@@ -65,15 +67,10 @@ export function HeroScreen({
         className="object-cover md:hidden"
       />
 
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/80 to-transparent"
-      />
-
       <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-20 text-center">
-        <div className="flex flex-col items-center gap-9">
+        <div className="flex flex-col items-center gap-6 md:gap-9">
           <Logo
-            tone="dark"
+            tone="light"
             width={dim.desktop.w}
             height={dim.desktop.h}
             priority
@@ -83,15 +80,15 @@ export function HeroScreen({
             level={1}
             variant="display"
             align="center"
-            className="text-white"
+            className="text-text-primary"
           >
             {headline}
           </Heading>
-          <p className="max-w-2xl font-sans text-base text-white md:text-2xl">
+          <p className="text-text-primary max-w-[260px] font-sans text-sm md:max-w-xl md:text-lg">
             {subheadline}
           </p>
           {cta ? (
-            <Button asChild variant="onImage" size="lg">
+            <Button asChild variant="primary" size="lg">
               <Link href={cta.href}>{cta.label}</Link>
             </Button>
           ) : null}
@@ -100,9 +97,9 @@ export function HeroScreen({
 
       <div className="absolute inset-x-0 bottom-9 flex justify-center md:bottom-16">
         <PolicyLinks
-          tone="onImage"
+          tone="muted"
           size="sm"
-          className="md:gap-3 md:text-base"
+          className="text-text-primary md:gap-3 md:text-base"
         />
       </div>
     </section>

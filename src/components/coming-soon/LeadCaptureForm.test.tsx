@@ -20,7 +20,7 @@ describe("LeadCaptureForm", () => {
   beforeEach(() => {
     pushMock.mockReset();
     globalThis.fetch = vi.fn(
-      async () => new Response('{"ok":true}', { status: 200 }),
+      async () => new Response('{"success":true}', { status: 200 }),
     ) as unknown as typeof fetch;
   });
 
@@ -59,19 +59,18 @@ describe("LeadCaptureForm", () => {
     );
   });
 
-  it("blocks submit when consent is not checked, even with valid email", async () => {
-    const fetchSpy = globalThis.fetch as unknown as ReturnType<typeof vi.fn>;
+  it("submits without consent (consent is optional)", async () => {
     render(<LeadCaptureForm />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
     await userEvent.click(
       screen.getByRole("button", { name: /get notified/i }),
     );
-    await new Promise((r) => setTimeout(r, 50));
-    expect(fetchSpy).not.toHaveBeenCalled();
-    expect(pushMock).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(pushMock).toHaveBeenCalledWith("/notify/success"),
+    );
   });
 
-  it("submits to /api/leads and navigates to /notify/success on a 2xx", async () => {
+  it("submits to Web3Forms and navigates to /notify/success on success", async () => {
     render(<LeadCaptureForm />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
     await userEvent.click(
@@ -84,7 +83,7 @@ describe("LeadCaptureForm", () => {
       expect(pushMock).toHaveBeenCalledWith("/notify/success"),
     );
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "/api/leads",
+      "https://api.web3forms.com/submit",
       expect.objectContaining({ method: "POST" }),
     );
   });
@@ -103,9 +102,9 @@ describe("LeadCaptureForm", () => {
     );
   });
 
-  it("does NOT navigate when the server responds with non-2xx; shows error message", async () => {
+  it("does NOT navigate when Web3Forms responds with success:false; shows error message", async () => {
     globalThis.fetch = vi.fn(
-      async () => new Response('{"ok":false}', { status: 502 }),
+      async () => new Response('{"success":false}', { status: 200 }),
     ) as unknown as typeof fetch;
     render(<LeadCaptureForm />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");

@@ -9,7 +9,10 @@ import { PolicyLinks } from "@/components/coming-soon/PolicyLinks";
 import { Heading } from "@/components/ui/Heading";
 import { Logo } from "@/components/ui/Logo";
 
-import formImage from "../../../public/images/coming-soon/form-image.png";
+const FORM_IMAGE_DESKTOP_URL =
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143864/819c0719cd5e22177f3ed471e583dd1970bb34fe_pirfxg.png";
+const FORM_IMAGE_MOBILE_URL =
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143860/Background_Phone_e54xrn.png";
 
 export const metadata: Metadata = {
   title: "Get Notified | FreshTerra",
@@ -30,29 +33,27 @@ export default function NotifyPage() {
 
   return (
     <main className="bg-cream-50 min-h-screen md:grid md:grid-cols-[505px_1fr]">
-      {/* Mobile: hero image at top with logo overlay */}
-      <div className="relative h-[393px] w-full overflow-hidden md:hidden">
+      {/* Mobile: hero image at top with logo overlay (Figma 122:830 — visible 388h) */}
+      <div className="relative h-[388px] w-full overflow-hidden md:hidden">
         <Image
-          src={formImage}
+          src={FORM_IMAGE_MOBILE_URL}
           alt=""
           priority
           fill
           sizes="100vw"
           className="object-cover"
-          placeholder="blur"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center px-6">
-          <Logo tone="dark" width={185} height={64} priority />
+          <Logo tone="dark" width={140} height={48} priority />
         </div>
       </div>
 
       {/* Sidebar (desktop) / form section (mobile) */}
-      <aside className="bg-gray-6 md:bg-gray-6 relative md:order-1 md:min-h-screen">
-        <div className="mx-auto flex max-w-[345px] flex-col gap-6 px-6 py-9 md:max-w-none md:gap-9 md:px-20 md:py-16">
+      <aside className="bg-cream-50 md:bg-gray-6 relative md:order-1 md:min-h-screen">
+        <div className="mx-auto flex min-h-[calc(100svh-388px)] flex-col gap-6 px-4 py-9 md:min-h-screen md:max-w-none md:gap-9 md:px-20 md:py-16">
           {/* Logo (desktop only — mobile shows it over the image) */}
           <div className="hidden md:block">
-            <Logo tone="light" width={200} height={70} priority />
+            <Logo tone="light" width={209} height={72} priority />
           </div>
 
           <Heading
@@ -74,13 +75,13 @@ export default function NotifyPage() {
             </span>
           </Heading>
 
-          <p className="text-input-text text-center font-sans text-sm font-medium md:text-left md:text-lg md:leading-snug md:font-normal">
+          <p className="text-input-text text-center font-sans text-xs font-medium md:text-left md:text-lg md:leading-snug md:font-normal">
             {notify.subheadline}
           </p>
 
-          <LeadCaptureForm surfaceClass="bg-gray-6" />
+          <LeadCaptureForm surfaceClass="bg-cream-50 md:bg-gray-6" />
 
-          <div className="mt-2 flex justify-center md:mt-auto md:justify-start">
+          <div className="mt-auto flex justify-center md:justify-start">
             <PolicyLinks tone="muted" size="sm" className="md:text-base" />
           </div>
         </div>
@@ -89,13 +90,12 @@ export default function NotifyPage() {
       {/* Desktop: hero food image on the right */}
       <div className="relative hidden md:order-2 md:block md:min-h-screen">
         <Image
-          src={formImage}
+          src={FORM_IMAGE_DESKTOP_URL}
           alt={hero.headline}
           priority
           fill
           sizes="(min-width: 768px) 65vw, 0vw"
           className="object-cover"
-          placeholder="blur"
         />
       </div>
     </main>
