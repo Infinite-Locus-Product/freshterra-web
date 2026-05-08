@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 
+import { track } from "@/lib/analytics/tracker";
 import { comingSoonContent } from "@/lib/MockData";
 import { cn } from "@/lib/utils/cn";
 
@@ -10,6 +13,24 @@ type PolicyLinksProps = {
   size?: "sm" | "md";
   className?: string;
 };
+
+function fireFooterClick(href: string) {
+  const sourcePageUrl =
+    typeof window !== "undefined" ? window.location.href : "";
+  if (href === "/terms") {
+    track({
+      name: "tc_click",
+      source_section: "footer",
+      source_page_url: sourcePageUrl,
+    });
+  } else if (href === "/privacy-policy") {
+    track({
+      name: "privacy_policy_click",
+      source_section: "footer",
+      source_page_url: sourcePageUrl,
+    });
+  }
+}
 
 export function PolicyLinks({
   tone = "onImage",
@@ -41,6 +62,7 @@ export function PolicyLinks({
           ) : null}
           <Link
             href={link.href}
+            onClick={() => fireFooterClick(link.href)}
             className="transition-opacity hover:opacity-80 focus-visible:underline focus-visible:outline-none"
           >
             {link.label}

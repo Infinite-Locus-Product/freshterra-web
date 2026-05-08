@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import { HERO_DESKTOP_URL, HERO_MOBILE_URL } from "@/lib/constants/images";
 
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
 import { Logo } from "@/components/ui/Logo";
 
+import { NotifiedCtaLink } from "./NotifiedCtaLink";
 import { PolicyLinks } from "./PolicyLinks";
 
 type HeroScreenProps = {
@@ -86,7 +86,7 @@ export function HeroScreen({
           </p>
           {cta ? (
             <Button asChild variant="primary" size="lg">
-              <Link href={cta.href}>{cta.label}</Link>
+              <NotifiedCtaLink href={cta.href}>{cta.label}</NotifiedCtaLink>
             </Button>
           ) : null}
         </div>

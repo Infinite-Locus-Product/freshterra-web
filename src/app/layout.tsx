@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 
 import { Manrope, Playfair_Display } from "next/font/google";
 
+import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
+
 import { Providers } from "./providers";
 
 const manrope = Manrope({
@@ -38,6 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
       <body>
+        <GoogleTagManager />
         <Providers>{children}</Providers>
       </body>
     </html>

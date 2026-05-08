@@ -38,6 +38,12 @@ const clientSchema = z.object({
   NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: z.string().url().optional(),
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: z.string().optional(),
   NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID: z.string().optional(),
+  NEXT_PUBLIC_GTM_ID: z
+    .string()
+    .regex(/^GTM-[A-Z0-9]+$/)
+    .optional(),
+  NEXT_PUBLIC_GTM_AUTH: z.string().optional(),
+  NEXT_PUBLIC_GTM_PREVIEW: z.string().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
@@ -74,6 +80,11 @@ const clientEnvRaw = {
   ),
   NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID: blankAsUndefined(
     process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID,
+  ),
+  NEXT_PUBLIC_GTM_ID: blankAsUndefined(process.env.NEXT_PUBLIC_GTM_ID),
+  NEXT_PUBLIC_GTM_AUTH: blankAsUndefined(process.env.NEXT_PUBLIC_GTM_AUTH),
+  NEXT_PUBLIC_GTM_PREVIEW: blankAsUndefined(
+    process.env.NEXT_PUBLIC_GTM_PREVIEW,
   ),
   NEXT_PUBLIC_APP_URL: blankAsUndefined(process.env.NEXT_PUBLIC_APP_URL),
   NEXT_PUBLIC_APP_STORE_URL: blankAsUndefined(

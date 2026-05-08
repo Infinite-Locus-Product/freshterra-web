@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { track } from "@/lib/analytics/tracker";
 import { env } from "@/lib/config/env";
 import { comingSoonContent } from "@/lib/MockData";
 
@@ -54,6 +55,41 @@ export function LeadCaptureForm({
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const firedOpenRef = useRef(false);
+  const firedStartRef = useRef(false);
+
+  // Fire `form_open` the first time the form is at least 50% in view. Cheap
+  // proxy for "user actually saw the form" — better than firing on mount,
+  // which would over-count on tall layouts that scroll.
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const target = formRef.current;
+    if (!target || firedOpenRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting) && !firedOpenRef.current) {
+          firedOpenRef.current = true;
+          track({ name: "form_open", form_name: "notify_me_form" });
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  const handleFirstFocus = (fieldName: "phone" | "email") => {
+    if (firedStartRef.current) return;
+    firedStartRef.current = true;
+    track({
+      name: "form_start",
+      form_name: "notify_me_form",
+      first_field_name: fieldName,
+    });
+  };
+
   const {
     register,
     handleSubmit,
@@ -76,6 +112,18 @@ export function LeadCaptureForm({
 
     const phone = values.phone.trim();
     const email = values.email?.trim() ?? "";
+
+    // Fire `form_submit` once validation passes — covers both success and
+    // server-error outcomes per the analytics spec ("total submission
+    // attempts — success + error combined").
+    track({
+      name: "form_submit",
+      form_name: "notify_me_form",
+      phone_filled: phone.length > 0,
+      email_filled: email.length > 0,
+      marketing_consent: !!values.consent,
+    });
+
     const controller = new AbortController();
     const timeoutId = setTimeout(
       () => controller.abort(),
@@ -123,6 +171,7 @@ export function LeadCaptureForm({
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit(onSubmit)}
       noValidate
       className={["flex flex-col gap-4", className].filter(Boolean).join(" ")}
@@ -135,6 +184,7 @@ export function LeadCaptureForm({
         error={errors.phone?.message}
         labelBgClass={surfaceClass}
         {...register("phone")}
+        onFocus={() => handleFirstFocus("phone")}
       />
       <Input
         label={notify.fields.email.label}
@@ -144,6 +194,7 @@ export function LeadCaptureForm({
         error={errors.email?.message}
         labelBgClass={surfaceClass}
         {...register("email")}
+        onFocus={() => handleFirstFocus("email")}
       />
 
       {/* Honeypot — bots fill this, humans don't see it */}
