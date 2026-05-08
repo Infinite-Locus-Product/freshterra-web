@@ -62,6 +62,7 @@ describe("LeadCaptureForm", () => {
   it("submits without consent (consent is optional)", async () => {
     render(<LeadCaptureForm />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
+    await userEvent.type(screen.getByLabelText(/^phone$/i), "+919876543210");
     await userEvent.click(
       screen.getByRole("button", { name: /get notified/i }),
     );
@@ -73,6 +74,7 @@ describe("LeadCaptureForm", () => {
   it("submits to Web3Forms and navigates to /notify/success on success", async () => {
     render(<LeadCaptureForm />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
+    await userEvent.type(screen.getByLabelText(/^phone$/i), "+919876543210");
     await userEvent.click(
       screen.getByRole("checkbox", { name: /marketing emails/i }),
     );
@@ -91,6 +93,7 @@ describe("LeadCaptureForm", () => {
   it("respects the successHref override", async () => {
     render(<LeadCaptureForm successHref="/custom-success" />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
+    await userEvent.type(screen.getByLabelText(/^phone$/i), "+919876543210");
     await userEvent.click(
       screen.getByRole("checkbox", { name: /marketing emails/i }),
     );
@@ -108,6 +111,7 @@ describe("LeadCaptureForm", () => {
     ) as unknown as typeof fetch;
     render(<LeadCaptureForm />);
     await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
+    await userEvent.type(screen.getByLabelText(/^phone$/i), "+919876543210");
     await userEvent.click(
       screen.getByRole("checkbox", { name: /marketing emails/i }),
     );

@@ -7,9 +7,9 @@ export const leadInputSchema = z
     email: z.string().email(),
     phone: z
       .string()
-      .transform((v) => (v.trim() === "" ? undefined : v.trim()))
-      .pipe(z.string().regex(PHONE_REGEX).optional())
-      .optional(),
+      .trim()
+      .min(1, { message: "Phone is required." })
+      .regex(PHONE_REGEX, { message: "Enter a valid phone number." }),
     consent: z.literal(true, {
       message: "Consent is required to receive marketing communications.",
     }),

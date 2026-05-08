@@ -24,8 +24,8 @@ const formSchema = z.object({
     .email({ message: "Enter a valid email address." }),
   phone: z
     .string()
-    .optional()
-    .refine((v) => !v || v.trim() === "" || PHONE_REGEX.test(v.trim()), {
+    .min(1, { message: "Phone is required." })
+    .refine((v) => PHONE_REGEX.test(v.trim()), {
       message: "Enter a valid phone number.",
     }),
   consent: z.boolean(),
@@ -71,7 +71,7 @@ export function LeadCaptureForm({
       return;
     }
 
-    const phone = values.phone?.trim() ?? "";
+    const phone = values.phone.trim();
     const controller = new AbortController();
     const timeoutId = setTimeout(
       () => controller.abort(),
@@ -90,7 +90,7 @@ export function LeadCaptureForm({
           subject: "FreshTerra — New launch notification signup",
           from_name: "FreshTerra Coming Soon",
           email: values.email,
-          phone: phone || "(not provided)",
+          phone,
           consent: values.consent
             ? "Yes — agreed to receive marketing emails"
             : "No — did not opt in",

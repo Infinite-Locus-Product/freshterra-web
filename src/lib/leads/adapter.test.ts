@@ -4,6 +4,7 @@ import type { LeadInput } from "./schema";
 
 const validLead: LeadInput = {
   email: "user@example.com",
+  phone: "+919876543210",
   consent: true,
 };
 

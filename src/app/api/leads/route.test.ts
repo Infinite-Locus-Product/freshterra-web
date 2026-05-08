@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const validBody = () => ({
   email: "user@example.com",
+  phone: "+919876543210",
   consent: true,
 });
 
