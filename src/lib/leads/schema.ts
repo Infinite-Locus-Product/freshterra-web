@@ -4,7 +4,11 @@ const PHONE_REGEX = /^\+?[0-9\s-]{7,20}$/;
 
 export const leadInputSchema = z
   .object({
-    email: z.string().email(),
+    email: z
+      .string()
+      .transform((v) => (v.trim() === "" ? undefined : v.trim()))
+      .pipe(z.email().optional())
+      .optional(),
     phone: z
       .string()
       .trim()

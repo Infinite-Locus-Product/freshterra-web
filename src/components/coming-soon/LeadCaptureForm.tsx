@@ -16,12 +16,15 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/Input";
 
 const PHONE_REGEX = /^\+?[0-9\s-]{7,20}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const formSchema = z.object({
   email: z
     .string()
-    .min(1, { message: "Email is required." })
-    .email({ message: "Enter a valid email address." }),
+    .optional()
+    .refine((v) => !v || v.trim() === "" || EMAIL_REGEX.test(v.trim()), {
+      message: "Enter a valid email address.",
+    }),
   phone: z
     .string()
     .min(1, { message: "Phone is required." })
@@ -72,6 +75,7 @@ export function LeadCaptureForm({
     }
 
     const phone = values.phone.trim();
+    const email = values.email?.trim() ?? "";
     const controller = new AbortController();
     const timeoutId = setTimeout(
       () => controller.abort(),
@@ -89,7 +93,7 @@ export function LeadCaptureForm({
           access_key: accessKey,
           subject: "FreshTerra — New launch notification signup",
           from_name: "FreshTerra Coming Soon",
-          email: values.email,
+          email: email || "(not provided)",
           phone,
           consent: values.consent
             ? "Yes — agreed to receive marketing emails"

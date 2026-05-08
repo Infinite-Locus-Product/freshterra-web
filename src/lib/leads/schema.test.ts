@@ -12,12 +12,24 @@ describe("leadInputSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects when email is missing", () => {
+  it("accepts when email is missing (email is optional)", () => {
     const result = leadInputSchema.safeParse({
       phone: "+919876543210",
       consent: true,
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+  });
+
+  it("treats an empty email string as undefined (optional field)", () => {
+    const result = leadInputSchema.safeParse({
+      email: "",
+      phone: "+919876543210",
+      consent: true,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.email).toBeUndefined();
+    }
   });
 
   it("rejects an invalid email", () => {
