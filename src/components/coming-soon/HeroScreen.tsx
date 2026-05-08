@@ -94,9 +94,9 @@ export function HeroScreen({
 
       <div className="absolute inset-x-0 bottom-9 flex justify-center md:bottom-16">
         <PolicyLinks
-          tone="muted"
+          tone="onImage"
           size="sm"
-          className="text-text-primary md:gap-3 md:text-base"
+          className="md:gap-3 md:text-base"
         />
       </div>
     </section>
