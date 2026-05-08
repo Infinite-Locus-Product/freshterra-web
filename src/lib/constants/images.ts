@@ -13,4 +13,4 @@ export const HERO_MOBILE_URL =
 export const FORM_IMAGE_DESKTOP_URL =
   "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143864/819c0719cd5e22177f3ed471e583dd1970bb34fe_pirfxg.png";
 export const FORM_IMAGE_MOBILE_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143860/Background_Phone_e54xrn.png";
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778224110/image_5_p8oeur.png";
