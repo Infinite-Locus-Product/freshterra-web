@@ -16,8 +16,24 @@ import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/Input";
 
-const PHONE_REGEX = /^\+?[0-9\s-]{7,20}$/;
+const PHONE_PREFIX = "+91 ";
+const MAX_LOCAL_DIGITS = 10;
+const PHONE_REGEX = /^\+91\s\d{10}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+function sanitizePhone(raw: string): string {
+  if (raw.startsWith(PHONE_PREFIX)) {
+    const local = raw.slice(PHONE_PREFIX.length).replaceAll(/\D/g, "");
+    return PHONE_PREFIX + local.slice(0, MAX_LOCAL_DIGITS);
+  }
+  const digits = raw.replaceAll(/\D/g, "");
+  const local =
+    digits.length > MAX_LOCAL_DIGITS && digits.startsWith("91")
+      ? digits.slice(2)
+      : digits;
+  return PHONE_PREFIX + local.slice(0, MAX_LOCAL_DIGITS);
+}
 
 const formSchema = z.object({
   email: z
@@ -32,7 +48,11 @@ const formSchema = z.object({
     .refine((v) => PHONE_REGEX.test(v.trim()), {
       message: "Enter a valid phone number.",
     }),
-  consent: z.boolean(),
+  consent: z
+    .boolean()
+    .refine((v) => v === true, {
+      message: "Please agree to receive marketing emails to continue.",
+    }),
   _hp: z.string().optional(),
 });
 
@@ -95,12 +115,28 @@ export function LeadCaptureForm({
     handleSubmit,
     setValue,
     getValues,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", phone: "", consent: false, _hp: "" },
     mode: "onSubmit",
   });
+
+  // Submit is enabled only when the user has entered a full 10-digit phone
+  // number AND opted in to marketing emails. Watching keeps this in sync
+  // with each keystroke / checkbox toggle.
+  const phoneValue = watch("phone") ?? "";
+  const consentChecked = !!watch("consent");
+  const phoneLocalDigitCount = phoneValue.startsWith(PHONE_PREFIX)
+    ? phoneValue.slice(PHONE_PREFIX.length).replaceAll(/\D/g, "").length
+    : phoneValue.replaceAll(/\D/g, "").length;
+  const isFormValid =
+    phoneLocalDigitCount === MAX_LOCAL_DIGITS && consentChecked;
+
+  // Pre-bind register so we can chain a sanitizing onChange on the phone
+  // input without losing the ref / name / onBlur that RHF needs.
+  const phoneRegister = register("phone");
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
@@ -181,18 +217,44 @@ export function LeadCaptureForm({
       <Input
         label={notify.fields.phone.label}
         type="tel"
+        inputMode="numeric"
         autoComplete="tel"
+        // "+91 " (4 chars) + 10 digits = 14
+        maxLength={PHONE_PREFIX.length + MAX_LOCAL_DIGITS}
         placeholder={notify.fields.phone.placeholder}
         error={errors.phone?.message}
         labelBgClass={surfaceClass}
-        {...register("phone")}
+        {...phoneRegister}
+        onChange={(e) => {
+          // Force "+91 " prefix and digits-only / 10-digit cap on every
+          // keystroke or paste. Mutating e.target.value before forwarding
+          // keeps the DOM (uncontrolled input) and RHF state in sync.
+          const sanitized = sanitizePhone(e.target.value);
+          if (e.target.value !== sanitized) {
+            e.target.value = sanitized;
+          }
+          phoneRegister.onChange(e);
+        }}
+        onKeyDown={(e) => {
+          const input = e.currentTarget;
+          const start = input.selectionStart ?? 0;
+          const end = input.selectionEnd ?? 0;
+          if (start !== end) return;
+          const wouldEatPrefix =
+            (e.key === "Backspace" && start <= PHONE_PREFIX.length) ||
+            (e.key === "Delete" && start < PHONE_PREFIX.length);
+          if (wouldEatPrefix) {
+            e.preventDefault();
+            input.setSelectionRange(PHONE_PREFIX.length, PHONE_PREFIX.length);
+          }
+        }}
         onFocus={() => {
           handleFirstFocus("phone");
           // Pre-fill the +91 prefix on first focus so users only type the
           // 10-digit local number. Only set when the field is empty so we
           // don't double-prefix on subsequent focus.
           if (!getValues("phone")) {
-            setValue("phone", "+91 ", { shouldValidate: false });
+            setValue("phone", PHONE_PREFIX, { shouldValidate: false });
           }
         }}
       />
@@ -217,10 +279,30 @@ export function LeadCaptureForm({
         {...register("_hp")}
       />
 
-      <div className="my-2 flex justify-center md:my-0 md:justify-start">
+      {/*
+        Figma mWeb consent row: 12px above the "I agree" text and 24px below.
+        The form is `flex flex-col gap-4` (16px between every pair of
+        siblings), and the next sibling (Button) carries `mt-2` (8px). So
+        the visible gaps compose as:
+          above = gap-4 (16) + wrapper-mt = 12  =>  wrapper-mt = -4px (-mt-1)
+          below = gap-4 (16) + wrapper-mb + button-mt-2 (8) = 24  =>  wrapper-mb = 0
+        The negative top margin is intentional and is a well-defined pull
+        against the parent `gap` in flexbox. `md:my-0` already cancels both
+        sides on desktop, so the desktop layout is unchanged.
+      */}
+      <div className="-mt-1 flex justify-center md:my-0 md:justify-start">
+        {/*
+          mWeb: the "I agree" label must be horizontally centered. Centering
+          via the parent wrapper alone doesn't work because Checkbox's own
+          outer div is `w-full` and absorbs the wrapper's `justify-center`.
+          Forwarding `text-center` to that w-full div centers the
+          `inline-flex` label inside it (inline-flex aligns like inline-block
+          for `text-align`). `md:text-left` reverts to the desktop layout.
+        */}
         <Checkbox
           label={notify.fields.consent}
           error={errors.consent?.message}
+          className="text-center md:text-left"
           {...register("consent")}
         />
       </div>
@@ -236,6 +318,7 @@ export function LeadCaptureForm({
         variant="primary"
         size="lg"
         loading={isSubmitting}
+        disabled={!isFormValid}
         className="mt-2 self-center md:w-full"
       >
         {notify.cta}

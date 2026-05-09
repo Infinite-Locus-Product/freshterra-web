@@ -52,4 +52,16 @@ describe("HeroScreen", () => {
     render(<HeroScreen {...baseProps} />);
     expect(screen.getByAltText(/freshterra/i)).toBeInTheDocument();
   });
+
+  it("merges headingClassName onto the h1 (e.g. /notify/success Figma frame)", () => {
+    render(
+      <HeroScreen
+        {...baseProps}
+        headingClassName="md:w-full md:max-w-[459px] md:leading-[74px]"
+      />,
+    );
+    const h1 = screen.getByRole("heading", { level: 1 });
+    expect(h1.className).toContain("md:max-w-[459px]");
+    expect(h1.className).toContain("md:leading-[74px]");
+  });
 });

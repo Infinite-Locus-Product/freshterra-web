@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { HERO_DESKTOP_URL, HERO_MOBILE_URL } from "@/lib/constants/images";
+import { cn } from "@/lib/utils/cn";
 
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
@@ -15,6 +16,10 @@ type HeroScreenProps = {
   cta?: { label: string; href: string };
   /** Logo display size at desktop breakpoint. Defaults to the brand-reveal sizing (277×96). */
   logoSize?: "default" | "large";
+  /** Per-page override for the headline `<h1>`. Merged via tailwind-merge so callers can patch a single property without restating the whole variant. */
+  headingClassName?: string;
+  /** Per-page override for the subheadline `<p>`. Same merge semantics as `headingClassName`; lets a single page tweak typography (e.g. Figma frame size) without touching the success screen. */
+  subheadlineClassName?: string;
 };
 
 const logoDimensions = {
@@ -42,6 +47,8 @@ export function HeroScreen({
   subheadline,
   cta,
   logoSize = "default",
+  headingClassName,
+  subheadlineClassName,
 }: HeroScreenProps) {
   const dim = logoDimensions[logoSize];
 
@@ -77,11 +84,16 @@ export function HeroScreen({
             level={1}
             variant="display"
             align="center"
-            className="text-[#181818]"
+            className={cn("text-[#181818]", headingClassName)}
           >
             {headline}
           </Heading>
-          <p className="max-w-[260px] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl">
+          <p
+            className={cn(
+              "max-w-[260px] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl",
+              subheadlineClassName,
+            )}
+          >
             {subheadline}
           </p>
           {cta ? (

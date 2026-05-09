@@ -18,7 +18,7 @@ export const comingSoonContent = {
     ],
     subheadline: "Be the first to know when we launch in Gurugram.",
     fields: {
-      phone: { label: "Phone", placeholder: "+91 00000000000" },
+      phone: { label: "Phone", placeholder: "+91 0000000000" },
       email: { label: "Email", placeholder: "johndoe@mail.com" },
       consent: "I agree to receive marketing emails.",
     },
@@ -30,8 +30,8 @@ export const comingSoonContent = {
     subheadline: "We'll reach out soon with a first look at what's in store.",
   },
   policyLinks: [
-    { label: "Privacy Policy", href: "/privacy-policy" as const },
     { label: "Terms & Conditions", href: "/terms" as const },
+    { label: "Privacy Policy", href: "/privacy-policy" as const },
   ],
 };
 

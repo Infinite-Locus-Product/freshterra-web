@@ -20,6 +20,7 @@ export default function NotifySuccessPage() {
       headline={notifySuccess.headline}
       subheadline={notifySuccess.subheadline}
       logoSize="large"
+      headingClassName="md:w-full md:max-w-[459px] md:leading-[74px]"
     />
   );
 }

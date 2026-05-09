@@ -36,20 +36,47 @@ describe("LeadCaptureForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a validation error when submitting an empty form", async () => {
+  it("keeps submit disabled on an empty form (no validation alerts until submit is possible)", () => {
     render(<LeadCaptureForm />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /get notified/i }),
-    );
-    expect(await screen.findAllByRole("alert")).not.toHaveLength(0);
+    const submit = screen.getByRole("button", { name: /get notified/i });
+    expect(submit).toBeDisabled();
+    expect(screen.queryAllByRole("alert")).toHaveLength(0);
   });
 
-  it("shows an email validation error for an invalid email", async () => {
+  it("locks the consent row to Figma's mWeb spacing (12px above, 24px below) and reverts on desktop", () => {
     render(<LeadCaptureForm />);
-    await userEvent.type(screen.getByLabelText(/^email$/i), "not-an-email");
+    const checkbox = screen.getByRole("checkbox", {
+      name: /marketing emails/i,
+    });
+    const wrapper = checkbox.closest("div.flex");
+    expect(wrapper).not.toBeNull();
+    expect(wrapper?.className).toContain("-mt-1");
+    expect(wrapper?.className).not.toContain("my-2");
+    expect(wrapper?.className).not.toContain("mb-2");
+    // Desktop reverts to my-0 so the desktop layout is preserved.
+    expect(wrapper?.className).toContain("md:my-0");
+  });
+
+  it("centers the 'I agree' label on mWeb and left-aligns it on desktop", () => {
+    render(<LeadCaptureForm />);
+    const checkbox = screen.getByRole("checkbox", {
+      name: /marketing emails/i,
+    });
+    // Checkbox's own outer wrapper is the closest `div.w-full`. Forwarding
+    // `text-center` onto that div centers the inline-flex label inside it.
+    const checkboxOuter = checkbox.closest("div.w-full");
+    expect(checkboxOuter).not.toBeNull();
+    expect(checkboxOuter?.className).toContain("text-center");
+    expect(checkboxOuter?.className).toContain("md:text-left");
+  });
+
+  it("shows an email validation error for an invalid email once phone and consent are valid", async () => {
+    render(<LeadCaptureForm />);
+    await userEvent.type(screen.getByLabelText(/^phone$/i), "9876543210");
     await userEvent.click(
       screen.getByRole("checkbox", { name: /marketing emails/i }),
     );
+    await userEvent.type(screen.getByLabelText(/^email$/i), "not-an-email");
     await userEvent.click(
       screen.getByRole("button", { name: /get notified/i }),
     );
@@ -59,16 +86,46 @@ describe("LeadCaptureForm", () => {
     );
   });
 
-  it("submits without consent (consent is optional)", async () => {
+  it("disables the submit button until both phone (10 digits) and consent are present", async () => {
     render(<LeadCaptureForm />);
-    await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
+    const submit = screen.getByRole("button", { name: /get notified/i });
+
+    // Empty form → disabled
+    expect(submit).toBeDisabled();
+
+    // Phone only → still disabled (consent missing)
     await userEvent.type(screen.getByLabelText(/^phone$/i), "9876543210");
+    expect(submit).toBeDisabled();
+
+    // Consent only (no phone) would also be disabled — covered by the
+    // empty-form case above. Now check that consent + phone enables submit.
     await userEvent.click(
-      screen.getByRole("button", { name: /get notified/i }),
+      screen.getByRole("checkbox", { name: /marketing emails/i }),
     );
-    await waitFor(() =>
-      expect(pushMock).toHaveBeenCalledWith("/notify/success"),
+    expect(submit).toBeEnabled();
+
+    // Removing consent should re-disable the button.
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /marketing emails/i }),
     );
+    expect(submit).toBeDisabled();
+  });
+
+  it("strips non-digits from the phone input and locks the +91 prefix", async () => {
+    render(<LeadCaptureForm />);
+    const phone = screen.getByLabelText(/^phone$/i) as HTMLInputElement;
+
+    // Letters/symbols are stripped; only digits remain after the prefix.
+    await userEvent.type(phone, "abc987-654 3210!!");
+    expect(phone.value).toBe("+91 9876543210");
+  });
+
+  it("caps the phone input at 10 local digits (extra digits ignored)", async () => {
+    render(<LeadCaptureForm />);
+    const phone = screen.getByLabelText(/^phone$/i) as HTMLInputElement;
+
+    await userEvent.type(phone, "98765432109999");
+    expect(phone.value).toBe("+91 9876543210");
   });
 
   it("submits to Web3Forms and navigates to /notify/success on success", async () => {
@@ -191,9 +248,8 @@ describe("LeadCaptureForm", () => {
       });
     });
 
-    it("does NOT push form_submit when client validation fails (empty phone)", async () => {
+    it("does NOT push form_submit when submit is blocked (phone + consent incomplete)", async () => {
       render(<LeadCaptureForm />);
-      // Email only, phone left empty (phone is required) → validation fails
       await userEvent.type(
         screen.getByLabelText(/^email$/i),
         "user@example.com",
