@@ -31,7 +31,7 @@ export function PolicyPage({ document: doc }: PolicyPageProps) {
         <article className="bg-white-soft rounded-[14.516px] p-6 shadow-[0px_1.452px_2.178px_rgba(0,0,0,0.1),0px_1.452px_1.452px_rgba(0,0,0,0.1)] md:p-12">
           <div className="flex flex-col gap-6 md:gap-8">
             {doc.intro ? (
-              <PolicySectionRenderer section={doc.intro} className="gap-0" />
+              <PolicySectionRenderer section={doc.intro} />
             ) : null}
             {doc.sections.map((section, i) => (
               <PolicySectionRenderer key={section.id ?? i} section={section} />

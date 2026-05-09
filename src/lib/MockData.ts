@@ -33,6 +33,10 @@ export const comingSoonContent = {
     { label: "Terms & Conditions", href: "/terms" as const },
     { label: "Privacy Policy", href: "/privacy-policy" as const },
   ],
+  marketingFooterPolicyLinks: [
+    { label: "Privacy Policy", href: "/privacy-policy" as const },
+    { label: "Terms & Conditions", href: "/terms" as const },
+  ],
 };
 
 export type ComingSoonContent = typeof comingSoonContent;

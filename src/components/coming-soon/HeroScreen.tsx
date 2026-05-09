@@ -16,10 +16,10 @@ type HeroScreenProps = {
   cta?: { label: string; href: string };
   /** Logo display size at desktop breakpoint. Defaults to the brand-reveal sizing (277×96). */
   logoSize?: "default" | "large";
-  /** Per-page override for the headline `<h1>`. Merged via tailwind-merge so callers can patch a single property without restating the whole variant. */
   headingClassName?: string;
-  /** Per-page override for the subheadline `<p>`. Same merge semantics as `headingClassName`; lets a single page tweak typography (e.g. Figma frame size) without touching the success screen. */
   subheadlineClassName?: string;
+
+  stackClassName?: string;
 };
 
 const logoDimensions = {
@@ -49,6 +49,7 @@ export function HeroScreen({
   logoSize = "default",
   headingClassName,
   subheadlineClassName,
+  stackClassName,
 }: HeroScreenProps) {
   const dim = logoDimensions[logoSize];
 
@@ -71,8 +72,18 @@ export function HeroScreen({
         className="object-cover md:hidden"
       />
 
-      <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-20 text-center">
-        <div className="flex flex-col items-center gap-6 md:gap-9">
+      {/*
+        Outer wrapper drops horizontal padding on mWeb so the brand-reveal
+        stack can size up to the Figma 393px frame. Desktop keeps `md:px-6`
+        for the existing margin around the content.
+      */}
+      <div className="relative flex min-h-screen flex-col items-center justify-center py-20 text-center md:px-6">
+        <div
+          className={cn(
+            "flex flex-col items-center gap-6 md:gap-9",
+            stackClassName,
+          )}
+        >
           <Logo
             tone="light"
             width={dim.desktop.w}

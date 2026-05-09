@@ -35,6 +35,18 @@ function sanitizePhone(raw: string): string {
   return PHONE_PREFIX + local.slice(0, MAX_LOCAL_DIGITS);
 }
 
+
+function clampPhoneCursor(input: HTMLInputElement): void {
+  const min = PHONE_PREFIX.length;
+  const start = input.selectionStart ?? 0;
+  const end = input.selectionEnd ?? 0;
+  const newStart = Math.max(start, min);
+  const newEnd = Math.max(end, min);
+  if (newStart !== start || newEnd !== end) {
+    input.setSelectionRange(newStart, newEnd);
+  }
+}
+
 const formSchema = z.object({
   email: z
     .string()
@@ -48,11 +60,7 @@ const formSchema = z.object({
     .refine((v) => PHONE_REGEX.test(v.trim()), {
       message: "Enter a valid phone number.",
     }),
-  consent: z
-    .boolean()
-    .refine((v) => v === true, {
-      message: "Please agree to receive marketing emails to continue.",
-    }),
+  consent: z.boolean().optional(),
   _hp: z.string().optional(),
 });
 
@@ -123,16 +131,13 @@ export function LeadCaptureForm({
     mode: "onSubmit",
   });
 
-  // Submit is enabled only when the user has entered a full 10-digit phone
-  // number AND opted in to marketing emails. Watching keeps this in sync
-  // with each keystroke / checkbox toggle.
+  // Submit is enabled when the user has entered a full 10-digit local number
+  // (other fields are optional on web and mWeb).
   const phoneValue = watch("phone") ?? "";
-  const consentChecked = !!watch("consent");
   const phoneLocalDigitCount = phoneValue.startsWith(PHONE_PREFIX)
     ? phoneValue.slice(PHONE_PREFIX.length).replaceAll(/\D/g, "").length
     : phoneValue.replaceAll(/\D/g, "").length;
-  const isFormValid =
-    phoneLocalDigitCount === MAX_LOCAL_DIGITS && consentChecked;
+  const isFormValid = phoneLocalDigitCount === MAX_LOCAL_DIGITS;
 
   // Pre-bind register so we can chain a sanitizing onChange on the phone
   // input without losing the ref / name / onBlur that RHF needs.
@@ -239,6 +244,21 @@ export function LeadCaptureForm({
           const input = e.currentTarget;
           const start = input.selectionStart ?? 0;
           const end = input.selectionEnd ?? 0;
+
+          if (!e.shiftKey) {
+            const homeIntoPrefix = e.key === "Home";
+            const leftIntoPrefix =
+              e.key === "ArrowLeft" && start <= PHONE_PREFIX.length;
+            if (homeIntoPrefix || leftIntoPrefix) {
+              e.preventDefault();
+              input.setSelectionRange(
+                PHONE_PREFIX.length,
+                PHONE_PREFIX.length,
+              );
+              return;
+            }
+          }
+
           if (start !== end) return;
           const wouldEatPrefix =
             (e.key === "Backspace" && start <= PHONE_PREFIX.length) ||
@@ -248,14 +268,30 @@ export function LeadCaptureForm({
             input.setSelectionRange(PHONE_PREFIX.length, PHONE_PREFIX.length);
           }
         }}
-        onFocus={() => {
+        onClick={(e) => clampPhoneCursor(e.currentTarget)}
+        onFocus={(e) => {
           handleFirstFocus("phone");
+          const input = e.currentTarget;
           // Pre-fill the +91 prefix on first focus so users only type the
           // 10-digit local number. Only set when the field is empty so we
           // don't double-prefix on subsequent focus.
           if (!getValues("phone")) {
             setValue("phone", PHONE_PREFIX, { shouldValidate: false });
+            // RHF mutates input.value synchronously via the registered ref,
+            // so the caret can be parked immediately after the prefix.
+            input.setSelectionRange(
+              PHONE_PREFIX.length,
+              PHONE_PREFIX.length,
+            );
+          } else {
+            // Field already has the prefix — don't trap the user at the end
+            // of an in-progress number, but never let the caret sit inside
+            // "+91 ".
+            clampPhoneCursor(input);
           }
+          // Some browsers (notably mobile Safari) re-set the selection after
+          // our focus handler runs, so re-clamp on the next animation frame.
+          requestAnimationFrame(() => clampPhoneCursor(input));
         }}
       />
       <Input
@@ -319,7 +355,7 @@ export function LeadCaptureForm({
         size="lg"
         loading={isSubmitting}
         disabled={!isFormValid}
-        className="mt-2 self-center md:w-full"
+        className="mt-2 self-center md:w-full disabled:bg-gray-200 disabled:text-text-secondary disabled:opacity-100 disabled:hover:bg-gray-200 disabled:active:bg-gray-200"
       >
         {notify.cta}
       </Button>

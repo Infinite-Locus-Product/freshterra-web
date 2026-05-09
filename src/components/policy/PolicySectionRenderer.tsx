@@ -23,7 +23,10 @@ export function PolicySectionRenderer({
   return (
     <section
       id={section.id}
-      className={cn("flex flex-col gap-4", className)}
+      className={cn(
+        "flex flex-col gap-4 [&>p+p]:-mt-4",
+        className,
+      )}
     >
       {section.heading ? (
         <Heading
@@ -52,16 +55,12 @@ function BlockRenderer({ block }: { block: PolicyBlock }) {
     );
   }
   return (
-    // Bullet markers sit at 36px from the section's left edge (one Tailwind
-    // step right of the heading) so lists read as visibly nested under their
-    // parent sub-heading. `list-inside` puts the bullet inline with the text
-    // so that when a bullet item wraps, the second line starts directly
-    // below the bullet (matches Figma) instead of hanging-indenting under
-    // the first-line text. Applies uniformly to every policy page
-    // (Privacy, T&C, Refund & Return) on both mWeb and desktop.
-    <ul className="text-text-primary ml-9 list-disc list-inside font-sans text-sm leading-[1.4] tracking-[0.2px]">
+    <ul className="text-text-primary ml-9 font-sans text-sm leading-[1.4] tracking-[0.2px]">
       {block.items.map((spans, i) => (
         <li key={i}>
+          <span aria-hidden="true" className="md:mr-2">
+            •
+          </span>
           {spans.map((span, j) => (
             <SpanRenderer key={j} span={span} />
           ))}

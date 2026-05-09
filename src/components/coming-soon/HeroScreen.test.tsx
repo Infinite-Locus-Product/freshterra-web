@@ -64,4 +64,30 @@ describe("HeroScreen", () => {
     expect(h1.className).toContain("md:max-w-[459px]");
     expect(h1.className).toContain("md:leading-[74px]");
   });
+
+  it("merges stackClassName onto the inner content stack (e.g. brand-reveal Figma frame)", () => {
+    render(
+      <HeroScreen
+        {...baseProps}
+        stackClassName="h-[358px] w-[393px] max-w-full justify-evenly"
+      />,
+    );
+    const stack = screen.getByRole("heading", { level: 1 }).parentElement;
+    expect(stack).not.toBeNull();
+    expect(stack!.className).toContain("h-[358px]");
+    expect(stack!.className).toContain("w-[393px]");
+    expect(stack!.className).toContain("max-w-full");
+    expect(stack!.className).toContain("justify-evenly");
+    expect(stack!.className).toContain("flex");
+    expect(stack!.className).toContain("flex-col");
+    expect(stack!.className).toContain("items-center");
+  });
+
+  it("leaves the inner stack content-sized when stackClassName is omitted (e.g. /notify/success)", () => {
+    render(<HeroScreen {...baseProps} />);
+    const stack = screen.getByRole("heading", { level: 1 }).parentElement;
+    expect(stack).not.toBeNull();
+    expect(stack!.className).not.toMatch(/w-\[\d+px\]/);
+    expect(stack!.className).not.toMatch(/h-\[\d+px\]/);
+  });
 });

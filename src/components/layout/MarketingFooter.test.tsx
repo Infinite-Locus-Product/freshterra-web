@@ -25,6 +25,20 @@ describe("MarketingFooter", () => {
     ).toHaveAttribute("href", "/terms");
   });
 
+  it("renders Privacy Policy before Terms & Conditions (inverse of notify-footer order)", () => {
+    render(<MarketingFooter />);
+    const links = screen
+      .getAllByRole("link")
+      .filter(
+        (a) =>
+          /privacy policy/i.test(a.textContent ?? "") ||
+          /terms & conditions/i.test(a.textContent ?? ""),
+      );
+    expect(links).toHaveLength(2);
+    expect(links[0]).toHaveTextContent(/privacy policy/i);
+    expect(links[1]).toHaveTextContent(/terms & conditions/i);
+  });
+
   it("locks the copyright line to Figma's 252 × 17 mWeb spec and reverts on desktop", () => {
     render(<MarketingFooter />);
     const copy = screen.getByText(/all rights reserved/i);

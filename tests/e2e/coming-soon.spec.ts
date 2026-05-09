@@ -51,17 +51,19 @@ test.describe("Coming Soon — /notify form", () => {
     ).toBeVisible();
   });
 
-  test("blocks submit with an empty form (validation visible)", async ({
-    page,
-  }) => {
-    await page.getByRole("button", { name: /get notified/i }).click();
-    // At least one alert should surface (consent or email required)
-    await expect(page.getByRole("alert").first()).toBeVisible();
+  test("keeps submit disabled when phone is incomplete", async ({ page }) => {
+    const submit = page.getByRole("button", { name: /get notified/i });
+    await expect(submit).toBeDisabled();
+    await page.getByLabel(/^email$/i).fill("user@example.com");
+    await expect(submit).toBeDisabled();
   });
 
-  test("blocks submit on invalid email", async ({ page }) => {
+  test("blocks submit on invalid email when phone is valid", async ({
+    page,
+  }) => {
+    await page.getByLabel(/^phone$/i).click();
+    await page.getByLabel(/^phone$/i).fill("9876543210");
     await page.getByLabel(/^email$/i).fill("not-an-email");
-    await page.getByRole("checkbox", { name: /marketing emails/i }).check();
     await page.getByRole("button", { name: /get notified/i }).click();
     await expect(page.getByText(/valid email/i)).toBeVisible();
   });
@@ -76,8 +78,9 @@ test.describe("Coming Soon — /notify form", () => {
         body: '{"ok":true}',
       }),
     );
+    await page.getByLabel(/^phone$/i).click();
+    await page.getByLabel(/^phone$/i).fill("9876543210");
     await page.getByLabel(/^email$/i).fill("user@example.com");
-    await page.getByRole("checkbox", { name: /marketing emails/i }).check();
     await page.getByRole("button", { name: /get notified/i }).click();
     await expect(page).toHaveURL(/\/notify\/success$/);
     await expect(
@@ -86,7 +89,9 @@ test.describe("Coming Soon — /notify form", () => {
     await expect(page.getByText(/we'll reach out soon/i)).toBeVisible();
   });
 
-  test("shows a server error message when the API fails", async ({ page }) => {
+  test("shows a server error message when Web3Forms fails", async ({
+    page,
+  }) => {
     await page.route("**/api/leads", (route) =>
       route.fulfill({
         status: 502,
@@ -94,8 +99,9 @@ test.describe("Coming Soon — /notify form", () => {
         body: '{"ok":false}',
       }),
     );
+    await page.getByLabel(/^phone$/i).click();
+    await page.getByLabel(/^phone$/i).fill("9876543210");
     await page.getByLabel(/^email$/i).fill("user@example.com");
-    await page.getByRole("checkbox", { name: /marketing emails/i }).check();
     await page.getByRole("button", { name: /get notified/i }).click();
     await expect(page.getByText(/something went wrong/i)).toBeVisible();
   });

@@ -34,4 +34,19 @@ describe("BrandRevealSection", () => {
     expect(className).toContain("md:max-w-xl");
     expect(className).toContain("md:text-2xl");
   });
+
+  it("locks the mWeb hero stack to the Figma 393 × 358 frame", () => {
+    render(<BrandRevealSection />);
+
+    const stack = screen.getByRole("heading", { level: 1 }).parentElement;
+    expect(stack).not.toBeNull();
+    expect(stack!.className).toContain("w-[393px]");
+    expect(stack!.className).toContain("h-[358px]");
+    expect(stack!.className).toContain("max-w-full");
+    expect(stack!.className).toContain("justify-evenly");
+    expect(stack!.className).toContain("md:w-auto");
+    expect(stack!.className).toContain("md:h-auto");
+    expect(stack!.className).toContain("md:max-w-none");
+    expect(stack!.className).toContain("md:justify-start");
+  });
 });

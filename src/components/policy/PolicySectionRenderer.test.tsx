@@ -75,7 +75,7 @@ describe("PolicySectionRenderer", () => {
     expect(items[0]).toHaveTextContent("First");
   });
 
-  it("uses list-inside so wrapped bullet text starts under the bullet (not under first-line text)", () => {
+  it("renders the bullet manually (no native ::marker) so the bullet→text gap is 0 on mWeb and 8px on desktop", () => {
     const section: PolicySection = {
       blocks: [
         {
@@ -87,9 +87,15 @@ describe("PolicySectionRenderer", () => {
     const { container } = render(<PolicySectionRenderer section={section} />);
     const ul = container.querySelector("ul");
     expect(ul).not.toBeNull();
-    expect(ul?.className).toContain("list-inside");
-    // Belt-and-suspenders: bullet styling is also still present.
-    expect(ul?.className).toContain("list-disc");
+    expect(ul?.className).not.toContain("list-disc");
+    expect(ul?.className).not.toContain("list-inside");
+
+    const bullet = container.querySelector("li > span");
+    expect(bullet).not.toBeNull();
+    expect(bullet).toHaveTextContent("•");
+    expect(bullet).toHaveAttribute("aria-hidden", "true");
+    expect(bullet?.className).toContain("md:mr-2");
+    expect(bullet?.className).not.toMatch(/(?:^|\s)mr-\d/);
   });
 
   it("renders multiple blocks in order", () => {
@@ -107,20 +113,19 @@ describe("PolicySectionRenderer", () => {
     expect(container).toHaveTextContent("Closing paragraph.");
   });
 
-  it("merges a className override onto the section wrapper (used by the intro to drop the 16px gap)", () => {
+  it("flushes paragraph→paragraph spacing via [&>p+p]:-mt-4 so consecutive paragraphs sit under each other (matches T&C §4 'Intellectual Property Rights')", () => {
     const section: PolicySection = {
+      heading: "Heading",
       blocks: [
-        { type: "paragraph", spans: [{ text: "Intro paragraph one." }] },
-        { type: "paragraph", spans: [{ text: "Intro paragraph two." }] },
+        { type: "paragraph", spans: [{ text: "Sentence ending in full stop." }] },
+        { type: "paragraph", spans: [{ text: "Next sentence on the line below." }] },
       ],
     };
-    const { container } = render(
-      <PolicySectionRenderer section={section} className="gap-0" />,
-    );
+    const { container } = render(<PolicySectionRenderer section={section} />);
     const sectionEl = container.querySelector("section");
     expect(sectionEl).not.toBeNull();
-    // tailwind-merge resolves the collision: `gap-0` wins over the default `gap-4`.
-    expect(sectionEl?.className).toContain("gap-0");
-    expect(sectionEl?.className).not.toContain("gap-4");
+    expect(sectionEl?.className).toContain("gap-4");
+
+    expect(sectionEl?.className).toContain("[&>p+p]:-mt-4");
   });
 });

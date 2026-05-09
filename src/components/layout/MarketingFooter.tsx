@@ -20,7 +20,7 @@ export function MarketingFooter() {
           © {year} FreshTerra. All rights reserved.
         </p>
         <nav aria-label="Legal" className="flex items-center gap-4 md:gap-6">
-          {comingSoonContent.policyLinks.map((link) => (
+          {comingSoonContent.marketingFooterPolicyLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
