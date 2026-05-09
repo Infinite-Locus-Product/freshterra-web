@@ -33,7 +33,7 @@ export function PolicySectionRenderer({
 function BlockRenderer({ block }: { block: PolicyBlock }) {
   if (block.type === "paragraph") {
     return (
-      <p className="text-text-primary font-sans text-sm leading-[1.2] tracking-[0.2px]">
+      <p className="text-text-primary font-sans text-sm leading-relaxed tracking-[0.2px]">
         {block.spans.map((span, i) => (
           <SpanRenderer key={i} span={span} />
         ))}
@@ -41,7 +41,7 @@ function BlockRenderer({ block }: { block: PolicyBlock }) {
     );
   }
   return (
-    <ul className="text-text-primary ml-5 list-disc font-sans text-sm leading-[1.6] tracking-[0.2px]">
+    <ul className="text-text-primary ml-6 list-disc font-sans text-sm leading-[1.4] tracking-[0.2px]">
       {block.items.map((spans, i) => (
         <li key={i}>
           {spans.map((span, j) => (

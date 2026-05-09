@@ -7,9 +7,9 @@ export function MarketingFooter() {
   return (
     <footer
       role="contentinfo"
-      className="border-brand-100 bg-brand-600 border-t px-4 py-6 md:px-10"
+      className="border-brand-100 bg-brand-600 flex min-h-20 items-center border-t px-4 py-4 md:px-10 md:py-0"
     >
-      <div className="mx-auto flex max-w-screen-2xl flex-col items-center gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col items-center gap-4 md:flex-row md:items-center md:justify-between">
         <p className="text-white-soft font-sans text-sm leading-[1.5]">
           © {year} FreshTerra. All rights reserved.
         </p>

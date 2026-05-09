@@ -59,8 +59,12 @@ body {
   font-family: var(--font-sans);
 }
 
-* {
-  border-color: var(--color-border);
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

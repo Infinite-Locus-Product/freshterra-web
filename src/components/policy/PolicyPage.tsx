@@ -35,7 +35,7 @@ export function PolicyPage({ document: doc }: PolicyPageProps) {
               <PolicySectionRenderer key={section.id ?? i} section={section} />
             ))}
 
-            <div className="border-t-2 border-gray-200 pt-6">
+            <div className="border-gray-divider border-t-2 pt-6">
               <p className="text-text-tertiary font-sans text-xs leading-[18px]">
                 Last Updated: {formattedDate}
               </p>

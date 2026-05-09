@@ -93,6 +93,8 @@ export function LeadCaptureForm({
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -184,7 +186,15 @@ export function LeadCaptureForm({
         error={errors.phone?.message}
         labelBgClass={surfaceClass}
         {...register("phone")}
-        onFocus={() => handleFirstFocus("phone")}
+        onFocus={() => {
+          handleFirstFocus("phone");
+          // Pre-fill the +91 prefix on first focus so users only type the
+          // 10-digit local number. Only set when the field is empty so we
+          // don't double-prefix on subsequent focus.
+          if (!getValues("phone")) {
+            setValue("phone", "+91 ", { shouldValidate: false });
+          }
+        }}
       />
       <Input
         label={notify.fields.email.label}
@@ -207,11 +217,13 @@ export function LeadCaptureForm({
         {...register("_hp")}
       />
 
-      <Checkbox
-        label={notify.fields.consent}
-        error={errors.consent?.message}
-        {...register("consent")}
-      />
+      <div className="my-2 flex justify-center md:my-0 md:justify-start">
+        <Checkbox
+          label={notify.fields.consent}
+          error={errors.consent?.message}
+          {...register("consent")}
+        />
+      </div>
 
       {serverError ? (
         <p role="alert" className="text-sm text-red-600">

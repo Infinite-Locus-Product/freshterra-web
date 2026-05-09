@@ -30,8 +30,8 @@ export const comingSoonContent = {
     subheadline: "We'll reach out soon with a first look at what's in store.",
   },
   policyLinks: [
-    { label: "Terms & Conditions", href: "/terms" as const },
     { label: "Privacy Policy", href: "/privacy-policy" as const },
+    { label: "Terms & Conditions", href: "/terms" as const },
   ],
 };
 

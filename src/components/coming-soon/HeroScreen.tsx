@@ -25,8 +25,8 @@ const logoDimensions = {
 };
 
 const logoHeightClass = {
-  default: "h-16 w-auto md:h-24",
-  large: "h-20 w-auto md:h-[120px]",
+  default: "h-16 w-[185px] md:h-24 md:w-[277px]",
+  large: "h-20 w-[232px] md:h-[120px] md:w-[347px]",
 };
 
 /**
@@ -77,11 +77,11 @@ export function HeroScreen({
             level={1}
             variant="display"
             align="center"
-            className="text-text-primary"
+            className="text-[#181818]"
           >
             {headline}
           </Heading>
-          <p className="text-text-primary max-w-[260px] font-sans text-sm md:max-w-xl md:text-lg">
+          <p className="max-w-[260px] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl">
             {subheadline}
           </p>
           {cta ? (
