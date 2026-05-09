@@ -22,4 +22,13 @@ describe("MarketingHeader", () => {
     expect(banner.className).toContain("text-center");
     expect(banner.className).toContain("md:text-left");
   });
+
+  it("locks the desktop bottom padding to 24px (Figma T&C / Privacy Policy frame)", () => {
+    render(<MarketingHeader />);
+    const banner = screen.getByRole("banner");
+    expect(banner.className).toContain("md:pt-8");
+    expect(banner.className).toContain("md:pb-6");
+    expect(banner.className).not.toContain("md:py-8");
+    expect(banner.className).toContain("py-6");
+  });
 });

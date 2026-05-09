@@ -4,7 +4,7 @@ export function MarketingHeader() {
   return (
     <header
       role="banner"
-      className="from-header-tint bg-linear-to-b to-gray-50 px-6 py-6 text-center md:px-10 md:py-8 md:text-left"
+      className="from-header-tint bg-linear-to-b to-gray-50 px-6 py-6 text-center md:px-10 md:pt-8 md:pb-6 md:text-left"
     >
       <Logo
         tone="light"

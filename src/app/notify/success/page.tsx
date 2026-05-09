@@ -20,7 +20,8 @@ export default function NotifySuccessPage() {
       headline={notifySuccess.headline}
       subheadline={notifySuccess.subheadline}
       logoSize="large"
-      headingClassName="md:w-full md:max-w-[459px] md:leading-[74px]"
+      headingClassName="w-[262px] md:w-full md:max-w-[459px] md:leading-[74px]"
+      stackClassName="h-[250px] w-[393px] max-w-full justify-evenly md:h-auto md:w-auto md:max-w-none md:justify-start"
     />
   );
 }
