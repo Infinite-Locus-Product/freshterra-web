@@ -21,7 +21,6 @@ const MAX_LOCAL_DIGITS = 10;
 const PHONE_REGEX = /^\+91\s\d{10}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
 function sanitizePhone(raw: string): string {
   if (raw.startsWith(PHONE_PREFIX)) {
     const local = raw.slice(PHONE_PREFIX.length).replaceAll(/\D/g, "");
@@ -34,7 +33,6 @@ function sanitizePhone(raw: string): string {
       : digits;
   return PHONE_PREFIX + local.slice(0, MAX_LOCAL_DIGITS);
 }
-
 
 function clampPhoneCursor(input: HTMLInputElement): void {
   const min = PHONE_PREFIX.length;
@@ -50,8 +48,8 @@ function clampPhoneCursor(input: HTMLInputElement): void {
 const formSchema = z.object({
   email: z
     .string()
-    .optional()
-    .refine((v) => !v || v.trim() === "" || EMAIL_REGEX.test(v.trim()), {
+    .min(1, { message: "Email is required." })
+    .refine((v) => EMAIL_REGEX.test(v.trim()), {
       message: "Enter a valid email address.",
     }),
   phone: z
@@ -131,13 +129,14 @@ export function LeadCaptureForm({
     mode: "onSubmit",
   });
 
-  // Submit is enabled when the user has entered a full 10-digit local number
-  // (other fields are optional on web and mWeb).
+
   const phoneValue = watch("phone") ?? "";
+  const emailValue = watch("email") ?? "";
   const phoneLocalDigitCount = phoneValue.startsWith(PHONE_PREFIX)
     ? phoneValue.slice(PHONE_PREFIX.length).replaceAll(/\D/g, "").length
     : phoneValue.replaceAll(/\D/g, "").length;
-  const isFormValid = phoneLocalDigitCount === MAX_LOCAL_DIGITS;
+  const isFormValid =
+    phoneLocalDigitCount === MAX_LOCAL_DIGITS && emailValue.trim().length > 0;
 
   // Pre-bind register so we can chain a sanitizing onChange on the phone
   // input without losing the ref / name / onBlur that RHF needs.
@@ -154,7 +153,7 @@ export function LeadCaptureForm({
     }
 
     const phone = values.phone.trim();
-    const email = values.email?.trim() ?? "";
+    const email = values.email.trim();
 
     // Fire `form_submit` once validation passes — covers both success and
     // server-error outcomes per the analytics spec ("total submission
@@ -184,7 +183,7 @@ export function LeadCaptureForm({
           access_key: accessKey,
           subject: "FreshTerra — New launch notification signup",
           from_name: "FreshTerra Coming Soon",
-          email: email || "(not provided)",
+          email,
           phone,
           consent: values.consent
             ? "Yes — agreed to receive marketing emails"
@@ -251,10 +250,7 @@ export function LeadCaptureForm({
               e.key === "ArrowLeft" && start <= PHONE_PREFIX.length;
             if (homeIntoPrefix || leftIntoPrefix) {
               e.preventDefault();
-              input.setSelectionRange(
-                PHONE_PREFIX.length,
-                PHONE_PREFIX.length,
-              );
+              input.setSelectionRange(PHONE_PREFIX.length, PHONE_PREFIX.length);
               return;
             }
           }
@@ -279,10 +275,7 @@ export function LeadCaptureForm({
             setValue("phone", PHONE_PREFIX, { shouldValidate: false });
             // RHF mutates input.value synchronously via the registered ref,
             // so the caret can be parked immediately after the prefix.
-            input.setSelectionRange(
-              PHONE_PREFIX.length,
-              PHONE_PREFIX.length,
-            );
+            input.setSelectionRange(PHONE_PREFIX.length, PHONE_PREFIX.length);
           } else {
             // Field already has the prefix — don't trap the user at the end
             // of an in-progress number, but never let the caret sit inside
@@ -355,7 +348,7 @@ export function LeadCaptureForm({
         size="lg"
         loading={isSubmitting}
         disabled={!isFormValid}
-        className="mt-2 self-center md:w-full disabled:bg-gray-200 disabled:text-text-secondary disabled:opacity-100 disabled:hover:bg-gray-200 disabled:active:bg-gray-200"
+        className="disabled:text-text-secondary mt-2 self-center disabled:bg-gray-200 disabled:opacity-100 disabled:hover:bg-gray-200 disabled:active:bg-gray-200 md:w-full"
       >
         {notify.cta}
       </Button>

@@ -84,7 +84,7 @@ describe("LeadCaptureForm", () => {
     );
   });
 
-  it("disables the submit button until phone has 10 digits (email and consent optional)", async () => {
+  it("disables the submit button until phone has 10 digits AND email is filled (consent stays optional)", async () => {
     render(<LeadCaptureForm />);
     const submit = screen.getByRole("button", { name: /get notified/i });
 
@@ -94,12 +94,22 @@ describe("LeadCaptureForm", () => {
     expect(submit).toBeDisabled();
 
     await userEvent.type(screen.getByLabelText(/^phone$/i), "0");
+    expect(submit).toBeDisabled();
+    await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
     expect(submit).toBeEnabled();
 
     await userEvent.click(
       screen.getByRole("checkbox", { name: /marketing emails/i }),
     );
     expect(submit).toBeEnabled();
+  });
+
+  it("keeps the submit button disabled when only email is filled (phone still required)", async () => {
+    render(<LeadCaptureForm />);
+    const submit = screen.getByRole("button", { name: /get notified/i });
+
+    await userEvent.type(screen.getByLabelText(/^email$/i), "user@example.com");
+    expect(submit).toBeDisabled();
   });
 
   it("strips non-digits from the phone input and locks the +91 prefix", async () => {
@@ -265,6 +275,10 @@ describe("LeadCaptureForm", () => {
     it("pushes form_submit with marketing_consent false when consent is unchecked", async () => {
       render(<LeadCaptureForm />);
       await userEvent.type(screen.getByLabelText(/^phone$/i), "9876543210");
+      await userEvent.type(
+        screen.getByLabelText(/^email$/i),
+        "user@example.com",
+      );
       await userEvent.click(
         screen.getByRole("button", { name: /get notified/i }),
       );
@@ -275,7 +289,7 @@ describe("LeadCaptureForm", () => {
         event: "form_submit",
         form_name: "notify_me_form",
         phone_filled: true,
-        email_filled: false,
+        email_filled: true,
         marketing_consent: false,
       });
     });
@@ -286,6 +300,18 @@ describe("LeadCaptureForm", () => {
         screen.getByLabelText(/^email$/i),
         "user@example.com",
       );
+      await userEvent.click(
+        screen.getByRole("button", { name: /get notified/i }),
+      );
+      const submitEvent = window.dataLayer?.find(
+        (e) => e.event === "form_submit",
+      );
+      expect(submitEvent).toBeUndefined();
+    });
+
+    it("does NOT push form_submit when submit is blocked (email empty)", async () => {
+      render(<LeadCaptureForm />);
+      await userEvent.type(screen.getByLabelText(/^phone$/i), "9876543210");
       await userEvent.click(
         screen.getByRole("button", { name: /get notified/i }),
       );

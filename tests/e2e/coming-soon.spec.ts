@@ -58,6 +58,15 @@ test.describe("Coming Soon — /notify form", () => {
     await expect(submit).toBeDisabled();
   });
 
+  test("keeps submit disabled when email is empty (phone alone is not enough)", async ({
+    page,
+  }) => {
+    const submit = page.getByRole("button", { name: /get notified/i });
+    await page.getByLabel(/^phone$/i).click();
+    await page.getByLabel(/^phone$/i).fill("9876543210");
+    await expect(submit).toBeDisabled();
+  });
+
   test("blocks submit on invalid email when phone is valid", async ({
     page,
   }) => {
