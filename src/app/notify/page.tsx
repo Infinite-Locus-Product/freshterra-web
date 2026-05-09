@@ -55,22 +55,25 @@ export default function NotifyPage() {
 
       {/* Sidebar (desktop) / form section (mobile) */}
       <aside className="bg-cream-50 md:bg-gray-6 relative md:order-1 md:min-h-screen">
-        <div className="mx-auto flex min-h-[calc(100svh-388px)] flex-col gap-6 px-9 py-9 md:min-h-screen md:max-w-none md:gap-9 md:px-20 md:pt-16 md:pb-[60px]">
-          {/* Logo (desktop only — mobile shows it over the image) */}
-          <div className="hidden md:-ml-2 md:block">
+        <div className="mx-auto flex min-h-[calc(100svh-388px)] flex-col gap-6 px-9 py-9 md:min-h-screen md:max-w-none md:gap-0 md:px-20 md:pt-[60px] md:pb-[60px]">
+          {/* Logo (desktop only — mobile shows it over the image).
+              Figma spec: 209 × 72 at top 60, left 80 (left/top come from
+              the parent's md:px-20 + md:pt-[60px] above). */}
+          <div className="hidden md:block">
             <Logo
               tone="light"
-              width={140}
-              height={48}
+              width={209}
+              height={72}
               priority
-              className="h-12 w-[140px]"
+              className="h-[72px] w-[209px]"
             />
           </div>
 
           <Heading
             level={1}
             variant="display"
-            className="font-display text-[28px] leading-[1.25] md:mt-[58px] md:text-[40px] md:leading-[48px]"
+            // Figma: 94px gap from logo bottom to heading top on desktop.
+            className="font-display text-[28px] leading-[1.25] md:mt-[94px] md:text-[40px] md:leading-[48px]"
             align="center"
           >
             <span className="md:block md:text-left">
@@ -86,13 +89,13 @@ export default function NotifyPage() {
             </span>
           </Heading>
 
-          <p className="text-input-text text-center font-sans text-sm font-medium md:text-left md:text-lg md:leading-snug md:font-normal">
+          <p className="text-input-text text-center font-sans text-sm font-medium md:mt-9 md:text-left md:text-lg md:leading-snug md:font-normal">
             {notify.subheadline}
           </p>
 
           <LeadCaptureForm
             surfaceClass="bg-cream-50 md:bg-gray-6"
-            className="md:-mt-3"
+            className="md:mt-6"
           />
 
           <div className="mt-auto flex justify-center md:justify-start">

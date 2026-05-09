@@ -24,4 +24,14 @@ describe("MarketingFooter", () => {
       screen.getByRole("link", { name: /terms & conditions/i }),
     ).toHaveAttribute("href", "/terms");
   });
+
+  it("locks the copyright line to Figma's 252 × 17 mWeb spec and reverts on desktop", () => {
+    render(<MarketingFooter />);
+    const copy = screen.getByText(/all rights reserved/i);
+    expect(copy.className).toContain("w-[252px]");
+    expect(copy.className).toContain("leading-[17px]");
+    expect(copy.className).toContain("text-sm");
+    expect(copy.className).toContain("md:w-auto");
+    expect(copy.className).toContain("md:leading-[1.5]");
+  });
 });

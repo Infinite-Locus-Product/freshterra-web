@@ -15,4 +15,11 @@ describe("MarketingHeader", () => {
       screen.getByRole("link", { name: /freshterra home/i }),
     ).toHaveAttribute("href", "/");
   });
+
+  it("centers the logo on mWeb and left-aligns it on desktop", () => {
+    render(<MarketingHeader />);
+    const banner = screen.getByRole("banner");
+    expect(banner.className).toContain("text-center");
+    expect(banner.className).toContain("md:text-left");
+  });
 });
