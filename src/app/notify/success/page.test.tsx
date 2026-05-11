@@ -20,7 +20,8 @@ describe("NotifySuccessPage", () => {
     expect(stack.className).toContain("md:w-auto");
     expect(stack.className).toContain("md:h-auto");
     expect(stack.className).toContain("md:max-w-none");
-    expect(stack.className).toContain("md:gap-6");
+    expect(stack.className).toContain("gap-6");
+    expect(stack.className).toContain("md:gap-0");
     expect(stack.className).not.toContain("justify-evenly");
   });
 
@@ -36,6 +37,7 @@ describe("NotifySuccessPage", () => {
     expect(className).toContain("md:w-full");
     expect(className).toContain("md:max-w-[459px]");
     expect(className).toContain("md:leading-[74px]");
+    expect(className).toContain("md:mb-6");
   });
 
   it("locks the subheadline to the 345 × 44 / 16px / 100% mWeb spec", () => {
@@ -58,6 +60,7 @@ describe("NotifySuccessPage", () => {
     expect(className).toContain("whitespace-pre-line");
     expect(className).toContain("md:max-w-none");
     expect(className).toContain("md:whitespace-nowrap");
+    expect(className).toContain("md:mb-9");
     expect(subheadline.textContent).toBe(
       "We'll reach out soon with a first\nlook at what's in store.",
     );
@@ -75,6 +78,7 @@ describe("NotifySuccessPage", () => {
     expect(className).toContain("md:w-[347px]");
     expect(className).not.toContain("h-20");
     expect(className).not.toContain("w-[232px]");
+    expect(className).toContain("md:mb-9");
   });
 
   it("renders back-to-home CTA with home href and Figma button sizing", () => {

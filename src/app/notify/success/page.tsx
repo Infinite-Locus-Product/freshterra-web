@@ -20,9 +20,10 @@ export default function NotifySuccessPage() {
       headline={notifySuccess.headline}
       subheadline={notifySuccess.subheadline}
       logoSize="large"
-      headingClassName="w-[262px] md:w-full md:max-w-[459px] md:leading-[74px]"
-      stackClassName="h-[318px] w-[393px] max-w-full md:h-auto md:w-auto md:max-w-none md:gap-6"
-      subheadlineClassName="w-full max-w-[345px] h-[44px] text-base text-center leading-[22px] whitespace-pre-line md:h-auto md:w-auto md:max-w-none md:whitespace-nowrap"
+      logoClassName="md:mb-9"
+      headingClassName="w-[262px] md:mb-6 md:w-full md:max-w-[459px] md:leading-[74px]"
+      stackClassName="h-[318px] w-[393px] max-w-full gap-6 md:h-auto md:w-auto md:max-w-none md:gap-0"
+      subheadlineClassName="md:mb-9 w-full max-w-[345px] h-[44px] text-base text-center leading-[22px] whitespace-pre-line md:h-auto md:w-auto md:max-w-none md:whitespace-nowrap"
       cta={{
         label: "Back to home",
         href: "/",

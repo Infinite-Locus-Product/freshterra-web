@@ -26,6 +26,8 @@ type HeroScreenProps = {
   };
   /** Logo display size at desktop breakpoint. Defaults to the brand-reveal sizing (277×96). */
   logoSize?: "default" | "large";
+  /** Merged onto the logo image (e.g. `mb-*` for vertical rhythm vs headline). */
+  logoClassName?: string;
   headingClassName?: string;
   subheadlineClassName?: string;
 
@@ -55,6 +57,7 @@ export function HeroScreen({
   subheadline,
   cta,
   logoSize = "default",
+  logoClassName,
   headingClassName,
   subheadlineClassName,
   stackClassName,
@@ -97,7 +100,7 @@ export function HeroScreen({
             width={dim.desktop.w}
             height={dim.desktop.h}
             priority
-            className={logoHeightClass[logoSize]}
+            className={cn(logoHeightClass[logoSize], logoClassName)}
           />
           <Heading
             level={1}

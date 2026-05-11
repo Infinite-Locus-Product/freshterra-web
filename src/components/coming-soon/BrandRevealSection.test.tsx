@@ -43,10 +43,21 @@ describe("BrandRevealSection", () => {
     expect(stack!.className).toContain("w-[393px]");
     expect(stack!.className).toContain("h-[358px]");
     expect(stack!.className).toContain("max-w-full");
-    expect(stack!.className).toContain("justify-evenly");
+    expect(stack!.className).toContain("justify-start");
+    expect(stack!.className).toContain("gap-6");
+    expect(stack!.className).toContain("md:gap-0");
     expect(stack!.className).toContain("md:w-auto");
     expect(stack!.className).toContain("md:h-auto");
     expect(stack!.className).toContain("md:max-w-none");
-    expect(stack!.className).toContain("md:justify-start");
+  });
+
+  it("uses 36px / 24px / 36px vertical gaps between logo, headline, subheadline, and CTA on web only", () => {
+    render(<BrandRevealSection />);
+    const logo = screen.getByAltText(/freshterra/i);
+    const headline = screen.getByRole("heading", { level: 1 });
+    const sub = screen.getByText(/five-star quality/i);
+    expect(logo.className).toContain("md:mb-9");
+    expect(headline.className).toContain("md:mb-6");
+    expect(sub.className).toContain("md:mb-9");
   });
 });
