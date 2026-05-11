@@ -34,6 +34,7 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
+  --radius-xxl: 1.75rem;
 
   /* Font families — wired to next/font CSS variables in app/layout.tsx */
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;

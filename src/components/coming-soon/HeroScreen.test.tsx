@@ -33,6 +33,23 @@ describe("HeroScreen", () => {
     expect(link).toHaveAttribute("href", "/notify");
   });
 
+  it("renders a plain Link when trackNotifiedCta is false", () => {
+    render(
+      <HeroScreen
+        {...baseProps}
+        cta={{
+          label: "Home",
+          href: "/",
+          trackNotifiedCta: false,
+          buttonClassName: "w-[172px]",
+        }}
+      />,
+    );
+    const link = screen.getByRole("link", { name: /home/i });
+    expect(link).toHaveAttribute("href", "/");
+    expect(link.className).toContain("w-[172px]");
+  });
+
   it("does NOT render a CTA when one is omitted", () => {
     render(<HeroScreen {...baseProps} />);
     expect(

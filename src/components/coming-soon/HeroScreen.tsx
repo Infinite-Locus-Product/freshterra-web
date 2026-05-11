@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { HERO_DESKTOP_URL, HERO_MOBILE_URL } from "@/lib/constants/images";
 import { cn } from "@/lib/utils/cn";
@@ -13,7 +14,17 @@ import { PolicyLinks } from "./PolicyLinks";
 type HeroScreenProps = {
   headline: string;
   subheadline: string;
-  cta?: { label: string; href: string };
+  cta?: {
+    label: string;
+    href: string;
+    /** Merged onto the CTA `Button` after preset sizes (tw-merge wins on conflicts). */
+    buttonClassName?: string;
+    /**
+     * When false, renders a plain home navigation link without `notified_cta_click`
+     * (use for `/notify/success` “Back to home”).
+     */
+    trackNotifiedCta?: boolean;
+  };
   /** Logo display size at desktop breakpoint. Defaults to the brand-reveal sizing (277×96). */
   logoSize?: "default" | "large";
   headingClassName?: string;
@@ -106,8 +117,17 @@ export function HeroScreen({
             {subheadline}
           </p>
           {cta ? (
-            <Button asChild variant="primary" size="lg">
-              <NotifiedCtaLink href={cta.href}>{cta.label}</NotifiedCtaLink>
+            <Button
+              asChild
+              variant="primary"
+              size="lg"
+              className={cta.buttonClassName}
+            >
+              {cta.trackNotifiedCta === false ? (
+                <Link href={cta.href}>{cta.label}</Link>
+              ) : (
+                <NotifiedCtaLink href={cta.href}>{cta.label}</NotifiedCtaLink>
+              )}
             </Button>
           ) : null}
         </div>

@@ -4,16 +4,18 @@ import { describe, expect, it } from "vitest";
 import NotifySuccessPage from "./page";
 
 describe("NotifySuccessPage", () => {
-  it("locks the mWeb success stack to the Figma 393 × 250 frame", () => {
+  it("locks the mWeb success stack to the Figma 393 × 318 frame", () => {
     render(<NotifySuccessPage />);
 
     const stack = screen.getByRole("heading", { level: 1 }).parentElement;
     if (!stack) {
-      throw new Error("Expected the success-screen heading to have a parent stack element.");
+      throw new Error(
+        "Expected the success-screen heading to have a parent stack element.",
+      );
     }
 
     expect(stack.className).toContain("w-[393px]");
-    expect(stack.className).toContain("h-[250px]");
+    expect(stack.className).toContain("h-[318px]");
     expect(stack.className).toContain("max-w-full");
     expect(stack.className).toContain("md:w-auto");
     expect(stack.className).toContain("md:h-auto");
@@ -53,7 +55,8 @@ describe("NotifySuccessPage", () => {
     expect(className).toContain("md:h-auto");
 
     expect(className).toContain("whitespace-pre-line");
-    expect(className).toContain("md:whitespace-normal");
+    expect(className).toContain("md:max-w-none");
+    expect(className).toContain("md:whitespace-nowrap");
     expect(subheadline.textContent).toBe(
       "We'll reach out soon with a first\nlook at what's in store.",
     );
@@ -71,5 +74,23 @@ describe("NotifySuccessPage", () => {
     expect(className).toContain("md:w-[347px]");
     expect(className).not.toContain("h-20");
     expect(className).not.toContain("w-[232px]");
+  });
+
+  it("renders back-to-home CTA with home href and Figma button sizing", () => {
+    render(<NotifySuccessPage />);
+
+    const link = screen.getByRole("link", { name: /back to home/i });
+    expect(link).toHaveAttribute("href", "/");
+
+    const cls = link.className;
+    expect(cls).toContain("h-[56px]");
+    expect(cls).toContain("w-[172px]");
+    expect(cls).toContain("px-6");
+    expect(cls).toContain("py-4");
+    expect(cls).toContain("rounded-[var(--radius-xxl)]");
+    expect(cls).toContain("text-[16px]");
+    expect(cls).toContain("leading-[24px]");
+    expect(cls).toContain("font-bold");
+    expect(cls).toContain("uppercase");
   });
 });
