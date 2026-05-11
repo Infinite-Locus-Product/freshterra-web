@@ -20,6 +20,7 @@ describe("NotifySuccessPage", () => {
     expect(stack.className).toContain("md:w-auto");
     expect(stack.className).toContain("md:h-auto");
     expect(stack.className).toContain("md:max-w-none");
+    expect(stack.className).toContain("md:gap-6");
     expect(stack.className).not.toContain("justify-evenly");
   });
 

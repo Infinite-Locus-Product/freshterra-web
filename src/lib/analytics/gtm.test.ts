@@ -61,6 +61,27 @@ describe("gtm sink", () => {
     });
   });
 
+  it("pushes back_to_home_cta with custom params and computed device_type", () => {
+    setUA(
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605",
+    );
+    gtm.track({
+      name: "back_to_home_cta",
+      page_title: "You're on the list!",
+      page_url: "https://freshterra.in/notify/success",
+      page_referrer: "https://freshterra.in/",
+      session_id: "test-session-id",
+    });
+    expect(window.dataLayer?.[0]).toEqual({
+      event: "back_to_home_cta",
+      device_type: "mobile",
+      page_title: "You're on the list!",
+      page_url: "https://freshterra.in/notify/success",
+      page_referrer: "https://freshterra.in/",
+      session_id: "test-session-id",
+    });
+  });
+
   it("pushes tc_click with source_section + source_page_url", () => {
     gtm.track({
       name: "tc_click",

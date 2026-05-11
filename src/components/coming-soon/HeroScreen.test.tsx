@@ -33,7 +33,7 @@ describe("HeroScreen", () => {
     expect(link).toHaveAttribute("href", "/notify");
   });
 
-  it("renders a plain Link when trackNotifiedCta is false", () => {
+  it("uses back-to-home tracking when trackNotifiedCta is false", () => {
     render(
       <HeroScreen
         {...baseProps}

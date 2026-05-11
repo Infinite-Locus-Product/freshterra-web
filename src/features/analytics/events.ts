@@ -41,6 +41,14 @@ export type AnalyticsEvent =
   // page_view (events 1, 8, 9 in the spec) is auto-tracked by GA4; nothing
   // to wire here. The 6 below are fired explicitly via tracker.track(...).
   | { name: "notified_cta_click" }
+  | {
+      name: "back_to_home_cta";
+      page_title: string;
+      page_url: string;
+      /** Spec key `page_referrer`: absolute URL of the page the user navigates to (CTA `href`). */
+      page_referrer: string;
+      session_id: string;
+    }
   | { name: "form_open"; form_name: "notify_me_form" }
   | {
       name: "form_start";

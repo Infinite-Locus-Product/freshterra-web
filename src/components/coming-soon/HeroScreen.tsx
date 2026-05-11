@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import { HERO_DESKTOP_URL, HERO_MOBILE_URL } from "@/lib/constants/images";
 import { cn } from "@/lib/utils/cn";
@@ -20,8 +19,8 @@ type HeroScreenProps = {
     /** Merged onto the CTA `Button` after preset sizes (tw-merge wins on conflicts). */
     buttonClassName?: string;
     /**
-     * When false, renders a plain home navigation link without `notified_cta_click`
-     * (use for `/notify/success` “Back to home”).
+     * When false, `NotifiedCtaLink` uses `back_to_home_cta` (success screen).
+     * When omitted/true, `notified_cta_click` (Get Notified).
      */
     trackNotifiedCta?: boolean;
   };
@@ -123,11 +122,14 @@ export function HeroScreen({
               size="lg"
               className={cta.buttonClassName}
             >
-              {cta.trackNotifiedCta === false ? (
-                <Link href={cta.href}>{cta.label}</Link>
-              ) : (
-                <NotifiedCtaLink href={cta.href}>{cta.label}</NotifiedCtaLink>
-              )}
+              <NotifiedCtaLink
+                href={cta.href}
+                tracking={
+                  cta.trackNotifiedCta === false ? "backToHome" : "notified"
+                }
+              >
+                {cta.label}
+              </NotifiedCtaLink>
             </Button>
           ) : null}
         </div>
