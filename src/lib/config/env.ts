@@ -106,8 +106,37 @@ const clientEnvRaw = {
 
 const isServer = typeof window === "undefined";
 
+// Same coercion as clientEnvRaw — empty `.env` entries arrive as "" which
+// fails `.url()` / `.min(1)` validators even when the field is `.optional()`.
+// Mapping blank → undefined lets `.optional()` / `.default()` apply.
+const serverEnvRaw = {
+  NODE_ENV: blankAsUndefined(process.env.NODE_ENV),
+  SALEOR_APP_TOKEN: blankAsUndefined(process.env.SALEOR_APP_TOKEN),
+  ERPNEXT_API_URL: blankAsUndefined(process.env.ERPNEXT_API_URL),
+  ERPNEXT_API_KEY: blankAsUndefined(process.env.ERPNEXT_API_KEY),
+  ERPNEXT_API_SECRET: blankAsUndefined(process.env.ERPNEXT_API_SECRET),
+  STRAPI_API_URL: blankAsUndefined(process.env.STRAPI_API_URL),
+  STRAPI_API_TOKEN: blankAsUndefined(process.env.STRAPI_API_TOKEN),
+  STRAPI_PREVIEW_TOKEN: blankAsUndefined(process.env.STRAPI_PREVIEW_TOKEN),
+  STRAPI_REVALIDATE_SECRET: blankAsUndefined(
+    process.env.STRAPI_REVALIDATE_SECRET,
+  ),
+  WIZZY_ENV: blankAsUndefined(process.env.WIZZY_ENV),
+  WIZZY_API_URL: blankAsUndefined(process.env.WIZZY_API_URL),
+  WIZZY_API_KEY: blankAsUndefined(process.env.WIZZY_API_KEY),
+  WIZZY_PROJECT_ID: blankAsUndefined(process.env.WIZZY_PROJECT_ID),
+  GOOGLE_MAPS_SERVER_KEY: blankAsUndefined(process.env.GOOGLE_MAPS_SERVER_KEY),
+  LEAD_WEBHOOK_URL: blankAsUndefined(process.env.LEAD_WEBHOOK_URL),
+  LEAD_FRESHTERRA_API_URL: blankAsUndefined(
+    process.env.LEAD_FRESHTERRA_API_URL,
+  ),
+  LEAD_FRESHTERRA_API_KEY: blankAsUndefined(
+    process.env.LEAD_FRESHTERRA_API_KEY,
+  ),
+};
+
 const serverParsed = isServer
-  ? serverSchema.safeParse(process.env)
+  ? serverSchema.safeParse(serverEnvRaw)
   : { success: true as const, data: {} as z.infer<typeof serverSchema> };
 
 const clientParsed = clientSchema.safeParse(clientEnvRaw);
