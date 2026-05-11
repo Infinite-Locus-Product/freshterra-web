@@ -42,6 +42,10 @@ export default function NotifyPage() {
           sizes="100vw"
           className="object-cover"
         />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/30"
+        />
         <div className="absolute inset-0 flex items-center justify-center px-6">
           <Logo
             tone="dark"
@@ -58,8 +62,11 @@ export default function NotifyPage() {
         <div className="mx-auto flex min-h-[calc(100svh-388px)] flex-col gap-6 px-9 py-9 md:min-h-screen md:max-w-none md:gap-0 md:px-20 md:pt-[60px] md:pb-[60px]">
           {/* Logo (desktop only — mobile shows it over the image).
               Figma spec: 209 × 72 at top 60, left 80 (left/top come from
-              the parent's md:px-20 + md:pt-[60px] above). */}
-          <div className="hidden md:block">
+              the parent's md:px-20 + md:pt-[60px] above).
+              Wrapper is `md:flex` (not `md:block`) so the inline <img>
+              doesn't add ~4–5px of line-height baseline descent below
+              the logo, which would inflate the heading's 94px gap. */}
+          <div className="hidden md:flex">
             <Logo
               tone="light"
               width={209}
@@ -72,8 +79,7 @@ export default function NotifyPage() {
           <Heading
             level={1}
             variant="display"
-            // Figma: 94px gap from logo bottom to heading top on desktop.
-            className="font-display text-[28px] leading-[1.25] md:mt-[94px] md:text-[40px] md:leading-[48px]"
+            className="mx-auto h-[70px] w-[345px] font-display text-[28px] leading-[1.25] md:mx-0 md:mt-[94px] md:h-auto md:w-auto md:text-[40px] md:leading-[48px]"
             align="center"
           >
             <span className="md:block md:text-left">

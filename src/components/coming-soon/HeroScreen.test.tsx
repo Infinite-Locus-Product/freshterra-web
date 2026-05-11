@@ -17,7 +17,9 @@ describe("HeroScreen", () => {
 
   it("renders the subheadline", () => {
     render(<HeroScreen {...baseProps} />);
-    expect(screen.getByText(/a sub line/i)).toBeInTheDocument();
+    const sub = screen.getByText(/a sub line/i);
+    expect(sub).toBeInTheDocument();
+    expect(sub.className).toContain("text-center");
   });
 
   it("renders the CTA when one is provided", () => {

@@ -24,14 +24,12 @@ type HeroScreenProps = {
 
 const logoDimensions = {
   default: { mobile: { w: 185, h: 64 }, desktop: { w: 277, h: 96 } },
-  // Slightly bigger logo when there's no CTA, to balance the visual weight.
-  // Sourced from the success screen Figma frame (88:489).
-  large: { mobile: { w: 232, h: 80 }, desktop: { w: 347, h: 120 } },
+  large: { mobile: { w: 185, h: 64 }, desktop: { w: 347, h: 120 } },
 };
 
 const logoHeightClass = {
   default: "h-16 w-[185px] md:h-24 md:w-[277px]",
-  large: "h-20 w-[232px] md:h-[120px] md:w-[347px]",
+  large: "h-16 w-[185px] md:h-[120px] md:w-[347px]",
 };
 
 /**
@@ -101,7 +99,7 @@ export function HeroScreen({
           </Heading>
           <p
             className={cn(
-              "max-w-[260px] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl",
+              "text-center max-w-[260px] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl",
               subheadlineClassName,
             )}
           >

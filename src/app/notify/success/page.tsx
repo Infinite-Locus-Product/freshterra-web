@@ -21,7 +21,8 @@ export default function NotifySuccessPage() {
       subheadline={notifySuccess.subheadline}
       logoSize="large"
       headingClassName="w-[262px] md:w-full md:max-w-[459px] md:leading-[74px]"
-      stackClassName="h-[250px] w-[393px] max-w-full justify-evenly md:h-auto md:w-auto md:max-w-none md:justify-start"
+      stackClassName="h-[250px] w-[393px] max-w-full md:h-auto md:w-auto md:max-w-none"
+      subheadlineClassName="w-full max-w-[345px] h-[44px] text-base text-center leading-[22px] whitespace-pre-line md:w-auto md:h-auto md:whitespace-normal"
     />
   );
 }

@@ -331,7 +331,7 @@ export function LeadCaptureForm({
         <Checkbox
           label={notify.fields.consent}
           error={errors.consent?.message}
-          className="text-center md:text-left"
+          className="text-center md:text-left [&_span]:h-[18px] [&_span]:w-[226px] [&_span]:text-sm [&_span]:leading-[18px] md:[&_span]:h-auto md:[&_span]:w-auto md:[&_span]:text-base md:[&_span]:leading-tight"
           {...register("consent")}
         />
       </div>

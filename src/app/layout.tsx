@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
+import { InitialLoader } from "@/components/layout/InitialLoader";
 
 import { Providers } from "./providers";
 
@@ -39,9 +40,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
-      <body>
+      <body className="min-h-screen antialiased" style={{ backgroundColor: "#fffef8" }}>
         <GoogleTagManager />
         <Providers>{children}</Providers>
+        <InitialLoader />
       </body>
     </html>
   );
