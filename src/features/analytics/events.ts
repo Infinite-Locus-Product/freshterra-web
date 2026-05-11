@@ -33,6 +33,44 @@ export type AnalyticsEvent =
   | { name: "view_plp"; storeId: string; categorySlug: string }
   // Location / store
   | { name: "store_selected"; storeId: string; method: "auto" | "manual" }
-  | { name: "deeplink_redirect"; target: "ios" | "android" | "fallback" };
+  | { name: "deeplink_redirect"; target: "ios" | "android" | "fallback" }
+  // Lead capture (Coming Soon /notify)
+  | { name: "lead_form_view"; source: "coming-soon-notify" }
+  | { name: "lead_submitted"; source: "coming-soon-notify"; hasPhone: boolean }
+  // Coming Soon launch — GTM/GA4 events per the analytics spec.
+  // page_view (events 1, 8, 9 in the spec) is auto-tracked by GA4; nothing
+  // to wire here. The 6 below are fired explicitly via tracker.track(...).
+  | { name: "notified_cta_click" }
+  | {
+      name: "back_to_home_cta";
+      page_title: string;
+      page_url: string;
+      /** Spec key `page_referrer`: absolute URL of the page the user navigates to (CTA `href`). */
+      page_referrer: string;
+      session_id: string;
+    }
+  | { name: "form_open"; form_name: "notify_me_form" }
+  | {
+      name: "form_start";
+      form_name: "notify_me_form";
+      first_field_name: "phone" | "email";
+    }
+  | {
+      name: "form_submit";
+      form_name: "notify_me_form";
+      phone_filled: boolean;
+      email_filled: boolean;
+      marketing_consent: boolean;
+    }
+  | {
+      name: "tc_click";
+      source_section: "footer";
+      source_page_url: string;
+    }
+  | {
+      name: "privacy_policy_click";
+      source_section: "footer";
+      source_page_url: string;
+    };
 
 export type AnalyticsEventName = AnalyticsEvent["name"];

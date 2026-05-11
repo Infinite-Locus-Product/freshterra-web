@@ -57,3 +57,5 @@ src/types/saleor.ts
 
 # Claude Code
 .claude/settings.local.json
+.agents
+skills-lock.json

@@ -20,5 +20,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/careers`, lastModified, changeFrequency: "weekly" },
     { url: `${base}/contact`, lastModified, changeFrequency: "monthly" },
     { url: `${base}/stores`, lastModified, changeFrequency: "weekly" },
+    {
+      url: `${base}/privacy-policy`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${base}/terms`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 }

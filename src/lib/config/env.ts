@@ -22,6 +22,14 @@ const serverSchema = z.object({
   WIZZY_PROJECT_ID: z.string().optional(),
 
   GOOGLE_MAPS_SERVER_KEY: z.string().optional(),
+
+  // Lead capture destination — left optional. Adapter falls back to console
+  // logging when nothing is configured. Wire one of these on the first deploy
+  // that needs real lead delivery (Make/Zapier/Resend → LEAD_WEBHOOK_URL,
+  // FreshTerra services → LEAD_FRESHTERRA_API_URL + LEAD_FRESHTERRA_API_KEY).
+  LEAD_WEBHOOK_URL: z.string().url().optional(),
+  LEAD_FRESHTERRA_API_URL: z.string().url().optional(),
+  LEAD_FRESHTERRA_API_KEY: z.string().optional(),
 });
 
 const clientSchema = z.object({
@@ -30,29 +38,105 @@ const clientSchema = z.object({
   NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: z.string().url().optional(),
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: z.string().optional(),
   NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID: z.string().optional(),
+  NEXT_PUBLIC_GTM_ID: z
+    .string()
+    .regex(/^GTM-[A-Z0-9]+$/)
+    .optional(),
+  NEXT_PUBLIC_GTM_AUTH: z.string().optional(),
+  NEXT_PUBLIC_GTM_PREVIEW: z.string().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: z.string().optional(),
+  NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: z
+    .string()
+    .url()
+    .default("https://api.web3forms.com/submit"),
+  NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(15_000),
 });
 
+// Coerce empty strings to undefined so zod's `.optional()` / `.default()`
+// kick in. Without this, an unset entry in `.env` (left blank) is "" not
+// undefined, which fails `.url()` and similar validators.
+const blankAsUndefined = (v: string | undefined) =>
+  v && v.length > 0 ? v : undefined;
+
 const clientEnvRaw = {
-  NEXT_PUBLIC_SALEOR_API_URL: process.env.NEXT_PUBLIC_SALEOR_API_URL,
-  NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY:
+  NEXT_PUBLIC_SALEOR_API_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_SALEOR_API_URL,
+  ),
+  NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY: blankAsUndefined(
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY,
-  NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT:
+  ),
+  NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: blankAsUndefined(
     process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
-  NEXT_PUBLIC_GA4_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID,
-  NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID:
+  ),
+  NEXT_PUBLIC_GA4_MEASUREMENT_ID: blankAsUndefined(
+    process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID,
+  ),
+  NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID: blankAsUndefined(
     process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID,
-  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  NEXT_PUBLIC_APP_STORE_URL: process.env.NEXT_PUBLIC_APP_STORE_URL,
-  NEXT_PUBLIC_PLAY_STORE_URL: process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_GTM_ID: blankAsUndefined(process.env.NEXT_PUBLIC_GTM_ID),
+  NEXT_PUBLIC_GTM_AUTH: blankAsUndefined(process.env.NEXT_PUBLIC_GTM_AUTH),
+  NEXT_PUBLIC_GTM_PREVIEW: blankAsUndefined(
+    process.env.NEXT_PUBLIC_GTM_PREVIEW,
+  ),
+  NEXT_PUBLIC_APP_URL: blankAsUndefined(process.env.NEXT_PUBLIC_APP_URL),
+  NEXT_PUBLIC_APP_STORE_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_APP_STORE_URL,
+  ),
+  NEXT_PUBLIC_PLAY_STORE_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: blankAsUndefined(
+    process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
+  ),
+  NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL,
+  ),
+  NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS: blankAsUndefined(
+    process.env.NEXT_PUBLIC_WEB3FORMS_TIMEOUT_MS,
+  ),
 };
 
 const isServer = typeof window === "undefined";
 
+// Same coercion as clientEnvRaw — empty `.env` entries arrive as "" which
+// fails `.url()` / `.min(1)` validators even when the field is `.optional()`.
+// Mapping blank → undefined lets `.optional()` / `.default()` apply.
+const serverEnvRaw = {
+  NODE_ENV: blankAsUndefined(process.env.NODE_ENV),
+  SALEOR_APP_TOKEN: blankAsUndefined(process.env.SALEOR_APP_TOKEN),
+  ERPNEXT_API_URL: blankAsUndefined(process.env.ERPNEXT_API_URL),
+  ERPNEXT_API_KEY: blankAsUndefined(process.env.ERPNEXT_API_KEY),
+  ERPNEXT_API_SECRET: blankAsUndefined(process.env.ERPNEXT_API_SECRET),
+  STRAPI_API_URL: blankAsUndefined(process.env.STRAPI_API_URL),
+  STRAPI_API_TOKEN: blankAsUndefined(process.env.STRAPI_API_TOKEN),
+  STRAPI_PREVIEW_TOKEN: blankAsUndefined(process.env.STRAPI_PREVIEW_TOKEN),
+  STRAPI_REVALIDATE_SECRET: blankAsUndefined(
+    process.env.STRAPI_REVALIDATE_SECRET,
+  ),
+  WIZZY_ENV: blankAsUndefined(process.env.WIZZY_ENV),
+  WIZZY_API_URL: blankAsUndefined(process.env.WIZZY_API_URL),
+  WIZZY_API_KEY: blankAsUndefined(process.env.WIZZY_API_KEY),
+  WIZZY_PROJECT_ID: blankAsUndefined(process.env.WIZZY_PROJECT_ID),
+  GOOGLE_MAPS_SERVER_KEY: blankAsUndefined(process.env.GOOGLE_MAPS_SERVER_KEY),
+  LEAD_WEBHOOK_URL: blankAsUndefined(process.env.LEAD_WEBHOOK_URL),
+  LEAD_FRESHTERRA_API_URL: blankAsUndefined(
+    process.env.LEAD_FRESHTERRA_API_URL,
+  ),
+  LEAD_FRESHTERRA_API_KEY: blankAsUndefined(
+    process.env.LEAD_FRESHTERRA_API_KEY,
+  ),
+};
+
 const serverParsed = isServer
-  ? serverSchema.safeParse(process.env)
+  ? serverSchema.safeParse(serverEnvRaw)
   : { success: true as const, data: {} as z.infer<typeof serverSchema> };
 
 const clientParsed = clientSchema.safeParse(clientEnvRaw);

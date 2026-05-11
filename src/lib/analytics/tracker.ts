@@ -4,10 +4,12 @@ import type { AnalyticsEvent } from "@/features/analytics/events";
 
 import { clevertap } from "./clevertap";
 import { ga4 } from "./ga4";
+import { gtm } from "./gtm";
 
 /**
- * Unified analytics facade. CLAUDE.md §5.7: NEVER call gtag/clevertap/wizzy
- * events directly from a component or feature. Always go through `track()`.
+ * Unified analytics facade. CLAUDE.md §5.7: NEVER call gtag/dataLayer/
+ * clevertap/wizzy events directly from a component or feature. Always go
+ * through `track()`.
  */
 
 const SEARCH_EVENT_NAMES = new Set([
@@ -20,6 +22,7 @@ const SEARCH_EVENT_NAMES = new Set([
 ]);
 
 export function track(event: AnalyticsEvent): void {
+  gtm.track(event);
   ga4.track(event);
   clevertap.track(event);
 

@@ -1,7 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: oklch(1 0 0);
+  /* Brand palette — sourced from Figma (FreshTerra Final Drafts) */
+  --color-brand-500: #18532f;
+  --color-brand-600: #164c2b;
+  --color-brand-300: #648c74;
+  --color-brand-100: #b7cabf;
+  --color-accent-olive: #4e7511;
+  --color-accent-terracotta: #ac612d;
+  --color-beige-100: #fcfaf5;
+  --color-cream-50: #fffef8;
+  --color-white-soft: #fefefe;
+  --color-gray-6: #f2f2f2;
+  --color-gray-50: #f9fafb;
+  --color-gray-200: #e5e7ea;
+  --color-gray-divider: #e5e7ea;
+  --color-header-tint: #ecfcec;
+  --color-text-primary: #131927;
+  --color-text-secondary: #6d717f;
+  --color-text-tertiary: #9ea2ae;
+  --color-input-border: rgba(0, 0, 0, 0.38);
+  --color-input-text: rgba(0, 0, 0, 0.87);
+  --color-input-label: rgba(0, 0, 0, 0.6);
+
+  --color-bg: #fffef8;
   --color-fg: oklch(0.18 0 0);
   --color-muted: oklch(0.96 0 0);
   --color-muted-fg: oklch(0.45 0 0);
@@ -12,8 +34,12 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
+  --radius-xxl: 1.75rem;
 
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  /* Font families — wired to next/font CSS variables in app/layout.tsx */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    var(--font-playfair), ui-serif, Georgia, "Times New Roman", serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,6 +59,20 @@ body {
   font-family: var(--font-sans);
 }
 
-* {
-  border-color: var(--color-border);
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

@@ -109,7 +109,8 @@ freshterra-web/
 │   ├── components/            # shared, presentational, no business logic
 │   │   ├── ui/                # primitives (Button, Modal, Input, etc.)
 │   │   ├── layout/            # Header, Footer, MegaMenu, MobileNav
-│   │   └── seo/               # JsonLd helpers, meta builders
+│   │   ├── seo/               # JsonLd helpers, meta builders
+│   │   └── analytics/         # GoogleTagManager (script + noscript loader)
 │   │
 │   ├── lib/
 │   │   ├── clients/           # one file per third-party — never import vendor SDKs elsewhere
@@ -235,11 +236,19 @@ Per the Wizzy Implementation PRD:
 - Restrict to India (`components=country:in`) per Location PRD.
 - Browser key (Maps JS) must be referrer-restricted in GCP console.
 
-### 5.7 Analytics (GA4 + CleverTap + Wizzy Events)
+### 5.7 Analytics (GTM + GA4 + CleverTap + Wizzy Events)
 
-- **Never** call `gtag(...)`, `clevertap.event.push(...)`, or Wizzy events
-  directly from a component or feature.
-- Always go through `lib/analytics/tracker.ts` which fans out to all sinks.
+- **GTM is loaded once** at the root layout via
+  `src/components/analytics/GoogleTagManager.tsx`. Container ID
+  `GTM-KDR6N28Q` is shared across environments; the TEST GTM environment is
+  targeted by setting `NEXT_PUBLIC_GTM_AUTH` + `NEXT_PUBLIC_GTM_PREVIEW`
+  (see §7). GA4 measurement IDs live INSIDE GTM, not in this repo.
+- **Never** call `gtag(...)`, `dataLayer.push(...)`,
+  `clevertap.event.push(...)`, or Wizzy events directly from a component
+  or feature.
+- Always go through `lib/analytics/tracker.ts` which fans out to all sinks
+  (GTM is added as a `gtm` sink alongside ga4/clevertap when the event
+  spec lands).
 - Event names + params are typed via a discriminated union in
   `features/analytics/events.ts`. TS will block unknown events.
 
@@ -343,6 +352,12 @@ NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=
 # Analytics
 NEXT_PUBLIC_GA4_MEASUREMENT_ID=
 NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID=
+
+# Google Tag Manager — single container, env-switched via auth/preview.
+# Leave AUTH+PREVIEW unset in production; set both for the TEST GTM env.
+NEXT_PUBLIC_GTM_ID=GTM-KDR6N28Q
+NEXT_PUBLIC_GTM_AUTH=                 # PROD: blank | TEST: LFqR_9j4YF5nxuaI5ylU2A
+NEXT_PUBLIC_GTM_PREVIEW=              # PROD: blank | TEST: env-5
 
 # App
 NEXT_PUBLIC_APP_URL=
