@@ -8,10 +8,15 @@ import { Manrope, Playfair_Display } from "next/font/google";
 
 import { isIndexable } from "@/lib/config/site";
 
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
+
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import { InitialLoader } from "@/components/layout/InitialLoader";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 import { Providers } from "./providers";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -31,9 +36,7 @@ const siteDescription =
   "FreshTerra: Your neighborhood food store for five-star quality at wow prices. Sourcing fresh, wholesome essentials with total honesty for your kitchen. — locally sourced. Browse the FreshTerra catalog and find your nearest store.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/",
-  ),
+  metadataBase: new URL(APP_URL),
   title: {
     default: "FreshTerra",
     template: "%s | FreshTerra",
@@ -65,7 +68,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
-      <body className="min-h-screen antialiased" style={{ backgroundColor: "#fffef8" }}>
+      <body
+        className="min-h-screen antialiased"
+        style={{ backgroundColor: "#fffef8" }}
+      >
+        <JsonLd data={organizationJsonLd({ baseUrl: APP_URL })} />
+        <JsonLd data={websiteJsonLd({ baseUrl: APP_URL })} />
         <GoogleTagManager />
         <Providers>{children}</Providers>
         <InitialLoader />

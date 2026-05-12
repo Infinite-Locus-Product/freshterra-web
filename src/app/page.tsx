@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { BrandRevealSection } from "@/components/coming-soon/BrandRevealSection";
-import { JsonLd } from "@/components/seo/JsonLd";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
@@ -31,26 +30,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main>
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "FreshTerra",
-          description:
-            "FreshTerra: Your neighborhood food store for five-star quality at wow prices. Sourcing fresh, wholesome essentials with total honesty for your kitchen.",
-          url: APP_URL,
-          logo: `${APP_URL}/images/coming-soon/FreshTerra-logo.svg`,
-          slogan: "Fresh, Wholesome, Gourmet Food",
-        }}
-      />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "FreshTerra",
-          url: APP_URL,
-        }}
-      />
       <BrandRevealSection />
     </main>
   );
