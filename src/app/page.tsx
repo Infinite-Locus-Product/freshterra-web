@@ -37,9 +37,11 @@ export default function HomePage() {
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "FreshTerra",
+          description:
+            "FreshTerra: Your neighborhood food store for five-star quality at wow prices. Sourcing fresh, wholesome essentials with total honesty for your kitchen.",
           url: APP_URL,
-          logo: `${APP_URL}/images/coming-soon/logo-dark.png`,
-          slogan: "Fresh. Wholesome. Gourmet.",
+          logo: `${APP_URL}/images/coming-soon/FreshTerra-logo.svg`,
+          slogan: "Fresh, Wholesome, Gourmet Food",
         }}
       />
       <JsonLd
