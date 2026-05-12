@@ -35,6 +35,14 @@ export const metadata: Metadata = {
   },
   description:
     "FreshTerra — fresh, local groceries. Browse our catalog and find a store near you.",
+  icons: {
+    icon: [
+      {
+        url: "/images/coming-soon/FreshTerra-logo.svg",
+        type: "image/svg+xml",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
