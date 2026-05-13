@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   description:
     "Be the first to know when FreshTerra opens in Gurugram. Leave your email and we'll send a single launch announcement.",
   alternates: { canonical: "/notify" },
-  robots: { index: true, follow: true },
 };
 
 const wordColorClass = {

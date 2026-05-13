@@ -6,10 +6,15 @@ import type { Metadata } from "next";
 
 import { Manrope, Playfair_Display } from "next/font/google";
 
+import { isIndexable } from "@/lib/config/site";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
+
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import { InitialLoader } from "@/components/layout/InitialLoader";
 
 import { Providers } from "./providers";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -25,24 +30,39 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const siteDescription =
+  "FreshTerra: Your neighborhood food store for five-star quality at wow prices. Sourcing fresh, wholesome essentials with total honesty for your kitchen. — locally sourced. Browse the FreshTerra catalog and find your nearest store.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/",
   ),
   title: {
     default: "FreshTerra",
     template: "%s | FreshTerra",
   },
-  description:
-    "FreshTerra — fresh, local groceries. Browse our catalog and find a store near you.",
-  icons: {
-    icon: [
-      {
-        url: "/images/coming-soon/FreshTerra-logo.svg",
-        type: "image/svg+xml",
-      },
-    ],
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    siteName: "FreshTerra",
+    locale: "en_IN",
+    url: "/",
+    title: "FreshTerra",
+    description: siteDescription,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "FreshTerra",
+    description: siteDescription,
+  },
+  robots: isIndexable
+    ? { index: true, follow: true }
+    : {
+        index: false,
+        follow: false,
+        nocache: true,
+        googleBot: { index: false, follow: false, noimageindex: true },
+      },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

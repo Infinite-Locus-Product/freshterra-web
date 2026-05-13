@@ -3,14 +3,13 @@ import type { Metadata } from "next";
 import { BrandRevealSection } from "@/components/coming-soon/BrandRevealSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
 export const metadata: Metadata = {
   title: "FreshTerra — Fresh, Wholesome, Gourmet. Coming Soon",
   description:
     "Five-star quality groceries at WOW prices. FreshTerra is launching in Gurugram — be the first to know.",
   alternates: { canonical: "/" },
-  robots: { index: true, follow: true },
   openGraph: {
     title: "FreshTerra — Coming Soon",
     description:

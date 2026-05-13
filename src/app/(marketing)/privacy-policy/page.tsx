@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   description:
     "How FreshTerra (F&W Foods Pvt. Ltd.) collects, uses, stores, shares, and protects personal data — in accordance with India's IT Act, 2000 and the DPDP Act, 2023.",
   alternates: { canonical: "/privacy-policy" },
-  robots: { index: true, follow: true },
 };
 
 export default async function PrivacyPolicyPage() {
