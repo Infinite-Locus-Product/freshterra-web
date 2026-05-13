@@ -7,14 +7,11 @@ import type { Metadata } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 
 import { isIndexable } from "@/lib/config/site";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
 import { InitialLoader } from "@/components/layout/InitialLoader";
 
 import { Providers } from "./providers";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
 const manrope = Manrope({
   subsets: ["latin"],
