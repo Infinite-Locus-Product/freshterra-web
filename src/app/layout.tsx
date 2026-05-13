@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 
 import { Manrope, Playfair_Display } from "next/font/google";
 
+import { isIndexable } from "@/lib/config/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
@@ -14,7 +15,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 import { Providers } from "./providers";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ const playfair = Playfair_Display({
 });
 
 const siteDescription =
-  "Fresh fruits, vegetables and everyday groceries — locally sourced. Browse the FreshTerra catalog and find your nearest store.";
+  "FreshTerra: Your neighborhood food store for five-star quality at wow prices. Sourcing fresh, wholesome essentials with total honesty for your kitchen. — locally sourced. Browse the FreshTerra catalog and find your nearest store.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -53,6 +54,14 @@ export const metadata: Metadata = {
     title: "FreshTerra",
     description: siteDescription,
   },
+  robots: isIndexable
+    ? { index: true, follow: true }
+    : {
+        index: false,
+        follow: false,
+        nocache: true,
+        googleBot: { index: false, follow: false, noimageindex: true },
+      },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
