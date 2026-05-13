@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   description:
     "Terms governing the use of FreshTerra's website, mobile app, and services. Operated by F&W Foods Pvt. Ltd.",
   alternates: { canonical: "/terms" },
-  robots: { index: true, follow: true },
 };
 
 export default async function TermsPage() {
