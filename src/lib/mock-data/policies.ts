@@ -704,7 +704,436 @@ const terms: PolicyDocument = {
   ],
 };
 
+const refundReturn: PolicyDocument = {
+  slug: "refund-return",
+  title: "Refund & Return Policy",
+  breadcrumbLabel: "Refund & Return Policy",
+  lastUpdated: "2026-05-02",
+  contactEmail: "support@freshterra.com",
+  intro: {
+    blocks: [
+      {
+        type: "paragraph",
+        spans: [
+          {
+            text: 'F&W Foods Pvt. Ltd. ("F&W Foods", "Company", "we", "our", or "us") operates retail channels under the FreshTerra brand and other brands. FreshTerra is a retail brand licensed to F&W Foods Pvt. Ltd. by the licensor. This Refunds & Returns Policy ("Policy") governs all purchases made through any channel operated by the Company — online and offline.',
+          },
+        ],
+      },
+      {
+        type: "paragraph",
+        spans: [
+          {
+            text: "This Policy aims to build and maintain customer trust through fair, transparent resolutions, provide operational clarity for store and support teams, and protect the business against misuse and fraudulent claims.",
+          },
+        ],
+      },
+    ],
+  },
+  sections: [
+    {
+      heading: "1. Applicability",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [
+            { text: "This Policy applies to all purchases made through:" },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Online Platform - Mobile App" }],
+            [
+              {
+                text: "Offline Retail Stores - All F&W Foods / FreshTerra physical stores",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "2. Return Eligibility",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [{ text: "a) Eligible Reasons for Return / Refund", bold: true }],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Damaged or defective product received" }],
+            [{ text: "Incorrect item delivered (wrong product or variant)" }],
+            [
+              {
+                text: "Quality issues, subject to validation - this includes expired products at the time of delivery or purchase",
+              },
+            ],
+            [{ text: "Missing items from the order" }],
+            [
+              {
+                text: "Late delivery - compensation or credit offered on a case-by-case basis",
+              },
+            ],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "b) Non-Eligible Scenarios", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [
+            { text: "Returns will NOT be accepted in the following cases:" },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Change of mind after purchase" }],
+            [
+              {
+                text: "Opened or used perishable items, unless a quality issue is established",
+              },
+            ],
+            [
+              {
+                text: "Purchases without valid proof of purchase (bill / order ID)",
+              },
+            ],
+            [
+              {
+                text: "Minor packaging damage that does not affect product quality",
+              },
+            ],
+            [{ text: "Damage caused by improper storage after delivery" }],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "3. Return Windows & Process - Online Orders",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [
+            {
+              text: "The following return windows and conditions apply based on product category for orders placed through the App:",
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "a) Fresh & Perishables", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [
+            {
+              text: "Includes: Fruits, Vegetables, Dairy, Bakery, Chilled, Frozen.",
+            },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Return window: Within 12 hours of delivery" }],
+            [
+              {
+                text: "Proof required: Minimum photos or a video of the issue required as per the App suggestion.",
+              },
+            ],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "b) Staples & Packaged Goods", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [
+            { text: "Includes: Flour, Pulses, Spices, Snacks, FMCG." },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Return window: Within 24 hours of delivery" }],
+            [
+              {
+                text: "Proof required: Minimum photos or a video of the issue required as per the App suggestion.",
+              },
+            ],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "c) Non-Food Items", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "Includes: Household Supplies, Kitchenware." }],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Return window: Within 24 hours of delivery" }],
+            [
+              {
+                text: "Proof required: Item must be unused and in original packaging",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "4. Return Windows & Process - Offline (In-Store) Orders",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [
+            {
+              text: "The following return windows and conditions apply for purchases made at any F&W Foods / FreshTerra physical store:",
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "a) Fresh & Perishables", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [
+            {
+              text: "Includes: Fruits, Vegetables, Dairy, Bakery, Chilled, Frozen.",
+            },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Return window: Within 12 hours of purchase" }],
+            [{ text: "Return mode: Physical return at store by customer" }],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "b) Staples & Packaged Goods", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [
+            { text: "Includes: Flour, Pulses, Spices, Snacks, FMCG." },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Return window: Within 48 hours of purchase" }],
+            [{ text: "Return mode: Physical return at store by customer" }],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "c) Non-Food Items", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "Includes: Household Supplies, Kitchenware." }],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Return window: Within 48 hours of purchase" }],
+            [{ text: "Return mode: Physical return at store by customer" }],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "5. Refund & Replacement Options",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [
+            {
+              text: "Customers would be refunded eligible amount to original payment method.",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      heading: "6. How to Raise a Return Request",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [{ text: "a) Online Orders", bold: true }],
+        },
+        {
+          type: "list",
+          items: [
+            [
+              {
+                text: "Submit a request via the App within the applicable return window",
+              },
+            ],
+            [
+              {
+                text: "Provide/Select Order ID, product details, and photo or video proof where required",
+              },
+            ],
+            [
+              {
+                text: "Requests would be reviewed and accordingly refunds would be processed within 24 hours.",
+              },
+            ],
+            [{ text: "Pickup is initiated upon approval, where applicable." }],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "b) Offline (In-Store) Purchases", bold: true }],
+        },
+        {
+          type: "paragraph",
+          spans: [
+            { text: "Includes: Flour, Pulses, Spices, Snacks, FMCG." },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Visit the store with the original bill and product" }],
+            [
+              {
+                text: "A Store Associate validates the request and issues a credit note or resolution upon approval by the Assistant Manager or Store Manager",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "7. Cancellation Policy",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [{ text: "a) Before Dispatch", bold: true }],
+        },
+        {
+          type: "list",
+          items: [
+            [{ text: "Cancellation is permitted at any time before dispatch" }],
+            [{ text: "Refund: 100% refund to original payment method" }],
+          ],
+        },
+        {
+          type: "paragraph",
+          spans: [{ text: "b) After Dispatch (Before Delivery)", bold: true }],
+        },
+        {
+          type: "list",
+          items: [
+            [
+              {
+                text: "Cancellation is not guaranteed once an order has been dispatched",
+              },
+            ],
+            [
+              {
+                text: "If approved, delivery charges will be deducted from the refund",
+              },
+            ],
+            [
+              {
+                text: "No refund will be issued for Fresh & Perishables (Fruits, Vegetables, Dairy, Bakery, Chilled, Frozen) once dispatched other than the reasons mentioned in Section 2(a).",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "8. Fraud Prevention & Policy Misuse",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [
+            { text: "F&W Foods Pvt. Ltd. reserves the right to:" },
+          ],
+        },
+        {
+          type: "list",
+          items: [
+            [
+              {
+                text: "Reject claims that appear suspicious or cannot be substantiated",
+              },
+            ],
+            [
+              {
+                text: "Block accounts with a pattern of repeated or unjustified claims",
+              },
+            ],
+            [
+              {
+                text: "Restrict return eligibility for users identified as high-risk",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      heading: "9. Customer Support",
+      blocks: [
+        {
+          type: "paragraph",
+          spans: [
+            {
+              text: "For any return, refund, or quality-related queries, please reach out to:",
+            },
+          ],
+        },
+        {
+          type: "list",
+          items: [[{ text: "Email: support@freshterra.in" }]],
+        },
+      ],
+    },
+    {
+      heading: "10. Policy Governance",
+      blocks: [
+        {
+          type: "list",
+          items: [
+            [
+              {
+                text: "This Policy is subject to periodic review and updates",
+              },
+            ],
+            [
+              {
+                text: "The final decision on all return and refund matters rests with F&W Foods Pvt. Ltd.",
+              },
+            ],
+            [
+              {
+                text: "Customers will be notified of material changes via the App, Website, or in-store notices",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ],
+};
+
 export const policiesContent: Partial<Record<PolicySlug, PolicyDocument>> = {
   privacy,
   terms,
+  "refund-return": refundReturn,
 };
