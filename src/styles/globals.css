@@ -6,6 +6,8 @@
   --color-brand-600: #164c2b;
   --color-brand-300: #648c74;
   --color-brand-100: #b7cabf;
+  --color-product-tag-bg: #ecf7ed;
+  --color-product-tag-text: #18532f;
   --color-accent-olive: #4e7511;
   --color-accent-terracotta: #ac612d;
   --color-amber-700: #a47223;
@@ -77,6 +79,11 @@ body {
   *::before,
   *::after {
     border-color: var(--color-border);
+  }
+
+  a[href],
+  button:not(:disabled) {
+    cursor: pointer;
   }
 
   /* Override the browser autofill styling (Chrome's blue/yellow tint) so
