@@ -12,8 +12,10 @@ describe("BrandRevealSection", () => {
     const className = headline.className;
 
     expect(className).toContain("w-[295px]");
-    expect(className).toContain("leading-[42px]");
+    expect(className).toContain("text-[24px]");
+    expect(className).toContain("leading-[1.2]");
     expect(className).toContain("md:w-auto");
+    expect(className).toContain("md:text-[50px]");
   });
 
   it("locks the mWeb subheadline 'Five-Star Quality @ WOW Prices' to the Figma 345 × 22 frame", () => {
