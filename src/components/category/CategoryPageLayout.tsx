@@ -1,179 +1,177 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import {
-  exploreCatalogBannerImageClass,
-  exploreCatalogBannerOuterClass,
-  exploreCatalogBannerShellClass,
-} from "@/components/category/category-explore-catalog-banner";
+  CategoryItemCard,
+  chunkItems,
+} from "@/components/catalog/CategoryItemCard";
+import { HorizontalScrollRail } from "@/components/catalog/HorizontalScrollRail";
+import { MarketingFooter } from "@/components/layout/MarketingFooter";
+import { MarketingHeader } from "@/components/layout/MarketingHeader";
 import { Body } from "@/components/ui/Body";
 import { Container } from "@/components/ui/Container";
-import { BrandTagline } from "@/components/ui/BrandTagline";
-import { HeaderDownloadAppButton } from "@/components/ui/HeaderDownloadAppButton";
-import { HeaderLocationBadge } from "@/components/ui/HeaderLocationBadge";
-import { HeaderSearchBar } from "@/components/ui/HeaderSearchBar";
 import { Heading } from "@/components/ui/Heading";
-import { Logo } from "@/components/ui/Logo";
-import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
-import { MarketingFooter } from "@/components/layout/MarketingFooter";
-import {
-  homeCategoriesCircleClass,
-} from "@/components/homepage/home-categories";
-
-import {
-  HEADER_EDGE_PADDING_CLASS,
-  HEADER_TO_HERO_GAP_CLASS,
-} from "@/components/layout/header-chrome";
 
 import type { CategoryPageDraftContent } from "@/features/cms-content/category-page";
-import { dummyImages } from "@/lib/dummy-images";
 
 type CategoryPageLayoutProps = {
   content: CategoryPageDraftContent;
 };
 
-type CategorySectionItem = CategoryPageDraftContent["sections"][number]["items"][number];
+type CategorySectionItem =
+  CategoryPageDraftContent["sections"][number]["items"][number];
 
 export function CategoryPageLayout({
   content,
 }: Readonly<CategoryPageLayoutProps>) {
   return (
-    <main className="bg-white text-text-primary">
-      <CategoryHeaderHeroSection content={content} />
+    <main className="text-text-primary bg-white">
+      <CategoryHeader content={content} />
+      <CategoryHero content={content} />
       <CategorySections content={content} />
       <MarketingFooter />
     </main>
   );
 }
 
-function CategoryHeaderHeroSection({ content }: Readonly<CategoryPageLayoutProps>) {
+function CategoryHeader({ content }: Readonly<CategoryPageLayoutProps>) {
   return (
-    <section className="bg-linear-to-b from-header-tint to-white pb-0 pt-6 md:pt-8">
-      <div className={`mx-auto w-full max-w-[1440px] ${HEADER_EDGE_PADDING_CLASS}`}>
-        <header className="flex flex-col gap-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-col gap-2">
-              <Logo tone="light" variant="header" priority linkToHome />
-              <BrandTagline as="h1" />
-            </div>
+    <MarketingHeader
+      locationLabel={content.nav.locationLabel}
+      links={content.nav.links}
+      ctaLabel={content.hero.ctaLabel}
+    />
+  );
+}
 
-            <HeaderSearchBar />
-
-            <HeaderLocationBadge>{content.nav.locationLabel}</HeaderLocationBadge>
+function CategoryHero({ content }: Readonly<CategoryPageLayoutProps>) {
+  return (
+    <section className="bg-white">
+      <Container size="full" className="max-w-[1440px] max-lg:px-4">
+        <div className="from-brand-600 to-brand-500 relative overflow-hidden rounded-[12px] bg-linear-to-r px-6 py-12 md:px-10 md:py-16">
+          <div className="max-w-xl">
+            <p className="text-beige-100 font-display text-4xl leading-tight italic md:text-6xl">
+              {content.hero.headline}
+            </p>
           </div>
-
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <nav
-              aria-label="Primary"
-              className="flex flex-wrap items-center gap-x-5 gap-y-2"
-            >
-              {content.nav.links.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm font-medium tracking-wide uppercase hover:underline"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            <HeaderDownloadAppButton href="/notify">
-              {content.hero.ctaLabel}
-            </HeaderDownloadAppButton>
-          </div>
-        </header>
-      </div>
-
-      <div className={`${exploreCatalogBannerShellClass} ${HEADER_TO_HERO_GAP_CLASS}`}>
-        <div className={exploreCatalogBannerOuterClass}>
-          <Image
-            src={dummyImages.exploreCatalogBanner.src}
-            alt={content.hero.headline}
-            fill
-            priority
-            className={exploreCatalogBannerImageClass}
-            sizes="(max-width: 1440px) 100vw, 1440px"
+          <div
+            aria-hidden
+            className="bg-brand-100/20 absolute -right-10 -bottom-12 size-56 rounded-full md:size-72"
+          />
+          <div
+            aria-hidden
+            className="bg-brand-100/15 absolute right-24 -bottom-20 size-44 rounded-full md:size-56"
           />
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
 
 function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
   return (
-    <section className="bg-white pt-21 pb-8 md:pb-12">
-      <Container size="full" className="max-w-[1440px] space-y-10 md:space-y-15">
-        {content.sections.map((section) => (
-          <section key={section.title} aria-labelledby={toId(section.title)}>
-            <div className="mb-5 flex items-end justify-between gap-3">
-              <div>
-                <Heading
-                  level={2}
-                  variant="h2"
-                  className="text-[32px] leading-tight md:text-[36px]"
-                  id={toId(section.title)}
+    <section className="bg-white py-8 md:py-12">
+      <Container
+        size="full"
+        className="max-w-[1440px] space-y-10 max-lg:px-4 md:space-y-14"
+      >
+        {content.sections.map((section) => {
+          const sectionItems = section.items as readonly CategorySectionItem[];
+
+          return (
+            <section key={section.title} aria-labelledby={toId(section.title)}>
+              <div className="mb-5 flex items-end justify-between gap-3">
+                <div>
+                  <Heading
+                    level={2}
+                    variant="h2"
+                    className="text-[32px] leading-tight max-lg:text-xl max-lg:leading-[1.3] max-lg:font-semibold md:text-[40px]"
+                    id={toId(section.title)}
+                  >
+                    {section.title}
+                  </Heading>
+                  <p className="text-brand-500 font-display mt-1 text-xl italic md:text-2xl">
+                    {section.subtitle}
+                  </p>
+                </div>
+                <Link
+                  href={`/c/${toSlug(section.title)}`}
+                  className="text-brand-500 inline-flex size-6 shrink-0 items-center justify-center rounded-full lg:hidden"
+                  aria-label={section.ctaLabel}
                 >
-                  {section.title}
-                </Heading>
-                <p className={`font-handsome ${section.subtitleColor} mt-1 text-[30px] leading-[26px] font-bold tracking-normal not-italic`}>
-                  {section.subtitle}
-                </p>
+                  <ChevronRightIcon />
+                </Link>
+                <Link
+                  href={`/c/${toSlug(section.title)}`}
+                  className="text-brand-500 hidden text-sm font-bold md:text-base lg:inline"
+                >
+                  {section.ctaLabel}
+                </Link>
               </div>
-              <Link
-                href={`/c/${toSlug(section.title)}`}
-                className="text-brand-500 inline-flex items-center gap-2 text-sm font-bold md:text-base"
-              >
-                {section.ctaLabel}
-                <Image
-                  src="/Shape.svg"
-                  alt=""
-                  width={7}
-                  height={12}
-                  className="h-[12px] w-[6.5px]"
-                  aria-hidden
-                />
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
-              {section.items.map((item: CategorySectionItem) => {
-                const imageSrc = "imageSrc" in item ? item.imageSrc : undefined;
+              <div className="flex flex-col gap-4 lg:hidden">
+                {chunkItems(sectionItems, 4).map((row, rowIndex) => (
+                  <HorizontalScrollRail
+                    key={`${section.title}-${row.map((item) => item.name).join("-")}`}
+                    ariaLabel={`${section.title} row ${rowIndex + 1}`}
+                  >
+                    {row.map((item, itemIndex) => (
+                      <CategoryItemCard
+                        key={item.name}
+                        name={item.name}
+                        toneIndex={rowIndex * 4 + itemIndex}
+                      />
+                    ))}
+                  </HorizontalScrollRail>
+                ))}
+              </div>
 
-                if (imageSrc) {
-                  return (
-                    <HomeCategoryTile
-                      key={item.name}
-                      name={item.name}
-                      imageSrc={imageSrc}
-                      labelClassName="text-[20px] text-black font-medium"
-                    />
-                  );
-                }
-
-                return (
+              <div className="hidden grid-cols-2 gap-4 sm:grid-cols-4 lg:grid lg:grid-cols-8">
+                {sectionItems.map((item) => (
                   <article
                     key={item.name}
                     className="flex flex-col items-center gap-3 rounded-md p-2 text-center"
                   >
-                    <div className={homeCategoriesCircleClass} aria-hidden />
-                    <Body size="sm" className="text-[20px] text-black font-medium">
+                    <div className="from-brand-100/80 to-cream-50 size-[84px] rounded-full bg-linear-to-b md:size-[110px]" />
+                    <Body size="sm" className="font-medium">
                       {item.name}
                     </Body>
                   </article>
-                );
-              })}
-            </div>
-          </section>
-        ))}
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </Container>
     </section>
   );
 }
 
+function ChevronRightIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M9 6L15 12L9 18"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function toSlug(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 }
 
 function toId(value: string): string {
