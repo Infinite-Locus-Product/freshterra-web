@@ -202,6 +202,9 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                 <article
                   key={label}
                   aria-label={label}
+                  // Card is intentionally focusable so keyboard users can
+                  // reveal the description shown on hover/focus.
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                   tabIndex={0}
                   className="group focus-visible:ring-brand-500 text-beige-100 relative flex aspect-[629/780] min-h-[220px] flex-col justify-end overflow-hidden rounded-[10px] p-5 focus:outline-none focus-visible:ring-2"
                 >
