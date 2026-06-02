@@ -26,7 +26,7 @@ const manrope = Manrope({
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["500"],
+  weight: ["500", "600"],
   variable: "--font-playfair",
   display: "swap",
 });

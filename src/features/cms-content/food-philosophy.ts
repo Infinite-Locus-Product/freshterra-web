@@ -4,10 +4,14 @@
  * This shape is intentionally CMS-friendly so Strapi integration only
  * replaces data fetching and mapping, not layout composition.
  */
+import { dummyImages } from "@/lib/dummy-images";
+
 export const foodPhilosophyDraftContent = {
   hero: {
     title: "Our Food Philosophy",
     ctaLabel: "Download the App",
+    imageSrc: dummyImages.philosophyHeroBanner.src,
+    imageAlt: "Hands holding a basket of freshly harvested vegetables",
   },
   nav: {
     locationLabel: "Fresh Market Gurugram",
@@ -36,10 +40,22 @@ export const foodPhilosophyDraftContent = {
     description:
       "We maintain the highest quality standards across our entire supply chain. Every product undergoes rigorous quality checks before reaching our stores.",
     items: [
-      "Organic Certified",
-      "FSSAI Approved",
-      "ISO 22000",
-      "Fair Trade",
+      {
+        label: "Organic Certified",
+        imageSrc: dummyImages.philosophyOrganicCertified.src,
+      },
+      {
+        label: "FSSAI Approved",
+        imageSrc: dummyImages.philosophyFssaiApproved.src,
+      },
+      {
+        label: "ISO 22000",
+        imageSrc: dummyImages.philosophyIso22000.src,
+      },
+      {
+        label: "Fair Trade",
+        imageSrc: dummyImages.philosophyFairTrade.src,
+      },
     ],
   },
   partnerships: {
@@ -52,6 +68,7 @@ export const foodPhilosophyDraftContent = {
         name: "Rajesh Kumar",
         location: "Jalandhar, Punjab",
         theme: "amber",
+        imageSrc: dummyImages.philosophyPartners.rajeshKumar.src,
       },
       {
         quote:
@@ -59,6 +76,7 @@ export const foodPhilosophyDraftContent = {
         name: "Kamla Devi",
         location: "Manglaur, UP",
         theme: "olive",
+        imageSrc: dummyImages.philosophyPartners.kamlaDevi.src,
       },
       {
         quote:
@@ -66,6 +84,7 @@ export const foodPhilosophyDraftContent = {
         name: "Manish Singh",
         location: "Manglaur, UP",
         theme: "sky",
+        imageSrc: dummyImages.philosophyPartners.manishSingh.src,
       },
     ],
   },
@@ -73,10 +92,30 @@ export const foodPhilosophyDraftContent = {
     title: "Sustainability Commitments",
     subtitle: "Rooted in responsibility",
     items: [
-      "Eco-Friendly Packaging",
-      "Zero Waste Goal",
-      "Local Sourcing",
-      "Energy Efficiency",
+      {
+        label: "Eco-Friendly Packaging",
+        description:
+          "We use biodegradable and recyclable packaging materials wherever possible.",
+        imageSrc: dummyImages.philosophySustainability.ecoFriendlyPackaging.src,
+      },
+      {
+        label: "Zero Waste Goal",
+        description:
+          "Our stores implement comprehensive waste reduction programs.",
+        imageSrc: dummyImages.philosophySustainability.zeroWasteGoal.src,
+      },
+      {
+        label: "Local Sourcing",
+        description:
+          "By sourcing locally, we reduce transportation emissions.",
+        imageSrc: dummyImages.philosophySustainability.localSourcing.src,
+      },
+      {
+        label: "Energy Efficiency",
+        description:
+          "Our stores utilize energy-efficient refrigeration and LED lighting.",
+        imageSrc: dummyImages.philosophySustainability.energyEfficiency.src,
+      },
     ],
   },
   footer: {

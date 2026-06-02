@@ -17,6 +17,8 @@ type ButtonProps = {
   size?: ButtonSize;
   fullWidth?: boolean;
   loading?: boolean;
+  /** Disable default uppercase + tracking treatment for special cases (e.g. form CTAs). */
+  caps?: boolean;
   asChild?: boolean;
   className?: string;
   children?: ReactNode;
@@ -26,7 +28,7 @@ type ButtonProps = {
 > & { disabled?: boolean };
 
 const baseClass = cn(
-  "inline-flex items-center justify-center gap-2 rounded-full font-sans font-bold uppercase tracking-wide",
+  "inline-flex items-center justify-center gap-2 rounded-full font-sans font-bold",
   "transition-colors duration-150",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
   "disabled:cursor-not-allowed disabled:opacity-60",
@@ -50,6 +52,7 @@ export function Button({
   size = "lg",
   fullWidth = false,
   loading = false,
+  caps = true,
   asChild = false,
   disabled,
   className,
@@ -59,6 +62,7 @@ export function Button({
 }: ButtonProps) {
   const composedClass = cn(
     baseClass,
+    caps && "uppercase tracking-wide",
     variantClass[variant],
     sizeClass[size],
     fullWidth && "w-full",
