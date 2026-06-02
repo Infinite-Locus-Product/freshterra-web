@@ -1,46 +1,91 @@
 /**
  * About page placeholder content until Strapi is integrated.
  */
+import { dummyImages } from "@/lib/dummy-images";
+
 export const aboutPageDraftContent = {
   hero: {
     title: "About FreshTerra",
-    subtitle: "Fresh. Wholesome. Gourmet.",
-    tagline: "Built for families who care about what goes on their table.",
+    bannerAlt: "Thoughtfully picked and curated with care",
+    bannerSrc: dummyImages.aboutBanner.src,
   },
   story: {
     title: "Our Story",
-    subtitle: "Where quality meets trust",
+    subtitle: "Five-star quality @ WOW prices",
     paragraphs: [
-      "FreshTerra started with a simple idea: make premium-quality groceries honest, accessible, and rooted in local communities.",
-      "We partner with farmers, ethical producers, and trusted brands to bring fresh essentials and gourmet favorites under one roof.",
-      "Every decision we make balances taste, nutrition, and transparency so every household can shop with confidence.",
+      "Founded with a vision to make fresh, gourmet food accessible to everyone, FreshTerra has been serving communities across India since 2020.",
+      "We believe that everyone deserves access to high-quality, fresh produce and artisanal food products without compromising on affordability or convenience.",
+      "Today, we operate stores in major cities, partnering directly with local farmers and producers to bring you the best selection of fresh, sustainable products.",
     ],
   },
-  mission: {
-    title: "What Drives Us",
+  missionBanner: {
+    alt: "Our Mission — To revolutionize the way people shop for food by providing fresh, gourmet products at affordable prices while supporting local farmers and sustainable practices.",
+    src: dummyImages.aboutMissionBanner.src,
+  },
+  coreValues: {
+    title: "Our Core Values",
+    subtitle: "The standard we hold ourselves to",
     items: [
       {
-        title: "Freshness First",
-        description:
-          "From produce to pantry, we prioritize freshness windows and disciplined quality checks at every step.",
+        label: "Fresh",
+        description: "Farm-to-table freshness guaranteed",
+        imageSrc: dummyImages.aboutCoreValues.fresh.src,
       },
       {
-        title: "Honest Sourcing",
-        description:
-          "We work with responsible suppliers and local partners who meet our standards for safety and sustainability.",
+        label: "Wholesome",
+        description: "Nutritious ingredients you feel good about",
+        imageSrc: dummyImages.aboutCoreValues.wholesome.src,
       },
       {
-        title: "Customer Delight",
-        description:
-          "We design every store and digital touchpoint to make daily grocery shopping simpler, faster, and more joyful.",
+        label: "Gourmet",
+        description: "Premium quality selection",
+        imageSrc: dummyImages.aboutCoreValues.gourmet.src,
+      },
+      {
+        label: "WOW Prices",
+        description: "Quality at accessible prices",
+        imageSrc: dummyImages.aboutCoreValues.wowPrices.src,
+      },
+    ],
+  },
+  customerStories: {
+    title: "Stories from Our Valued Customers",
+    subtitle: "Bringing freshness to your table",
+    items: [
+      {
+        name: "Anita Sharma",
+        ageLabel: "36 Years",
+        imageSrc: dummyImages.testimonials.anitaSharma,
+        quote:
+          "The produce quality is excellent and the experience feels thoughtfully curated every single time.",
+      },
+      {
+        name: "Mankirat Singh",
+        ageLabel: "42 Years",
+        imageSrc: dummyImages.testimonials.mankiratSingh,
+        quote:
+          "I love Freshterra because I know I'm serving safe, fresh food to my children every day.",
+      },
+      {
+        name: "Rohan Mehta",
+        ageLabel: "29 Years",
+        imageSrc: dummyImages.testimonials.rohanMehta,
+        quote:
+          "I can finally buy clean, trustworthy pantry staples from one place near home.",
       },
     ],
   },
   milestones: {
     title: "Our Journey",
     events: [
-      { year: "2024", text: "FreshTerra concept and sourcing network established." },
-      { year: "2025", text: "Pilot operations launched with curated category assortment." },
+      {
+        year: "2024",
+        text: "FreshTerra concept and sourcing network established.",
+      },
+      {
+        year: "2025",
+        text: "Pilot operations launched with curated category assortment.",
+      },
       { year: "2026", text: "First flagship store opened in Gurugram." },
     ],
   },
