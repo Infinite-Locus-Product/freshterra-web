@@ -1,62 +1,65 @@
+import Image from "next/image";
 import Link from "next/link";
 
+import {
+  exploreCatalogBannerImageClass,
+  exploreCatalogBannerOuterClass,
+  exploreCatalogBannerShellClass,
+} from "@/components/category/category-explore-catalog-banner";
 import { Body } from "@/components/ui/Body";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { BrandTagline } from "@/components/ui/BrandTagline";
+import { HeaderDownloadAppButton } from "@/components/ui/HeaderDownloadAppButton";
+import { HeaderLocationBadge } from "@/components/ui/HeaderLocationBadge";
+import { HeaderSearchBar } from "@/components/ui/HeaderSearchBar";
 import { Heading } from "@/components/ui/Heading";
 import { Logo } from "@/components/ui/Logo";
+import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
+import {
+  homeCategoriesCircleClass,
+} from "@/components/homepage/home-categories";
+
+import {
+  HEADER_EDGE_PADDING_CLASS,
+  HEADER_TO_HERO_GAP_CLASS,
+} from "@/components/layout/header-chrome";
 
 import type { CategoryPageDraftContent } from "@/features/cms-content/category-page";
+import { dummyImages } from "@/lib/dummy-images";
 
 type CategoryPageLayoutProps = {
   content: CategoryPageDraftContent;
 };
+
+type CategorySectionItem = CategoryPageDraftContent["sections"][number]["items"][number];
 
 export function CategoryPageLayout({
   content,
 }: Readonly<CategoryPageLayoutProps>) {
   return (
     <main className="bg-white text-text-primary">
-      <CategoryHeader content={content} />
-      <CategoryHero content={content} />
+      <CategoryHeaderHeroSection content={content} />
       <CategorySections content={content} />
       <MarketingFooter />
     </main>
   );
 }
 
-function CategoryHeader({ content }: Readonly<CategoryPageLayoutProps>) {
+function CategoryHeaderHeroSection({ content }: Readonly<CategoryPageLayoutProps>) {
   return (
-    <section className="bg-linear-to-b from-header-tint to-white pb-6 pt-6 md:pt-8">
-      <Container size="full" className="max-w-[1440px]">
+    <section className="bg-linear-to-b from-header-tint to-white pb-8 pt-6 md:pb-10 md:pt-8">
+      <div className={`mx-auto w-full max-w-[1440px] ${HEADER_EDGE_PADDING_CLASS}`}>
         <header className="flex flex-col gap-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-2">
-              <Logo tone="light" width={140} height={48} priority linkToHome />
-              <Heading level={1} variant="h2" className="text-[28px] md:text-[40px]">
-                Fresh. Wholesome. Gourmet.
-              </Heading>
+              <Logo tone="light" variant="header" priority linkToHome />
+              <BrandTagline as="h1" />
             </div>
 
-            <label
-              className="border-gray-200 bg-white-soft flex h-12 w-full items-center gap-3 rounded-full border px-4 lg:max-w-[566px]"
-              aria-label="Search products"
-            >
-              <span aria-hidden className="text-text-secondary text-lg">
-                🔍
-              </span>
-              <input
-                type="search"
-                placeholder="Search for fresh produce, groceries, and more..."
-                className="placeholder:text-text-tertiary h-full w-full bg-transparent text-sm outline-none md:text-base"
-                readOnly
-              />
-            </label>
+            <HeaderSearchBar />
 
-            <div className="bg-header-tint border-brand-100 text-brand-500 inline-flex h-12 items-center justify-center rounded-full border px-4 text-sm font-medium">
-              {content.nav.locationLabel}
-            </div>
+            <HeaderLocationBadge>{content.nav.locationLabel}</HeaderLocationBadge>
           </div>
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -75,36 +78,25 @@ function CategoryHeader({ content }: Readonly<CategoryPageLayoutProps>) {
               ))}
             </nav>
 
-            <Button asChild size="md" className="w-full md:w-auto">
-              <Link href="/notify">{content.hero.ctaLabel}</Link>
-            </Button>
+            <HeaderDownloadAppButton href="/notify">
+              {content.hero.ctaLabel}
+            </HeaderDownloadAppButton>
           </div>
         </header>
-      </Container>
-    </section>
-  );
-}
+      </div>
 
-function CategoryHero({ content }: Readonly<CategoryPageLayoutProps>) {
-  return (
-    <section className="bg-white">
-      <Container size="full" className="max-w-[1440px]">
-        <div className="from-brand-600 to-brand-500 relative overflow-hidden rounded-[12px] bg-linear-to-r px-6 py-12 md:px-10 md:py-16">
-          <div className="max-w-xl">
-            <p className="text-beige-100 font-display text-4xl leading-tight italic md:text-6xl">
-              {content.hero.headline}
-            </p>
-          </div>
-          <div
-            aria-hidden
-            className="bg-brand-100/20 absolute -right-10 -bottom-12 size-56 rounded-full md:size-72"
-          />
-          <div
-            aria-hidden
-            className="bg-brand-100/15 absolute right-24 -bottom-20 size-44 rounded-full md:size-56"
+      <div className={`${exploreCatalogBannerShellClass} ${HEADER_TO_HERO_GAP_CLASS}`}>
+        <div className={exploreCatalogBannerOuterClass}>
+          <Image
+            src={dummyImages.exploreCatalogBanner.src}
+            alt={content.hero.headline}
+            fill
+            priority
+            className={exploreCatalogBannerImageClass}
+            sizes="(max-width: 1440px) 100vw, 1440px"
           />
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
@@ -125,7 +117,7 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                 >
                   {section.title}
                 </Heading>
-                <p className="text-brand-500 font-display mt-1 text-xl italic md:text-2xl">
+                <p className="font-handsome text-amber-700 mt-1 text-[30px] leading-[26px] font-bold tracking-normal not-italic">
                   {section.subtitle}
                 </p>
               </div>
@@ -138,17 +130,31 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
-              {section.items.map((item) => (
-                <article
-                  key={item}
-                  className="flex flex-col items-center gap-3 rounded-md p-2 text-center"
-                >
-                  <div className="from-brand-100/80 to-cream-50 size-[84px] rounded-full bg-linear-to-b md:size-[110px]" />
-                  <Body size="sm" className="font-medium">
-                    {item}
-                  </Body>
-                </article>
-              ))}
+              {section.items.map((item: CategorySectionItem) => {
+                const imageSrc = "imageSrc" in item ? item.imageSrc : undefined;
+
+                if (imageSrc) {
+                  return (
+                    <HomeCategoryTile
+                      key={item.name}
+                      name={item.name}
+                      imageSrc={imageSrc}
+                    />
+                  );
+                }
+
+                return (
+                  <article
+                    key={item.name}
+                    className="flex flex-col items-center gap-3 rounded-md p-2 text-center"
+                  >
+                    <div className={homeCategoriesCircleClass} aria-hidden />
+                    <Body size="sm" className="font-medium">
+                      {item.name}
+                    </Body>
+                  </article>
+                );
+              })}
             </div>
           </section>
         ))}

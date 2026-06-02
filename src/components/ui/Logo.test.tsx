@@ -27,4 +27,13 @@ describe("Logo", () => {
       screen.getByRole("link", { name: /freshterra home/i }),
     ).toBeInTheDocument();
   });
+
+  it("renders header variant at 93×32", () => {
+    render(<Logo variant="header" />);
+    const img = screen.getByAltText(/freshterra/i) as HTMLImageElement;
+    expect(img).toHaveAttribute("width", "93");
+    expect(img).toHaveAttribute("height", "32");
+    expect(img.className).toContain("w-[93px]");
+    expect(img.className).toContain("h-8");
+  });
 });

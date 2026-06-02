@@ -1,4 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
+
+import { dummyImages } from "@/lib/dummy-images";
 
 const FOOTER_CONTENT = {
   aboutLinks: [
@@ -50,13 +53,13 @@ export function MarketingFooter() {
       role="contentinfo"
       className="bg-brand-600 text-white-soft relative mt-6 overflow-hidden"
     >
-      <div
+      <Image
+        src={dummyImages.botanicalLineArt.src}
+        alt=""
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-15"
-        style={{
-          background:
-            "radial-gradient(circle at 12% 30%, #c8ddcb 0, transparent 35%), radial-gradient(circle at 40% 70%, #c8ddcb 0, transparent 30%), radial-gradient(circle at 78% 28%, #c8ddcb 0, transparent 35%)",
-        }}
+        fill
+        sizes="100vw"
+        className="pointer-events-none absolute inset-0 object-cover opacity-20"
       />
 
       <div className="relative mx-auto w-full max-w-[1440px] px-6 py-10 md:px-10">
