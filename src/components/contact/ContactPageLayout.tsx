@@ -1,11 +1,10 @@
 import Link from "next/link";
 
-import type { ReactNode } from "react";
-
+import { Body } from "@/components/ui/Body";
+import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
-
-import { ContactForm } from "@/components/contact/ContactForm";
+import { Input } from "@/components/ui/Input";
 
 import type { ContactPageDraftContent } from "@/features/cms-content/contact";
 
@@ -13,15 +12,13 @@ type ContactPageLayoutProps = {
   content: ContactPageDraftContent;
 };
 
-/** Section column headings — Manrope Bold 20px / 130% line-height */
-const columnHeadingClass =
-  "font-sans text-[20px] leading-[1.3] font-bold tracking-[0]";
-
-export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>) {
+export function ContactPageLayout({
+  content,
+}: Readonly<ContactPageLayoutProps>) {
   return (
-    <section className="py-8 text-text-primary md:py-10">
+    <section className="text-text-primary bg-white py-8 md:py-10">
       <Container size="full" className="max-w-[1440px]">
-        <div className="mb-6 flex items-center gap-2 text-sm text-text-secondary">
+        <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm">
           <Link href="/" className="hover:underline">
             Home
           </Link>
@@ -29,165 +26,121 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
           <span className="text-text-primary">{content.breadcrumbLabel}</span>
         </div>
 
-        <Heading
-          level={1}
-          variant="h2"
-          className="font-display text-[36px] leading-[1.5] font-medium tracking-[0]"
-        >
+        <Heading level={1} variant="h2">
           {content.hero.title}
         </Heading>
+        <p className="font-display text-brand-500 mt-1 text-2xl italic md:text-3xl">
+          {content.hero.subtitle}
+        </p>
+        <Body
+          size="md"
+          className="mt-3 max-w-3xl text-[18px] leading-7 tracking-normal"
+        >
+          {content.hero.description}
+        </Body>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-          <section aria-labelledby="contact-form-title">
-            <h2 id="contact-form-title" className={columnHeadingClass}>
+        <div className="mt-8 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <section className="border-input-border rounded-[10px] border bg-white p-5 md:p-6">
+            <h2 className="text-[28px] leading-tight font-semibold">
               {content.form.title}
             </h2>
 
-            <div className="border-gray-200 mt-4 box-border flex w-full max-w-[656px] flex-col rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:h-[647px] lg:w-[656px] lg:overflow-hidden">
-              <ContactForm
-                fields={content.form.fields}
-                inquiryOptions={[
-                  "General Query",
-                  "Support",
-                  "Partnership",
-                  "Store Feedback",
-                ]}
-                ctaLabel={content.form.ctaLabel}
+            <form className="mt-6 space-y-4">
+              <Input label={content.form.fields.fullName} name="fullName" />
+              <Input
+                label={content.form.fields.phone}
+                name="phone"
+                type="tel"
+                inputMode="tel"
               />
-            </div>
-          </section>
+              <Input
+                label={content.form.fields.email}
+                name="email"
+                type="email"
+                autoComplete="email"
+              />
 
-          <section aria-labelledby="get-in-touch-title">
-            <h2 id="get-in-touch-title" className={columnHeadingClass}>
-              {content.getInTouch.title}
-            </h2>
-
-            <div className="border-gray-200 mt-4 box-border w-full max-w-[656px] rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:h-[383px] lg:w-[656px]">
-              <div className="space-y-5">
-                <InfoRow
-                  icon={<LocationIcon />}
-                  title={content.getInTouch.headOffice.label}
-                  lines={content.getInTouch.headOffice.lines}
-                />
-                <InfoRow
-                  icon={<MailIcon />}
-                  title={content.getInTouch.email.label}
-                  lines={[content.getInTouch.email.value]}
-                />
-                <InfoRow
-                  icon={<PhoneIcon />}
-                  title={content.getInTouch.phone.label}
-                  lines={[content.getInTouch.phone.value]}
-                />
-                <InfoRow
-                  icon={<ClockIcon />}
-                  title={content.getInTouch.businessHours.label}
-                  lines={content.getInTouch.businessHours.lines}
+              <div className="relative">
+                <label
+                  htmlFor="contact-message"
+                  className="text-input-label absolute -top-2 left-4 z-10 bg-white px-1 text-xs leading-none"
+                >
+                  {content.form.fields.message}
+                </label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  rows={5}
+                  className="border-input-border text-input-text placeholder:text-input-label focus:border-brand-500 focus:ring-brand-500 w-full rounded-[24px] border px-4 py-3 text-sm outline-none focus:ring-1 md:text-base"
                 />
               </div>
+
+              <Button type="submit" className="tracking-normal normal-case">
+                {content.form.ctaLabel}
+              </Button>
+            </form>
+          </section>
+
+          <section className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
+              {content.contactCards.map((card) => (
+                <article
+                  key={card.title}
+                  className="border-input-border rounded-[10px] border bg-white p-5"
+                >
+                  <h3 className="text-[20px] leading-tight font-bold">
+                    {card.title}
+                  </h3>
+                  <div className="mt-2 space-y-1">
+                    {card.lines.map((line) => (
+                      <Body
+                        key={line}
+                        size="md"
+                        className="text-text-secondary text-[16px] leading-6 tracking-normal"
+                      >
+                        {line}
+                      </Body>
+                    ))}
+                  </div>
+                </article>
+              ))}
             </div>
+
+            <div className="from-brand-100/40 to-brand-300/25 min-h-[220px] rounded-[10px] bg-linear-to-tr md:min-h-[280px]" />
           </section>
         </div>
+
+        <section className="mt-10">
+          <h2 className="text-[28px] leading-tight font-semibold">
+            Quick Help
+          </h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {content.quickHelp.map((item) => (
+              <article
+                key={item.title}
+                className="border-input-border rounded-[10px] border bg-white p-5"
+              >
+                <h3 className="text-[20px] leading-tight font-bold">
+                  {item.title}
+                </h3>
+                <Body
+                  size="md"
+                  className="text-text-secondary mt-2 min-h-[72px] text-[16px] leading-6 tracking-normal"
+                >
+                  {item.description}
+                </Body>
+                <Button
+                  asChild
+                  size="sm"
+                  className="mt-4 tracking-normal normal-case"
+                >
+                  <Link href={item.href}>{item.ctaLabel}</Link>
+                </Button>
+              </article>
+            ))}
+          </div>
+        </section>
       </Container>
     </section>
-  );
-}
-
-function InfoRow({
-  icon,
-  title,
-  lines,
-}: Readonly<{
-  icon: ReactNode;
-  title: string;
-  lines: readonly string[];
-}>) {
-  return (
-    <div className="flex gap-3">
-      <div className="text-text-tertiary mt-0.5">{icon}</div>
-      <div className="min-w-0">
-        <h3 className="text-[14px] font-semibold leading-tight">{title}</h3>
-        <div className="mt-1 space-y-0.5">
-          {lines.map((line) => (
-            <p key={line} className="text-text-secondary text-[13px] leading-relaxed">
-              {line}
-            </p>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function LocationIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      className="size-5"
-    >
-      <path
-        d="M12 13.5a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 22s7-6.05 7-12a7 7 0 1 0-14 0c0 5.95 7 12 7 12Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
-
-function MailIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M4.5 7.5h15v9h-15v-9Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m5.25 8.25 6.4 5.12a.75.75 0 0 0 .9 0l6.2-5.12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function PhoneIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M7 3.75h3l1 4-2 1c1 2.5 3 4.5 5.25 5.25l1-2 4 1v3c0 1.1-.9 2-2 2C10.6 19 5 13.4 5 6.75c0-1.1.9-2 2-2Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 7v5l3 2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

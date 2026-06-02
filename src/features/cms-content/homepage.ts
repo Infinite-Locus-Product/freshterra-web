@@ -1,5 +1,3 @@
-import { dummyImages } from "@/lib/dummy-images";
-
 /**
  * Homepage placeholder content until Strapi is connected.
  *
@@ -29,38 +27,14 @@ export const homePageDraftContent = {
     subtitle: "Explore our entire selection",
     ctaLabel: "View All",
     items: [
-      {
-        name: "Fruits & Vegetables",
-        imageSrc: dummyImages.categories.fruitsVegetables,
-      },
-      {
-        name: "Dairy, Bread & Eggs",
-        imageSrc: dummyImages.categories.dairyBreadEggs,
-      },
-      {
-        name: "Meat & Seafood",
-        imageSrc: dummyImages.categories.meatSeafood,
-      },
-      {
-        name: "Snacks & Munchies",
-        imageSrc: dummyImages.categories.snacks,
-      },
-      {
-        name: "Hot & Cold Beverages",
-        imageSrc: dummyImages.categories.beverages,
-      },
-      {
-        name: "Pantry Staples",
-        imageSrc: dummyImages.categories.pantryStaples,
-      },
-      {
-        name: "Ready to Eat",
-        imageSrc: dummyImages.categories.readyToEat,
-      },
-      {
-        name: "View All",
-        imageSrc: dummyImages.categories.viewAll,
-      },
+      { name: "Fruits & Vegetables" },
+      { name: "Dairy, Bread & Eggs" },
+      { name: "Meat & Seafood" },
+      { name: "Snacks & Munchies" },
+      { name: "Hot & Cold Beverages" },
+      { name: "Pantry Staples" },
+      { name: "Ready to Eat" },
+      { name: "View All" },
     ],
   },
   sourcing: {
@@ -79,21 +53,18 @@ export const homePageDraftContent = {
       {
         name: "Mankirat Singh",
         ageLabel: "42 Years",
-        imageSrc: dummyImages.testimonials.mankiratSingh,
         quote:
-          "I love Freshterra because I know I'm serving safe, fresh food to my children every day.",
+          "I love FreshTerra because I know I am serving safe, fresh food to my children every day.",
       },
       {
         name: "Anita Sharma",
         ageLabel: "36 Years",
-        imageSrc: dummyImages.testimonials.anitaSharma,
         quote:
           "The produce quality is excellent and the experience feels thoughtfully curated every single time.",
       },
       {
         name: "Rohan Mehta",
         ageLabel: "29 Years",
-        imageSrc: dummyImages.testimonials.rohanMehta,
         quote:
           "I can finally buy clean, trustworthy pantry staples from one place near home.",
       },

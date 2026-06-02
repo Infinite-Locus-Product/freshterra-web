@@ -1,14 +1,10 @@
 /**
  * Careers page draft content until Strapi is integrated.
  */
-import { dummyImages } from "@/lib/dummy-images";
-
 export const careersPageDraftContent = {
   hero: {
     title: "Careers at FreshTerra",
     subtitle: "Join Our Team",
-    bannerSrc: dummyImages.careersHeroBanner.src,
-    bannerAlt: "FreshTerra team member standing in a produce aisle",
     paragraphs: [
       "At FreshTerra, we're building more than just a food retail company - we're creating a movement towards accessible, sustainable, and quality food for everyone.",
       "Our team is passionate, diverse, and committed to innovation. We offer competitive compensation, comprehensive benefits, and a culture that values growth and learning.",
