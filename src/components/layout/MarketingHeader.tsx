@@ -69,7 +69,7 @@ export function MarketingHeader({
   return (
     <header
       role="banner"
-      className="from-header-tint text-text-primary bg-linear-to-b to-white"
+      className="from-header-tint text-text-primary w-full max-w-full overflow-x-clip bg-linear-to-b to-white"
     >
       <MobileAppBanner ctaHref={ctaHref} />
 
@@ -119,7 +119,7 @@ export function MarketingHeader({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <nav
             aria-label="Primary"
-            className="flex items-center gap-5 overflow-x-auto whitespace-nowrap"
+            className="flex min-w-0 items-center gap-5 overflow-x-auto whitespace-nowrap"
           >
             {links.map((link) => (
               <Link
