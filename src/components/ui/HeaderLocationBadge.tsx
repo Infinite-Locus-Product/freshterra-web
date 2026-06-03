@@ -14,11 +14,14 @@ type HeaderLocationBadgeProps = Readonly<{
   className?: string;
 }>;
 
-export function HeaderLocationBadge({ children, className }: HeaderLocationBadgeProps) {
+export function HeaderLocationBadge({
+  children,
+  className,
+}: HeaderLocationBadgeProps) {
   return (
     <div className={cn(headerLocationBadgeClass, className)}>
       <Image
-        src="/Icon.svg"
+        src="/brand-icon.svg"
         alt=""
         aria-hidden
         width={24}
