@@ -10,9 +10,15 @@ import {
 type HomeCategoryTileProps = Readonly<{
   name: string;
   imageSrc: string;
+  /** Override the label styling (defaults to the homepage tile look). */
+  labelClassName?: string;
 }>;
 
-export function HomeCategoryTile({ name, imageSrc }: HomeCategoryTileProps) {
+export function HomeCategoryTile({
+  name,
+  imageSrc,
+  labelClassName = "font-medium",
+}: HomeCategoryTileProps) {
   return (
     <article className="flex flex-col items-center gap-3 rounded-md p-2 text-center">
       <div className={homeCategoriesCircleClass}>
@@ -24,7 +30,7 @@ export function HomeCategoryTile({ name, imageSrc }: HomeCategoryTileProps) {
           sizes="(max-width: 768px) 84px, 140px"
         />
       </div>
-      <Body size="sm" className="font-medium">
+      <Body size="sm" className={labelClassName}>
         {name}
       </Body>
     </article>

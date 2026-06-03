@@ -41,7 +41,7 @@ import {
   homeSourcingSectionFrameClass,
   homeSourcingTitleClass,
 } from "@/components/homepage/home-sourcing";
-import { HomeTestimonialCard } from "@/components/homepage/HomeTestimonialCard";
+import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 import {
   homeStoreAddressClass,
   homeStoreCtaPillClass,
@@ -51,7 +51,6 @@ import {
   homeStoreMediaImageClass,
   homeStoreNameClass,
 } from "@/components/homepage/home-store";
-import { homeTestimonialsGridClass } from "@/components/homepage/home-testimonials";
 
 import type { HomePageDraftContent } from "@/features/cms-content/homepage";
 
@@ -101,7 +100,7 @@ function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="text-sm font-medium tracking-wide uppercase hover:underline"
+                  className="text-sm font-medium tracking-wide text-black uppercase hover:underline"
                 >
                   {link.label}
                 </Link>
@@ -147,7 +146,7 @@ function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
 
 function CategoriesSection({ content }: Readonly<HomepageLayoutProps>) {
   return (
-    <section className="bg-white py-8 md:py-12">
+    <section className="bg-white pt-8 pb-0 md:pt-12">
       <Container size="full" className="max-w-[1440px]">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
@@ -163,9 +162,22 @@ function CategoriesSection({ content }: Readonly<HomepageLayoutProps>) {
           </div>
           <Link
             href="/c/explore-catalog"
-            className="text-brand-500 text-sm font-bold md:text-base"
+            className="text-brand-500 inline-flex items-center gap-1.5 text-sm font-bold md:text-base"
           >
             {content.categories.ctaLabel}
+            <svg
+              width="7"
+              height="12"
+              viewBox="0 0 7 12"
+              fill="none"
+              aria-hidden
+              className="shrink-0"
+            >
+              <path
+                d="M0.145817 0.147077C0.340731 -0.0485327 0.657313 -0.0490966 0.852923 0.145817L6.33741 5.6108C6.55312 5.82574 6.55312 6.17505 6.33741 6.39L0.852923 11.855C0.657313 12.0499 0.340731 12.0493 0.145817 11.8537C-0.0490966 11.6581 -0.0485327 11.3415 0.147077 11.1466L5.31166 6.0004L0.147077 0.854183C-0.0485327 0.659268 -0.0490966 0.342687 0.145817 0.147077Z"
+                fill="currentColor"
+              />
+            </svg>
           </Link>
         </div>
 
@@ -185,7 +197,8 @@ function CategoriesSection({ content }: Readonly<HomepageLayoutProps>) {
 
 function SourcingSection({ content }: Readonly<HomepageLayoutProps>) {
   return (
-    <section className="bg-white py-8 md:py-10">
+    // Top padding 96px to the categories section above.
+    <section className="bg-white pt-24 pb-8 md:pb-10">
       <div className="mx-auto w-full max-w-[1440px] px-6 lg:px-0">
         <div className={`${homeSourcingSectionFrameClass} lg:p-0`}>
           <Image
@@ -205,7 +218,7 @@ function SourcingSection({ content }: Readonly<HomepageLayoutProps>) {
             className={`${homeSourcingArtClass} -top-10 -right-10 w-[320px] -scale-x-100 lg:w-[460px]`}
           />
           <div className={`${homeSourcingTitleClass} relative z-10`}>
-            <Heading level={2} variant="h2" className="text-brand-500">
+            <Heading level={2} variant="h2" className="text-[#445133]">
               {content.sourcing.title}
             </Heading>
           </div>
@@ -249,9 +262,9 @@ function SourcingSection({ content }: Readonly<HomepageLayoutProps>) {
 
 function TestimonialsSection({ content }: Readonly<HomepageLayoutProps>) {
   return (
-    <section className="bg-white py-10 md:py-14">
+    <section className="bg-white pt-10 pb-0 md:pt-14">
       <Container size="full" className="max-w-[1440px]">
-        <Heading level={2} variant="h2">
+        <Heading level={2} variant="h2" className="text-[#101828]">
           {content.testimonials.title}
         </Heading>
         <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
@@ -259,26 +272,18 @@ function TestimonialsSection({ content }: Readonly<HomepageLayoutProps>) {
         </p>
       </Container>
 
-      <div className={homeTestimonialsGridClass} aria-label="Customer stories">
-        {content.testimonials.items.map((item) => (
-          <HomeTestimonialCard
-            key={item.name}
-            name={item.name}
-            ageLabel={item.ageLabel}
-            quote={item.quote}
-            imageSrc={item.imageSrc}
-          />
-        ))}
-      </div>
+      <HomeTestimonialsCarousel items={content.testimonials.items} />
     </section>
   );
 }
 
 function StoreSection({ content }: Readonly<HomepageLayoutProps>) {
   return (
-    <section className="bg-white py-10 md:py-14">
+    // Top padding 76px to the testimonials section above.
+    // Bottom padding (49.16px) + footer mt-8 (32px) = 81.16px gap to the footer.
+    <section className="bg-white pt-19 pb-[49.16px]">
       <Container size="full" className="max-w-[1440px]">
-        <Heading level={2} variant="h2" className="mb-6">
+        <Heading level={2} variant="h2" className="mb-[34.84px] text-[#101828]">
           {content.store.title}
         </Heading>
 

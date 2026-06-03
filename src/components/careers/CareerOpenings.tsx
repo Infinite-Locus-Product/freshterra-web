@@ -18,18 +18,22 @@ export function CareerOpenings({ openings }: CareerOpeningsProps) {
   const [activeJob, setActiveJob] = useState<string | null>(null);
 
   return (
-    <section>
-      <Heading level={2} variant="h2" className="mb-6">
+    <section className="flex w-full max-w-340 flex-col gap-6">
+      <Heading
+        level={2}
+        variant="h2"
+        className="font-semibold tracking-normal md:text-[28px] md:leading-none"
+      >
         {openings.title}
       </Heading>
 
       <div className="space-y-6">
         {openings.groups.map((group) => (
           <section key={group.title}>
-            <h3 className="mb-4 text-[28px] leading-tight font-semibold">
+            <h3 className="mb-4 w-full max-w-340 font-sans text-[28px] leading-tight font-semibold tracking-normal md:text-[20px] md:font-bold md:leading-[130%]">
               {group.title}
             </h3>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-12 xl:grid-cols-3">
               {group.jobs.map((job) => (
                 <article
                   key={job.title}
@@ -46,7 +50,7 @@ export function CareerOpenings({ openings }: CareerOpeningsProps) {
                   </Body>
                   <Button
                     size="sm"
-                    className="mt-4 text-sm tracking-normal normal-case"
+                    className="mt-6 text-sm tracking-normal normal-case"
                     onClick={() => setActiveJob(job.title)}
                   >
                     Apply Now

@@ -27,13 +27,17 @@ export function CareersPageLayout({
           <span className="text-text-primary">Careers</span>
         </div>
 
-        <Heading level={1} variant="h2" className="mb-6">
+        <Heading
+          level={1}
+          variant="h2"
+          className="mb-6 tracking-normal md:text-[36px] md:leading-[150%]"
+        >
           {content.hero.title}
         </Heading>
 
-        <section className="mb-14 grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-start">
+        <section className="mb-14 grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-[18.5px]">
           <div>
-            <h2 className="mb-4 text-[32px] leading-tight font-bold">
+            <h2 className="mb-4 font-sans text-[32px] leading-tight font-bold tracking-normal md:text-[20px] md:leading-[130%]">
               {content.hero.subtitle}
             </h2>
             <div className="space-y-5">
@@ -49,7 +53,7 @@ export function CareersPageLayout({
             </div>
           </div>
 
-          <div className="relative aspect-[1481/988] min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[460px]">
+          <div className="relative aspect-[667.923/457] min-h-75 overflow-hidden rounded-sm md:aspect-auto md:h-114.25 md:w-[667.9px]">
             <Image
               src={content.hero.bannerSrc}
               alt={content.hero.bannerAlt}

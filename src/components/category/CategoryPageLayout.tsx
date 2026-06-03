@@ -48,7 +48,7 @@ export function CategoryPageLayout({
 
 function CategoryHeaderHeroSection({ content }: Readonly<CategoryPageLayoutProps>) {
   return (
-    <section className="bg-linear-to-b from-header-tint to-white pb-8 pt-6 md:pb-10 md:pt-8">
+    <section className="bg-linear-to-b from-header-tint to-white pb-0 pt-6 md:pt-8">
       <div className={`mx-auto w-full max-w-[1440px] ${HEADER_EDGE_PADDING_CLASS}`}>
         <header className="flex flex-col gap-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -103,8 +103,8 @@ function CategoryHeaderHeroSection({ content }: Readonly<CategoryPageLayoutProps
 
 function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
   return (
-    <section className="bg-white py-8 md:py-12">
-      <Container size="full" className="max-w-[1440px] space-y-10 md:space-y-14">
+    <section className="bg-white pt-21 pb-8 md:pb-12">
+      <Container size="full" className="max-w-[1440px] space-y-10 md:space-y-15">
         {content.sections.map((section) => (
           <section key={section.title} aria-labelledby={toId(section.title)}>
             <div className="mb-5 flex items-end justify-between gap-3">
@@ -112,20 +112,28 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                 <Heading
                   level={2}
                   variant="h2"
-                  className="text-[32px] leading-tight md:text-[40px]"
+                  className="text-[32px] leading-tight md:text-[36px]"
                   id={toId(section.title)}
                 >
                   {section.title}
                 </Heading>
-                <p className="font-handsome text-amber-700 mt-1 text-[30px] leading-[26px] font-bold tracking-normal not-italic">
+                <p className={`font-handsome ${section.subtitleColor} mt-1 text-[30px] leading-[26px] font-bold tracking-normal not-italic`}>
                   {section.subtitle}
                 </p>
               </div>
               <Link
                 href={`/c/${toSlug(section.title)}`}
-                className="text-brand-500 text-sm font-bold md:text-base"
+                className="text-brand-500 inline-flex items-center gap-2 text-sm font-bold md:text-base"
               >
                 {section.ctaLabel}
+                <Image
+                  src="/Shape.svg"
+                  alt=""
+                  width={7}
+                  height={12}
+                  className="h-[12px] w-[6.5px]"
+                  aria-hidden
+                />
               </Link>
             </div>
 
@@ -139,6 +147,7 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                       key={item.name}
                       name={item.name}
                       imageSrc={imageSrc}
+                      labelClassName="text-[20px] text-black font-medium"
                     />
                   );
                 }
@@ -149,7 +158,7 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                     className="flex flex-col items-center gap-3 rounded-md p-2 text-center"
                   >
                     <div className={homeCategoriesCircleClass} aria-hidden />
-                    <Body size="sm" className="font-medium">
+                    <Body size="sm" className="text-[20px] text-black font-medium">
                       {item.name}
                     </Body>
                   </article>
