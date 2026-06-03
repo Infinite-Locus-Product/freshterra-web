@@ -76,7 +76,7 @@ export function CareerApplicationForm({
 
   return (
     <form
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-3"
       aria-label={`Application form for ${jobTitle}`}
       onSubmit={handleSubmit(onSubmit)}
       noValidate
@@ -148,7 +148,7 @@ export function CareerApplicationForm({
 const formLabelClass =
   "text-text-tertiary font-sans text-[14px] font-normal leading-[1.2] tracking-[0.2px]";
 const formControlClass = cn(
-  "border-gray-200 text-text-primary h-[52px] w-full rounded-full border bg-white px-5 text-[16px] leading-[1.3] lg:text-[18px]",
+  "border-gray-200 text-text-primary h-12 w-full rounded-xxl border-[1.5px] bg-white px-3 text-[16px] leading-[1.3] lg:text-[18px]",
   "placeholder:text-text-tertiary",
   "focus:border-brand-500 focus:ring-brand-500 focus:ring-1 focus:outline-none",
 );
@@ -219,7 +219,7 @@ function ResumeUpload({ file, error, onSelect }: ResumeUploadProps) {
         onClick={() => inputRef.current?.click()}
         aria-describedby={error ? errorId : undefined}
         className={cn(
-          "flex w-full flex-col items-center justify-center gap-1 rounded-[16px] border border-dashed bg-gray-50 px-5 py-8 text-center transition-colors",
+          "flex h-[111px] w-full flex-col items-center justify-center gap-1 rounded-[10px] border-2 border-dashed bg-gray-50 p-[34px] text-center transition-colors",
           "hover:border-brand-500 focus-visible:border-brand-500 focus-visible:ring-brand-500 focus-visible:ring-1 focus-visible:outline-none",
           error ? "border-red-600" : "border-gray-300",
         )}

@@ -10,7 +10,7 @@ export const HEADER_DOWNLOAD_APP_WIDTH = 241;
 export const HEADER_DOWNLOAD_APP_HEIGHT = 48;
 
 const headerDownloadAppButtonClass =
-  "box-border h-12 w-full shrink-0 px-4 py-0 text-base leading-6 lg:w-[241px]";
+  "box-border h-12 w-full shrink-0 px-4 py-0 text-xl leading-6 lg:w-[241px]";
 
 type HeaderDownloadAppButtonProps = Readonly<{
   href: string;
@@ -24,7 +24,7 @@ export function HeaderDownloadAppButton({
   className,
 }: HeaderDownloadAppButtonProps) {
   return (
-    <Button asChild size="md" className={cn(headerDownloadAppButtonClass, className)}>
+    <Button asChild size="md" caps={false} className={cn(headerDownloadAppButtonClass, className)}>
       <Link href={href}>{children}</Link>
     </Button>
   );

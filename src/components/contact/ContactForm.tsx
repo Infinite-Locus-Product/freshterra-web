@@ -144,7 +144,7 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
         fullWidth
         caps={false}
         disabled={isSubmitting}
-        className="mt-auto h-[56px] shrink-0 text-[18px] font-semibold tracking-[0] lg:h-[64px]"
+        className="mt-auto h-12 shrink-0 rounded-[var(--radius-xxl)] px-5 py-[14px] text-[18px] font-semibold tracking-[0] opacity-100"
       >
         {ctaLabel}
       </Button>
@@ -157,6 +157,9 @@ const formControlClass = cn(
   "border-gray-200 text-text-primary h-[52px] w-full rounded-full border bg-white px-5 text-[16px] leading-[1.3] lg:text-[18px]",
   "placeholder:text-text-tertiary",
   "focus:border-brand-500 focus:ring-brand-500 focus:ring-1 focus:outline-none",
+  // Suppress the browser autofill blue/yellow tint — mask it with the field's
+  // own white background and keep the text color.
+  "autofill:shadow-[inset_0_0_0_1000px_#ffffff] autofill:[-webkit-text-fill-color:#131927]",
 );
 
 function controlErrorClass(hasError: boolean | undefined): string | undefined {
@@ -283,20 +286,31 @@ function LabeledTextarea({
       <label htmlFor={fieldId} className="text-text-primary shrink-0 font-sans text-[18px] leading-[1.3]">
         {label}
       </label>
-      <textarea
-        id={fieldId}
-        name={name}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
+      {/* Border + radius live on this wrapper with overflow-hidden so the
+          textarea's native scrollbar is clipped to the rounded corners
+          instead of poking out of the box on long messages. */}
+      <div
         className={cn(
-          "border-gray-200 text-text-primary w-full flex-1 rounded-[16px] border bg-white px-5 py-3 text-[16px] leading-[1.4] lg:text-[18px]",
-          "placeholder:text-text-tertiary",
-          "focus:border-brand-500 focus:ring-brand-500 focus:ring-1 focus:outline-none",
+          "border-gray-200 flex min-h-0 flex-1 overflow-hidden rounded-[16px] border bg-white",
+          "focus-within:border-brand-500 focus-within:ring-brand-500 focus-within:ring-1",
           controlErrorClass(!!error),
           className,
         )}
-        {...rest}
-      />
+      >
+        <textarea
+          id={fieldId}
+          name={name}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          className={cn(
+            "text-text-primary w-full flex-1 resize-none border-0 bg-transparent px-5 py-3 text-[16px] leading-[1.4] lg:text-[18px]",
+            "placeholder:text-text-tertiary",
+            "focus:outline-none",
+            "autofill:shadow-[inset_0_0_0_1000px_#ffffff] autofill:[-webkit-text-fill-color:#131927]",
+          )}
+          {...rest}
+        />
+      </div>
       {error ? <FieldError id={errorId} message={error} /> : null}
     </div>
   );

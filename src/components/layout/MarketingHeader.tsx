@@ -26,7 +26,7 @@ export function MarketingHeader() {
       role="banner"
       className={`from-header-tint text-text-primary bg-linear-to-b to-white pt-6 pb-6 md:pt-8 md:pb-6 ${HEADER_EDGE_PADDING_CLASS}`}
     >
-      <div className="mx-auto flex w-full max-w-[1360px] flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-[1360px] flex-col gap-10">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3">
             <Logo tone="light" variant="header" priority linkToHome />
@@ -47,7 +47,7 @@ export function MarketingHeader() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-text-primary text-sm font-medium tracking-wide uppercase hover:underline"
+                className="text-text-primary text-sm leading-4 font-medium tracking-wide uppercase hover:underline"
               >
                 {link.label}
               </Link>

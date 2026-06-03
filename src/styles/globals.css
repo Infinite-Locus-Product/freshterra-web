@@ -9,6 +9,7 @@
   --color-accent-olive: #4e7511;
   --color-accent-terracotta: #ac612d;
   --color-amber-700: #a47223;
+  --color-brown-700: #81614a;
   --color-beige-100: #fcfaf5;
   --color-cream-50: #fffef8;
   --color-white-soft: #fefefe;
@@ -48,9 +49,7 @@
 
 @font-face {
   font-family: "Handsome";
-  src:
-    url("/fonts/Handsome-Bold.woff2") format("woff2"),
-    url("/fonts/Handsome-Bold.woff") format("woff");
+  src: url("/fonts/Handsome-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -78,6 +77,20 @@ body {
   *::before,
   *::after {
     border-color: var(--color-border);
+  }
+
+  /* Override the browser autofill styling (Chrome's blue/yellow tint) so
+     fields filled from saved data keep the normal text color and white
+     background instead of showing a blue tint. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-text-primary);
+    caret-color: var(--color-text-primary);
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
+    box-shadow: 0 0 0 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 
