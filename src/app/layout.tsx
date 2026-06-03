@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import type { ReactNode } from "react";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { Manrope, Playfair_Display } from "next/font/google";
 
@@ -34,6 +34,11 @@ const playfair = Playfair_Display({
 
 const siteDescription =
   "FreshTerra: Your neighborhood food store for five-star quality at wow prices. Sourcing fresh, wholesome essentials with total honesty for your kitchen. — locally sourced. Browse the FreshTerra catalog and find your nearest store.";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -69,7 +74,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
       <body
-        className="min-h-screen antialiased"
+        className="min-h-screen w-full max-w-full min-w-0 antialiased"
         style={{ backgroundColor: "#fffef8" }}
       >
         <JsonLd data={organizationJsonLd({ baseUrl: APP_URL })} />
