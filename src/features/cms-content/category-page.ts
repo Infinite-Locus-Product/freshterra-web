@@ -27,6 +27,7 @@ export const categoryPageDraftContent = {
     {
       title: "Fruits & Vegetables",
       subtitle: "Fresh from the farm",
+      subtitleColor: "text-brand-500",
       ctaLabel: "View All",
       items: [
         { name: "Fruits", imageSrc: dummyImages.exploreCatalogFruitsVegetables.fruits },
@@ -51,6 +52,7 @@ export const categoryPageDraftContent = {
     {
       title: "Dairy, Bread & Eggs",
       subtitle: "Start your day strong",
+      subtitleColor: "text-brown-700",
       ctaLabel: "View All",
       items: [
         { name: "Milk", imageSrc: dummyImages.exploreCatalogDairyBreadEggs.milk },
@@ -66,6 +68,7 @@ export const categoryPageDraftContent = {
     {
       title: "Snacks & Munchies",
       subtitle: "Elevate your tea time",
+      subtitleColor: "text-amber-700",
       ctaLabel: "View All",
       items: [
         { name: "Chips", imageSrc: dummyImages.exploreCatalogSnacksMunchies.chips },

@@ -9,13 +9,13 @@ export const homeStoreMediaImageClass = "object-cover object-center";
 
 /** Store name, address, and CTAs — below the image, left-aligned to media width. */
 export const homeStoreDetailsClass =
-  "mt-6 flex w-full max-w-[1360px] flex-col items-start gap-4";
+  "mt-6 flex w-full max-w-[1360px] flex-col items-start gap-2.5";
 
 export const homeStoreNameClass = "font-sans text-xl font-bold text-text-primary";
 
-export const homeStoreAddressClass = "text-text-secondary text-sm leading-6";
+export const homeStoreAddressClass = "text-text-secondary text-base leading-6";
 
-export const homeStoreCtaRowClass = "flex flex-wrap items-center gap-3";
+export const homeStoreCtaRowClass = "mt-3.5 flex flex-wrap items-center gap-3";
 
 /** Figma store section CTAs (“View Store”, “Locate Us”). */
 export const HOME_STORE_CTA_WIDTH = 286;

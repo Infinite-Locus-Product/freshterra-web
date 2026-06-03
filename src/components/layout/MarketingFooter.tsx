@@ -29,13 +29,13 @@ const FOOTER_CONTENT = {
       topLine: "Download on the",
       brandLine: "App Store",
       href: "/notify",
-      icon: "A",
+      iconSrc: "/image-11305.svg",
     },
     {
       topLine: "Get it on",
       brandLine: "Google Play",
       href: "/notify",
-      icon: "G",
+      iconSrc: "/image-11306.svg",
     },
   ],
   socialLinks: [
@@ -51,7 +51,7 @@ export function MarketingFooter() {
   return (
     <footer
       role="contentinfo"
-      className="bg-brand-600 text-white-soft relative mt-6 overflow-hidden"
+      className="bg-brand-600 text-white-soft relative mt-8 overflow-hidden"
     >
       <Image
         src={dummyImages.botanicalLineArt.src}
@@ -83,9 +83,14 @@ export function MarketingFooter() {
                   href={badge.href}
                   className="bg-brand-100 text-text-primary inline-flex h-[48px] w-full max-w-[230px] items-center gap-3 rounded-[8px] px-3 text-sm font-semibold"
                 >
-                  <span className="inline-flex size-6 items-center justify-center rounded-md bg-black text-white">
-                    {badge.icon}
-                  </span>
+                  <Image
+                    src={badge.iconSrc}
+                    alt=""
+                    aria-hidden
+                    width={30}
+                    height={30}
+                    className="size-7.5 shrink-0"
+                  />
                   <span className="flex flex-col leading-none">
                     <span className="text-[10px] font-medium">{badge.topLine}</span>
                     <span className="text-[16px] font-bold">{badge.brandLine}</span>
@@ -113,7 +118,7 @@ export function MarketingFooter() {
         </div>
       </div>
 
-      <div className="border-brand-100/70 relative border-t">
+      <div className="border-brand-100/70 bg-brand-600 relative border-t">
         <div className="mx-auto w-full max-w-[1440px] px-6 py-4 text-sm md:flex md:items-center md:justify-between md:px-10">
           <p className="text-white-soft/90">© 2026 FreshTerra. All rights reserved.</p>
           <nav aria-label="Legal" className="mt-2 flex gap-5 text-xs md:mt-0">

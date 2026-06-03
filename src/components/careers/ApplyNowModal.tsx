@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef } from "react";
 
+import Image from "next/image";
 import { createPortal } from "react-dom";
 
 import { CareerApplicationForm } from "./CareerApplicationForm";
@@ -94,18 +95,14 @@ export function ApplyNowModal({ open, jobTitle, onClose }: ApplyNowModalProps) {
           aria-label="Close application form"
           className="text-text-secondary hover:text-text-primary focus-visible:ring-brand-500 -ml-1 mb-4 block rounded-full p-[4.25px] focus-visible:ring-2 focus-visible:outline-none"
         >
-          <svg
-            width="15.5"
-            height="15.5"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
+          <Image
+            src="/Shape-2.svg"
+            alt=""
+            width={16}
+            height={16}
+            className="h-[15.5px] w-[15.5px]"
             aria-hidden
-          >
-            <path d="M1.5 1.5l13 13M14.5 1.5l-13 13" />
-          </svg>
+          />
         </button>
 
         <h2

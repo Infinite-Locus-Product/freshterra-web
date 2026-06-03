@@ -37,13 +37,13 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
           {content.hero.title}
         </Heading>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+        <div className="mt-8 grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <section aria-labelledby="contact-form-title">
             <h2 id="contact-form-title" className={columnHeadingClass}>
               {content.form.title}
             </h2>
 
-            <div className="border-gray-200 mt-4 box-border flex w-full max-w-[656px] flex-col rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:h-[647px] lg:w-[656px] lg:overflow-hidden">
+            <div className="border-gray-200 mt-6 box-border flex w-full max-w-[656px] flex-col rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:min-h-161.75 lg:w-[656px]">
               <ContactForm
                 fields={content.form.fields}
                 inquiryOptions={[
@@ -62,8 +62,8 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
               {content.getInTouch.title}
             </h2>
 
-            <div className="border-gray-200 mt-4 box-border w-full max-w-[656px] rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:h-[383px] lg:w-[656px]">
-              <div className="space-y-5">
+            <div className="border-gray-200 mt-6 box-border w-full max-w-[656px] rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:h-[383px] lg:w-[656px]">
+              <div className="space-y-6">
                 <InfoRow
                   icon={<LocationIcon />}
                   title={content.getInTouch.headOffice.label}

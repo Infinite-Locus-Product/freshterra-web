@@ -23,9 +23,9 @@ export function FoodPhilosophyPageLayout({
 
 function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
   return (
-    <section className="bg-white py-8 md:py-10">
+    <section className="bg-white pt-8 pb-8 md:pt-10 md:pb-29.25">
       <Container size="full" className="max-w-[1440px]">
-        <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm">
+        <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm leading-[17px]">
           <Link href="/" className="hover:underline">
             Home
           </Link>
@@ -33,11 +33,15 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
           <span className="text-text-primary">Our Food Philosophy</span>
         </div>
 
-        <Heading level={2} variant="h2" className="mb-6">
+        <Heading
+          level={2}
+          variant="h2"
+          className="mb-6 tracking-normal md:h-13.5 md:w-85.75 md:text-[36px] md:leading-[150%]"
+        >
           {content.hero.title}
         </Heading>
 
-        <div className="relative mb-10 aspect-[2720/916] overflow-hidden rounded-[10px]">
+        <div className="relative mx-auto mb-10 aspect-2720/916 overflow-hidden rounded-[10px] md:aspect-auto md:h-114.5 md:w-340">
           <Image
             src={content.hero.imageSrc}
             alt={content.hero.imageAlt}
@@ -48,15 +52,17 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
           />
         </div>
 
-        <div className="mb-12 grid gap-8 lg:grid-cols-2">
-          <article>
-            <h3 className="font-display text-[28px] font-semibold">
-              {content.sourcing.title}
-            </h3>
-            <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
-              {content.sourcing.subtitle}
-            </p>
-            <div className="mt-5 space-y-4">
+        <div className="mb-12 grid gap-8 lg:grid-cols-[656px_640px] lg:justify-between">
+          <article className="flex flex-col gap-6 lg:h-[345px] lg:w-[656px]">
+            <div>
+              <h3 className="font-display text-[28px] font-semibold">
+                {content.sourcing.title}
+              </h3>
+              <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+                {content.sourcing.subtitle}
+              </p>
+            </div>
+            <div className="space-y-4">
               {content.sourcing.paragraphs.map((paragraph) => (
                 <Body
                   key={paragraph}
@@ -69,19 +75,21 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
             </div>
           </article>
 
-          <article>
-            <h3 className="font-display text-[28px] font-semibold">
-              {content.certifications.title}
-            </h3>
-            <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
-              {content.certifications.subtitle}
-            </p>
-            <Body
-              size="md"
-              className="mt-5 text-[18px] leading-7 tracking-normal"
-            >
-              {content.certifications.description}
-            </Body>
+          <article className="flex flex-col lg:h-[345px] lg:w-[640px] lg:justify-between">
+            <div>
+              <h3 className="font-display text-[28px] font-semibold">
+                {content.certifications.title}
+              </h3>
+              <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+                {content.certifications.subtitle}
+              </p>
+              <Body
+                size="md"
+                className="mt-5 text-[18px] leading-7 tracking-normal lg:h-20.25 lg:w-160"
+              >
+                {content.certifications.description}
+              </Body>
+            </div>
             <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
               {content.certifications.items.map((item) => {
                 const label = item.label;
@@ -90,7 +98,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                 return (
                   <div
                     key={label}
-                    className="flex flex-col items-center gap-3 text-center"
+                    className="flex flex-col items-center gap-3 text-center md:h-36.25 md:w-30"
                   >
                     <div className="relative size-20 md:size-24">
                       {imageSrc ? (
@@ -108,7 +116,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                         />
                       )}
                     </div>
-                    <p className="text-sm font-bold">{label}</p>
+                    <p className="text-sm font-bold md:h-5.25 md:w-29.25">{label}</p>
                   </div>
                 );
               })}
@@ -117,10 +125,10 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
         </div>
 
         <section className="mb-12">
-          <h3 className="font-display text-[28px] font-semibold">
+          <h3 className="font-display text-[28px] font-semibold lg:ml-2">
             {content.partnerships.title}
           </h3>
-          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px] lg:ml-2">
             {content.partnerships.subtitle}
           </p>
 
@@ -129,13 +137,13 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
               <article
                 key={partner.name}
                 className={[
-                  "grid gap-6 rounded-[10px] p-6 md:grid-cols-[1fr_1fr] md:gap-10 md:p-8",
+                  "grid gap-6 rounded-[10px] p-6 md:grid-cols-[1fr_1fr] md:gap-12 md:p-8 lg:mx-auto lg:h-127.5 lg:w-340 lg:grid-cols-[813px_1fr]",
                   partner.theme === "amber" && "bg-[#fdf6ea]",
                   partner.theme === "olive" && "bg-[#e9f0e2]",
                   partner.theme === "sky" && "bg-[#deeef4]",
                 ].join(" ")}
               >
-                <div className="relative min-h-[220px] overflow-hidden rounded-[10px] md:min-h-[320px]">
+                <div className="relative min-h-[220px] overflow-hidden rounded-[10px] md:min-h-[320px] lg:h-109 lg:min-h-0 lg:w-203.25">
                   {"imageSrc" in partner && partner.imageSrc ? (
                     <Image
                       src={partner.imageSrc}
@@ -187,11 +195,11 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
           <h3 className="font-display text-[28px] font-semibold">
             {content.sustainability.title}
           </h3>
-          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+          <p className="text-brand-500 font-handsome mt-2 text-[30px] leading-[26px] font-bold tracking-[0px]">
             {content.sustainability.subtitle}
           </p>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {content.sustainability.items.map((item) => {
               const label = item.label;
               const imageSrc = "imageSrc" in item ? item.imageSrc : undefined;
@@ -206,7 +214,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                   // reveal the description shown on hover/focus.
                   // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                   tabIndex={0}
-                  className="group focus-visible:ring-brand-500 text-beige-100 relative flex aspect-[629/780] min-h-[220px] flex-col justify-end overflow-hidden rounded-[10px] p-5 focus:outline-none focus-visible:ring-2"
+                  className="group focus-visible:ring-brand-500 text-beige-100 relative flex aspect-[629/780] min-h-[220px] flex-col justify-end overflow-hidden rounded-[10px] p-5 focus:outline-none focus-visible:ring-2 lg:aspect-auto lg:h-97.5 lg:min-h-0 lg:w-78.625"
                 >
                   {imageSrc ? (
                     <Image

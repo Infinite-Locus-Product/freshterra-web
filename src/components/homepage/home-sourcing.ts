@@ -3,7 +3,7 @@ export const HOME_SOURCING_SECTION_WIDTH = 1440;
 export const HOME_SOURCING_SECTION_HEIGHT = 600;
 
 export const homeSourcingSectionFrameClass =
-  "relative overflow-hidden rounded-[15px] bg-[#eef3ea] mx-auto box-border w-full max-w-[1440px] min-h-[400px] lg:min-h-[600px]";
+  "relative overflow-hidden bg-[#eef3ea] mx-auto box-border w-full max-w-[1440px] min-h-[400px] lg:min-h-[600px]";
 
 /** Faint botanical line-art tucked into the section corners (decorative only). */
 export const homeSourcingArtClass =
