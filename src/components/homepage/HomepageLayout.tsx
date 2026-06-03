@@ -118,6 +118,19 @@ function CategoriesSection({ content }: Readonly<HomepageLayoutProps>) {
             className="text-brand-500 hidden text-sm font-bold md:text-base lg:inline"
           >
             {content.categories.ctaLabel}
+            <svg
+              width="7"
+              height="12"
+              viewBox="0 0 7 12"
+              fill="none"
+              aria-hidden
+              className="shrink-0"
+            >
+              <path
+                d="M0.145817 0.147077C0.340731 -0.0485327 0.657313 -0.0490966 0.852923 0.145817L6.33741 5.6108C6.55312 5.82574 6.55312 6.17505 6.33741 6.39L0.852923 11.855C0.657313 12.0499 0.340731 12.0493 0.145817 11.8537C-0.0490966 11.6581 -0.0485327 11.3415 0.147077 11.1466L5.31166 6.0004L0.147077 0.854183C-0.0485327 0.659268 -0.0490966 0.342687 0.145817 0.147077Z"
+                fill="currentColor"
+              />
+            </svg>
           </Link>
         </div>
 
@@ -158,33 +171,19 @@ function CategoriesSection({ content }: Readonly<HomepageLayoutProps>) {
 
 function SourcingSection({ content }: Readonly<HomepageLayoutProps>) {
   return (
-    <section className="bg-brand-100/40 py-10 md:py-14">
+    <section className="bg-white py-10 md:py-14">
       <Container size="full" className="max-w-[1440px] max-lg:px-4">
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-stretch">
-          <div className="flex flex-col gap-4">
-            <Heading level={2} variant="h2" className="text-brand-500">
-              {content.sourcing.title}
-            </Heading>
-            {content.sourcing.paragraphs.map((paragraph) => (
-              <Body key={paragraph} size="md" className="text-text-primary/90">
-                {paragraph}
-              </Body>
-            ))}
-            <Link
-              href="/food-philosophy"
-              className="text-brand-500 mt-2 font-bold"
-            >
-              {content.sourcing.ctaLabel}
-            </Link>
-          </div>
-          <div className="from-brand-300/25 to-brand-600/35 min-h-[240px] rounded-2xl bg-linear-to-tr p-6 md:min-h-[340px]">
-            <div className="flex h-full items-start justify-end">
-              <p className="text-cream-50 font-display max-w-[260px] text-right text-2xl italic md:text-4xl">
-                Fresh, Wholesome & Gourmet
-              </p>
-            </div>
-          </div>
-        </div>
+        <Heading level={2} variant="h2">
+          {content.testimonials.title}
+        </Heading>
+
+        <p className="text-brand-500 font-display mt-1 text-xl italic md:text-2xl">
+          {content.testimonials.subtitle}
+        </p>
+
+        <HomeTestimonialsCarousel
+          items={content.testimonials.items}
+        />
       </Container>
     </section>
   );

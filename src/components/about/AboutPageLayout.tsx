@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 import { Body } from "@/components/ui/Body";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
@@ -12,7 +13,7 @@ type AboutPageLayoutProps = {
 
 export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
   return (
-    <section className="text-text-primary bg-white py-8 md:py-10">
+    <section className="text-text-primary bg-white pt-8 pb-0 md:pt-10">
       <Container size="full" className="max-w-[1440px]">
         <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm">
           <Link href="/" className="hover:underline">
@@ -53,7 +54,7 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
             <p className="text-brand-500 font-display mt-1 text-2xl italic md:text-3xl">
               {content.story.subtitle}
             </p>
-            <div className="mt-5 space-y-4">
+            <div className="mt-6 space-y-4">
               {content.story.paragraphs.map((paragraph) => (
                 <Body
                   key={paragraph}
@@ -116,6 +117,27 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
         <section className="mt-12">
           <h2 className="font-display text-[28px] font-semibold">
             {content.team.title}
+        <section className="mt-10 md:mt-12" aria-label="Our Mission">
+          <div className="relative aspect-[1360/313] w-full overflow-hidden rounded-[10px]">
+            <Image
+              src={content.missionBanner.src}
+              alt={content.missionBanner.alt}
+              fill
+              className="object-cover object-center"
+              sizes="(max-width: 1440px) 100vw, 1440px"
+            />
+          </div>
+        </section>
+
+        <section
+          className="mt-18"
+          aria-labelledby="about-core-values-heading"
+        >
+          <h2
+            id="about-core-values-heading"
+            className="font-display text-[28px] font-semibold"
+          >
+            {content.coreValues.title}
           </h2>
           <p className="text-brand-500 font-display mt-1 text-2xl italic md:text-3xl">
             {content.team.subtitle}
@@ -134,6 +156,27 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
                 <p className="mt-1 text-base">{member.role}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section
+          className="mt-18"
+          aria-labelledby="about-stories-heading"
+        >
+          <h2
+            id="about-stories-heading"
+            className="font-display text-[28px] font-semibold"
+          >
+            {content.customerStories.title}
+          </h2>
+          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+            {content.customerStories.subtitle}
+          </p>
+
+          {/* Full-bleed so the carousel can center cards across the viewport,
+              matching the homepage testimonials behavior. */}
+          <div className="relative left-1/2 w-screen -translate-x-1/2">
+            <HomeTestimonialsCarousel items={content.customerStories.items} />
           </div>
         </section>
       </Container>

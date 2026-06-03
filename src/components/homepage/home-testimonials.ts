@@ -3,7 +3,7 @@ export const HOME_TESTIMONIALS_CARD_WIDTH = 730;
 export const HOME_TESTIMONIALS_CARD_HEIGHT = 551;
 
 export const homeTestimonialsGridClass =
-  "mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[7.5vw] pb-2 sm:px-[calc((100vw-600px)/2)] lg:px-[calc((100vw-730px)/2)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+  "mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[7.5vw] pb-2 sm:px-[calc((100vw-600px)/2)] lg:px-[calc((100vw-730px)/2)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
 export const homeTestimonialsCardClass =
   "relative box-border h-[551px] w-[85vw] max-w-[730px] shrink-0 snap-center overflow-hidden rounded-2xl sm:w-[600px] lg:w-[730px]";

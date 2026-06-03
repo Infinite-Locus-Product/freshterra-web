@@ -19,7 +19,7 @@ export const dummyImages = {
     height: 437,
   },
   exploreCatalogBanner: {
-    src: "/dummy-images/explore-catalog-banner-01.png",
+    src: "/dummy-images/banner-2.png",
     width: 1440,
     height: 422,
   },

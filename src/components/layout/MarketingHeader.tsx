@@ -125,7 +125,7 @@ export function MarketingHeader({
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-text-primary text-sm font-medium tracking-wide uppercase hover:underline"
+                className="text-text-primary text-sm leading-4 font-medium tracking-wide uppercase hover:underline"
               >
                 {link.label}
               </Link>

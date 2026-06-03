@@ -55,7 +55,7 @@ function BlockRenderer({ block }: { block: PolicyBlock }) {
     );
   }
   return (
-    <ul className="text-text-primary ml-9 font-sans text-sm leading-[1.4] tracking-[0.2px]">
+    <ul className="text-text-primary ml-6 font-sans text-sm leading-[1.4] tracking-[0.2px] md:ml-9">
       {block.items.map((spans, i) => (
         <li key={i}>
           <span aria-hidden="true" className="md:mr-2">

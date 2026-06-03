@@ -25,6 +25,7 @@ export const categoryPageDraftContent = {
     {
       title: "Fruits & Vegetables",
       subtitle: "Fresh from the farm",
+      subtitleColor: "text-brand-500",
       ctaLabel: "View All",
       items: [
         "Fruits",
@@ -40,6 +41,7 @@ export const categoryPageDraftContent = {
     {
       title: "Dairy, Bread & Eggs",
       subtitle: "Start your day strong",
+      subtitleColor: "text-brown-700",
       ctaLabel: "View All",
       items: [
         "Milk",
@@ -55,6 +57,7 @@ export const categoryPageDraftContent = {
     {
       title: "Snacks & Munchies",
       subtitle: "Elevate your tea time",
+      subtitleColor: "text-amber-700",
       ctaLabel: "View All",
       items: [
         "Chips",

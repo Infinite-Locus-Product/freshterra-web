@@ -99,6 +99,14 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                 className="text-brand-500 hidden text-sm font-bold md:text-base lg:inline"
               >
                 {section.ctaLabel}
+                <Image
+                  src="/Shape.svg"
+                  alt=""
+                  width={7}
+                  height={12}
+                  className="h-[12px] w-[6.5px]"
+                  aria-hidden
+                />
               </Link>
             </div>
 
