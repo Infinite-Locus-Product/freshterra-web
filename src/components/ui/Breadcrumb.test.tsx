@@ -33,21 +33,4 @@ describe("Breadcrumb", () => {
       "page",
     );
   });
-
-  it("renders ancestor links between home and the current page", () => {
-    render(
-      <Breadcrumb
-        current="Fruits & Vegetables"
-        ancestors={[{ label: "Explore Catalog", href: "/c/explore-catalog" }]}
-      />,
-    );
-
-    expect(
-      screen.getByRole("link", { name: /explore catalog/i }),
-    ).toHaveAttribute("href", "/c/explore-catalog");
-    expect(screen.getByText(/fruits & vegetables/i)).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-  });
 });

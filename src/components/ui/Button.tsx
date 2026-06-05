@@ -28,7 +28,7 @@ type ButtonProps = {
 > & { disabled?: boolean };
 
 const baseClass = cn(
-  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-full font-sans font-bold uppercase tracking-wide",
+  "inline-flex items-center justify-center gap-2 rounded-full font-sans font-bold",
   "transition-colors duration-150",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
   "disabled:cursor-not-allowed disabled:opacity-60",
