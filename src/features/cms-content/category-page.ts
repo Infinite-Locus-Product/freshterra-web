@@ -1,10 +1,8 @@
-import { dummyImages } from "@/lib/dummy-images";
-
 /**
- * Category page placeholder content.
- *
- * Replace this with Strapi data fetchers once CMS schemas are finalized.
+ * @deprecated Static explore-catalog draft — replaced by `ExploreCatalogView`
+ * + `getWebCategoryPage()` (BFF `/content/single/web-category-page`).
  */
+import { dummyImages } from "@/lib/dummy-images";
 export const categoryPageDraftContent = {
   slug: "explore-catalog",
   hero: {

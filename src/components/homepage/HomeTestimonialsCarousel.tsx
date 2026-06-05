@@ -3,7 +3,10 @@
 import { useEffect, useRef } from "react";
 
 import { HomeTestimonialCard } from "@/components/homepage/HomeTestimonialCard";
-import { homeTestimonialsGridClass } from "@/components/homepage/home-testimonials";
+import {
+  homeTestimonialsEdgeSpacerClass,
+  homeTestimonialsGridClass,
+} from "@/components/homepage/home-testimonials";
 
 type HomeTestimonialItem = Readonly<{
   name: string;
@@ -12,21 +15,31 @@ type HomeTestimonialItem = Readonly<{
   imageSrc: string;
 }>;
 
+const TESTIMONIAL_CARD_SELECTOR = "[data-testimonial-card]";
+
+/** Scroll so `card` is horizontally centred inside the scroller. */
+function scrollCardToCenter(scroller: HTMLElement, card: HTMLElement): void {
+  scroller.scrollLeft =
+    card.offsetLeft + card.offsetWidth / 2 - scroller.clientWidth / 2;
+}
+
 export function HomeTestimonialsCarousel({
   items,
 }: Readonly<{ items: readonly HomeTestimonialItem[] }>) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
-  // Open centered on the second card, so the neighbouring cards peek in on both
-  // sides instead of the first card sitting flush against an empty left margin.
+  // Default view: 2nd card centred, 1st and 3rd peek half on each side.
   useEffect(() => {
     const scroller = scrollerRef.current;
-    if (!scroller) return;
-    const target = scroller.children[1] as HTMLElement | undefined;
+    if (!scroller || items.length === 0) return;
+
+    const cards = scroller.querySelectorAll<HTMLElement>(TESTIMONIAL_CARD_SELECTOR);
+    const centerIndex = Math.min(1, cards.length - 1);
+    const target = cards[centerIndex];
     if (!target) return;
-    scroller.scrollLeft =
-      target.offsetLeft - (scroller.clientWidth - target.clientWidth) / 2;
-  }, []);
+
+    scrollCardToCenter(scroller, target);
+  }, [items]);
 
   return (
     <div
@@ -34,6 +47,7 @@ export function HomeTestimonialsCarousel({
       className={homeTestimonialsGridClass}
       aria-label="Customer stories"
     >
+      <div aria-hidden className={homeTestimonialsEdgeSpacerClass} />
       {items.map((item) => (
         <HomeTestimonialCard
           key={item.name}
@@ -43,6 +57,7 @@ export function HomeTestimonialsCarousel({
           imageSrc={item.imageSrc}
         />
       ))}
+      <div aria-hidden className={homeTestimonialsEdgeSpacerClass} />
     </div>
   );
 }

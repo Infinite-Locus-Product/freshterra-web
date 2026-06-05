@@ -22,14 +22,14 @@ export function HomeTestimonialCard({
   imageSrc,
 }: HomeTestimonialCardProps) {
   return (
-    <article className={homeTestimonialsCardClass}>
+    <article className={homeTestimonialsCardClass} data-testimonial-card>
       <div className={homeTestimonialsCardMediaClass}>
         <Image
           src={imageSrc}
           alt=""
           fill
           className={homeTestimonialsCardImageClass}
-          sizes="(max-width: 768px) 85vw, 730px"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 600px, 730px"
           aria-hidden
         />
       </div>

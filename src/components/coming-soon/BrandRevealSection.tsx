@@ -1,5 +1,7 @@
 import { comingSoonContent } from "@/lib/MockData";
 
+import { MOBILE_STACK_FRAME_CLASS } from "@/components/layout/layout-classes";
+
 import { HeroScreen } from "./HeroScreen";
 
 export function BrandRevealSection() {
@@ -10,9 +12,9 @@ export function BrandRevealSection() {
       subheadline={hero.subheadline}
       cta={{ label: hero.cta, href: "/notify" }}
       logoClassName="md:mb-9"
-      headingClassName="w-[295px] text-[24px] leading-[1.2] md:mb-6 md:w-auto md:text-[50px]"
-      subheadlineClassName="md:mb-9 w-[345px] max-w-full text-base leading-[22px] md:w-auto md:leading-normal"
-      stackClassName="h-[358px] w-[393px] max-w-full justify-start gap-6 md:gap-0 md:h-auto md:w-auto md:max-w-none"
+      headingClassName="w-full max-w-[18.4375rem] text-[1.5rem] leading-[1.2] md:mb-6 md:max-w-none md:text-[3.125rem]"
+      subheadlineClassName="md:mb-9 w-full max-w-[21.5625rem] text-base leading-[1.375rem] md:max-w-none md:leading-normal"
+      stackClassName={`h-[22.375rem] ${MOBILE_STACK_FRAME_CLASS} justify-start gap-6 md:gap-0`}
     />
   );
 }

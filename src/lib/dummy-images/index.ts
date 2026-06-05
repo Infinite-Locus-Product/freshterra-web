@@ -139,22 +139,22 @@ export const dummyImages = {
   },
   philosophySustainability: {
     ecoFriendlyPackaging: {
-      src: "/dummy-images/philosophy-sustainability-eco-friendly-packaging.png",
+      src: "/philosophy-tile-1.png",
       width: 629,
       height: 780,
     },
     zeroWasteGoal: {
-      src: "/dummy-images/philosophy-sustainability-zero-waste-goal.png",
+      src: "/philosophy-tile-2.png",
       width: 629,
       height: 780,
     },
     localSourcing: {
-      src: "/dummy-images/philosophy-sustainability-local-sourcing.png",
+      src: "/philosophy-tile-3.png",
       width: 629,
       height: 780,
     },
     energyEfficiency: {
-      src: "/dummy-images/philosophy-sustainability-energy-efficiency.png",
+      src: "/philosophy-tile-4.png",
       width: 629,
       height: 780,
     },

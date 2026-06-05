@@ -2,10 +2,9 @@ import Link from "next/link";
 
 import type { ReactNode } from "react";
 
-import { Container } from "@/components/ui/Container";
-import { Heading } from "@/components/ui/Heading";
-
 import { ContactForm } from "@/components/contact/ContactForm";
+import { PageShell } from "@/components/layout/PageShell";
+import { Heading } from "@/components/ui/Heading";
 
 import type { ContactPageDraftContent } from "@/features/cms-content/contact";
 
@@ -15,12 +14,12 @@ type ContactPageLayoutProps = {
 
 /** Section column headings — Manrope Bold 20px / 130% line-height */
 const columnHeadingClass =
-  "font-sans text-[20px] leading-[1.3] font-bold tracking-[0]";
+  "font-sans text-[1.25rem] leading-[1.3] font-bold tracking-[0]";
 
 export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>) {
   return (
     <section className="py-8 text-text-primary md:py-10">
-      <Container size="full" className="max-w-[1440px]">
+      <PageShell>
         <div className="mb-6 flex items-center gap-2 text-sm text-text-secondary">
           <Link href="/" className="hover:underline">
             Home
@@ -32,7 +31,7 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
         <Heading
           level={1}
           variant="h2"
-          className="font-display text-[36px] leading-[1.5] font-medium tracking-[0]"
+          className="font-display text-[2.25rem] leading-[1.5] font-medium tracking-[0]"
         >
           {content.hero.title}
         </Heading>
@@ -43,7 +42,7 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
               {content.form.title}
             </h2>
 
-            <div className="border-gray-200 mt-6 box-border flex w-full max-w-[656px] flex-col rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:min-h-161.75 lg:w-[656px]">
+            <div className="border-gray-200 mt-6 box-border flex w-full max-w-[41rem] flex-col rounded-[0.9075rem] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:min-h-161.75">
               <ContactForm
                 fields={content.form.fields}
                 inquiryOptions={[
@@ -62,7 +61,7 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
               {content.getInTouch.title}
             </h2>
 
-            <div className="border-gray-200 mt-6 box-border w-full max-w-[656px] rounded-[14.52px] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:h-[383px] lg:w-[656px]">
+            <div className="border-gray-200 mt-6 box-border w-full max-w-[41rem] rounded-[0.9075rem] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:min-h-[23.9375rem]">
               <div className="space-y-6">
                 <InfoRow
                   icon={<LocationIcon />}
@@ -88,7 +87,7 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
             </div>
           </section>
         </div>
-      </Container>
+      </PageShell>
     </section>
   );
 }
@@ -106,10 +105,10 @@ function InfoRow({
     <div className="flex gap-3">
       <div className="text-text-tertiary mt-0.5">{icon}</div>
       <div className="min-w-0">
-        <h3 className="text-[14px] font-semibold leading-tight">{title}</h3>
+        <h3 className="text-[0.875rem] font-semibold leading-tight">{title}</h3>
         <div className="mt-1 space-y-0.5">
           {lines.map((line) => (
-            <p key={line} className="text-text-secondary text-[13px] leading-relaxed">
+            <p key={line} className="text-text-secondary text-[0.8125rem] leading-relaxed">
               {line}
             </p>
           ))}

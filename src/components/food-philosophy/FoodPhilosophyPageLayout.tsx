@@ -2,7 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Body } from "@/components/ui/Body";
-import { Container } from "@/components/ui/Container";
+import {
+  BODY_MD_CLASS,
+  SECTION_SUBTITLE_CLASS,
+  SECTION_TITLE_CLASS,
+} from "@/components/layout/layout-classes";
+import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
 import type { FoodPhilosophyDraftContent } from "@/features/cms-content/food-philosophy";
@@ -24,7 +29,7 @@ export function FoodPhilosophyPageLayout({
 function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
   return (
     <section className="bg-white pt-8 pb-8 md:pt-10 md:pb-29.25">
-      <Container size="full" className="max-w-[1440px]">
+      <PageShell>
         <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm leading-[17px]">
           <Link href="/" className="hover:underline">
             Home
@@ -36,7 +41,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
         <Heading
           level={2}
           variant="h2"
-          className="mb-6 tracking-normal md:h-13.5 md:w-85.75 md:text-[36px] md:leading-[150%]"
+          className="mb-6 tracking-normal md:max-w-[21.4375rem] md:text-[2.25rem] md:leading-[150%]"
         >
           {content.hero.title}
         </Heading>
@@ -52,41 +57,30 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
           />
         </div>
 
-        <div className="mb-12 grid gap-8 lg:grid-cols-[656px_640px] lg:justify-between">
-          <article className="flex flex-col gap-6 lg:h-[345px] lg:w-[656px]">
+        <div className="mb-12 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,41rem)_minmax(0,40rem)] lg:justify-between">
+          <article className="flex min-w-0 flex-col gap-6">
             <div>
-              <h3 className="font-display text-[28px] font-semibold">
-                {content.sourcing.title}
-              </h3>
-              <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
-                {content.sourcing.subtitle}
-              </p>
+              <h3 className={SECTION_TITLE_CLASS}>{content.sourcing.title}</h3>
+              <p className={SECTION_SUBTITLE_CLASS}>{content.sourcing.subtitle}</p>
             </div>
             <div className="space-y-4">
               {content.sourcing.paragraphs.map((paragraph) => (
-                <Body
-                  key={paragraph}
-                  size="md"
-                  className="text-[18px] leading-7 tracking-normal"
-                >
+                <Body key={paragraph} size="md" className={BODY_MD_CLASS}>
                   {paragraph}
                 </Body>
               ))}
             </div>
           </article>
 
-          <article className="flex flex-col lg:h-[345px] lg:w-[640px] lg:justify-between">
+          <article className="flex min-w-0 flex-col lg:justify-between">
             <div>
-              <h3 className="font-display text-[28px] font-semibold">
+              <h3 className={SECTION_TITLE_CLASS}>
                 {content.certifications.title}
               </h3>
-              <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+              <p className={SECTION_SUBTITLE_CLASS}>
                 {content.certifications.subtitle}
               </p>
-              <Body
-                size="md"
-                className="mt-5 text-[18px] leading-7 tracking-normal lg:h-20.25 lg:w-160"
-              >
+              <Body size="md" className={`mt-5 ${BODY_MD_CLASS}`}>
                 {content.certifications.description}
               </Body>
             </div>
@@ -125,19 +119,31 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
         </div>
 
         <section className="mb-12">
-          <h3 className="font-display text-[28px] font-semibold lg:ml-2">
+          <h3 className={`${SECTION_TITLE_CLASS} lg:ml-2`}>
             {content.partnerships.title}
           </h3>
-          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px] lg:ml-2">
+          <p className={`${SECTION_SUBTITLE_CLASS} lg:ml-2`}>
             {content.partnerships.subtitle}
           </p>
 
-          <div className="mt-6 space-y-4">
-            {content.partnerships.quotes.map((partner) => (
+          {/*
+            Sticky card stack: each card pins via `position: sticky` at an
+            incrementally larger `top`, so as the user scrolls the next card
+            climbs up and overlaps the previous one (which stays pinned, never
+            fades or scales). Newer cards sit above older ones via z-index.
+            `--stack-top` / `--stack-peek` are tuned per breakpoint so the
+            pinned cards stay in view on shorter mobile/tablet viewports.
+          */}
+          <div className="mt-6 [--stack-peek:1.25rem] [--stack-top:4.5rem] md:[--stack-peek:2.25rem] md:[--stack-top:6rem]">
+            {content.partnerships.quotes.map((partner, index) => (
               <article
                 key={partner.name}
+                style={{
+                  top: `calc(var(--stack-top) + ${index} * var(--stack-peek))`,
+                  zIndex: index + 1,
+                }}
                 className={[
-                  "grid gap-6 rounded-[10px] p-6 md:grid-cols-[1fr_1fr] md:gap-12 md:p-8 lg:mx-auto lg:h-127.5 lg:w-340 lg:grid-cols-[813px_1fr]",
+                  "sticky mb-4 grid min-w-0 gap-6 rounded-[0.625rem] p-6 shadow-[0_-2px_24px_rgba(16,24,40,0.06)] md:grid-cols-[1fr_1fr] md:gap-12 md:p-8 lg:mx-auto lg:max-w-full lg:grid-cols-[minmax(0,50.8125rem)_minmax(0,1fr)]",
                   partner.theme === "amber" && "bg-[#fdf6ea]",
                   partner.theme === "olive" && "bg-[#e9f0e2]",
                   partner.theme === "sky" && "bg-[#deeef4]",
@@ -162,7 +168,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                 <div className="flex flex-col justify-between gap-6">
                   <p
                     className={[
-                      "font-handsome align-middle text-[40px] leading-[40px] font-bold tracking-[0px]",
+                      "font-handsome align-middle text-[2.5rem] leading-[2.5rem] font-bold tracking-[0px]",
                       partner.theme === "amber" && "text-[#7f581b]",
                       partner.theme === "olive" && "text-[#5a6b43]",
                       partner.theme === "sky" && "text-[#153e5a]",
@@ -171,7 +177,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                     {`"${partner.quote}"`}
                   </p>
                   <div>
-                    <h4 className="font-display text-[28px] font-semibold">
+                    <h4 className={SECTION_TITLE_CLASS}>
                       {partner.name}
                     </h4>
                     <p
@@ -192,10 +198,8 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
         </section>
 
         <section>
-          <h3 className="font-display text-[28px] font-semibold">
-            {content.sustainability.title}
-          </h3>
-          <p className="text-brand-500 font-handsome mt-2 text-[30px] leading-[26px] font-bold tracking-[0px]">
+          <h3 className={SECTION_TITLE_CLASS}>{content.sustainability.title}</h3>
+          <p className={`${SECTION_SUBTITLE_CLASS} mt-2`}>
             {content.sustainability.subtitle}
           </p>
 
@@ -248,7 +252,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
             })}
           </div>
         </section>
-      </Container>
+      </PageShell>
     </section>
   );
 }

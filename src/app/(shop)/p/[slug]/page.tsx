@@ -1,8 +1,14 @@
-import { ComingSoon } from "@/components/ui/coming-soon";
+import { permanentRedirect } from "next/navigation";
 
 type Params = Promise<{ slug: string }>;
 
-export default async function ProductPage({ params }: { params: Params }) {
+/**
+ * Legacy PDP path. The canonical product URL is now `/product/[slug]`; this
+ * 308-redirects old `/p/...` links (and any external deeplinks) there.
+ */
+export default async function LegacyProductRedirect({
+  params,
+}: Readonly<{ params: Params }>) {
   const { slug } = await params;
-  return <ComingSoon title={`Product: ${slug}`} hint="PDP — coming soon." />;
+  permanentRedirect(`/product/${slug}`);
 }

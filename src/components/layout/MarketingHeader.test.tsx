@@ -16,19 +16,16 @@ describe("MarketingHeader", () => {
     ).toHaveAttribute("href", "/");
   });
 
-  it("centers the logo on mWeb and left-aligns it on desktop", () => {
+  it("uses fluid page padding on the banner shell", () => {
     render(<MarketingHeader />);
     const banner = screen.getByRole("banner");
-    expect(banner.className).toContain("text-center");
-    expect(banner.className).toContain("md:text-left");
+    expect(banner.className).toContain("px-page");
   });
 
-  it("locks the desktop bottom padding to 24px (Figma T&C / Privacy Policy frame)", () => {
+  it("wraps primary nav links instead of horizontal scroll", () => {
     render(<MarketingHeader />);
-    const banner = screen.getByRole("banner");
-    expect(banner.className).toContain("md:pt-8");
-    expect(banner.className).toContain("md:pb-6");
-    expect(banner.className).not.toContain("md:py-8");
-    expect(banner.className).toContain("py-6");
+    const nav = screen.getByRole("navigation", { name: /primary/i });
+    expect(nav.className).toContain("flex-wrap");
+    expect(nav.className).not.toContain("overflow-x-auto");
   });
 });

@@ -2,11 +2,19 @@
 export const HOME_TESTIMONIALS_CARD_WIDTH = 730;
 export const HOME_TESTIMONIALS_CARD_HEIGHT = 551;
 
+/** Full-bleed horizontal scroller — edge spacers + snap-center for peeking neighbours. */
 export const homeTestimonialsGridClass =
-  "mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[7.5vw] pb-2 sm:px-[calc((100vw-600px)/2)] lg:px-[calc((100vw-730px)/2)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+  "mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
+/**
+ * ~50vw on mobile so cards 1 & 3 show half when card 2 is centred; Figma widths on sm+.
+ */
 export const homeTestimonialsCardClass =
-  "relative box-border h-[551px] w-[85vw] max-w-[730px] shrink-0 snap-center overflow-hidden rounded-2xl sm:w-[600px] lg:w-[730px]";
+  "relative box-border aspect-[730/551] min-h-[20rem] w-[50vw] max-w-[45.625rem] shrink-0 snap-center overflow-hidden rounded-2xl sm:w-[37.5rem] lg:w-[45.625rem]";
+
+/** Centres the first/last card in the viewport when snapped (no dead whitespace). */
+export const homeTestimonialsEdgeSpacerClass =
+  "pointer-events-none shrink-0 snap-none w-[max(0px,calc((100vw-50vw-1rem)/2))] sm:w-[max(0px,calc((100vw-37.5rem-1rem)/2))] lg:w-[max(0px,calc((100vw-45.625rem-1rem)/2))]";
 
 export const homeTestimonialsCardMediaClass =
   "bg-gray-6 absolute inset-0 overflow-hidden";
