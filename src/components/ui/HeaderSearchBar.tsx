@@ -2,12 +2,14 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils/cn";
 
+import { HEADER_SEARCH_MAX_CLASS } from "@/components/layout/layout-classes";
+
 /** Figma header search field. */
 export const HEADER_SEARCH_WIDTH = 566;
 export const HEADER_SEARCH_HEIGHT = 48;
 
 const headerSearchClass =
-  "border-gray-200 bg-white-soft flex h-12 w-full shrink-0 items-center gap-3 rounded-full border px-4 lg:h-12 lg:w-[566px]";
+  `border-gray-200 bg-white-soft flex h-12 shrink-0 items-center gap-3 rounded-full border px-4 lg:h-12 ${HEADER_SEARCH_MAX_CLASS}`;
 
 type HeaderSearchBarProps = Readonly<{
   className?: string;

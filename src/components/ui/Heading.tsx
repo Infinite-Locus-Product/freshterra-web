@@ -22,16 +22,16 @@ type HeadingProps = {
 
 const variantClass: Record<HeadingVariant, string> = {
   display:
-    "font-display font-medium leading-[1.25] text-[28px] md:text-[58.94px] md:leading-[1.2]",
+    "font-display font-medium leading-[1.25] text-[1.75rem] md:text-[3.684rem] md:leading-[1.2]",
   h1: "font-display font-medium leading-tight text-3xl md:text-5xl",
   h2: "font-display font-medium leading-tight text-2xl md:text-4xl",
   h3: "font-sans font-bold leading-tight text-xl md:text-2xl",
   /** Policy/legal page H1 — Playfair, 28px mobile / 36px desktop. Always dark on light bg. */
   policyTitle:
-    "font-display font-medium leading-none text-[28px] text-text-primary md:text-[36px] md:leading-[1.5]",
+    "font-display font-medium leading-none text-[1.75rem] text-text-primary md:text-[2.25rem] md:leading-[1.5]",
   /** Numbered section heading inside the policy card — Manrope Bold, 20px mobile / 28px desktop. Always dark on light card. */
   policySection:
-    "font-sans font-bold leading-[1.3] text-[20px] text-text-primary md:text-[28px] md:leading-[1.2]",
+    "font-sans font-bold leading-[1.3] text-[1.25rem] text-text-primary md:text-[1.75rem] md:leading-[1.2]",
 };
 
 const alignClass: Record<HeadingAlign, string> = {

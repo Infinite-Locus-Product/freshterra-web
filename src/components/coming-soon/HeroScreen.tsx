@@ -40,8 +40,8 @@ const logoDimensions = {
 };
 
 const logoHeightClass = {
-  default: "h-16 w-[185px] md:h-24 md:w-[277px]",
-  large: "h-16 w-[185px] md:h-[120px] md:w-[347px]",
+  default: "h-16 w-[11.5625rem] md:h-24 md:w-[17.3125rem]",
+  large: "h-16 w-[11.5625rem] md:h-[7.5rem] md:w-[21.6875rem]",
 };
 
 /**
@@ -88,7 +88,7 @@ export function HeroScreen({
         stack can size up to the Figma 393px frame. Desktop keeps `md:px-6`
         for the existing margin around the content.
       */}
-      <div className="relative flex min-h-screen flex-col items-center justify-center py-20 text-center md:px-6">
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-page py-20 text-center md:px-6">
         <div
           className={cn(
             "flex flex-col items-center gap-6 md:gap-9",
@@ -112,7 +112,7 @@ export function HeroScreen({
           </Heading>
           <p
             className={cn(
-              "text-center max-w-[260px] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl",
+              "text-center max-w-[16.25rem] font-sans text-sm text-[#181818] md:max-w-xl md:text-2xl",
               subheadlineClassName,
             )}
           >

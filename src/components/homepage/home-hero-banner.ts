@@ -3,7 +3,7 @@ export const HOME_HERO_BANNER_WIDTH = 1440;
 export const HOME_HERO_BANNER_HEIGHT = 777;
 
 export const homeHeroBannerOuterClass =
-  "relative mx-auto box-border w-full max-w-[1440px] overflow-hidden min-h-[280px] lg:h-[777px]";
+  "relative mx-auto box-border w-full max-w-content overflow-hidden min-h-[17.5rem] aspect-[16/9] lg:aspect-[1440/777] lg:max-h-[48.5625rem]";
 
 export const homeHeroBannerImageClass = "object-cover object-center";
 

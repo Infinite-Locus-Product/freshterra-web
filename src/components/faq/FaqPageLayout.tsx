@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Body } from "@/components/ui/Body";
 import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
+import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
 import type { FaqPageDraftContent } from "@/features/cms-content/faq";
@@ -14,7 +14,7 @@ type FaqPageLayoutProps = {
 export function FaqPageLayout({ content }: Readonly<FaqPageLayoutProps>) {
   return (
     <section className="bg-gray-50 py-8 text-text-primary md:py-10">
-      <Container size="full" className="max-w-[1440px]">
+      <PageShell>
         <div className="mb-4 flex items-center gap-2 text-sm text-text-secondary">
           <Link href="/" className="hover:underline">
             Home
@@ -35,14 +35,14 @@ export function FaqPageLayout({ content }: Readonly<FaqPageLayoutProps>) {
               open={item.defaultOpen}
             >
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-4 py-4 text-sm md:px-5 md:py-5">
-                <span className="font-sans text-[18px] leading-4 font-bold tracking-normal">
+                <span className="font-sans text-[1.125rem] leading-4 font-bold tracking-normal">
                   {item.question}
                 </span>
                 <ChevronIcon className="text-text-secondary mt-1.75 shrink-0 transition-transform group-open:rotate-180" />
               </summary>
               <Body
                 size="sm"
-                className="text-text-secondary pr-4 pb-4 pl-7 font-sans text-[16px] leading-[1.5] font-normal tracking-[0.2px] md:pr-5 md:pl-8"
+                className="text-text-primary pr-4 pb-4 pl-7 font-sans text-[1rem] leading-[1.5] font-normal tracking-[0.0125rem] md:pr-5 md:pl-8"
               >
                 {item.answer
                   .split(/(?<=\.)\s+/)
@@ -58,13 +58,13 @@ export function FaqPageLayout({ content }: Readonly<FaqPageLayoutProps>) {
         </div>
 
         <section className="bg-brand-100/35 mx-auto mt-12 flex h-57 w-full max-w-340 flex-col items-center rounded-[10px] px-4 pt-10 pb-7 text-center md:px-6">
-          <h2 className="font-display mx-auto w-[272px] text-center text-[28px] leading-[1] font-semibold tracking-[0]">
+          <h2 className="font-display mx-auto max-w-[17rem] text-center text-[1.75rem] leading-[1] font-semibold tracking-[0]">
             {content.supportCta.title}
           </h2>
-          <Body size="md" className="text-text-secondary mt-1 text-center font-sans text-[20px] leading-[1.5] font-normal tracking-[0.2px]">
+          <Body size="md" className="text-text-secondary mt-1 text-center font-sans text-[1.25rem] leading-[1.5] font-normal tracking-[0.0125rem]">
             {content.supportCta.description}
           </Body>
-          <Button asChild size="sm" className="mt-6 h-14 w-55 gap-3 text-center text-[18px] leading-6 font-bold tracking-normal normal-case opacity-100">
+          <Button asChild size="sm" className="mt-6 h-14 w-55 gap-3 text-center text-[1.125rem] leading-6 font-bold tracking-normal normal-case opacity-100">
             <Link href={content.supportCta.buttonHref}>
               {content.supportCta.buttonLabel}
             </Link>
@@ -72,7 +72,7 @@ export function FaqPageLayout({ content }: Readonly<FaqPageLayoutProps>) {
         </section>
 
         <section className="mt-11">
-          <h2 className="font-display h-[54px] w-[261px] text-[36px] leading-[1.5] font-medium tracking-[0]">
+          <h2 className="font-display max-w-[16.3125rem] text-[2.25rem] leading-[1.5] font-medium tracking-[0]">
             {content.legalPolicies.title}
           </h2>
           <div className="mt-4 space-y-2">
@@ -82,7 +82,7 @@ export function FaqPageLayout({ content }: Readonly<FaqPageLayoutProps>) {
                 href={link.href}
                 className="border-gray-divider flex items-center justify-between rounded-[10px] border bg-white px-3 py-4 hover:bg-gray-100/50 md:px-4"
               >
-                <span className="text-center font-sans text-[18px] leading-4 font-bold tracking-normal text-black">
+                <span className="text-center font-sans text-[1.125rem] leading-4 font-bold tracking-normal text-black">
                   {link.label}
                 </span>
                 <ChevronIcon className="text-text-secondary shrink-0 -rotate-90" />
@@ -91,7 +91,7 @@ export function FaqPageLayout({ content }: Readonly<FaqPageLayoutProps>) {
           </div>
         </section>
 
-      </Container>
+      </PageShell>
     </section>
   );
 }

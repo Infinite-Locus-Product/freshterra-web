@@ -14,9 +14,8 @@ describe("NotifySuccessPage", () => {
       );
     }
 
-    expect(stack.className).toContain("w-[393px]");
-    expect(stack.className).toContain("h-[318px]");
-    expect(stack.className).toContain("max-w-full");
+    expect(stack.className).toContain("max-w-[24.5625rem]");
+    expect(stack.className).toContain("h-[19.875rem]");
     expect(stack.className).toContain("md:w-auto");
     expect(stack.className).toContain("md:h-auto");
     expect(stack.className).toContain("md:max-w-none");
@@ -32,11 +31,10 @@ describe("NotifySuccessPage", () => {
     const className = heading.className;
 
     // mWeb Figma frame: 262px wide.
-    expect(className).toContain("w-[262px]");
+    expect(className).toContain("max-w-[16.375rem]");
     // Desktop frame: 459 × 74 (existing spec).
-    expect(className).toContain("md:w-full");
-    expect(className).toContain("md:max-w-[459px]");
-    expect(className).toContain("md:leading-[74px]");
+    expect(className).toContain("md:max-w-[28.6875rem]");
+    expect(className).toContain("md:leading-[4.625rem]");
     expect(className).toContain("md:mb-6");
   });
 
@@ -47,14 +45,14 @@ describe("NotifySuccessPage", () => {
       /we'?ll reach out soon with a first look at what'?s in store/i,
     );
     const className = subheadline.className;
-    expect(className).toContain("max-w-[345px]");
-    expect(className).toContain("h-[44px]");
+    expect(className).toContain("max-w-[21.5625rem]");
+    expect(className).toContain("h-[2.75rem]");
     expect(className).toContain("text-center");
     expect(className).not.toContain("mx-auto");
 
     expect(className).toContain("text-base");
-    expect(className).toContain("leading-[22px]");
-    expect(className).toContain("md:w-auto");
+    expect(className).toContain("leading-[1.375rem]");
+    expect(className).toContain("md:max-w-none");
     expect(className).toContain("md:h-auto");
 
     expect(className).toContain("whitespace-pre-line");
@@ -73,9 +71,9 @@ describe("NotifySuccessPage", () => {
     const className = logo.className;
 
     expect(className).toContain("h-16");
-    expect(className).toContain("w-[185px]");
-    expect(className).toContain("md:h-[120px]");
-    expect(className).toContain("md:w-[347px]");
+    expect(className).toContain("w-[11.5625rem]");
+    expect(className).toContain("md:h-[7.5rem]");
+    expect(className).toContain("md:w-[21.6875rem]");
     expect(className).not.toContain("h-20");
     expect(className).not.toContain("w-[232px]");
     expect(className).toContain("md:mb-9");
@@ -88,13 +86,13 @@ describe("NotifySuccessPage", () => {
     expect(link).toHaveAttribute("href", "/");
 
     const cls = link.className;
-    expect(cls).toContain("h-[56px]");
-    expect(cls).toContain("w-[172px]");
+    expect(cls).toContain("h-[3.5rem]");
+    expect(cls).toContain("max-w-[10.75rem]");
     expect(cls).toContain("px-6");
     expect(cls).toContain("py-4");
     expect(cls).toContain("rounded-[var(--radius-xxl)]");
-    expect(cls).toContain("text-[16px]");
-    expect(cls).toContain("leading-[24px]");
+    expect(cls).toContain("text-[1rem]");
+    expect(cls).toContain("leading-[1.5rem]");
     expect(cls).toContain("font-bold");
     expect(cls).toContain("uppercase");
   });

@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Body } from "@/components/ui/Body";
-import { Container } from "@/components/ui/Container";
+import { BODY_MD_CLASS } from "@/components/layout/layout-classes";
+import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
 import type { CareersPageDraftContent } from "@/features/cms-content/careers";
@@ -18,7 +19,7 @@ export function CareersPageLayout({
 }: Readonly<CareersPageLayoutProps>) {
   return (
     <section className="text-text-primary bg-white py-8 md:py-10">
-      <Container size="full" className="max-w-[1440px]">
+      <PageShell>
         <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm">
           <Link href="/" className="hover:underline">
             Home
@@ -30,14 +31,14 @@ export function CareersPageLayout({
         <Heading
           level={1}
           variant="h2"
-          className="mb-6 tracking-normal md:text-[36px] md:leading-[150%]"
+          className="mb-6 tracking-normal md:text-[2.25rem] md:leading-[150%]"
         >
           {content.hero.title}
         </Heading>
 
         <section className="mb-14 grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-[18.5px]">
           <div>
-            <h2 className="mb-4 font-sans text-[32px] leading-tight font-bold tracking-normal md:text-[20px] md:leading-[130%]">
+            <h2 className="mb-4 font-sans text-[2rem] leading-tight font-bold tracking-normal md:text-[1.25rem] md:leading-[130%]">
               {content.hero.subtitle}
             </h2>
             <div className="space-y-5">
@@ -45,7 +46,7 @@ export function CareersPageLayout({
                 <Body
                   key={paragraph}
                   size="md"
-                  className="text-[18px] leading-7 tracking-normal"
+                  className={BODY_MD_CLASS}
                 >
                   {paragraph}
                 </Body>
@@ -53,7 +54,7 @@ export function CareersPageLayout({
             </div>
           </div>
 
-          <div className="relative aspect-[667.923/457] min-h-75 overflow-hidden rounded-sm md:aspect-auto md:h-114.25 md:w-[667.9px]">
+          <div className="relative aspect-[667.923/457] min-h-75 w-full max-w-full overflow-hidden rounded-sm md:aspect-auto md:max-h-[28.5625rem] md:max-w-[41.74rem]">
             <Image
               src={content.hero.bannerSrc}
               alt={content.hero.bannerAlt}
@@ -66,7 +67,7 @@ export function CareersPageLayout({
         </section>
 
         <CareerOpenings openings={content.openings} />
-      </Container>
+      </PageShell>
     </section>
   );
 }

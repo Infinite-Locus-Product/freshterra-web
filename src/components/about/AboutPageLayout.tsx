@@ -3,7 +3,12 @@ import Link from "next/link";
 
 import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 import { Body } from "@/components/ui/Body";
-import { Container } from "@/components/ui/Container";
+import {
+  BODY_MD_CLASS,
+  SECTION_SUBTITLE_CLASS,
+  SECTION_TITLE_CLASS,
+} from "@/components/layout/layout-classes";
+import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
 import type { AboutPageDraftContent } from "@/features/cms-content/about";
@@ -15,7 +20,7 @@ type AboutPageLayoutProps = {
 export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
   return (
     <section className="text-text-primary bg-white pt-8 pb-0 md:pt-10">
-      <Container size="full" className="max-w-[1440px]">
+      <PageShell>
         <div className="text-text-secondary mb-4 flex items-center gap-2 text-sm">
           <Link href="/" className="hover:underline">
             Home
@@ -27,13 +32,13 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
         <Heading
           level={1}
           variant="h2"
-          className="mb-[22.5px] h-13.5 w-[288px] opacity-100"
+          className="mb-[1.40625rem] max-w-[18rem] opacity-100"
         >
           {content.hero.title}
         </Heading>
 
-        <section className="grid gap-8 lg:grid-cols-[3fr_2fr] lg:items-start lg:gap-10">
-          <div className="relative aspect-[775/456] w-full max-w-[775px] overflow-hidden rounded-[10px]">
+        <section className="grid min-w-0 gap-8 lg:grid-cols-[3fr_2fr] lg:items-start lg:gap-10">
+          <div className="relative aspect-[775/456] w-full max-w-[48.4375rem] overflow-hidden rounded-[0.625rem]">
             <Image
               src={content.hero.bannerSrc}
               alt={content.hero.bannerAlt}
@@ -45,19 +50,11 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
           </div>
 
           <article>
-            <h2 className="font-display text-[28px] font-semibold">
-              {content.story.title}
-            </h2>
-            <p className="text-brand-500 font-handsome mt-2 text-[30px] leading-[26px] font-bold tracking-[0px]">
-              {content.story.subtitle}
-            </p>
+            <h2 className={SECTION_TITLE_CLASS}>{content.story.title}</h2>
+            <p className={SECTION_SUBTITLE_CLASS}>{content.story.subtitle}</p>
             <div className="mt-6 space-y-4">
               {content.story.paragraphs.map((paragraph) => (
-                <Body
-                  key={paragraph}
-                  size="md"
-                  className="text-[18px] leading-7 tracking-normal"
-                >
+                <Body key={paragraph} size="md" className={BODY_MD_CLASS}>
                   {paragraph}
                 </Body>
               ))}
@@ -66,7 +63,7 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
         </section>
 
         <section className="mt-10 md:mt-12" aria-label="Our Mission">
-          <div className="relative aspect-[1360/313] w-full overflow-hidden rounded-[10px]">
+          <div className="relative aspect-[1360/313] w-full overflow-hidden rounded-[0.625rem]">
             <Image
               src={content.missionBanner.src}
               alt={content.missionBanner.alt}
@@ -83,15 +80,15 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
         >
           <h2
             id="about-core-values-heading"
-            className="font-display text-[28px] font-semibold"
+            className={SECTION_TITLE_CLASS}
           >
             {content.coreValues.title}
           </h2>
-          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+          <p className={SECTION_SUBTITLE_CLASS}>
             {content.coreValues.subtitle}
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-8">
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
             {content.coreValues.items.map((item) => (
               <article
                 key={item.label}
@@ -136,11 +133,11 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
         >
           <h2
             id="about-stories-heading"
-            className="font-display text-[28px] font-semibold"
+            className={SECTION_TITLE_CLASS}
           >
             {content.customerStories.title}
           </h2>
-          <p className="text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]">
+          <p className={SECTION_SUBTITLE_CLASS}>
             {content.customerStories.subtitle}
           </p>
 
@@ -150,7 +147,7 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
             <HomeTestimonialsCarousel items={content.customerStories.items} />
           </div>
         </section>
-      </Container>
+      </PageShell>
     </section>
   );
 }
