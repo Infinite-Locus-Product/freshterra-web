@@ -47,6 +47,13 @@ const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
+  // FreshTerra BFF base URL (search autocomplete, etc.). Defaults to the
+  // staging gateway; override per environment. Requests are issued as
+  // `${NEXT_PUBLIC_API_BASE_URL}/api/v1/...`.
+  NEXT_PUBLIC_API_BASE_URL: z
+    .string()
+    .url()
+    .default("https://api.stage.freshterra.in"),
   NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: z.string().optional(),
   NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: z
     .string()
@@ -92,6 +99,9 @@ const clientEnvRaw = {
   ),
   NEXT_PUBLIC_PLAY_STORE_URL: blankAsUndefined(
     process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_API_BASE_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_API_BASE_URL,
   ),
   NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: blankAsUndefined(
     process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 
-import { notFound } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
-import { CategoryPageLayout } from "@/components/category/CategoryPageLayout";
+import { MarketingFooter } from "@/components/layout/MarketingFooter";
+import { MarketingHeader } from "@/components/layout/MarketingHeader";
 
-import { categoryPageDraftContent } from "@/features/cms-content/category-page";
+import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
 
 type Params = Promise<{ slug: string }>;
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
+const EXPLORE_CATALOG_SLUG = "explore-catalog";
 
 export async function generateMetadata({
   params,
@@ -16,34 +17,33 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const prettyTitle = slug
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word[0]?.toUpperCase() + word.slice(1))
-    .join(" ");
+  if (slug !== EXPLORE_CATALOG_SLUG) {
+    return { alternates: { canonical: `/category/${slug}` } };
+  }
 
   return {
-    title: `${prettyTitle} | Explore Catalog`,
-    description: `Browse ${prettyTitle} on FreshTerra.`,
-    alternates: { canonical: `/c/${slug}` },
-    openGraph: {
-      title: `${prettyTitle} | FreshTerra`,
-      description: `Browse ${prettyTitle} on FreshTerra.`,
-      url: `${APP_URL}/c/${slug}`,
-      siteName: "FreshTerra",
-      images: ["/logo.svg"],
-      type: "website",
-    },
+    title: "Explore Catalog",
+    description: "Browse FreshTerra categories and discover products.",
+    alternates: { canonical: `/c/${EXPLORE_CATALOG_SLUG}` },
   };
 }
 
-export default async function CategoryPage({
+export default async function CategoryHubPage({
   params,
 }: Readonly<{ params: Params }>) {
   const { slug } = await params;
-  if (slug !== categoryPageDraftContent.slug) {
-    notFound();
+
+  if (slug !== EXPLORE_CATALOG_SLUG) {
+    permanentRedirect(`/category/${slug}`);
   }
 
-  return <CategoryPageLayout content={categoryPageDraftContent} />;
+  return (
+    <div className="flex min-h-screen flex-col bg-white">
+      <MarketingHeader />
+      <main className="text-text-primary flex-1">
+        <ExploreCatalogView />
+      </main>
+      <MarketingFooter />
+    </div>
+  );
 }

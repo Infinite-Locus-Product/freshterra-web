@@ -24,44 +24,11 @@ export const homePageDraftContent = {
       { label: "FAQ", href: "/faq" },
     ],
   },
+  /** Section copy fallbacks when the BFF categories entry omits title/subtitle. */
   categories: {
     title: "Categories",
     subtitle: "Explore our entire selection",
     ctaLabel: "View All",
-    items: [
-      {
-        name: "Fruits & Vegetables",
-        imageSrc: dummyImages.categories.fruitsVegetables,
-      },
-      {
-        name: "Dairy, Bread & Eggs",
-        imageSrc: dummyImages.categories.dairyBreadEggs,
-      },
-      {
-        name: "Meat & Seafood",
-        imageSrc: dummyImages.categories.meatSeafood,
-      },
-      {
-        name: "Snacks & Munchies",
-        imageSrc: dummyImages.categories.snacks,
-      },
-      {
-        name: "Hot & Cold Beverages",
-        imageSrc: dummyImages.categories.beverages,
-      },
-      {
-        name: "Pantry Staples",
-        imageSrc: dummyImages.categories.pantryStaples,
-      },
-      {
-        name: "Ready to Eat",
-        imageSrc: dummyImages.categories.readyToEat,
-      },
-      {
-        name: "View All",
-        imageSrc: dummyImages.categories.viewAll,
-      },
-    ],
   },
   sourcing: {
     title: "How We Source",

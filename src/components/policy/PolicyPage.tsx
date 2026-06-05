@@ -20,7 +20,7 @@ export function PolicyPage({ document: doc }: PolicyPageProps) {
   const formattedDate = formatDate(doc.lastUpdated);
 
   return (
-    <div className="bg-gray-50 px-4 pt-6 pb-0 md:px-10 md:pt-8">
+    <div className="bg-gray-50 px-page pt-6 pb-0 md:pt-8">
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-6">
         <Breadcrumb current={doc.breadcrumbLabel} />
 

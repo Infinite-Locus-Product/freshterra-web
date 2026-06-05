@@ -1,38 +1,65 @@
 import Image from "next/image";
-
-import { Body } from "@/components/ui/Body";
+import Link from "next/link";
 
 import {
   homeCategoriesCircleClass,
   homeCategoriesImageClass,
 } from "@/components/homepage/home-categories";
+import { Body } from "@/components/ui/Body";
+import { categoryTileImageLoader } from "@/lib/clients/imagekit";
+import { env } from "@/lib/config/env";
 
 type HomeCategoryTileProps = Readonly<{
   name: string;
-  imageSrc: string;
+  /** Strapi/Saleor image URL; placeholder circle when omitted. */
+  imageSrc?: string;
+  /** When set, the tile becomes a link (e.g. to a category PLP). */
+  href?: string;
   /** Override the label styling (defaults to the homepage tile look). */
   labelClassName?: string;
 }>;
 
+const useImageKitTiles = Boolean(env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT);
+
 export function HomeCategoryTile({
   name,
   imageSrc,
+  href,
   labelClassName = "font-medium",
 }: HomeCategoryTileProps) {
-  return (
-    <article className="flex flex-col items-center gap-3 rounded-md p-2 text-center">
+  const content = (
+    <>
       <div className={homeCategoriesCircleClass}>
-        <Image
-          src={imageSrc}
-          alt={name}
-          fill
-          className={homeCategoriesImageClass}
-          sizes="(max-width: 768px) 84px, 140px"
-        />
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={name}
+            fill
+            loader={useImageKitTiles ? categoryTileImageLoader : undefined}
+            className={homeCategoriesImageClass}
+            sizes="(max-width: 768px) 84px, 140px"
+          />
+        ) : null}
       </div>
       <Body size="sm" className={labelClassName}>
         {name}
       </Body>
-    </article>
+    </>
   );
+
+  const baseClass =
+    "flex flex-col items-center gap-3 rounded-md p-2 text-center";
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`${baseClass} transition-transform hover:-translate-y-0.5`}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <article className={baseClass}>{content}</article>;
 }

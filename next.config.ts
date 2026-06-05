@@ -27,6 +27,15 @@ const nextConfig: NextConfig = {
     ],
   },
   typedRoutes: true,
+  // Same-origin proxy for browser → backend calls. The BFF sends no CORS
+  // headers, so client-side requests go to `/bff/*` and Next forwards them to
+  // the backend server-side (no CORS). Server-side (RSC) calls hit the backend
+  // directly — see buildUrl() in lib/clients/freshterra-api.ts.
+  async rewrites() {
+    const apiOrigin =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.stage.freshterra.in";
+    return [{ source: "/bff/:path*", destination: `${apiOrigin}/:path*` }];
+  },
   async headers() {
     if (isProdHost()) return [];
     return [
