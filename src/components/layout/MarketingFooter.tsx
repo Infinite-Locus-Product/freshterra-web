@@ -64,28 +64,18 @@ export function MarketingFooter() {
 
       <div className="relative mx-auto w-full max-w-[1440px] px-6 py-10 md:px-10">
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          <FooterColumn
-            title="About FreshTerra"
-            items={FOOTER_CONTENT.aboutLinks}
-          />
+          <FooterColumn title="About FreshTerra" items={FOOTER_CONTENT.aboutLinks} />
           <FooterColumn title="Quick Links" items={FOOTER_CONTENT.quickLinks} />
           <div>
-            <h3 className="mb-4 text-[30px] leading-none font-semibold max-lg:text-xl">
-              Head Office
-            </h3>
+            <h3 className="mb-4 text-[30px] leading-none font-semibold">Head Office</h3>
             {FOOTER_CONTENT.officeLines.map((line) => (
-              <p
-                key={line}
-                className="text-white-soft/80 text-sm leading-[1.4]"
-              >
+              <p key={line} className="text-white-soft/80 text-sm leading-[1.4]">
                 {line}
               </p>
             ))}
           </div>
           <div>
-            <h3 className="mb-4 text-[30px] leading-none font-semibold max-lg:text-xl">
-              Download App
-            </h3>
+            <h3 className="mb-4 text-[30px] leading-none font-semibold">Download App</h3>
             <div className="space-y-3">
               {FOOTER_CONTENT.appBadges.map((badge) => (
                 <Link
@@ -102,21 +92,15 @@ export function MarketingFooter() {
                     className="size-7.5 shrink-0"
                   />
                   <span className="flex flex-col leading-none">
-                    <span className="text-[10px] font-medium">
-                      {badge.topLine}
-                    </span>
-                    <span className="text-[16px] font-bold">
-                      {badge.brandLine}
-                    </span>
+                    <span className="text-[10px] font-medium">{badge.topLine}</span>
+                    <span className="text-[16px] font-bold">{badge.brandLine}</span>
                   </span>
                 </Link>
               ))}
             </div>
 
             <div className="mt-4">
-              <h4 className="mb-2 text-[30px] leading-none font-semibold max-lg:text-xl">
-                Follow Us
-              </h4>
+              <h4 className="mb-2 text-[30px] leading-none font-semibold">Follow Us</h4>
               <div className="flex items-center gap-2">
                 {FOOTER_CONTENT.socialLinks.map((social) => (
                   <Link
@@ -136,23 +120,15 @@ export function MarketingFooter() {
 
       <div className="border-brand-100/70 bg-brand-600 relative border-t">
         <div className="mx-auto w-full max-w-[1440px] px-6 py-4 text-sm md:flex md:items-center md:justify-between md:px-10">
-          <p className="text-white-soft/90 text-sm max-lg:w-[252px] max-lg:leading-[17px] md:leading-[1.5]">
-            © 2026 FreshTerra. All rights reserved.
-          </p>
+          <p className="text-white-soft/90">© 2026 FreshTerra. All rights reserved.</p>
           <nav aria-label="Legal" className="mt-2 flex gap-5 text-xs md:mt-0">
-            <Link
-              href="/privacy-policy"
-              className="text-white-soft/90 hover:underline"
-            >
+            <Link href="/privacy-policy" className="text-white-soft/90 hover:underline">
               Privacy Policy
             </Link>
             <Link href="/terms" className="text-white-soft/90 hover:underline">
               Terms & Conditions
             </Link>
-            <Link
-              href="/refund-return"
-              className="text-white-soft/90 hover:underline"
-            >
+            <Link href="/refund-return" className="text-white-soft/90 hover:underline">
               Refund & Return Policy
             </Link>
           </nav>
@@ -165,22 +141,14 @@ export function MarketingFooter() {
 function FooterColumn({
   title,
   items,
-}: Readonly<{
-  title: string;
-  items: readonly { label: string; href: string }[];
-}>) {
+}: Readonly<{ title: string; items: readonly { label: string; href: string }[] }>) {
   return (
     <div>
-      <h3 className="mb-4 text-[30px] leading-none font-semibold max-lg:text-xl">
-        {title}
-      </h3>
+      <h3 className="mb-4 text-[30px] leading-none font-semibold">{title}</h3>
       <ul className="space-y-2 text-sm">
         {items.map((item) => (
           <li key={item.label}>
-            <Link
-              href={item.href}
-              className="text-white-soft/80 hover:underline"
-            >
+            <Link href={item.href} className="text-white-soft/80 hover:underline">
               {item.label}
             </Link>
           </li>

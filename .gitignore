@@ -59,6 +59,3 @@ src/types/saleor.ts
 .claude/settings.local.json
 .agents
 skills-lock.json
-
-# Cursor
-.cursor/
