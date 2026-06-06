@@ -27,7 +27,7 @@ export type Crumb = { label: string; href?: string };
 export type PlpTab = { label: string; value: string };
 
 /** Hero banner above the listing (CMS-driven content). */
-export type PlpBanner = { title: string; subtitle?: string; imageSrc: string };
+export type PlpBanner = { title?: string; subtitle?: string; imageSrc: string };
 
 export type PlpViewProps<TSort extends string> = {
   /** Listing title from the API (category/collection name). */
@@ -246,9 +246,11 @@ export function PlpView<TSort extends string>({
             className="from-text-primary/55 absolute inset-0 bg-linear-to-r to-transparent"
           />
           <div className="relative flex h-full flex-col justify-center px-8 md:px-12">
-            <p className="font-handsome text-[2.75rem] leading-none font-bold text-white md:text-[4rem]">
-              {banner.title}
-            </p>
+            {banner.title ? (
+              <p className="font-handsome text-[2.75rem] leading-none font-bold text-white md:text-[4rem]">
+                {banner.title}
+              </p>
+            ) : null}
             {banner.subtitle ? (
               <p className="mt-3 max-w-md text-base text-white/90 md:text-lg">
                 {banner.subtitle}

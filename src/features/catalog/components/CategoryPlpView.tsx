@@ -2,14 +2,72 @@
 
 import { useMemo, useState } from "react";
 
+import { dummyImages } from "@/lib/dummy-images";
+
 import { resolveListingTitle } from "../plp-listing-meta";
 import { useCategoryProducts } from "../useCategoryProducts";
 
-import { PlpView, type Crumb, type PlpTab } from "./PlpView";
+import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 
 import type { CategoryFacets, CategorySort } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
 import type { SortOption } from "./PlpSortMenu";
+
+/**
+ * Placeholder hero banner for the category PLP. The real content lives in the
+ * Strapi `web-category-plp` single type, but the BFF doesn't expose a working
+ * route yet (`/content/(single|categories)/web-category-plp` → NOT_FOUND).
+ * Swap this for the CMS fetch once that endpoint lands.
+ */
+const PLACEHOLDER_BANNER: PlpBanner = {
+  imageSrc: dummyImages.exploreCatalogBanner.src,
+};
+
+/**
+ * Placeholder quick-filter tabs + filter groups, used only when the API
+ * returns no facets (staging: BFF 404 + Saleor products have no attributes).
+ * Real facets from the API take precedence. These are presentational scaffolds
+ * — on Saleor-only categories the fallback ignores the filter params, so they
+ * don't yet narrow results.
+ */
+const PLACEHOLDER_TABS: PlpTab[] = [
+  { label: "All", value: "all" },
+  { label: "Bestsellers", value: "bestsellers" },
+  { label: "Organic", value: "organic" },
+  { label: "Seasonal", value: "seasonal" },
+  { label: "Leafy Greens", value: "leafy-greens" },
+  { label: "Root", value: "root" },
+];
+
+const PLACEHOLDER_FILTER_GROUPS: PlpFilterGroup[] = [
+  {
+    key: "brand",
+    label: "Brand",
+    options: [
+      { value: "brand-a", label: "Brand A" },
+      { value: "brand-b", label: "Brand B" },
+      { value: "brand-c", label: "Brand C" },
+    ],
+  },
+  {
+    key: "dietary",
+    label: "Dietary",
+    options: [
+      { value: "organic", label: "Organic" },
+      { value: "vegan", label: "Vegan" },
+      { value: "gluten-free", label: "Gluten-free" },
+    ],
+  },
+  {
+    key: "health-tags",
+    label: "Health Tags",
+    options: [
+      { value: "high-protein", label: "High protein" },
+      { value: "low-carb", label: "Low carb" },
+      { value: "sugar-free", label: "Sugar free" },
+    ],
+  },
+];
 
 const SORT_OPTIONS: SortOption<CategorySort>[] = [
   { value: "relevance", label: "Relevance" },
@@ -79,12 +137,18 @@ export function CategoryPlpView({ slug, polygonId }: CategoryPlpViewProps) {
 
   const ctrl = useCategoryProducts({ slug, polygonId, sort, filters });
 
-  const filterGroups = useMemo(
-    () => facetsToGroups(ctrl.facets),
+  // Prefer real API facets; fall back to placeholders so the filter/tab UI is
+  // visible on staging, where the BFF 404s and Saleor products carry no
+  // attributes (→ no facets). Real facets take over automatically when present.
+  const filterGroups = useMemo(() => {
+    const apiGroups = facetsToGroups(ctrl.facets);
+    return apiGroups.length > 0 ? apiGroups : PLACEHOLDER_FILTER_GROUPS;
+  }, [ctrl.facets]);
+
+  const tabs = useMemo(
+    () => facetsToTabs(ctrl.facets) ?? PLACEHOLDER_TABS,
     [ctrl.facets],
   );
-
-  const tabs = useMemo(() => facetsToTabs(ctrl.facets), [ctrl.facets]);
 
   const title = useMemo(
     () =>
@@ -108,6 +172,7 @@ export function CategoryPlpView({ slug, polygonId }: CategoryPlpViewProps) {
       title={title}
       titleLoading={ctrl.loading && !title}
       breadcrumbs={breadcrumbs}
+      banner={PLACEHOLDER_BANNER}
       tabs={tabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}
