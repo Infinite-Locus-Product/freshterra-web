@@ -343,6 +343,77 @@ export async function getSaleorCategoryById(
   return parsed.success ? parsed.data : null;
 }
 
+const TOP_CATEGORIES_QUERY = gql`
+  query TopCategories($first: Int!) {
+    categories(level: 0, first: $first) {
+      edges {
+        node {
+          id
+          name
+          slug
+          backgroundImage {
+            url
+          }
+          products {
+            totalCount
+          }
+        }
+      }
+    }
+  }
+`;
+
+const saleorTopCategorySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  backgroundImage: z.object({ url: z.string() }).nullable().optional(),
+  products: z
+    .object({ totalCount: z.number().optional() })
+    .nullable()
+    .optional(),
+});
+
+export interface SaleorTopCategory {
+  id: string;
+  name: string;
+  slug: string;
+  imageUrl?: string;
+  productCount: number;
+}
+
+/** Saleor's built-in placeholder root category — never shown to shoppers. */
+const SALEOR_DEFAULT_CATEGORY_SLUG = "default-category";
+
+/**
+ * Lists all top-level (level 0) Saleor categories — the homepage category rail.
+ * Excludes Saleor's built-in "Default Category" placeholder.
+ */
+export async function getSaleorTopCategories(
+  options: { first?: number } = {},
+): Promise<SaleorTopCategory[]> {
+  const client = getSaleorClient();
+  const data = await client.request<{
+    categories: { edges: { node: unknown }[] } | null;
+  }>(TOP_CATEGORIES_QUERY, { first: options.first ?? 100 });
+
+  const out: SaleorTopCategory[] = [];
+  for (const edge of data.categories?.edges ?? []) {
+    const parsed = saleorTopCategorySchema.safeParse(edge.node);
+    if (!parsed.success) continue;
+    const node = parsed.data;
+    if (node.slug === SALEOR_DEFAULT_CATEGORY_SLUG) continue;
+    out.push({
+      id: node.id,
+      name: node.name,
+      slug: node.slug,
+      imageUrl: node.backgroundImage?.url,
+      productCount: node.products?.totalCount ?? 0,
+    });
+  }
+  return out;
+}
+
 export const saleor = {
   /** Placeholder. Implement with codegen-typed queries that require `storeId`. */
   async ping(): Promise<boolean> {
@@ -350,4 +421,5 @@ export const saleor = {
   },
   getCategoryById: getSaleorCategoryById,
   getCategoryProductListing: getSaleorCategoryProductListing,
+  getTopCategories: getSaleorTopCategories,
 };
