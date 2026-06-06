@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { dummyImages } from "@/lib/dummy-images";
+
 import {
   homeCategoriesCircleClass,
   homeCategoriesSubtitleClass,
@@ -10,46 +12,40 @@ import {
 import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
 import { PageShell } from "@/components/layout/PageShell";
 
-import { useCategoriesContent } from "@/features/cms-content/useCategoriesContent";
-
+import { useHomeCategories } from "@/features/catalog/useHomeCategories";
 import type { HomePageDraftContent } from "@/features/cms-content/homepage";
 
 type HomeCategoriesSectionProps = Readonly<{
-  /** Fallback section labels when the BFF entry has no title/subtitle/cta. */
+  /** Section labels (title/subtitle/cta) — Saleor supplies the tiles. */
   fallback: HomePageDraftContent["categories"];
 }>;
 
-function categoryHref(slug: string, name: string): string {
-  const normalized = slug.trim().toLowerCase();
-  const label = name.trim().toLowerCase();
-  if (normalized === "view-all" || label === "view all") {
-    return "/c/explore-catalog";
-  }
-  return `/category/${slug}`;
-}
+/**
+ * Tile imagery by Saleor slug. Saleor categories carry no `backgroundImage`
+ * yet, so these local assets stand in until CMS/Saleor media is wired.
+ */
+const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
+  "fruits-vegetables": dummyImages.categories.fruitsVegetables,
+  "dairy-breads-eggs": dummyImages.categories.dairyBreadEggs,
+  "snacks-and-munchies": dummyImages.categories.snacks,
+};
 
-function categoryImage(
-  item: { image?: string; imageUrl?: string },
-): string | undefined {
-  const src = item.imageUrl?.trim() || item.image?.trim();
-  return src && src.length > 0 ? src : undefined;
+function tileImage(slug: string, imageUrl?: string): string | undefined {
+  return imageUrl?.trim() || CATEGORY_IMAGE_BY_SLUG[slug];
 }
 
 /**
- * Homepage category rail — tiles from BFF `GET /content/single/categories`
- * (Saleor slugs mapped in Strapi). No local dummy category list.
+ * Homepage category rail — all top-level categories configured in Saleor
+ * (`GET /api/catalog/categories`), plus a trailing "View All" tile.
  */
-export function HomeCategoriesSection({ fallback }: HomeCategoriesSectionProps) {
-  const { entry, loading, error } = useCategoriesContent();
-  const categories = entry?.categories ?? [];
+export function HomeCategoriesSection({
+  fallback,
+}: HomeCategoriesSectionProps) {
+  const { categories, loading } = useHomeCategories();
 
-  const title = entry?.title?.trim() || fallback.title;
-  const subtitle = entry?.subtitle?.trim() || fallback.subtitle;
-  const ctaLabel = entry?.ctaLabel?.trim() || fallback.ctaLabel;
-
-  if (!loading && categories.length === 0 && error) {
-    return null;
-  }
+  const { title, subtitle, ctaLabel } = fallback;
+  const gridClass =
+    "grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8";
 
   return (
     <section className="bg-white pt-8 pb-0 md:pt-12">
@@ -86,11 +82,7 @@ export function HomeCategoriesSection({ fallback }: HomeCategoriesSectionProps) 
         </div>
 
         {loading && categories.length === 0 ? (
-          <div
-            className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
-            aria-busy
-            aria-label="Loading categories"
-          >
+          <div className={gridClass} aria-busy aria-label="Loading categories">
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={`home-cat-skeleton-${i}`}
@@ -103,19 +95,25 @@ export function HomeCategoriesSection({ fallback }: HomeCategoriesSectionProps) 
               </div>
             ))}
           </div>
-        ) : categories.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-            {categories.map((item) => (
+        ) : (
+          <div className={gridClass}>
+            {categories.map((category) => (
               <HomeCategoryTile
-                key={item.slug}
-                name={item.name}
-                imageSrc={categoryImage(item)}
+                key={category.id}
+                name={category.name}
+                imageSrc={tileImage(category.slug, category.imageUrl)}
                 labelClassName="font-medium text-[20px]"
-                href={categoryHref(item.slug, item.name)}
+                href={`/category/${category.slug}`}
               />
             ))}
+            <HomeCategoryTile
+              name="View All"
+              imageSrc={dummyImages.categories.viewAll}
+              labelClassName="font-medium text-[20px]"
+              href="/c/explore-catalog"
+            />
           </div>
-        ) : null}
+        )}
       </PageShell>
     </section>
   );
