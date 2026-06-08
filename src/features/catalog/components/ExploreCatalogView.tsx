@@ -6,12 +6,20 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { dummyImages } from "@/lib/dummy-images";
+import { cn } from "@/lib/utils/cn";
 
 import {
   exploreCatalogBannerImageClass,
   exploreCatalogBannerOuterClass,
   exploreCatalogBannerShellClass,
 } from "@/components/category/category-explore-catalog-banner";
+import {
+  categorySectionCtaLabelClass,
+  categorySectionCtaLinkClass,
+  categorySectionSubtitleClass,
+  categorySectionTitleClass,
+} from "@/components/category/category-section-header";
+import { homeCategoriesGridClass } from "@/components/homepage/home-categories";
 import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
 import { HEADER_TO_HERO_GAP_CLASS } from "@/components/layout/header-chrome";
 import { PageShell } from "@/components/layout/PageShell";
@@ -113,7 +121,7 @@ export function ExploreCatalogView() {
               fill
               priority
               className={exploreCatalogBannerImageClass}
-              sizes="(max-width: 1440px) 100vw, 1440px"
+              sizes="(max-width: 1024px) 393px, (max-width: 1440px) 100vw, 1440px"
             />
           </div>
         </div>
@@ -138,13 +146,13 @@ function ExploreCatalogSkeleton() {
         {Array.from({ length: 2 }).map((_, i) => (
           <div key={`explore-skeleton-${i}`} className="space-y-5">
             <div className="h-10 w-64 animate-pulse rounded bg-gray-100" />
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+            <div className={homeCategoriesGridClass}>
               {Array.from({ length: 4 }).map((_, j) => (
                 <div
                   key={`explore-tile-skeleton-${i}-${j}`}
-                  className="flex flex-col items-center gap-3 p-2"
+                  className="flex w-[78.4px] flex-col items-center gap-3 p-0 md:w-auto md:p-2"
                 >
-                  <div className="size-[84px] animate-pulse rounded-full bg-gray-100 md:size-[140px]" />
+                  <div className="size-[78.4px] animate-pulse rounded-[100px] bg-gray-100 md:size-[140px] md:rounded-full" />
                   <div className="h-5 w-20 animate-pulse rounded bg-gray-100" />
                 </div>
               ))}
@@ -165,27 +173,21 @@ function ExploreCatalogSectionBlock({
     <section aria-labelledby={sectionId}>
       <div className="mb-5 flex items-end justify-between gap-3">
         <div>
-          <Heading
-            level={2}
-            variant="h2"
-            className="text-[2rem] leading-tight md:text-[2.25rem]"
-            id={sectionId}
-          >
+          <h2 className={categorySectionTitleClass} id={sectionId}>
             {section.title}
-          </Heading>
+          </h2>
           {section.tagline ? (
-            <p
-              className={`font-handsome ${section.subtitleColor} mt-1 text-[1.875rem] leading-[1.625rem] font-bold tracking-normal not-italic`}
-            >
+            <p className={cn(categorySectionSubtitleClass, section.subtitleColor)}>
               {section.tagline}
             </p>
           ) : null}
         </div>
         <Link
           href={`/category/${section.slug}`}
-          className="text-brand-500 inline-flex items-center gap-2 text-sm font-bold md:text-base"
+          aria-label={section.ctaLabel}
+          className={categorySectionCtaLinkClass}
         >
-          {section.ctaLabel}
+          <span className={categorySectionCtaLabelClass}>{section.ctaLabel}</span>
           <Image
             src="/Shape.svg"
             alt=""
@@ -197,14 +199,13 @@ function ExploreCatalogSectionBlock({
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+      <div className={homeCategoriesGridClass}>
         {section.tiles.map((tile) => (
           <HomeCategoryTile
             key={tile.key}
             name={tile.name}
             imageSrc={tile.imageSrc}
             href={tile.href}
-            labelClassName="text-[1.25rem] font-medium text-black"
           />
         ))}
       </div>

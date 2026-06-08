@@ -1,14 +1,39 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Body } from "@/components/ui/Body";
+import { cn } from "@/lib/utils/cn";
+
 import {
-  BODY_MD_CLASS,
-  SECTION_SUBTITLE_CLASS,
-  SECTION_TITLE_CLASS,
-} from "@/components/layout/layout-classes";
+  foodPhilosophyHeroBannerImageClass,
+  foodPhilosophyHeroBannerOuterClass,
+  foodPhilosophyHeroBannerShellClass,
+  foodPhilosophyPageTitleClass,
+  foodPhilosophyCertificationsBodyClass,
+  foodPhilosophyCertificationsSubtitleClass,
+  foodPhilosophyCertificationsTitleClass,
+  foodPhilosophyPartnershipCardClass,
+  foodPhilosophyPartnershipCardMediaClass,
+  foodPhilosophyPartnershipCardCopyClass,
+  foodPhilosophyPartnershipCardMediaImageClass,
+  foodPhilosophyPartnershipLocationClass,
+  foodPhilosophyPartnershipNameClass,
+  foodPhilosophyPartnershipQuoteClass,
+  foodPhilosophyPartnershipThemeTextClass,
+  foodPhilosophyPartnershipsStackClass,
+  foodPhilosophyPartnershipsSubtitleClass,
+  foodPhilosophyPartnershipsTitleClass,
+  foodPhilosophySourcingBodyClass,
+  foodPhilosophySourcingSubtitleClass,
+  foodPhilosophySourcingTitleClass,
+  foodPhilosophySustainabilityCardClass,
+  foodPhilosophySustainabilityCardImageClass,
+  foodPhilosophySustainabilityCardLabelClass,
+  foodPhilosophySustainabilityCardLabelWrapClass,
+  foodPhilosophySustainabilityGridClass,
+  foodPhilosophySustainabilitySubtitleClass,
+  foodPhilosophySustainabilityTitleClass,
+} from "@/components/food-philosophy/food-philosophy-page";
 import { PageShell } from "@/components/layout/PageShell";
-import { Heading } from "@/components/ui/Heading";
 
 import type { FoodPhilosophyDraftContent } from "@/features/cms-content/food-philosophy";
 
@@ -38,51 +63,54 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
           <span className="text-text-primary">Our Food Philosophy</span>
         </div>
 
-        <Heading
-          level={2}
-          variant="h2"
-          className="mb-6 tracking-normal md:max-w-[21.4375rem] md:text-[2.25rem] md:leading-[150%]"
-        >
-          {content.hero.title}
-        </Heading>
+        <h1 className={foodPhilosophyPageTitleClass}>{content.hero.title}</h1>
+      </PageShell>
 
-        <div className="relative mx-auto mb-10 aspect-2720/916 overflow-hidden rounded-[10px] md:aspect-auto md:h-114.5 md:w-340">
+      <div className={foodPhilosophyHeroBannerShellClass}>
+        <div className={foodPhilosophyHeroBannerOuterClass}>
           <Image
             src={content.hero.imageSrc}
             alt={content.hero.imageAlt}
             fill
             priority
-            className="object-cover"
-            sizes="(max-width: 1440px) 100vw, 1440px"
+            className={foodPhilosophyHeroBannerImageClass}
+            sizes="(max-width: 768px) 393px, (max-width: 1440px) 100vw, 1440px"
           />
         </div>
+      </div>
+
+      <PageShell>
 
         <div className="mb-12 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,41rem)_minmax(0,40rem)] lg:justify-between">
           <article className="flex min-w-0 flex-col gap-6">
             <div>
-              <h3 className={SECTION_TITLE_CLASS}>{content.sourcing.title}</h3>
-              <p className={SECTION_SUBTITLE_CLASS}>{content.sourcing.subtitle}</p>
+              <h2 className={foodPhilosophySourcingTitleClass}>
+                {content.sourcing.title}
+              </h2>
+              <p className={foodPhilosophySourcingSubtitleClass}>
+                {content.sourcing.subtitle}
+              </p>
             </div>
             <div className="space-y-4">
               {content.sourcing.paragraphs.map((paragraph) => (
-                <Body key={paragraph} size="md" className={BODY_MD_CLASS}>
+                <p key={paragraph} className={foodPhilosophySourcingBodyClass}>
                   {paragraph}
-                </Body>
+                </p>
               ))}
             </div>
           </article>
 
           <article className="flex min-w-0 flex-col lg:justify-between">
             <div>
-              <h3 className={SECTION_TITLE_CLASS}>
+              <h2 className={foodPhilosophyCertificationsTitleClass}>
                 {content.certifications.title}
-              </h3>
-              <p className={SECTION_SUBTITLE_CLASS}>
+              </h2>
+              <p className={foodPhilosophyCertificationsSubtitleClass}>
                 {content.certifications.subtitle}
               </p>
-              <Body size="md" className={`mt-5 ${BODY_MD_CLASS}`}>
+              <p className={foodPhilosophyCertificationsBodyClass}>
                 {content.certifications.description}
-              </Body>
+              </p>
             </div>
             <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
               {content.certifications.items.map((item) => {
@@ -119,10 +147,10 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
         </div>
 
         <section className="mb-12">
-          <h3 className={`${SECTION_TITLE_CLASS} lg:ml-2`}>
+          <h2 className={foodPhilosophyPartnershipsTitleClass}>
             {content.partnerships.title}
-          </h3>
-          <p className={`${SECTION_SUBTITLE_CLASS} lg:ml-2`}>
+          </h2>
+          <p className={foodPhilosophyPartnershipsSubtitleClass}>
             {content.partnerships.subtitle}
           </p>
 
@@ -134,7 +162,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
             `--stack-top` / `--stack-peek` are tuned per breakpoint so the
             pinned cards stay in view on shorter mobile/tablet viewports.
           */}
-          <div className="mt-6 [--stack-peek:1.25rem] [--stack-top:4.5rem] md:[--stack-peek:2.25rem] md:[--stack-top:6rem]">
+          <div className={foodPhilosophyPartnershipsStackClass}>
             {content.partnerships.quotes.map((partner, index) => (
               <article
                 key={partner.name}
@@ -142,51 +170,47 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                   top: `calc(var(--stack-top) + ${index} * var(--stack-peek))`,
                   zIndex: index + 1,
                 }}
-                className={[
-                  "sticky mb-4 grid min-w-0 gap-6 rounded-[0.625rem] p-6 shadow-[0_-2px_24px_rgba(16,24,40,0.06)] md:grid-cols-[1fr_1fr] md:gap-12 md:p-8 lg:mx-auto lg:max-w-full lg:grid-cols-[minmax(0,50.8125rem)_minmax(0,1fr)]",
+                className={cn(
+                  foodPhilosophyPartnershipCardClass,
                   partner.theme === "amber" && "bg-[#fdf6ea]",
                   partner.theme === "olive" && "bg-[#e9f0e2]",
                   partner.theme === "sky" && "bg-[#deeef4]",
-                ].join(" ")}
+                )}
               >
-                <div className="relative min-h-[220px] overflow-hidden rounded-[10px] md:min-h-[320px] lg:h-109 lg:min-h-0 lg:w-203.25">
+                <div className={foodPhilosophyPartnershipCardMediaClass}>
                   {"imageSrc" in partner && partner.imageSrc ? (
                     <Image
                       src={partner.imageSrc}
                       alt={`${partner.name}, ${partner.location}`}
                       fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className={foodPhilosophyPartnershipCardMediaImageClass}
+                      sizes="(max-width: 768px) 328px, 50vw"
                     />
                   ) : (
                     <div
-                      className="from-text-primary/20 to-text-primary/40 size-full min-h-[220px] bg-linear-to-tr md:min-h-[320px]"
+                      className="from-text-primary/20 to-text-primary/40 size-full min-h-0 bg-linear-to-tr md:min-h-[320px]"
                       aria-hidden
                     />
                   )}
                 </div>
-                <div className="flex flex-col justify-between gap-6">
+                <div className={foodPhilosophyPartnershipCardCopyClass}>
                   <p
-                    className={[
-                      "font-handsome align-middle text-[2.5rem] leading-[2.5rem] font-bold tracking-[0px]",
-                      partner.theme === "amber" && "text-[#7f581b]",
-                      partner.theme === "olive" && "text-[#5a6b43]",
-                      partner.theme === "sky" && "text-[#153e5a]",
-                    ].join(" ")}
+                    className={cn(
+                      foodPhilosophyPartnershipQuoteClass,
+                      foodPhilosophyPartnershipThemeTextClass[partner.theme],
+                    )}
                   >
                     {`"${partner.quote}"`}
                   </p>
                   <div>
-                    <h4 className={SECTION_TITLE_CLASS}>
+                    <h3 className={foodPhilosophyPartnershipNameClass}>
                       {partner.name}
-                    </h4>
+                    </h3>
                     <p
-                      className={[
-                        "text-base",
-                        partner.theme === "amber" && "text-[#7f581b]",
-                        partner.theme === "olive" && "text-[#5a6b43]",
-                        partner.theme === "sky" && "text-[#153e5a]",
-                      ].join(" ")}
+                      className={cn(
+                        foodPhilosophyPartnershipLocationClass,
+                        foodPhilosophyPartnershipThemeTextClass[partner.theme],
+                      )}
                     >
                       {partner.location}
                     </p>
@@ -198,12 +222,14 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
         </section>
 
         <section>
-          <h3 className={SECTION_TITLE_CLASS}>{content.sustainability.title}</h3>
-          <p className={`${SECTION_SUBTITLE_CLASS} mt-2`}>
+          <h2 className={foodPhilosophySustainabilityTitleClass}>
+            {content.sustainability.title}
+          </h2>
+          <p className={foodPhilosophySustainabilitySubtitleClass}>
             {content.sustainability.subtitle}
           </p>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className={foodPhilosophySustainabilityGridClass}>
             {content.sustainability.items.map((item) => {
               const label = item.label;
               const imageSrc = "imageSrc" in item ? item.imageSrc : undefined;
@@ -218,7 +244,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                   // reveal the description shown on hover/focus.
                   // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                   tabIndex={0}
-                  className="group focus-visible:ring-brand-500 text-beige-100 relative flex aspect-[629/780] min-h-[220px] flex-col justify-end overflow-hidden rounded-[10px] p-5 focus:outline-none focus-visible:ring-2 lg:aspect-auto lg:h-97.5 lg:min-h-0 lg:w-78.625"
+                  className={foodPhilosophySustainabilityCardClass}
                 >
                   {imageSrc ? (
                     <Image
@@ -226,8 +252,8 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                       alt=""
                       aria-hidden
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105 group-focus-visible:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                      className={foodPhilosophySustainabilityCardImageClass}
+                      sizes="(max-width: 768px) 172px, (max-width: 1280px) 50vw, 25vw"
                     />
                   ) : null}
 
@@ -237,8 +263,8 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                     className="from-text-primary/80 via-text-primary/20 absolute inset-0 bg-linear-to-t to-transparent transition-colors duration-300 group-hover:from-text-primary group-hover:via-text-primary/55 group-focus-visible:from-text-primary group-focus-visible:via-text-primary/55"
                   />
 
-                  <div className="relative z-10">
-                    <p className="font-sans text-2xl leading-tight font-semibold">
+                  <div className={foodPhilosophySustainabilityCardLabelWrapClass}>
+                    <p className={foodPhilosophySustainabilityCardLabelClass}>
                       {label}
                     </p>
                     {description ? (

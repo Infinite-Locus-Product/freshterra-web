@@ -21,6 +21,8 @@ import type { SortOption } from "./PlpSortMenu";
  */
 const PLACEHOLDER_BANNER: PlpBanner = {
   imageSrc: dummyImages.exploreCatalogBanner.src,
+  title: "Organic Picks",
+  subtitle: "Wholesome produce, grown with care.",
 };
 
 /**
@@ -163,6 +165,7 @@ export function CategoryPlpView({ slug, polygonId }: CategoryPlpViewProps) {
     () => [
       { label: "Home", href: "/" },
       ...(title ? [{ label: title }] : []),
+      { label: "All Items" },
     ],
     [title],
   );

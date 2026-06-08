@@ -1,13 +1,14 @@
-/** Explore Catalog page — hero / first banner (Figma 1440 × 422). */
+/** Explore Catalog page — hero / first banner. */
+export const EXPLORE_CATALOG_BANNER_MWEB_WIDTH = 393;
+export const EXPLORE_CATALOG_BANNER_MWEB_HEIGHT = 171;
 export const EXPLORE_CATALOG_BANNER_WIDTH = 1440;
 export const EXPLORE_CATALOG_BANNER_HEIGHT = 422;
 
-/** Full-bleed banner under nav — Figma 1440 × 422. Spans the full viewport
- *  width (no max-w / no page gutter); the 1440/422 aspect sets the shape and
- *  the `lg:max-h` caps the height at 422px on desktop while it widens. */
-export const exploreCatalogBannerOuterClass =
-  "relative box-border w-full overflow-hidden aspect-[1440/422] min-h-[12.5rem] lg:max-h-[26.375rem]";
+/** mWeb: full-bleed 393 × 171 frame. Desktop: Figma 1440 × 422 aspect. */
+export const exploreCatalogBannerShellClass =
+  "relative left-1/2 w-screen max-w-none -translate-x-1/2 max-lg:px-0 lg:relative lg:left-auto lg:w-full lg:translate-x-0";
 
-export const exploreCatalogBannerShellClass = "w-full";
+export const exploreCatalogBannerOuterClass =
+  "relative box-border h-[171px] w-full overflow-hidden lg:aspect-[1440/422] lg:h-auto lg:min-h-[12.5rem] lg:max-h-[26.375rem]";
 
 export const exploreCatalogBannerImageClass = "object-cover object-center";
