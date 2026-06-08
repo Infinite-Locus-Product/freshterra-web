@@ -1,6 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import {
+  categoryPlpProductCardImageClass,
+  categoryPlpProductCardMetaClass,
+  categoryPlpProductCardNameClass,
+  categoryPlpProductCardTagClass,
+  categoryPlpProductCardTagsRowClass,
+} from "@/components/category/category-plp-product-card";
 import { cn } from "@/lib/utils/cn";
 
 import { productPageHref } from "../product-href";
@@ -28,7 +35,7 @@ export function ProductCard({ product }: { product: PlpProduct }) {
       href={productPageHref(product)}
       className="group block focus-visible:outline-none"
     >
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
+      <div className={categoryPlpProductCardImageClass}>
         {image ? (
           <Image
             src={image.url}
@@ -41,23 +48,23 @@ export function ProductCard({ product }: { product: PlpProduct }) {
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-2">
-        <h3 className="text-text-primary group-hover:text-brand-600 text-base leading-snug font-semibold">
+        <h3
+          className={cn(
+            categoryPlpProductCardNameClass,
+            "group-hover:text-brand-600",
+          )}
+        >
           {product.name}
         </h3>
-        {product.inStock ? <InStockBadge /> : null}
+        {product.regulatory?.veg !== false ? <VegDietaryBadge /> : null}
       </div>
 
-      {meta ? <p className="text-text-secondary mt-0.5 text-sm">{meta}</p> : null}
+      {meta ? <p className={categoryPlpProductCardMetaClass}>{meta}</p> : null}
 
       {product.tags.length > 0 ? (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className={categoryPlpProductCardTagsRowClass}>
           {product.tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className={cn(
-                "bg-header-tint text-brand-600 rounded-full px-2.5 py-1 text-xs font-medium capitalize",
-              )}
-            >
+            <span key={tag} className={categoryPlpProductCardTagClass}>
               {tag}
             </span>
           ))}
@@ -67,14 +74,14 @@ export function ProductCard({ product }: { product: PlpProduct }) {
   );
 }
 
-/** Small green "in stock" marker shown beside the product name. */
-function InStockBadge() {
+/** Green veg dietary marker beside the product name (Figma PLP mWeb). */
+function VegDietaryBadge() {
   return (
     <span
       role="img"
-      aria-label="In stock"
-      title="In stock"
-      className="border-brand-300 mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border"
+      aria-label="Vegetarian"
+      title="Vegetarian"
+      className="border-brand-300 mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border"
     >
       <span className="bg-brand-500 h-1.5 w-1.5 rounded-full" />
     </span>

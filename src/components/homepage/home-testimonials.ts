@@ -1,20 +1,43 @@
-/** Figma homepage testimonial story cards. */
+/** Figma homepage “Stories from Our Valued Customers” section. */
+export const HOME_TESTIMONIALS_TITLE_MWEB_FONT_SIZE = 20;
+export const HOME_TESTIMONIALS_SUBTITLE_MWEB_FONT_SIZE = 20;
+export const HOME_TESTIMONIALS_SUBTITLE_MWEB_LINE_HEIGHT = 20;
+
+export const HOME_TESTIMONIALS_CARD_MWEB_WIDTH = 343;
+export const HOME_TESTIMONIALS_CARD_MWEB_HEIGHT = 400;
+export const HOME_TESTIMONIALS_CARD_MWEB_GAP = 10;
+export const HOME_TESTIMONIALS_CARD_MWEB_RADIUS = 10;
+export const HOME_TESTIMONIALS_CARD_MWEB_PADDING = 16;
+
 export const HOME_TESTIMONIALS_CARD_WIDTH = 730;
 export const HOME_TESTIMONIALS_CARD_HEIGHT = 551;
 
+export const homeTestimonialsSectionClass = "bg-white pt-10 pb-0 md:pt-14";
+
+/** mWeb: Figma 16px horizontal inset for section header copy. */
+export const homeTestimonialsSectionShellClass =
+  "mx-auto w-full max-w-content px-4 md:px-page";
+
+export const homeTestimonialsTitleClass =
+  "font-display text-[#101828] text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-2xl md:font-medium md:leading-tight";
+
+export const homeTestimonialsSubtitleClass =
+  "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:text-[1.875rem] md:leading-[1.625rem]";
+
+export const homeTestimonialsCarouselBleedClass =
+  "relative left-1/2 w-screen -translate-x-1/2";
+
 /** Full-bleed horizontal scroller — edge spacers + snap-center for peeking neighbours. */
 export const homeTestimonialsGridClass =
-  "mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+  "mt-6 flex snap-x snap-mandatory gap-[10px] overflow-x-auto pb-2 [scrollbar-width:none] md:mt-10 md:gap-4 [&::-webkit-scrollbar]:hidden";
 
-/**
- * ~50vw on mobile so cards 1 & 3 show half when card 2 is centred; Figma widths on sm+.
- */
+/** mWeb: 343 × 400 video placeholder; desktop Figma story card sizes. */
 export const homeTestimonialsCardClass =
-  "relative box-border aspect-[730/551] min-h-[20rem] w-[50vw] max-w-[45.625rem] shrink-0 snap-center overflow-hidden rounded-2xl sm:w-[37.5rem] lg:w-[45.625rem]";
+  "relative box-border h-[400px] w-[343px] shrink-0 snap-center overflow-hidden rounded-[10px] sm:aspect-[730/551] sm:h-auto sm:min-h-[20rem] sm:w-[37.5rem] sm:rounded-2xl lg:w-[45.625rem]";
 
 /** Centres the first/last card in the viewport when snapped (no dead whitespace). */
 export const homeTestimonialsEdgeSpacerClass =
-  "pointer-events-none shrink-0 snap-none w-[max(0px,calc((100vw-50vw-1rem)/2))] sm:w-[max(0px,calc((100vw-37.5rem-1rem)/2))] lg:w-[max(0px,calc((100vw-45.625rem-1rem)/2))]";
+  "pointer-events-none w-[max(0px,calc((100vw-343px)/2))] shrink-0 snap-none sm:w-[max(0px,calc((100vw-37.5rem-1rem)/2))] lg:w-[max(0px,calc((100vw-45.625rem-1rem)/2))]";
 
 export const homeTestimonialsCardMediaClass =
   "bg-gray-6 absolute inset-0 overflow-hidden";
@@ -25,4 +48,25 @@ export const homeTestimonialsCardScrimClass =
   "pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/25 to-transparent";
 
 export const homeTestimonialsCardFooterClass =
-  "absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 md:p-8";
+  "absolute inset-x-0 bottom-0 flex flex-col gap-1 p-4 md:gap-2 md:p-8";
+
+export const HOME_TESTIMONIALS_NAME_MWEB_FONT_SIZE = 16;
+export const HOME_TESTIMONIALS_META_MWEB_FONT_SIZE = 12;
+
+/** Age + quote stack; play button top-aligns with the age line. */
+export const homeTestimonialsCardMetaRowClass =
+  "flex items-start justify-between gap-4";
+
+export const homeTestimonialsCardCopyClass = "text-white-soft min-w-0 flex-1";
+
+export const homeTestimonialsCardNameClass =
+  "text-white-soft font-sans text-base font-semibold leading-[1.3] tracking-[0] md:font-display md:text-2xl md:leading-tight";
+
+export const homeTestimonialsCardAgeClass =
+  "font-sans text-xs font-normal leading-[1.4] tracking-[0] text-white/90 md:text-sm";
+
+export const homeTestimonialsCardQuoteClass =
+  "mt-2 font-sans text-xs font-normal leading-[1.4] tracking-[0] text-white/95 md:mt-3 md:text-sm md:leading-6";
+
+export const homeTestimonialsCardPlayButtonClass =
+  "shrink-0 self-start rounded-full transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none";

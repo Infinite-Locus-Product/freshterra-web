@@ -1,12 +1,35 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
 
 import type { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
+import {
+  categoryPlpBannerBleedClass,
+  categoryPlpBannerCopyClass,
+  categoryPlpBannerImageClass,
+  categoryPlpBannerOverlayClass,
+  categoryPlpBannerShellClass,
+  categoryPlpBannerSubtitleClass,
+  categoryPlpBannerTitleClass,
+  categoryPlpBreadcrumbClass,
+  categoryPlpBreadcrumbCurrentClass,
+  categoryPlpCountClass,
+  categoryPlpMobileFiltersClass,
+  categoryPlpPageShellClass,
+  categoryPlpProductGridClass,
+  categoryPlpTabActiveClass,
+  categoryPlpTabInactiveClass,
+  categoryPlpTabsRowClass,
+  categoryPlpTitleClass,
+  categoryPlpToolbarButtonClass,
+  categoryPlpToolbarClass,
+  categoryPlpToolbarDividerClass,
+  categoryPlpToolbarLabelClass,
+} from "@/components/category/category-plp-page";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
@@ -116,6 +139,7 @@ export function PlpView<TSort extends string>({
   onLoadMore,
   onRetry,
 }: PlpViewProps<TSort>) {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
@@ -169,13 +193,12 @@ export function PlpView<TSort extends string>({
     onFiltersChange(next);
   }
 
+  const hasFilters = Boolean(filterGroups && filterGroups.length > 0);
+
   return (
-    <PageShell className="py-8">
+    <PageShell pad={false} className={categoryPlpPageShellClass}>
       {breadcrumbs && breadcrumbs.length > 0 ? (
-        <nav
-          aria-label="Breadcrumb"
-          className="text-text-secondary mb-4 flex items-center gap-2 text-sm"
-        >
+        <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
           {breadcrumbs.map((crumb, i) => (
             <span key={`${crumb.label}-${i}`} className="flex items-center gap-2">
               {crumb.href ? (
@@ -183,7 +206,7 @@ export function PlpView<TSort extends string>({
                   {crumb.label}
                 </Link>
               ) : (
-                <span className="text-text-primary">{crumb.label}</span>
+                <span className={categoryPlpBreadcrumbCurrentClass}>{crumb.label}</span>
               )}
               {i < breadcrumbs.length - 1 ? <span aria-hidden>›</span> : null}
             </span>
@@ -193,11 +216,11 @@ export function PlpView<TSort extends string>({
 
       {titleLoading ? (
         <div
-          className="mb-5 h-9 w-48 max-w-full animate-pulse rounded bg-gray-100"
+          className="mb-4 h-9 w-48 max-w-full animate-pulse rounded bg-gray-100 lg:mb-5"
           aria-hidden
         />
       ) : title ? (
-        <Heading level={1} variant="h2" className="mb-5">
+        <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
           {title}
         </Heading>
       ) : null}
@@ -206,7 +229,7 @@ export function PlpView<TSort extends string>({
         <div
           role="tablist"
           aria-label="Quick filters"
-          className="mb-6 flex flex-wrap gap-2.5 border-b border-gray-100 pb-5"
+          className={categoryPlpTabsRowClass}
         >
           {tabs.map((tab) => {
             const selected = (activeTab ?? tabs[0]?.value) === tab.value;
@@ -218,9 +241,7 @@ export function PlpView<TSort extends string>({
                 aria-selected={selected}
                 onClick={() => onTabChange?.(tab.value)}
                 className={
-                  selected
-                    ? "bg-brand-600 rounded-full px-5 py-2 text-sm font-semibold text-white"
-                    : "text-text-primary rounded-full border border-gray-200 px-5 py-2 text-sm font-medium hover:bg-gray-50"
+                  selected ? categoryPlpTabActiveClass : categoryPlpTabInactiveClass
                 }
               >
                 {tab.label}
@@ -231,31 +252,26 @@ export function PlpView<TSort extends string>({
       ) : null}
 
       {banner ? (
-        <div className="relative mb-6 h-[13.75rem] w-full overflow-hidden rounded-[0.625rem] md:h-[18.75rem]">
-          <Image
-            src={banner.imageSrc}
-            alt=""
-            aria-hidden
-            fill
-            priority
-            sizes="(max-width: 1440px) 100vw, 1440px"
-            className="object-cover"
-          />
-          <div
-            aria-hidden
-            className="from-text-primary/55 absolute inset-0 bg-linear-to-r to-transparent"
-          />
-          <div className="relative flex h-full flex-col justify-center px-8 md:px-12">
-            {banner.title ? (
-              <p className="font-handsome text-[2.75rem] leading-none font-bold text-white md:text-[4rem]">
-                {banner.title}
-              </p>
-            ) : null}
-            {banner.subtitle ? (
-              <p className="mt-3 max-w-md text-base text-white/90 md:text-lg">
-                {banner.subtitle}
-              </p>
-            ) : null}
+        <div className={categoryPlpBannerBleedClass}>
+          <div className={categoryPlpBannerShellClass}>
+            <Image
+              src={banner.imageSrc}
+              alt=""
+              aria-hidden
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 1440px"
+              className={categoryPlpBannerImageClass}
+            />
+            <div aria-hidden className={categoryPlpBannerOverlayClass} />
+            <div className={categoryPlpBannerCopyClass}>
+              {banner.title ? (
+                <p className={categoryPlpBannerTitleClass}>{banner.title}</p>
+              ) : null}
+              {banner.subtitle ? (
+                <p className={categoryPlpBannerSubtitleClass}>{banner.subtitle}</p>
+              ) : null}
+            </div>
           </div>
         </div>
       ) : null}
@@ -297,7 +313,35 @@ export function PlpView<TSort extends string>({
         ) : null}
 
         <div>
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          {hasFilters ? (
+            <div className={categoryPlpToolbarClass}>
+              <button
+                type="button"
+                className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass}`}
+                aria-expanded={mobileFiltersOpen}
+                onClick={() => setMobileFiltersOpen((open) => !open)}
+              >
+                <FiltersIcon />
+                <span>Filters</span>
+              </button>
+              <div className={categoryPlpToolbarDividerClass}>
+                <PlpSortMenu
+                  variant="plp-toolbar"
+                  value={sort}
+                  options={sortOptions}
+                  onChange={onSortChange}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          <p className={`${categoryPlpCountClass} lg:hidden`}>
+            {isInitialLoad
+              ? "Loading…"
+              : `Showing ${total} ${total === 1 ? "product" : "products"}`}
+          </p>
+
+          <div className="mb-6 hidden flex-wrap items-center justify-between gap-4 lg:flex">
             <p className="text-text-secondary text-sm">
               {isInitialLoad
                 ? "Loading…"
@@ -310,8 +354,8 @@ export function PlpView<TSort extends string>({
             />
           </div>
 
-          {filterGroups && filterGroups.length > 0 ? (
-            <div className="mb-6 lg:hidden">
+          {hasFilters && mobileFiltersOpen ? (
+            <div className={categoryPlpMobileFiltersClass}>
               <PlpFilters
                 groups={filterGroups}
                 selections={selections}
@@ -331,7 +375,7 @@ export function PlpView<TSort extends string>({
               }
             />
           ) : (
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+            <ul className={categoryPlpProductGridClass}>
               {isInitialLoad
                 ? Array.from({ length: 8 }).map((_, i) => (
                     <li key={`skeleton-${i}`}>
@@ -403,6 +447,23 @@ function ProductSkeleton() {
       <div className="mt-3 h-4 w-2/3 rounded bg-gray-100" />
       <div className="mt-2 h-3 w-1/3 rounded bg-gray-100" />
     </div>
+  );
+}
+
+function FiltersIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width={16}
+      height={16}
+      aria-hidden
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    >
+      <path d="M2 4h12M4 8h8M6 12h4" />
+    </svg>
   );
 }
 

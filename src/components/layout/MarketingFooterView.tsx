@@ -5,31 +5,23 @@ import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
 import {
+  marketingFooterBottomInnerClass,
   marketingFooterBottomShellClass,
   marketingFooterContentShellClass,
+  marketingFooterCopyrightClass,
   marketingFooterGridClass,
+  marketingFooterLegalDesktopRowClass,
+  marketingFooterLegalLinkClass,
+  marketingFooterLegalMwebStackClass,
+  marketingFooterLegalNavClass,
+  marketingFooterLegalPairRowClass,
   marketingFooterMainBandClass,
 } from "@/components/layout/marketing-footer-layout";
+import { APP_STORE_BADGES } from "@/components/layout/app-store-badges";
 import { MarketingFooterArt } from "@/components/layout/MarketingFooterArt";
 
 import type { FooterContent, FooterLink, FooterSocial } from "@/features/cms-content/footer-content-types";
 import { socialShortLabel } from "@/features/cms-content/strapi-footer-mapper";
-
-
-const APP_BADGES = [
-  {
-    topLine: "Download on the",
-    brandLine: "App Store",
-    hrefKey: "appStore" as const,
-    iconSrc: "/image-11305.svg",
-  },
-  {
-    topLine: "Get it on",
-    brandLine: "Google Play",
-    hrefKey: "playStore" as const,
-    iconSrc: "/image-11306.svg",
-  },
-] as const;
 
 type MarketingFooterViewProps = Readonly<{
   content: FooterContent;
@@ -74,7 +66,7 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
                 Download App
               </h3>
               <div className="space-y-3">
-                {APP_BADGES.map((badge) => (
+                {APP_STORE_BADGES.map((badge) => (
                   <Link
                     key={badge.brandLine}
                     href={badgeHref[badge.hrefKey]}
@@ -118,19 +110,37 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
       </div>
 
       <div className="border-brand-100/70 bg-brand-600 relative border-t">
-        <div
-          className={`${marketingFooterBottomShellClass} py-4 text-sm md:flex md:items-center md:justify-between`}
-        >
-          {copyright ? (
-            <p className="text-white-soft/90">{copyright}</p>
-          ) : null}
-          {content.legal.length > 0 ? (
-            <nav aria-label="Legal" className="mt-2 flex flex-wrap gap-5 text-xs md:mt-0">
-              {content.legal.map((link) => (
-                <FooterLegalLink key={link.url} link={link} />
-              ))}
-            </nav>
-          ) : null}
+        <div className={marketingFooterBottomShellClass}>
+          <div className={marketingFooterBottomInnerClass}>
+            {copyright ? (
+              <p className={marketingFooterCopyrightClass}>{copyright}</p>
+            ) : null}
+            {content.legal.length > 0 ? (
+              <nav aria-label="Legal" className={marketingFooterLegalNavClass}>
+                <div className={marketingFooterLegalMwebStackClass}>
+                  {content.legal.length >= 2 ? (
+                    <div className={marketingFooterLegalPairRowClass}>
+                      {content.legal.slice(0, 2).map((link) => (
+                        <FooterLegalLink key={link.url} link={link} />
+                      ))}
+                    </div>
+                  ) : null}
+                  {content.legal.length === 1 ? (
+                    <FooterLegalLink link={content.legal[0]!} />
+                  ) : (
+                    content.legal.slice(2).map((link) => (
+                      <FooterLegalLink key={link.url} link={link} />
+                    ))
+                  )}
+                </div>
+                <div className={marketingFooterLegalDesktopRowClass}>
+                  {content.legal.map((link) => (
+                    <FooterLegalLink key={link.url} link={link} />
+                  ))}
+                </div>
+              </nav>
+            ) : null}
+          </div>
         </div>
       </div>
     </footer>
@@ -205,7 +215,7 @@ function FooterLegalLink({ link }: Readonly<{ link: FooterLink }>) {
   return (
     <Link
       href={link.url}
-      className="text-white-soft/90 hover:underline"
+      className={marketingFooterLegalLinkClass}
       {...(external
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}

@@ -1,13 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { categoryTileImageLoader } from "@/lib/clients/imagekit";
+import { env } from "@/lib/config/env";
+import { cn } from "@/lib/utils/cn";
+
 import {
   homeCategoriesCircleClass,
   homeCategoriesImageClass,
+  homeCategoriesTileClass,
+  homeCategoriesTileLabelClass,
 } from "@/components/homepage/home-categories";
 import { Body } from "@/components/ui/Body";
-import { categoryTileImageLoader } from "@/lib/clients/imagekit";
-import { env } from "@/lib/config/env";
 
 type HomeCategoryTileProps = Readonly<{
   name: string;
@@ -17,6 +21,7 @@ type HomeCategoryTileProps = Readonly<{
   href?: string;
   /** Override the label styling (defaults to the homepage tile look). */
   labelClassName?: string;
+  className?: string;
 }>;
 
 const useImageKitTiles = Boolean(env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT);
@@ -25,7 +30,8 @@ export function HomeCategoryTile({
   name,
   imageSrc,
   href,
-  labelClassName = "font-medium",
+  labelClassName = homeCategoriesTileLabelClass,
+  className,
 }: HomeCategoryTileProps) {
   const content = (
     <>
@@ -37,7 +43,7 @@ export function HomeCategoryTile({
             fill
             loader={useImageKitTiles ? categoryTileImageLoader : undefined}
             className={homeCategoriesImageClass}
-            sizes="(max-width: 768px) 84px, 140px"
+            sizes="(max-width: 768px) 78.4px, 140px"
           />
         ) : null}
       </div>
@@ -47,14 +53,13 @@ export function HomeCategoryTile({
     </>
   );
 
-  const baseClass =
-    "flex flex-col items-center gap-3 rounded-md p-2 text-center";
+  const baseClass = cn(homeCategoriesTileClass, className);
 
   if (href) {
     return (
       <Link
         href={href}
-        className={`${baseClass} transition-transform hover:-translate-y-0.5`}
+        className={cn(baseClass, "transition-transform hover:-translate-y-0.5")}
       >
         {content}
       </Link>

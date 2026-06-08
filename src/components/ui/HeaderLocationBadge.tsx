@@ -27,7 +27,7 @@ export function HeaderLocationBadge({ children, className }: HeaderLocationBadge
         height={24}
         className="size-6 shrink-0"
       />
-      {children}
+      <span className="truncate">{children}</span>
     </div>
   );
 }

@@ -2,9 +2,17 @@
 
 import { useState } from "react";
 
-import { Body } from "@/components/ui/Body";
+import {
+  careersJobCardButtonClass,
+  careersJobCardClass,
+  careersJobCardDescriptionClass,
+  careersJobCardGridClass,
+  careersJobCardTitleClass,
+  careersOpeningsGroupTitleClass,
+  careersOpeningsSectionClass,
+  careersOpeningsTitleClass,
+} from "@/components/careers/careers-page";
 import { Button } from "@/components/ui/Button";
-import { Heading } from "@/components/ui/Heading";
 
 import type { CareersPageDraftContent } from "@/features/cms-content/careers";
 
@@ -18,39 +26,23 @@ export function CareerOpenings({ openings }: CareerOpeningsProps) {
   const [activeJob, setActiveJob] = useState<string | null>(null);
 
   return (
-    <section className="flex w-full max-w-340 flex-col gap-6">
-      <Heading
-        level={2}
-        variant="h2"
-        className="font-semibold tracking-normal md:text-[28px] md:leading-none"
-      >
-        {openings.title}
-      </Heading>
+    <section className={careersOpeningsSectionClass}>
+      <h2 className={careersOpeningsTitleClass}>{openings.title}</h2>
 
       <div className="space-y-6">
         {openings.groups.map((group) => (
           <section key={group.title}>
-            <h3 className="mb-4 w-full max-w-340 font-sans text-[28px] leading-tight font-semibold tracking-normal md:text-[20px] md:font-bold md:leading-[130%]">
-              {group.title}
-            </h3>
-            <div className="grid gap-4 md:grid-cols-2 md:gap-12 xl:grid-cols-3">
+            <h3 className={careersOpeningsGroupTitleClass}>{group.title}</h3>
+            <div className={careersJobCardGridClass}>
               {group.jobs.map((job) => (
-                <article
-                  key={job.title}
-                  className="rounded-[10px] border border-gray-200 bg-white p-5 shadow-sm"
-                >
-                  <h4 className="text-[24px] leading-tight font-bold">
-                    {job.title}
-                  </h4>
-                  <Body
-                    size="md"
-                    className="text-text-secondary mt-2 min-h-[88px] text-[16px] leading-6 tracking-normal"
-                  >
+                <article key={job.title} className={careersJobCardClass}>
+                  <h4 className={careersJobCardTitleClass}>{job.title}</h4>
+                  <p className={careersJobCardDescriptionClass}>
                     {job.description}
-                  </Body>
+                  </p>
                   <Button
                     size="sm"
-                    className="mt-6 text-sm tracking-normal normal-case"
+                    className={careersJobCardButtonClass}
                     onClick={() => setActiveJob(job.title)}
                   >
                     Apply Now

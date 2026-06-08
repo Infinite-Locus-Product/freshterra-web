@@ -1,10 +1,12 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+
+import Link from "next/link";
 
 import { cn } from "@/lib/utils/cn";
 
 import { HEADER_EDGE_PADDING_CLASS } from "@/components/layout/header-chrome";
 import { PAGE_SHELL_INNER_CLASS } from "@/components/layout/layout-classes";
+import { MobileMarketingHeader } from "@/components/layout/MobileMarketingHeader";
 import { BrandTagline } from "@/components/ui/BrandTagline";
 import { HeaderDownloadAppButton } from "@/components/ui/HeaderDownloadAppButton";
 import { HeaderLocationBadge } from "@/components/ui/HeaderLocationBadge";
@@ -17,7 +19,7 @@ export type MarketingNavLink = Readonly<{
   href: string;
 }>;
 
-const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
+export const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
   { label: "Explore Catalog", href: "/c/explore-catalog" },
   { label: "Our Philosophy", href: "/food-philosophy" },
   { label: "About Us", href: "/about" },
@@ -36,6 +38,8 @@ export type MarketingHeaderProps = Readonly<{
   downloadLabel?: string;
   /** When true, omits outer gradient shell (parent section provides it). */
   embedded?: boolean;
+  /** Homepage mWeb — app download strip spans full viewport width. */
+  bannerFullBleed?: boolean;
   className?: string;
 }>;
 
@@ -47,10 +51,11 @@ export function MarketingHeader({
   downloadHref = "/notify",
   downloadLabel = "Download the App",
   embedded = false,
+  bannerFullBleed = false,
   className,
 }: MarketingHeaderProps) {
-  const inner = (
-    <div className={`${PAGE_SHELL_INNER_CLASS} flex flex-col gap-6 md:gap-10`}>
+  const desktopInner = (
+    <div className={`${PAGE_SHELL_INNER_CLASS} hidden flex-col gap-6 lg:flex md:gap-10`}>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-3">
           <Logo tone="light" variant="header" priority linkToHome />
@@ -89,10 +94,22 @@ export function MarketingHeader({
     </div>
   );
 
+  const mobileInner = (
+    <div className="lg:hidden">
+      <MobileMarketingHeader
+        locationLabel={locationLabel}
+        navLinks={navLinks}
+        downloadHref={downloadHref}
+        bannerFullBleed={bannerFullBleed}
+      />
+    </div>
+  );
+
   if (embedded) {
     return (
       <header role="banner" className={cn(className)}>
-        <div className={HEADER_EDGE_PADDING_CLASS}>{inner}</div>
+        {mobileInner}
+        <div className={HEADER_EDGE_PADDING_CLASS}>{desktopInner}</div>
       </header>
     );
   }
@@ -101,12 +118,12 @@ export function MarketingHeader({
     <header
       role="banner"
       className={cn(
-        "from-header-tint text-text-primary bg-linear-to-b to-white pt-6 pb-6 md:pt-8 md:pb-6",
-        HEADER_EDGE_PADDING_CLASS,
+        "text-text-primary lg:from-header-tint lg:bg-linear-to-b lg:to-white lg:pt-6 lg:pb-6 md:lg:pt-8 md:lg:pb-6",
         className,
       )}
     >
-      {inner}
+      {mobileInner}
+      <div className={HEADER_EDGE_PADDING_CLASS}>{desktopInner}</div>
     </header>
   );
 }
