@@ -1,10 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Body } from "@/components/ui/Body";
-import { BODY_MD_CLASS } from "@/components/layout/layout-classes";
+import {
+  careersHeroBodyClass,
+  careersHeroCopyClass,
+  careersHeroImageClass,
+  careersHeroImageMediaClass,
+  careersHeroParagraphsClass,
+  careersHeroSectionClass,
+  careersHeroSubtitleClass,
+  careersPageTitleClass,
+} from "@/components/careers/careers-page";
 import { PageShell } from "@/components/layout/PageShell";
-import { Heading } from "@/components/ui/Heading";
 
 import type { CareersPageDraftContent } from "@/features/cms-content/careers";
 
@@ -28,40 +35,28 @@ export function CareersPageLayout({
           <span className="text-text-primary">Careers</span>
         </div>
 
-        <Heading
-          level={1}
-          variant="h2"
-          className="mb-6 tracking-normal md:text-[2.25rem] md:leading-[150%]"
-        >
-          {content.hero.title}
-        </Heading>
+        <h1 className={careersPageTitleClass}>{content.hero.title}</h1>
 
-        <section className="mb-14 grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-start lg:gap-[18.5px]">
-          <div>
-            <h2 className="mb-4 font-sans text-[2rem] leading-tight font-bold tracking-normal md:text-[1.25rem] md:leading-[130%]">
-              {content.hero.subtitle}
-            </h2>
-            <div className="space-y-5">
+        <section className={careersHeroSectionClass}>
+          <div className={careersHeroCopyClass}>
+            <h2 className={careersHeroSubtitleClass}>{content.hero.subtitle}</h2>
+            <div className={careersHeroParagraphsClass}>
               {content.hero.paragraphs.map((paragraph) => (
-                <Body
-                  key={paragraph}
-                  size="md"
-                  className={BODY_MD_CLASS}
-                >
+                <p key={paragraph} className={careersHeroBodyClass}>
                   {paragraph}
-                </Body>
+                </p>
               ))}
             </div>
           </div>
 
-          <div className="relative aspect-[667.923/457] min-h-75 w-full max-w-full overflow-hidden rounded-sm md:aspect-auto md:max-h-[28.5625rem] md:max-w-[41.74rem]">
+          <div className={careersHeroImageClass}>
             <Image
               src={content.hero.bannerSrc}
               alt={content.hero.bannerAlt}
               fill
               priority
-              className="object-cover object-center"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              className={careersHeroImageMediaClass}
+              sizes="(max-width: 1024px) 361px, 50vw"
             />
           </div>
         </section>

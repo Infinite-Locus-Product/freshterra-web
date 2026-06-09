@@ -2,6 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import {
+  pdpDetailsHeadingClass,
+  pdpKeyFeatureItemClass,
+  pdpKeyFeaturesListClass,
+  pdpKeyFeaturesSectionClass,
+  pdpTabActiveClass,
+  pdpTabInactiveClass,
+  pdpTabsRowClass,
+  pdpTabsSectionClass,
+} from "@/components/category/pdp-page";
 import { cn } from "@/lib/utils/cn";
 
 import {
@@ -36,11 +46,11 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
   }
 
   return (
-    <section className="border-t border-gray-200">
+    <section className={pdpTabsSectionClass}>
       <div
         role="tablist"
         aria-label="Product information"
-        className="flex flex-wrap gap-2 py-4"
+        className={pdpTabsRowClass}
       >
         {visibleTabs.map((tab) => (
           <button
@@ -52,10 +62,8 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
             aria-controls={`panel-${tab}`}
             onClick={() => setActive(tab)}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-              active === tab
-                ? "bg-brand-500 text-beige-100"
-                : "text-text-secondary hover:bg-gray-50",
+              "transition-colors",
+              active === tab ? pdpTabActiveClass : pdpTabInactiveClass,
             )}
           >
             {TAB_LABELS[tab]}
@@ -108,11 +116,10 @@ function DetailsPanel({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-text-primary mb-3 text-lg font-semibold">
-          Product Details
-        </h2>
+        <h2 className={pdpDetailsHeadingClass}>Product Details</h2>
         <dl className="space-y-1.5 text-sm">
           {brand ? <Row label="Brand" value={brand} /> : null}
+          {meta?.foodType ? <Row label="Type" value={meta.foodType} /> : null}
           {product.category ? (
             <Row label="Category" value={product.category.name} />
           ) : null}
@@ -125,21 +132,18 @@ function DetailsPanel({
 
       {features.length > 0 ? (
         <div>
-          <h3 className="text-text-primary mb-3 text-base font-semibold">
-            Key Features
-          </h3>
-          <div className="flex flex-wrap gap-x-8 gap-y-4">
-            {features.map((feature) => (
-              <div
-                key={feature}
-                className="text-text-secondary flex flex-col items-center gap-2 text-xs"
-              >
-                <span className="bg-header-tint text-brand-500 grid h-11 w-11 place-items-center rounded-full">
-                  <LeafIcon />
-                </span>
-                <span className="capitalize">{feature}</span>
-              </div>
-            ))}
+          <h3 className={pdpDetailsHeadingClass}>Key Features</h3>
+          <div className={pdpKeyFeaturesSectionClass}>
+            <div className={pdpKeyFeaturesListClass}>
+              {features.map((feature) => (
+                <div key={feature} className={pdpKeyFeatureItemClass}>
+                  <span className="bg-header-tint text-brand-500 grid h-11 w-11 shrink-0 place-items-center rounded-full">
+                    <LeafIcon />
+                  </span>
+                  <span className="capitalize">{feature}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}

@@ -1,15 +1,48 @@
 /** Figma “Categories” section title below homepage hero banner. */
 export const HOME_CATEGORIES_TITLE_WIDTH = 175;
 export const HOME_CATEGORIES_TITLE_HEIGHT = 54;
+export const HOME_CATEGORIES_TITLE_MWEB_FONT_SIZE = 20;
+export const HOME_CATEGORIES_BANNER_GAP = 30;
 
 export const homeCategoriesTitleClass =
-  "font-display text-text-primary box-border h-[54px] w-[175px] max-w-full shrink-0 text-[36px] font-medium leading-[1.5] tracking-[0]";
+  "font-display text-text-primary box-border max-w-full shrink-0 text-[20px] font-semibold leading-[1.3] tracking-[0] md:h-[54px] md:w-[175px] md:text-[36px] md:font-medium md:leading-[1.5]";
+
+export const homeCategoriesSectionClass = "bg-white pt-[30px] pb-0 md:pt-12";
+
+export const HOME_CATEGORIES_SUBTITLE_MWEB_FONT_SIZE = 20;
+export const HOME_CATEGORIES_SUBTITLE_MWEB_LINE_HEIGHT = 20;
 
 export const homeCategoriesSubtitleClass =
-  "text-brand-500 font-handsome mt-1 text-[30px] leading-[26px] font-bold tracking-[0px]";
+  "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:text-[30px] md:leading-[26px]";
 
-/** Circular category image placeholder (Figma). */
+export const homeCategoriesHeaderRowClass =
+  "mb-6 flex items-center justify-between gap-4 md:items-end";
+
+/** mWeb: chevron only. Desktop: label + chevron. */
+export const homeCategoriesCtaLinkClass =
+  "text-brand-500 inline-flex shrink-0 items-center gap-1.5 text-sm font-bold md:text-base";
+
+export const homeCategoriesCtaLabelClass = "hidden md:inline";
+
+export const homeCategoriesViewAllTileClass = "hidden md:flex";
+
+/** Circular category image placeholder — Figma mWeb 78.4 × 78.4, radius 100px. */
+export const HOME_CATEGORIES_CIRCLE_MWEB_SIZE = 78.4;
+
 export const homeCategoriesCircleClass =
-  "from-brand-100 to-cream-50 relative size-[84px] shrink-0 overflow-hidden rounded-full bg-linear-to-b md:size-[140px]";
+  "from-brand-100 to-cream-50 relative size-[78.4px] shrink-0 overflow-hidden rounded-[100px] bg-linear-to-b opacity-100 md:size-[140px] md:rounded-full";
+
+export const HOME_CATEGORIES_TILE_GAP = 16;
+
+/** mWeb: 4 fixed 78.4px columns — (78.4 × 4) + (16 × 3) ≈ 393px frame. */
+export const homeCategoriesGridClass =
+  "grid grid-cols-[repeat(4,78.4px)] gap-[16px] md:grid-cols-4 md:gap-4 lg:grid-cols-6 xl:grid-cols-8";
+
+export const homeCategoriesTileClass =
+  "flex w-[78.4px] flex-col items-center gap-3 rounded-md p-0 text-center md:w-auto md:p-2";
+
+/** mWeb tile label — Manrope 14 / 120% / 0.2px, centered. */
+export const homeCategoriesTileLabelClass =
+  "w-full text-center font-normal text-sm leading-[1.2] tracking-[0.2px] md:text-[20px] md:font-medium md:leading-normal md:tracking-normal";
 
 export const homeCategoriesImageClass = "object-cover object-center";

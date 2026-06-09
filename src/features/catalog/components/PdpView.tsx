@@ -2,11 +2,32 @@
 
 import { useState } from "react";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
+import {
+  pdpAppCardBodyClass,
+  pdpAppCardButtonsClass,
+  pdpAppCardClass,
+  pdpAppCardTitleClass,
+  pdpStoreButtonClass,
+  pdpContentShellClass,
+  pdpGalleryBleedClass,
+  pdpInfoShellClass,
+  pdpMainGridClass,
+  pdpPageShellClass,
+  pdpStoryClass,
+  pdpTitleClass,
+  pdpTrustHeadingClass,
+  pdpTrustItemClass,
+  pdpTrustRowClass,
+  pdpVariantLabelClass,
+  pdpVariantPillClass,
+} from "@/components/category/pdp-page";
+import { APP_STORE_BADGE_BY_STORE } from "@/components/layout/app-store-badges";
 import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
@@ -32,11 +53,11 @@ export function PdpView({
   breadcrumbs,
 }: PdpViewProps) {
   return (
-    <PageShell className="py-8">
+    <PageShell pad={false} className={pdpPageShellClass}>
       {breadcrumbs && breadcrumbs.length > 0 ? (
         <nav
           aria-label="Breadcrumb"
-          className="text-text-secondary mb-6 flex flex-wrap items-center gap-2 text-sm"
+          className={`${pdpContentShellClass} text-text-secondary mb-4 hidden flex-wrap items-center gap-2 text-sm lg:mb-6 lg:flex`}
         >
           {breadcrumbs.map((crumb, i) => (
             <span key={`${crumb.label}-${i}`} className="flex items-center gap-2">
@@ -53,17 +74,23 @@ export function PdpView({
         </nav>
       ) : null}
 
-      <div className="grid min-w-0 gap-8 lg:grid-cols-2 lg:gap-12">
-        <ProductGallery images={product.images} name={product.name} />
-        <ProductInfo product={product} />
+      <div className={pdpMainGridClass}>
+        <div className={pdpGalleryBleedClass}>
+          <ProductGallery images={product.images} name={product.name} />
+        </div>
+        <div className={cn(pdpContentShellClass, pdpInfoShellClass)}>
+          <ProductInfo product={product} />
+        </div>
       </div>
 
-      <div className="mt-10">
+      <div className={cn(pdpContentShellClass, "mt-8 lg:mt-10")}>
         <ProductTabs product={product} />
       </div>
 
       {related.length > 0 || relatedLoading ? (
-        <SimilarProducts products={related} loading={relatedLoading} />
+        <div className={pdpContentShellClass}>
+          <SimilarProducts products={related} loading={relatedLoading} />
+        </div>
       ) : null}
     </PageShell>
   );
@@ -72,15 +99,13 @@ export function PdpView({
 function ProductInfo({ product }: { product: ProductDetail }) {
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1
-          className="font-sans text-[2rem] leading-[130%] font-bold tracking-[0px]"
-          style={{ color: "var(--Text-Color-text-primary-black-2, #131927)" }}
-        >
-          {product.name}
-        </h1>
+      <div className="flex flex-col">
+        <h1 className={pdpTitleClass}>{product.name}</h1>
+        {product.story ? (
+          <p className={cn(pdpStoryClass, "lg:order-last")}>{product.story}</p>
+        ) : null}
         {product.tags.length > 0 || product.metafields?.foodType ? (
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="order-2 mt-3 hidden flex-wrap gap-2 lg:flex">
             {product.metafields?.foodType ? (
               <span className="border-brand-300 text-brand-600 rounded-full border px-3 py-1 text-xs font-medium">
                 {product.metafields.foodType}
@@ -97,15 +122,6 @@ function ProductInfo({ product }: { product: ProductDetail }) {
           </div>
         ) : null}
       </div>
-
-      {product.story ? (
-        <p
-          className="font-handsome text-text-secondary text-2xl leading-[26px] font-bold tracking-[0px]"
-          style={{ color: "var(--Text-Color-text-primary-black-2, #131927)" }}
-        >
-          {product.story}
-        </p>
-      ) : null}
 
       {product.variants.length > 0 ? (
         <VariantSelector variants={product.variants} />
@@ -126,12 +142,7 @@ function VariantSelector({
   const [active, setActive] = useState(0);
   return (
     <div>
-      <p
-        className="mb-2 font-sans text-base leading-[130%] font-semibold tracking-[0px] uppercase"
-        style={{ color: "var(--Text-Color-text-primary-black-2, #131927)" }}
-      >
-        Select Variant
-      </p>
+      <p className={pdpVariantLabelClass}>Select Variant</p>
       <div className="flex flex-wrap gap-3">
         {variants.map((variant, i) => {
           const label =
@@ -144,7 +155,7 @@ function VariantSelector({
               aria-pressed={i === active}
               onClick={() => setActive(i)}
               className={cn(
-                "flex h-11 w-[5.125rem] shrink-0 items-center justify-center rounded-full border text-sm transition-colors",
+                pdpVariantPillClass,
                 i === active
                   ? "border-brand-500 bg-header-tint text-brand-600 font-medium"
                   : "text-text-primary border-gray-200 hover:border-gray-300",
@@ -155,11 +166,6 @@ function VariantSelector({
           );
         })}
       </div>
-      <div
-        className="mt-6 h-px w-full"
-        style={{ backgroundColor: "#E5E7EB" }}
-        aria-hidden
-      />
     </div>
   );
 }
@@ -181,24 +187,15 @@ function TrustMarkers({
 
   return (
     <div>
-      <p
-        className="mb-3 font-sans text-base leading-[130%] font-semibold tracking-[0px] uppercase"
-        style={{ color: "var(--Text-Color-text-primary-black-2, #131927)" }}
-      >
-        Trust Markers
-      </p>
-      <div className="flex flex-wrap gap-8">
+      <p className={pdpTrustHeadingClass}>Trust Markers</p>
+      <div className={pdpTrustRowClass}>
         {markers.map((marker) => (
-          <div
-            key={marker.label}
-            className="text-text-secondary flex flex-col items-center gap-1.5 text-center text-xs"
-          >
+          <div key={marker.label} className={pdpTrustItemClass}>
             <span className="text-brand-500">{marker.icon}</span>
             <span>{marker.label}</span>
           </div>
         ))}
       </div>
-      <div className="mt-6 w-full border-b border-[#E5E7EB]" aria-hidden />
     </div>
   );
 }
@@ -208,23 +205,14 @@ function AppDownloadCard() {
   const appStore = env.NEXT_PUBLIC_APP_STORE_URL ?? "/notify";
   const playStore = env.NEXT_PUBLIC_PLAY_STORE_URL ?? "/notify";
   return (
-    <div
-      className="box-border flex w-full flex-col gap-4 rounded-sm border border-gray-200 p-8"
-      style={{ backgroundColor: "var(--Color-Brand-Brand--50, #E8EEEA)" }}
-    >
-      <p
-        className="font-sans text-lg leading-6 font-bold tracking-[0px]"
-        style={{ color: "var(--Text-Color-text-primary-black-2, #131927)" }}
-      >
-        Download App to Order
-      </p>
-      <p
-        className="font-sans text-sm leading-[150%] font-normal tracking-[0px]"
-        style={{ color: "var(--Text-Color-text-primary-black-2, #131927)" }}
-      >
-        Browse the full range on our exclusive app.
-      </p>
-      <div className="flex flex-wrap gap-3">
+    <div className={pdpAppCardClass}>
+      <div className="flex flex-col gap-1">
+        <p className={pdpAppCardTitleClass}>Download App to Order</p>
+        <p className={pdpAppCardBodyClass}>
+          Browse the full range on our exclusive app.
+        </p>
+      </div>
+      <div className={pdpAppCardButtonsClass}>
         <StoreButton href={appStore} store="apple" />
         <StoreButton href={playStore} store="google" />
       </div>
@@ -239,21 +227,23 @@ function StoreButton({
   href: string;
   store: "apple" | "google";
 }) {
-  const isApple = store === "apple";
+  const badge = APP_STORE_BADGE_BY_STORE[store];
   return (
-    <Link
-      href={href}
-      className="box-border flex h-14 w-[14.375rem] shrink-0 items-center gap-[11.73px] rounded-[9.78px] border-[0.73px] border-gray-200 bg-white px-2 transition-colors hover:bg-gray-50"
-    >
-      <span className="text-text-primary">
-        {isApple ? <AppleIcon /> : <GooglePlayIcon />}
-      </span>
+    <Link href={href} className={pdpStoreButtonClass}>
+      <Image
+        src={badge.iconSrc}
+        alt=""
+        aria-hidden
+        width={30}
+        height={30}
+        className="size-6 shrink-0 lg:size-7.5"
+      />
       <span className="leading-tight">
         <span className="text-text-tertiary block text-[10px]">
-          {isApple ? "Download on the" : "Get it on"}
+          {badge.topLine}
         </span>
         <span className="text-text-primary block text-sm font-semibold">
-          {isApple ? "App Store" : "Google Play"}
+          {badge.brandLine}
         </span>
       </span>
     </Link>
@@ -321,19 +311,4 @@ function CheckIcon() {
     </svg>
   );
 }
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width={22} height={22} aria-hidden fill="currentColor">
-      <path d="M16.4 12.7c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.3-.1-2.4.7-3 .7s-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7 1 1.4 2 2.5 2 1 0 1.3-.6 2.5-.6s1.5.6 2.6.6c1.1 0 1.7-1 2.4-2 .5-.7.8-1.5.9-1.6-.1 0-1.8-.8-1.8-2.2zM14.6 6.3c.6-.7 1-1.6.9-2.6-.8 0-1.8.6-2.4 1.2-.5.6-1 1.5-.9 2.4.9.1 1.8-.4 2.4-1z" />
-    </svg>
-  );
-}
-function GooglePlayIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width={22} height={22} aria-hidden fill="currentColor">
-      <path d="M3.6 2.3c-.2.2-.3.5-.3.9v17.6c0 .4.1.7.3.9l.1.1L13.5 12 3.7 2.2zM17 8.4l-2.6-1.5-2.3 2.3 2.3 2.3L17 10c.9-.5.9-1.1 0-1.6zM4.6 21.6c.3.1.7 0 1.1-.2l8.2-4.7-2.3-2.3zM13.6 7.5L5.4 2.8c-.4-.2-.8-.3-1.1-.2L11.3 9.8z" />
-    </svg>
-  );
-}
-
 export default PdpView;

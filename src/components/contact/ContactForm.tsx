@@ -11,6 +11,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { contactFormNameInputClass } from "@/components/contact/contact-page";
 import { cn } from "@/lib/utils/cn";
 
 import { Button } from "@/components/ui/Button";
@@ -94,6 +95,7 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
         autoComplete="name"
         placeholder="Your name"
         error={errors.name?.message}
+        className={contactFormNameInputClass}
         {...register("name")}
       />
 

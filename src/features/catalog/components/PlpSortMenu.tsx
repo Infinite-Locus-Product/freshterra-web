@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { categoryPlpToolbarButtonClass, categoryPlpToolbarLabelClass } from "@/components/category/category-plp-page";
 import { cn } from "@/lib/utils/cn";
 
 export type SortOption<T extends string = string> = {
@@ -13,12 +14,15 @@ type PlpSortMenuProps<T extends string> = {
   value: T;
   options: SortOption<T>[];
   onChange: (next: T) => void;
+  /** mWeb PLP toolbar: label-only “Sort By” trigger in the split bar. */
+  variant?: "default" | "plp-toolbar";
 };
 
 export function PlpSortMenu<T extends string>({
   value,
   options,
   onChange,
+  variant = "default",
 }: PlpSortMenuProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -35,19 +39,36 @@ export function PlpSortMenu<T extends string>({
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, [open]);
 
+  const triggerClass =
+    variant === "plp-toolbar"
+      ? cn(categoryPlpToolbarButtonClass, categoryPlpToolbarLabelClass, "w-full gap-2")
+      : "text-text-primary flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm";
+
   return (
-    <div ref={rootRef} className="relative shrink-0">
+    <div
+      ref={rootRef}
+      className={cn("relative shrink-0", variant === "plp-toolbar" && "w-full")}
+    >
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="text-text-primary flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm"
+        className={triggerClass}
       >
-        <span>
-          Sort: <span className="font-medium">{current?.label}</span>
-        </span>
-        <Chevron open={open} />
+        {variant === "plp-toolbar" ? (
+          <>
+            <span>Sort By</span>
+            <Chevron open={open} />
+          </>
+        ) : (
+          <>
+            <span>
+              Sort: <span className="font-medium">{current?.label}</span>
+            </span>
+            <Chevron open={open} />
+          </>
+        )}
       </button>
 
       {open ? (

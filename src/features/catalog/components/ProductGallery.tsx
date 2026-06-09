@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import Image from "next/image";
 
+import {
+  pdpGalleryFrameClass,
+} from "@/components/category/pdp-page";
 import { cn } from "@/lib/utils/cn";
 
 import type { ProductImage } from "../types";
@@ -20,7 +23,7 @@ export function ProductGallery({
 
   return (
     <div className="relative">
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gray-50">
+      <div className={pdpGalleryFrameClass}>
         {current ? (
           <Image
             src={current.url}

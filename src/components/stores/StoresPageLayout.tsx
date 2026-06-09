@@ -1,11 +1,32 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import type { ReactNode } from "react";
+
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
-import { Body } from "@/components/ui/Body";
+import {
+  storesDirectionsButtonClass,
+  storesDirectionsButtonShellClass,
+  storesHeroImageClass,
+  storesHeroImageShellClass,
+  storesInfoCardClass,
+  storesInfoFieldLabelClass,
+  storesInfoFieldValueClass,
+  storesInfoRowClass,
+  storesInfoRowIconClass,
+  storesInfoTitleClass,
+  storesCategoryCardClass,
+  storesInStoreCategoriesGridClass,
+  storesInStoreCategoriesTitleClass,
+  storesMapBannerClass,
+  storesMapBannerShellClass,
+  storesMapSectionClass,
+  storesPageShellClass,
+  storesPageTitleClass,
+  storesSecondaryImageClass,
+} from "@/components/stores/stores-page";
 import { Button } from "@/components/ui/Button";
-import { SECTION_TITLE_CLASS } from "@/components/layout/layout-classes";
 import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
@@ -25,7 +46,7 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
       <MarketingHeader />
 
       <section className="py-8 md:py-10">
-        <PageShell>
+        <PageShell pad={false} className={storesPageShellClass}>
           <div className="mb-4 flex items-center gap-2 text-sm text-text-secondary">
             <Link href="/" className="hover:underline">
               Home
@@ -34,46 +55,50 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
             <span className="text-text-primary">{content.breadcrumbLabel}</span>
           </div>
 
-          <Heading level={1} variant="h2" className="mb-6">
+          <Heading level={1} variant="h2" className={storesPageTitleClass}>
             {content.store.title}
           </Heading>
 
           <div className="mb-4 grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <div className="relative min-h-[260px] overflow-hidden rounded-[10px] md:min-h-[460px]">
-              <Image
-                src="/store.png"
-                alt={`${content.store.title} store interior`}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-              <div className="absolute right-4 bottom-4 flex gap-1.5" aria-hidden>
-                <span className="bg-white h-1.5 w-1.5 rounded-full" />
-                <span className="bg-white/60 h-1.5 w-1.5 rounded-full" />
-                <span className="bg-white/60 h-1.5 w-1.5 rounded-full" />
+            <div className={storesHeroImageShellClass}>
+              <div className={storesHeroImageClass}>
+                <Image
+                  src="/store.png"
+                  alt={`${content.store.title} store interior`}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+                <div className="absolute right-4 bottom-4 flex gap-1.5" aria-hidden>
+                  <span className="bg-white h-1.5 w-1.5 rounded-full" />
+                  <span className="bg-white/60 h-1.5 w-1.5 rounded-full" />
+                  <span className="bg-white/60 h-1.5 w-1.5 rounded-full" />
+                </div>
               </div>
             </div>
             <StoreInfoCard content={content} mapsUrl={mapsUrl} />
           </div>
 
-          <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open ${content.store.title} in Google Maps`}
-              className="focus-visible:ring-brand-500 relative min-h-[220px] overflow-hidden rounded-[10px] focus:outline-none focus-visible:ring-2 md:min-h-[340px]"
-            >
-              <Image
-                src="/map-store.png"
-                alt={`Map showing ${content.store.title}`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </a>
-            <div className="relative min-h-[220px] overflow-hidden rounded-[10px] md:min-h-[340px]">
+          <div className={storesMapSectionClass}>
+            <div className={storesMapBannerShellClass}>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${content.store.title} in Google Maps`}
+                className={storesMapBannerClass}
+              >
+                <Image
+                  src="/map-store.png"
+                  alt={`Map showing ${content.store.title}`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+              </a>
+            </div>
+            <div className={storesSecondaryImageClass}>
               <Image
                 src="/store.png"
                 alt={`${content.store.title} store interior`}
@@ -85,15 +110,10 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
           </div>
 
           <section>
-            <h2 className={`mb-4 ${SECTION_TITLE_CLASS} leading-tight`}>
-              In-Store Categories
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <h2 className={storesInStoreCategoriesTitleClass}>In-Store Categories</h2>
+            <div className={storesInStoreCategoriesGridClass}>
               {content.inStoreCategories.map((category) => (
-                <article
-                  key={category}
-                  className="from-text-primary/45 to-text-primary/70 text-beige-100 flex min-h-[120px] items-end rounded-[10px] bg-linear-to-t p-3"
-                >
+                <article key={category} className={storesCategoryCardClass}>
                   <p className="text-sm leading-tight font-semibold">{category}</p>
                 </article>
               ))}
@@ -112,52 +132,129 @@ function StoreInfoCard({
   mapsUrl,
 }: Readonly<StoresPageLayoutProps & { mapsUrl: string }>) {
   return (
-    <article className="border-gray-200 rounded-[10px] border bg-white p-5 md:p-6">
-      <h2 className={`mb-5 ${SECTION_TITLE_CLASS} leading-tight`}>
-        Store information
-      </h2>
+    <article className={storesInfoCardClass}>
+      <h2 className={storesInfoTitleClass}>Store information</h2>
 
       <div className="space-y-5">
-        <div>
-          <h3 className="text-base font-bold">Address</h3>
-          <Body size="md" className="text-text-secondary mt-1 text-[1rem] leading-6 tracking-normal">
-            {content.store.addressLine1}
-          </Body>
-          <Body size="md" className="text-text-secondary text-[16px] leading-6 tracking-normal">
-            {content.store.addressLine2}
-          </Body>
-        </div>
-
-        <div>
-          <h3 className="text-base font-bold">Opening Hours</h3>
-          <Body size="md" className="text-text-secondary mt-1 text-[1rem] leading-6 tracking-normal">
-            {content.store.openingHoursWeekdays}
-          </Body>
-          <Body size="md" className="text-text-secondary text-[16px] leading-6 tracking-normal">
-            {content.store.openingHoursWeekends}
-          </Body>
-        </div>
-
-        <div>
-          <h3 className="text-base font-bold">Phone</h3>
-          <Body size="md" className="text-text-secondary mt-1 text-[1rem] leading-6 tracking-normal">
-            {content.store.phone}
-          </Body>
-        </div>
-
-        <div>
-          <h3 className="text-base font-bold">Email</h3>
-          <Body size="md" className="text-text-secondary mt-1 text-[1rem] leading-6 tracking-normal">
-            {content.store.email}
-          </Body>
-        </div>
+        <StoreInfoRow
+          icon={<LocationIcon />}
+          title="Address"
+          lines={[content.store.addressLine1, content.store.addressLine2]}
+        />
+        <StoreInfoRow
+          icon={<ClockIcon />}
+          title="Opening Hours"
+          lines={[content.store.openingHoursWeekdays, content.store.openingHoursWeekends]}
+        />
+        <StoreInfoRow
+          icon={<PhoneIcon />}
+          title="Phone"
+          lines={[content.store.phone]}
+        />
+        <StoreInfoRow icon={<MailIcon />} title="Email" lines={[content.store.email]} />
       </div>
 
-      <Button asChild className="mt-6 normal-case tracking-normal">
-        <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-          {content.store.ctaLabel}
-        </a>
-      </Button>
+      <div className={storesDirectionsButtonShellClass}>
+        <Button asChild fullWidth className={storesDirectionsButtonClass}>
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+            {content.store.ctaLabel}
+          </a>
+        </Button>
+      </div>
     </article>
+  );
+}
+
+function StoreInfoRow({
+  icon,
+  title,
+  lines,
+}: Readonly<{
+  icon: ReactNode;
+  title: string;
+  lines: readonly string[];
+}>) {
+  return (
+    <div className={storesInfoRowClass}>
+      <div className={storesInfoRowIconClass}>{icon}</div>
+      <div className="min-w-0">
+        <h3 className={storesInfoFieldLabelClass}>{title}</h3>
+        <div className="mt-1 space-y-0.5">
+          {lines.map((line) => (
+            <p key={line} className={storesInfoFieldValueClass}>
+              {line}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
+      <path
+        d="M12 13.5a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M12 22s7-6.05 7-12a7 7 0 1 0-14 0c0 5.95 7 12 7 12Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
+      <path
+        d="M4.5 7.5h15v9h-15v-9Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m5.25 8.25 6.4 5.12a.75.75 0 0 0 .9 0l6.2-5.12"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
+      <path
+        d="M7 3.75h3l1 4-2 1c1 2.5 3 4.5 5.25 5.25l1-2 4 1v3c0 1.1-.9 2-2 2C10.6 19 5 13.4 5 6.75c0-1.1.9-2 2-2Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
+      <path
+        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M12 7v5l3 2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

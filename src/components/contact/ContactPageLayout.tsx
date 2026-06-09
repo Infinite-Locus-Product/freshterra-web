@@ -2,6 +2,18 @@ import Link from "next/link";
 
 import type { ReactNode } from "react";
 
+import {
+  contactFormCardClass,
+  contactFormSectionClass,
+  contactGetInTouchCardClass,
+  contactGetInTouchSectionClass,
+  contactInfoRowLabelClass,
+  contactInfoRowLineClass,
+  contactPageSectionClass,
+  contactPageSectionsClass,
+  contactPageTitleClass,
+  contactSectionHeadingClass,
+} from "@/components/contact/contact-page";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
@@ -12,13 +24,9 @@ type ContactPageLayoutProps = {
   content: ContactPageDraftContent;
 };
 
-/** Section column headings — Manrope Bold 20px / 130% line-height */
-const columnHeadingClass =
-  "font-sans text-[1.25rem] leading-[1.3] font-bold tracking-[0]";
-
 export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>) {
   return (
-    <section className="py-8 text-text-primary md:py-10">
+    <section className={contactPageSectionClass}>
       <PageShell>
         <div className="mb-6 flex items-center gap-2 text-sm text-text-secondary">
           <Link href="/" className="hover:underline">
@@ -28,21 +36,20 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
           <span className="text-text-primary">{content.breadcrumbLabel}</span>
         </div>
 
-        <Heading
-          level={1}
-          variant="h2"
-          className="font-display text-[2.25rem] leading-[1.5] font-medium tracking-[0]"
-        >
+        <Heading level={1} variant="h2" className={contactPageTitleClass}>
           {content.hero.title}
         </Heading>
 
-        <div className="mt-8 grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-          <section aria-labelledby="contact-form-title">
-            <h2 id="contact-form-title" className={columnHeadingClass}>
+        <div className={contactPageSectionsClass}>
+          <section
+            aria-labelledby="contact-form-title"
+            className={contactFormSectionClass}
+          >
+            <h2 id="contact-form-title" className={contactSectionHeadingClass}>
               {content.form.title}
             </h2>
 
-            <div className="border-gray-200 mt-6 box-border flex w-full max-w-[41rem] flex-col rounded-[0.9075rem] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:min-h-161.75">
+            <div className={contactFormCardClass}>
               <ContactForm
                 fields={content.form.fields}
                 inquiryOptions={[
@@ -56,12 +63,15 @@ export function ContactPageLayout({ content }: Readonly<ContactPageLayoutProps>)
             </div>
           </section>
 
-          <section aria-labelledby="get-in-touch-title">
-            <h2 id="get-in-touch-title" className={columnHeadingClass}>
+          <section
+            aria-labelledby="get-in-touch-title"
+            className={contactGetInTouchSectionClass}
+          >
+            <h2 id="get-in-touch-title" className={contactSectionHeadingClass}>
               {content.getInTouch.title}
             </h2>
 
-            <div className="border-gray-200 mt-6 box-border w-full max-w-[41rem] rounded-[0.9075rem] border bg-white p-8 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] lg:min-h-[23.9375rem]">
+            <div className={contactGetInTouchCardClass}>
               <div className="space-y-6">
                 <InfoRow
                   icon={<LocationIcon />}
@@ -105,10 +115,10 @@ function InfoRow({
     <div className="flex gap-3">
       <div className="text-text-tertiary mt-0.5">{icon}</div>
       <div className="min-w-0">
-        <h3 className="text-[0.875rem] font-semibold leading-tight">{title}</h3>
+        <h3 className={contactInfoRowLabelClass}>{title}</h3>
         <div className="mt-1 space-y-0.5">
           {lines.map((line) => (
-            <p key={line} className="text-text-secondary text-[0.8125rem] leading-relaxed">
+            <p key={line} className={contactInfoRowLineClass}>
               {line}
             </p>
           ))}

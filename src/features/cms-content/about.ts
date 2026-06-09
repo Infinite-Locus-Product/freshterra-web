@@ -18,6 +18,11 @@ export const aboutPageDraftContent = {
       "Today, we operate stores in major cities, partnering directly with local farmers and producers to bring you the best selection of fresh, sustainable products.",
     ],
   },
+  mission: {
+    title: "Our Mission",
+    description:
+      "A clinical pathway designed for precision, personalization, and measurable long-term results. Here's what to expect.",
+  },
   missionBanner: {
     alt: "Our Mission — To revolutionize the way people shop for food by providing fresh, gourmet products at affordable prices while supporting local farmers and sustainable practices.",
     src: dummyImages.aboutMissionBanner.src,

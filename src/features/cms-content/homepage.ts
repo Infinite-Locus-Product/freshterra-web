@@ -32,6 +32,8 @@ export const homePageDraftContent = {
   },
   sourcing: {
     title: "How We Source",
+    subtitle: "From soil to soul",
+    mediaOverlay: "Fresh, Wholesome and Gourmet",
     paragraphs: [
       "We work directly with local farmers and producers, cutting out middlemen to ensure the freshest possible products reach your table.",
       "Every product in our stores is carefully selected based on strict quality criteria. We prioritize organic, sustainable, and ethically sourced ingredients.",
