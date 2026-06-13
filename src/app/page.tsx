@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 
 import { HomepageLayout } from "@/components/homepage/HomepageLayout";
 
-import { homePageDraftContent } from "@/features/cms-content/homepage";
+import { fetchWebHomepageContentSafe } from "@/features/cms-content/web-homepage-service";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
+
+/** ISR: re-fetch homepage CMS content every 10 min (matches the BFF cache). */
+export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "FreshTerra — Fresh, Wholesome, Gourmet.",
@@ -27,8 +30,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  return (
-    <HomepageLayout content={homePageDraftContent} />
-  );
+export default async function HomePage() {
+  const content = await fetchWebHomepageContentSafe();
+
+  return <HomepageLayout content={content} />;
 }

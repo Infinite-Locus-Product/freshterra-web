@@ -36,4 +36,36 @@ describe("categoryProductsDataSchema", () => {
     expect(data.category?.name).toBe("Chocolates");
     expect(data.category?.slug).toBe("chocolates");
   });
+
+  it("normalizes BFF array facets into the record shape", () => {
+    const data = categoryProductsDataSchema.parse({
+      items: [
+        {
+          saleorProductId: "UHJvZHVjdDoyMw==",
+          name: "Milk Chocolate Bar",
+          slug: "chocolate",
+          mainImage: "https://cdn/chocolate.webp",
+          defaultVariantId: "UHJvZHVjdFZhcmlhbnQ6MjA=",
+          price: 0,
+          mrp: 0,
+          currency: "INR",
+          inStock: true,
+        },
+      ],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      facets: [
+        {
+          key: "brand",
+          label: "Brand",
+          options: [{ value: "FarmFresh", label: "FarmFresh", count: 1 }],
+        },
+      ],
+    });
+
+    expect(data.facets.brand).toEqual([
+      { value: "FarmFresh", count: 1, name: "FarmFresh" },
+    ]);
+  });
 });

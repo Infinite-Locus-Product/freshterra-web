@@ -76,7 +76,7 @@ export function CareerApplicationForm({
 
   return (
     <form
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-3 md:gap-6"
       aria-label={`Application form for ${jobTitle}`}
       onSubmit={handleSubmit(onSubmit)}
       noValidate

@@ -1,4 +1,8 @@
 /** Figma Stores page — mWeb tokens. */
+export const STORES_CONTENT_TO_FOOTER_GAP_MWEB = 29;
+
+export const storesPageSectionClass = "pt-8 pb-[29px] md:py-10";
+
 export const STORES_PAGE_TITLE_MWEB_FONT_SIZE = 28;
 export const STORES_HERO_IMAGE_MWEB_INSET = 16;
 export const STORES_HERO_IMAGE_MWEB_WIDTH = 361;
@@ -69,10 +73,15 @@ export const storesInStoreCategoriesTitleClass =
 export const STORES_CATEGORY_CARD_MWEB_WIDTH = 176;
 export const STORES_CATEGORY_CARD_MWEB_HEIGHT = 153;
 export const STORES_CATEGORY_CARD_BORDER_WIDTH = 1.73;
+export const STORES_CATEGORY_CARD_GAP_MWEB = 9;
 
 export const storesInStoreCategoriesGridClass =
-  "grid grid-cols-2 gap-2 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3 xl:grid-cols-6";
+  "grid grid-cols-2 gap-[9px] sm:grid-cols-2 lg:grid-cols-3 lg:gap-3 xl:grid-cols-6";
 
 /** Category card — mWeb: 176 × 153, 10px radius, 1.73px border, -180deg gradient. */
 export const storesCategoryCardClass =
   "from-text-primary/45 to-text-primary/70 text-beige-100 box-border flex h-[153px] w-[176px] max-w-full items-end overflow-hidden rounded-[10px] border-[1.73px] border-gray-200 bg-linear-to-b p-3 lg:min-h-[120px] lg:h-auto lg:w-auto lg:border-0 lg:bg-linear-to-t";
+
+/** Category card label — mWeb: Manrope 14px bold, 16px line-height. */
+export const storesCategoryCardLabelClass =
+  "font-sans text-[14px] font-bold leading-4 tracking-[0] lg:text-sm lg:leading-tight lg:font-semibold";

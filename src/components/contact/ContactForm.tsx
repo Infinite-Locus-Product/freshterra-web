@@ -11,7 +11,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { contactFormNameInputClass } from "@/components/contact/contact-page";
+import {
+  contactFormClass,
+  contactFormMessageLabelClass,
+  contactFormMessageSubmitGroupClass,
+  contactFormMessageTextareaClass,
+  contactFormNameInputClass,
+  contactFormSubmitButtonClass,
+} from "@/components/contact/contact-page";
 import { cn } from "@/lib/utils/cn";
 
 import { Button } from "@/components/ui/Button";
@@ -78,7 +85,7 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
 
   return (
     <form
-      className="flex min-h-0 flex-1 flex-col gap-4 lg:gap-[18px]"
+      className={contactFormClass}
       aria-label="Contact form"
       onSubmit={handleSubmit(onSubmit)}
       noValidate
@@ -132,24 +139,26 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
         ref={phoneRegister.ref}
       />
 
-      <LabeledTextarea
-        label={fields.message}
-        rows={4}
-        placeholder="Tell us more..."
-        error={errors.message?.message}
-        className="min-h-[96px] flex-1 resize-none lg:max-h-[120px]"
-        {...register("message")}
-      />
+      <div className={contactFormMessageSubmitGroupClass}>
+        <LabeledTextarea
+          label={fields.message}
+          rows={4}
+          placeholder="Tell us more..."
+          error={errors.message?.message}
+          className="min-h-[96px] flex-1 resize-none lg:max-h-[120px]"
+          {...register("message")}
+        />
 
-      <Button
-        type="submit"
-        fullWidth
-        caps={false}
-        disabled={isSubmitting}
-        className="mt-auto h-12 shrink-0 rounded-[var(--radius-xxl)] px-5 py-[14px] text-[18px] font-semibold tracking-[0] opacity-100"
-      >
-        {ctaLabel}
-      </Button>
+        <Button
+          type="submit"
+          fullWidth
+          caps={false}
+          disabled={isSubmitting}
+          className={contactFormSubmitButtonClass}
+        >
+          {ctaLabel}
+        </Button>
+      </div>
     </form>
   );
 }
@@ -285,7 +294,7 @@ function LabeledTextarea({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col space-y-1.5">
-      <label htmlFor={fieldId} className="text-text-primary shrink-0 font-sans text-[18px] leading-[1.3]">
+      <label htmlFor={fieldId} className={contactFormMessageLabelClass}>
         {label}
       </label>
       {/* Border + radius live on this wrapper with overflow-hidden so the
@@ -305,8 +314,7 @@ function LabeledTextarea({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           className={cn(
-            "text-text-primary w-full flex-1 resize-none border-0 bg-transparent px-5 py-3 text-[16px] leading-[1.4] lg:text-[18px]",
-            "placeholder:text-text-tertiary",
+            contactFormMessageTextareaClass,
             "focus:outline-none",
             "autofill:shadow-[inset_0_0_0_1000px_#ffffff] autofill:[-webkit-text-fill-color:#131927]",
           )}

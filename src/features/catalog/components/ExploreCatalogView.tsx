@@ -150,9 +150,9 @@ function ExploreCatalogSkeleton() {
               {Array.from({ length: 4 }).map((_, j) => (
                 <div
                   key={`explore-tile-skeleton-${i}-${j}`}
-                  className="flex w-[78.4px] flex-col items-center gap-3 p-0 md:w-auto md:p-2"
-                >
-                  <div className="size-[78.4px] animate-pulse rounded-[100px] bg-gray-100 md:size-[140px] md:rounded-full" />
+                  className="flex w-[74.94px] flex-col items-center gap-3 p-0 md:w-auto md:p-2"
+                  >
+                  <div className="h-[74px] w-[74.94px] animate-pulse rounded-[100px] bg-gray-100 md:size-[140px] md:rounded-full" />
                   <div className="h-5 w-20 animate-pulse rounded bg-gray-100" />
                 </div>
               ))}

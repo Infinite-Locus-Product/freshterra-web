@@ -140,14 +140,14 @@ export function SearchBox({
         <button
           type="submit"
           aria-label="Search"
-          className="grid h-[19px] w-[19px] shrink-0 place-items-center"
+          className="grid size-6 shrink-0 place-items-center lg:size-[19px]"
         >
           <Image
             src="/Shape-3.svg"
             alt=""
-            width={19}
-            height={19}
-            className="h-[19px] w-[19px]"
+            width={24}
+            height={24}
+            className="size-6 lg:size-[19px]"
             aria-hidden
           />
         </button>
@@ -166,7 +166,7 @@ export function SearchBox({
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={activeId}
-          className="placeholder:text-text-tertiary h-full min-w-0 flex-1 bg-transparent text-sm outline-none md:text-base"
+          className="placeholder:text-text-tertiary h-full min-w-0 flex-1 bg-transparent text-base outline-none"
         />
       </form>
 

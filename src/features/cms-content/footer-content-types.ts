@@ -23,6 +23,12 @@ export const footerGroupSchema = z.object({
 });
 export type FooterGroup = z.infer<typeof footerGroupSchema>;
 
+export const footerOfficeSchema = z.object({
+  title: z.string(),
+  lines: z.array(z.string()).default([]),
+});
+export type FooterOffice = z.infer<typeof footerOfficeSchema>;
+
 export const footerSocialSchema = z.object({
   platform: z.string(),
   url: z.string(),
@@ -32,6 +38,7 @@ export type FooterSocial = z.infer<typeof footerSocialSchema>;
 
 export const footerContentDataSchema = z.object({
   groups: z.array(footerGroupSchema).default([]),
+  office: footerOfficeSchema.optional(),
   social: z.array(footerSocialSchema).default([]),
   legal: z.array(footerLinkSchema).default([]),
   copyrightLine: z.string().optional(),

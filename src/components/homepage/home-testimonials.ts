@@ -5,31 +5,37 @@ export const HOME_TESTIMONIALS_SUBTITLE_MWEB_LINE_HEIGHT = 20;
 
 export const HOME_TESTIMONIALS_CARD_MWEB_WIDTH = 343;
 export const HOME_TESTIMONIALS_CARD_MWEB_HEIGHT = 400;
-export const HOME_TESTIMONIALS_CARD_MWEB_GAP = 10;
+export const HOME_TESTIMONIALS_CARD_MWEB_GAP = 12;
 export const HOME_TESTIMONIALS_CARD_MWEB_RADIUS = 10;
 export const HOME_TESTIMONIALS_CARD_MWEB_PADDING = 16;
 
 export const HOME_TESTIMONIALS_CARD_WIDTH = 730;
 export const HOME_TESTIMONIALS_CARD_HEIGHT = 551;
 
-export const homeTestimonialsSectionClass = "bg-white pt-10 pb-0 md:pt-14";
+export const HOME_TESTIMONIALS_FOOTER_GAP_MWEB = 73.14;
+
+export const homeTestimonialsSectionClass = "bg-white pt-8 pb-0 md:pt-14";
+
+/** About page — stories carousel is the last block before the footer on mWeb. */
+export const homeTestimonialsStoriesSectionClass =
+  "mt-18 pb-[73.14px] md:pb-0";
 
 /** mWeb: Figma 16px horizontal inset for section header copy. */
 export const homeTestimonialsSectionShellClass =
   "mx-auto w-full max-w-content px-4 md:px-page";
 
 export const homeTestimonialsTitleClass =
-  "font-display text-[#101828] text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-2xl md:font-medium md:leading-tight";
+  "font-display text-[#101828] text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-[36px] md:font-medium md:leading-[150%] md:tracking-[0]";
 
 export const homeTestimonialsSubtitleClass =
-  "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:text-[1.875rem] md:leading-[1.625rem]";
+  "text-brand-500 font-handsome text-[20px] leading-[20px] font-bold tracking-[0] md:text-[1.875rem] md:leading-[1.625rem]";
 
 export const homeTestimonialsCarouselBleedClass =
   "relative left-1/2 w-screen -translate-x-1/2";
 
 /** Full-bleed horizontal scroller — edge spacers + snap-center for peeking neighbours. */
 export const homeTestimonialsGridClass =
-  "mt-6 flex snap-x snap-mandatory gap-[10px] overflow-x-auto pb-2 [scrollbar-width:none] md:mt-10 md:gap-4 [&::-webkit-scrollbar]:hidden";
+  "mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none] md:mt-10 md:gap-4 [&::-webkit-scrollbar]:hidden";
 
 /** mWeb: 343 × 400 video placeholder; desktop Figma story card sizes. */
 export const homeTestimonialsCardClass =
@@ -52,6 +58,14 @@ export const homeTestimonialsCardFooterClass =
 
 export const HOME_TESTIMONIALS_NAME_MWEB_FONT_SIZE = 16;
 export const HOME_TESTIMONIALS_META_MWEB_FONT_SIZE = 12;
+export const HOME_TESTIMONIALS_QUOTE_MWEB_FONT_SIZE = 12;
+export const HOME_TESTIMONIALS_QUOTE_MWEB_LINE_HEIGHT = 1.4;
+
+/** Desktop / web — About (and homepage) story card footer copy. */
+export const HOME_TESTIMONIALS_NAME_WEB_FONT_SIZE = 28;
+export const HOME_TESTIMONIALS_AGE_WEB_FONT_SIZE = 18;
+export const HOME_TESTIMONIALS_QUOTE_WEB_FONT_SIZE = 14;
+export const HOME_TESTIMONIALS_QUOTE_WEB_LINE_HEIGHT = 16;
 
 /** Age + quote stack; play button top-aligns with the age line. */
 export const homeTestimonialsCardMetaRowClass =
@@ -60,13 +74,13 @@ export const homeTestimonialsCardMetaRowClass =
 export const homeTestimonialsCardCopyClass = "text-white-soft min-w-0 flex-1";
 
 export const homeTestimonialsCardNameClass =
-  "text-white-soft font-sans text-base font-semibold leading-[1.3] tracking-[0] md:font-display md:text-2xl md:leading-tight";
+  "text-white-soft font-sans text-base font-semibold leading-[1.3] tracking-[0] md:font-display md:text-[28px] md:font-semibold md:leading-none md:tracking-[0]";
 
 export const homeTestimonialsCardAgeClass =
-  "font-sans text-xs font-normal leading-[1.4] tracking-[0] text-white/90 md:text-sm";
+  "font-sans text-xs font-normal leading-[1.4] tracking-[0] text-white/90 md:text-[18px] md:font-normal md:leading-none md:tracking-[0.2px]";
 
 export const homeTestimonialsCardQuoteClass =
-  "mt-2 font-sans text-xs font-normal leading-[1.4] tracking-[0] text-white/95 md:mt-3 md:text-sm md:leading-6";
+  "mt-2 align-middle font-sans text-[12px] font-normal leading-[1.4] tracking-[0] text-white/95 md:mt-3 md:text-[14px] md:font-medium md:leading-4 md:tracking-[0]";
 
 export const homeTestimonialsCardPlayButtonClass =
   "shrink-0 self-start rounded-full transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none";

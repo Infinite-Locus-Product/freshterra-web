@@ -14,12 +14,12 @@ import {
 } from "@/components/careers/careers-page";
 import { Button } from "@/components/ui/Button";
 
-import type { CareersPageDraftContent } from "@/features/cms-content/careers";
+import type { CareersPageContent } from "@/features/cms-content/career-types";
 
 import { ApplyNowModal } from "./ApplyNowModal";
 
 type CareerOpeningsProps = Readonly<{
-  openings: CareersPageDraftContent["openings"];
+  openings: CareersPageContent["openings"];
 }>;
 
 export function CareerOpenings({ openings }: CareerOpeningsProps) {
@@ -45,7 +45,7 @@ export function CareerOpenings({ openings }: CareerOpeningsProps) {
                     className={careersJobCardButtonClass}
                     onClick={() => setActiveJob(job.title)}
                   >
-                    Apply Now
+                    {job.applyCtaLabel}
                   </Button>
                 </article>
               ))}

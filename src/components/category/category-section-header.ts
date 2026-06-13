@@ -10,8 +10,13 @@ export const categorySectionTitleClass =
 export const categorySectionSubtitleClass =
   "font-handsome mt-1 text-[20px] leading-[1.2] font-bold tracking-[0.2px] not-italic md:text-[1.875rem] md:leading-[1.625rem] md:tracking-normal";
 
+/** Web “View All” CTA — Manrope 18px bold, 24px line-height. */
+export const CATEGORY_SECTION_CTA_WEB_FONT_SIZE = 18;
+export const CATEGORY_SECTION_CTA_WEB_LINE_HEIGHT = 24;
+
 /** mWeb: chevron only. Desktop: label + chevron. */
 export const categorySectionCtaLinkClass =
-  "text-brand-500 inline-flex shrink-0 items-center gap-2 text-sm font-bold md:text-base";
+  "text-brand-500 inline-flex shrink-0 items-center gap-2 md:items-center";
 
-export const categorySectionCtaLabelClass = "hidden md:inline";
+export const categorySectionCtaLabelClass =
+  "hidden font-sans text-[18px] font-bold leading-6 tracking-[0] md:inline md:text-center";

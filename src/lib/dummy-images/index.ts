@@ -33,16 +33,6 @@ export const dummyImages = {
     width: 1024,
     height: 235,
   },
-  careersHeroBanner: {
-    src: "/dummy-images/careers-hero-banner.png",
-    width: 1481,
-    height: 988,
-  },
-  philosophyHeroBanner: {
-    src: "/dummy-images/philosophy-hero-banner.png",
-    width: 2720,
-    height: 916,
-  },
   botanicalLineArt: {
     src: "/dummy-images/footer-pattern-overlay.png",
     width: 1024,
@@ -99,65 +89,6 @@ export const dummyImages = {
     popcorn: "/dummy-images/catalog-s-popcorn.png",
     chocolates: "/dummy-images/catalog-s-chocolates.png",
     viewAll: "/dummy-images/catalog-s-view-all.png",
-  },
-  philosophyOrganicCertified: {
-    src: "/dummy-images/philosophy-organic-certified.png",
-    width: 240,
-    height: 240,
-  },
-  philosophyFssaiApproved: {
-    src: "/dummy-images/philosophy-fssai-approved.png",
-    width: 240,
-    height: 240,
-  },
-  philosophyIso22000: {
-    src: "/dummy-images/philosophy-iso-22000.png",
-    width: 240,
-    height: 236,
-  },
-  philosophyFairTrade: {
-    src: "/dummy-images/philosophy-fair-trade.png",
-    width: 244,
-    height: 240,
-  },
-  philosophyPartners: {
-    rajeshKumar: {
-      src: "/dummy-images/philosophy-partner-rajesh-kumar.jpg",
-      width: 1024,
-      height: 549,
-    },
-    kamlaDevi: {
-      src: "/dummy-images/philosophy-partner-kamla-devi.jpg",
-      width: 1024,
-      height: 561,
-    },
-    manishSingh: {
-      src: "/dummy-images/philosophy-partner-manish-singh.jpg",
-      width: 1024,
-      height: 561,
-    },
-  },
-  philosophySustainability: {
-    ecoFriendlyPackaging: {
-      src: "/philosophy-tile-1.png",
-      width: 629,
-      height: 780,
-    },
-    zeroWasteGoal: {
-      src: "/philosophy-tile-2.png",
-      width: 629,
-      height: 780,
-    },
-    localSourcing: {
-      src: "/philosophy-tile-3.png",
-      width: 629,
-      height: 780,
-    },
-    energyEfficiency: {
-      src: "/philosophy-tile-4.png",
-      width: 629,
-      height: 780,
-    },
   },
   testimonials: {
     mankiratSingh: "/dummy-images/home-testimonial-mankirat-singh.png",

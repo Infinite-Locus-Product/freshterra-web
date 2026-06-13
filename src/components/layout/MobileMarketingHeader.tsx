@@ -11,6 +11,9 @@ import type { MarketingNavLink } from "@/components/layout/MarketingHeader";
 import { DEFAULT_NAV_LINKS } from "@/components/layout/MarketingHeader";
 import {
   mobileHeaderLocationBadgeClass,
+  mobileHeaderLogoClass,
+  MOBILE_HEADER_LOGO_HEIGHT,
+  MOBILE_HEADER_LOGO_WIDTH,
   mobileHeaderMenuLogoGroupClass,
   mobileHeaderMenuButtonClass,
   mobileHeaderShellClass,
@@ -48,6 +51,7 @@ export function MobileMarketingHeader({
       <div
         className={cn(
           mobileHeaderShellClass,
+          bannerFullBleed && "pb-0",
           HEADER_EDGE_PADDING_CLASS,
           className,
         )}
@@ -65,7 +69,15 @@ export function MobileMarketingHeader({
               >
                 <MenuIcon />
               </button>
-              <Logo tone="light" variant="header" priority linkToHome />
+              <Logo
+                tone="light"
+                variant="header"
+                width={MOBILE_HEADER_LOGO_WIDTH}
+                height={MOBILE_HEADER_LOGO_HEIGHT}
+                priority
+                linkToHome
+                className={mobileHeaderLogoClass}
+              />
             </div>
 
             <HeaderLocationBadge className={mobileHeaderLocationBadgeClass}>

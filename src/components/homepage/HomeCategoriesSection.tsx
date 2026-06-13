@@ -1,11 +1,6 @@
-"use client";
-
 import Link from "next/link";
 
-import { dummyImages } from "@/lib/dummy-images";
-
 import {
-  homeCategoriesCircleClass,
   homeCategoriesCtaLabelClass,
   homeCategoriesCtaLinkClass,
   homeCategoriesGridClass,
@@ -13,32 +8,15 @@ import {
   homeCategoriesSectionClass,
   homeCategoriesSubtitleClass,
   homeCategoriesTitleClass,
-  homeCategoriesViewAllTileClass,
 } from "@/components/homepage/home-categories";
 import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
 import { PageShell } from "@/components/layout/PageShell";
 
-import { useHomeCategories } from "@/features/catalog/useHomeCategories";
-import type { HomePageDraftContent } from "@/features/cms-content/homepage";
+import type { HomePageContent } from "@/features/cms-content/web-homepage-types";
 
 type HomeCategoriesSectionProps = Readonly<{
-  /** Section labels (title/subtitle/cta) — Saleor supplies the tiles. */
-  fallback: HomePageDraftContent["categories"];
+  categories: HomePageContent["categories"];
 }>;
-
-/**
- * Tile imagery by Saleor slug. Saleor categories carry no `backgroundImage`
- * yet, so these local assets stand in until CMS/Saleor media is wired.
- */
-const CATEGORY_IMAGE_BY_SLUG: Record<string, string> = {
-  "fruits-vegetables": dummyImages.categories.fruitsVegetables,
-  "dairy-breads-eggs": dummyImages.categories.dairyBreadEggs,
-  "snacks-and-munchies": dummyImages.categories.snacks,
-};
-
-function tileImage(slug: string, imageUrl?: string): string | undefined {
-  return imageUrl?.trim() || CATEGORY_IMAGE_BY_SLUG[slug];
-}
 
 function CategoriesChevronIcon() {
   return (
@@ -59,66 +37,54 @@ function CategoriesChevronIcon() {
 }
 
 /**
- * Homepage category rail — all top-level categories configured in Saleor
- * (`GET /api/catalog/categories`), plus a trailing "View All" tile on desktop.
+ * Homepage category rail — curated L3 tiles from `web-category-page` CMS data.
  */
 export function HomeCategoriesSection({
-  fallback,
+  categories,
 }: HomeCategoriesSectionProps) {
-  const { categories, loading } = useHomeCategories();
+  const { title, subtitle, ctaLabel, viewAllHref = "/categories", items } =
+    categories;
 
-  const { title, subtitle, ctaLabel } = fallback;
+  if (!title.trim() && items.length === 0) {
+    return null;
+  }
 
   return (
     <section className={homeCategoriesSectionClass}>
       <PageShell>
         <div className={homeCategoriesHeaderRowClass}>
           <div>
-            <h2 className={homeCategoriesTitleClass}>{title}</h2>
-            <p className={homeCategoriesSubtitleClass}>{subtitle}</p>
+            {title.trim() ? (
+              <h2 className={homeCategoriesTitleClass}>{title}</h2>
+            ) : null}
+            {subtitle.trim() ? (
+              <p className={homeCategoriesSubtitleClass}>{subtitle}</p>
+            ) : null}
           </div>
-          <Link
-            href="/c/explore-catalog"
-            aria-label={ctaLabel}
-            className={homeCategoriesCtaLinkClass}
-          >
-            <span className={homeCategoriesCtaLabelClass}>{ctaLabel}</span>
-            <CategoriesChevronIcon />
-          </Link>
+          {viewAllHref ? (
+            <Link
+              href={viewAllHref}
+              aria-label={ctaLabel}
+              className={homeCategoriesCtaLinkClass}
+            >
+              <span className={homeCategoriesCtaLabelClass}>{ctaLabel}</span>
+              <CategoriesChevronIcon />
+            </Link>
+          ) : null}
         </div>
 
-        {loading && categories.length === 0 ? (
-          <div className={homeCategoriesGridClass} aria-busy aria-label="Loading categories">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={`home-cat-skeleton-${i}`}
-                className="flex w-[78.4px] flex-col items-center gap-3 p-0 md:w-auto md:p-2"
-              >
-                <div
-                  className={`${homeCategoriesCircleClass} animate-pulse bg-gray-100`}
-                />
-                <div className="h-5 w-20 animate-pulse rounded bg-gray-100" />
-              </div>
-            ))}
-          </div>
-        ) : (
+        {items.length > 0 ? (
           <div className={homeCategoriesGridClass}>
-            {categories.map((category) => (
+            {items.map((tile) => (
               <HomeCategoryTile
-                key={category.id}
-                name={category.name}
-                imageSrc={tileImage(category.slug, category.imageUrl)}
-                href={`/category/${category.slug}`}
+                key={tile.key}
+                name={tile.name}
+                imageSrc={tile.imageSrc}
+                href={tile.href}
               />
             ))}
-            <HomeCategoryTile
-              name="View All"
-              imageSrc={dummyImages.categories.viewAll}
-              className={homeCategoriesViewAllTileClass}
-              href="/c/explore-catalog"
-            />
           </div>
-        )}
+        ) : null}
       </PageShell>
     </section>
   );
