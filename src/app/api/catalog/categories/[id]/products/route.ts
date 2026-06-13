@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
@@ -13,6 +14,8 @@ import { getCategoryProductsFromSaleor } from "@/features/catalog/category-saleo
  * resolves either. Server-only so the Saleor app token stays off the browser.
  */
 export const dynamic = "force-dynamic";
+
+const STORE_COOKIE = "ft_store_id";
 
 type Params = Promise<{ id: string }>;
 
@@ -29,9 +32,17 @@ export async function GET(
   const url = new URL(request.url);
   const page = toInt(url.searchParams.get("page"), 1);
   const pageSize = toInt(url.searchParams.get("pageSize"), 20);
+  const storeId =
+    url.searchParams.get("storeId")?.trim() ||
+    (await cookies()).get(STORE_COOKIE)?.value?.trim() ||
+    undefined;
 
   try {
-    const data = await getCategoryProductsFromSaleor(id, { page, pageSize });
+    const data = await getCategoryProductsFromSaleor(id, {
+      page,
+      pageSize,
+      storeId,
+    });
     return NextResponse.json({ success: true, data, error: null });
   } catch (error) {
     if (error instanceof FreshTerraApiError && error.code === "NOT_FOUND") {

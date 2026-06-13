@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { dummyImages } from "@/lib/dummy-images";
+import { cn } from "@/lib/utils/cn";
 
 import {
   homeStoreAddressClass,
@@ -12,6 +13,7 @@ import {
   homeStoreHeaderRowClass,
   homeStoreMediaFrameClass,
   homeStoreMediaImageClass,
+  homeStoreNameAddressGroupClass,
   homeStoreNameClass,
   homeStoreSectionClass,
   homeStoreSectionShellClass,
@@ -20,10 +22,10 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 
-import type { HomePageDraftContent } from "@/features/cms-content/homepage";
+import type { HomePageContent } from "@/features/cms-content/web-homepage-types";
 
 type HomeStoreSectionProps = Readonly<{
-  content: HomePageDraftContent["store"];
+  content: HomePageContent["store"];
   title: string;
 }>;
 
@@ -46,6 +48,11 @@ function StoreChevronIcon() {
 }
 
 export function HomeStoreSection({ content, title }: HomeStoreSectionProps) {
+  const mediaImage = content.mediaImage ?? dummyImages.homeStoreMedia.src;
+  const mediaImageMobile = content.mediaImageMobile ?? mediaImage;
+  const primaryHref = content.primaryCtaHref ?? "/stores";
+  const secondaryHref = content.secondaryCtaHref ?? "/stores";
+
   return (
     <section className={homeStoreSectionClass}>
       <PageShell pad={false} className={homeStoreSectionShellClass}>
@@ -62,19 +69,28 @@ export function HomeStoreSection({ content, title }: HomeStoreSectionProps) {
 
         <div className={homeStoreMediaFrameClass}>
           <Image
-            src={dummyImages.homeStoreMedia.src}
+            src={mediaImageMobile}
             alt={`${content.name} store interior`}
             fill
-            className={homeStoreMediaImageClass}
+            className={cn(homeStoreMediaImageClass, "md:hidden")}
+            sizes="(max-width: 768px) 361px, (max-width: 1360px) 100vw, 1360px"
+          />
+          <Image
+            src={mediaImage}
+            alt={`${content.name} store interior`}
+            fill
+            className={cn(homeStoreMediaImageClass, "hidden md:block")}
             sizes="(max-width: 768px) 361px, (max-width: 1360px) 100vw, 1360px"
           />
         </div>
 
         <div className={homeStoreDetailsClass}>
-          <h3 className={homeStoreNameClass}>{content.name}</h3>
-          <div className={homeStoreAddressClass}>
-            <p>{content.addressLine1}</p>
-            <p>{content.addressLine2}</p>
+          <div className={homeStoreNameAddressGroupClass}>
+            <h3 className={homeStoreNameClass}>{content.name}</h3>
+            <div className={homeStoreAddressClass}>
+              <p>{content.addressLine1}</p>
+              <p>{content.addressLine2}</p>
+            </div>
           </div>
           <div className={homeStoreCtaRowClass}>
             <Button
@@ -84,7 +100,7 @@ export function HomeStoreSection({ content, title }: HomeStoreSectionProps) {
               caps={false}
               className={homeStoreCtaPillClass}
             >
-              <Link href="/stores">{content.primaryCtaLabel}</Link>
+              <Link href={primaryHref}>{content.primaryCtaLabel}</Link>
             </Button>
             <Button
               asChild
@@ -93,7 +109,7 @@ export function HomeStoreSection({ content, title }: HomeStoreSectionProps) {
               caps={false}
               className={homeStoreCtaPillClass}
             >
-              <Link href="/stores">{content.secondaryCtaLabel}</Link>
+              <Link href={secondaryHref}>{content.secondaryCtaLabel}</Link>
             </Button>
           </div>
         </div>

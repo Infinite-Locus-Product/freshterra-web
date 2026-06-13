@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { PolicyPage } from "@/components/policy/PolicyPage";
-import { ComingSoon } from "@/components/ui/coming-soon";
 
 import { getPolicyDocument } from "@/features/cms-content/policies";
+
+/** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
+export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -12,12 +15,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy-policy" },
 };
 
+/**
+ * Renders the Privacy Policy from the CMS single type
+ * (`GET /api/v1/content/single/privacy-policy`).
+ */
 export default async function PrivacyPolicyPage() {
   const doc = await getPolicyDocument("privacy");
-  if (!doc) {
-    // Phase 1: Privacy is always populated. If we ever ship without content,
-    // fall back to the placeholder so the route still works.
-    return <ComingSoon title="Privacy Policy" />;
-  }
+  if (!doc) notFound();
+
   return <PolicyPage document={doc} />;
 }

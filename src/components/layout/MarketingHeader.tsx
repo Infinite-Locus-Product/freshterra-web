@@ -4,7 +4,10 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils/cn";
 
-import { HEADER_EDGE_PADDING_CLASS } from "@/components/layout/header-chrome";
+import {
+  HEADER_EDGE_PADDING_CLASS,
+  marketingHeaderNavClass,
+} from "@/components/layout/header-chrome";
 import { PAGE_SHELL_INNER_CLASS } from "@/components/layout/layout-classes";
 import { MobileMarketingHeader } from "@/components/layout/MobileMarketingHeader";
 import { BrandTagline } from "@/components/ui/BrandTagline";
@@ -72,10 +75,7 @@ export function MarketingHeader({
       </div>
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <nav
-          aria-label="Primary"
-          className="flex flex-wrap items-center gap-x-5 gap-y-2"
-        >
+        <nav aria-label="Primary" className={marketingHeaderNavClass}>
           {navLinks.map((link) => (
             <Link
               key={link.label}

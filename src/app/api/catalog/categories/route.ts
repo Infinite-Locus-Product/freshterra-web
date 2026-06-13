@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 import { getSaleorTopCategories } from "@/lib/clients/saleor";
 
@@ -8,9 +9,17 @@ import { getSaleorTopCategories } from "@/lib/clients/saleor";
  */
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<NextResponse> {
+const STORE_COOKIE = "ft_store_id";
+
+export async function GET(request: Request): Promise<NextResponse> {
+  const url = new URL(request.url);
+  const storeId =
+    url.searchParams.get("storeId")?.trim() ||
+    (await cookies()).get(STORE_COOKIE)?.value?.trim() ||
+    undefined;
+
   try {
-    const categories = await getSaleorTopCategories();
+    const categories = await getSaleorTopCategories({ storeId });
     return NextResponse.json({
       success: true,
       data: { categories },

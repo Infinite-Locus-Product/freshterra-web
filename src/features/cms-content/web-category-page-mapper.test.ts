@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildExploreCatalogSections,
+  buildHomepageCategoryTiles,
   collectUnresolvedCategoryIds,
 } from "./web-category-page-mapper";
 
@@ -257,6 +258,56 @@ describe("buildExploreCatalogSections", () => {
     expect(sections).toHaveLength(1);
     expect(sections[0]?.tiles).toHaveLength(0);
     expect(sections[0]?.title).toBe("Fruits and Vegetables");
+  });
+});
+
+describe("buildHomepageCategoryTiles", () => {
+  it("flattens l3 tiles across sections, sorted by position and capped by limit", () => {
+    const tiles = buildHomepageCategoryTiles(
+      {
+        sections: [
+          {
+            saleorCategoryId: "Q2F0ZWdvcnk6Mw==",
+            name: "Fruits and Vegetables",
+            slug: "fruits-vegetables",
+            tagline: "Fresh from the farm",
+            position: 1,
+            tiles: [
+              {
+                saleorCategoryId: "Q2F0ZWdvcnk6Nw==",
+                name: "Vegetables",
+                slug: "vegetables",
+                imageWeb: "https://cms-stg.freshterra.in/uploads/veg.png",
+                imageMweb: "",
+                position: 2,
+              },
+            ],
+          },
+          {
+            saleorCategoryId: "Q2F0ZWdvcnk6MTA=",
+            name: "Dairy",
+            slug: "dairy",
+            tagline: "Start your day",
+            position: 2,
+            tiles: [
+              {
+                saleorCategoryId: "Q2F0ZWdvcnk6NA==",
+                name: "Fruits",
+                slug: "fruits",
+                imageWeb: "https://cms-stg.freshterra.in/uploads/fruits.png",
+                imageMweb: "",
+                position: 1,
+              },
+            ],
+          },
+        ],
+      },
+      { limit: 2 },
+    );
+
+    expect(tiles).toHaveLength(2);
+    expect(tiles[0]?.name).toBe("Fruits");
+    expect(tiles[1]?.name).toBe("Vegetables");
   });
 });
 

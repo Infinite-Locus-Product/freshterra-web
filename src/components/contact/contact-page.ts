@@ -1,4 +1,9 @@
 /** Figma Contact page — mWeb tokens. */
+export const CONTACT_PAGE_BREADCRUMB_MWEB_FONT_SIZE = 12;
+
+export const contactPageBreadcrumbClass =
+  "text-text-secondary mb-6 flex items-center gap-2 text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
+
 export const CONTACT_PAGE_TITLE_MWEB_FONT_SIZE = 28;
 
 export const CONTACT_FORM_TO_FOOTER_GAP = 24;
@@ -44,3 +49,24 @@ export const CONTACT_FORM_NAME_INPUT_MWEB_HEIGHT = 48;
 /** Name field input — mWeb: 361 × 48. */
 export const contactFormNameInputClass =
   "box-border h-[48px] w-full max-w-[361px] lg:h-[52px] lg:max-w-none";
+
+/** Message field label — mWeb: Manrope 14px medium, 16px line-height. */
+export const contactFormMessageLabelClass =
+  "text-text-primary shrink-0 font-sans text-[14px] font-medium leading-4 tracking-[0] md:text-[18px] md:leading-[1.3]";
+
+/** Message field input + placeholder — mWeb: Manrope 12px regular, 140% line-height. */
+export const contactFormMessageTextareaClass =
+  "text-text-primary font-sans w-full flex-1 resize-none border-0 bg-transparent px-5 py-3 text-[12px] font-normal leading-[1.4] tracking-[0] placeholder:text-text-tertiary md:text-[16px] lg:text-[18px]";
+
+export const CONTACT_FORM_MESSAGE_TO_SUBMIT_GAP_MWEB = 40;
+
+/** Message textarea + submit — mWeb: 40px between box and CTA. */
+export const contactFormMessageSubmitGroupClass =
+  "flex min-h-0 flex-1 flex-col gap-[40px] lg:gap-[18px]";
+
+export const contactFormClass =
+  "flex min-h-0 flex-1 flex-col gap-4 lg:gap-[18px]";
+
+/** Submit Application — web: Manrope 16px bold, 20px line-height, centered. */
+export const contactFormSubmitButtonClass =
+  "h-12 shrink-0 rounded-[var(--radius-xxl)] px-5 py-[14px] text-[18px] font-semibold tracking-[0] opacity-100 lg:mt-auto md:text-center md:text-[16px] md:font-bold md:leading-5 md:tracking-[0]";

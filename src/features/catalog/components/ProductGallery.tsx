@@ -9,6 +9,8 @@ import {
 } from "@/components/category/pdp-page";
 import { cn } from "@/lib/utils/cn";
 
+import { ProductImageGalleryModal } from "./ProductImageGalleryModal";
+
 import type { ProductImage } from "../types";
 
 export function ProductGallery({
@@ -19,6 +21,7 @@ export function ProductGallery({
   name: string;
 }) {
   const [active, setActive] = useState(0);
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const current = images[active];
 
   return (
@@ -37,15 +40,22 @@ export function ProductGallery({
 
         <button
           type="button"
+          aria-label="Open image gallery"
+          onClick={() => setGalleryOpen(true)}
+          className="absolute inset-0 z-[1] cursor-zoom-in"
+        />
+
+        <button
+          type="button"
           aria-label="Share this product"
           onClick={() => void shareProduct(name)}
-          className="text-text-primary absolute top-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
+          className="text-text-primary absolute top-4 right-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
         >
           <ShareIcon />
         </button>
 
         {images.length > 1 ? (
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+          <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
             {images.map((_, i) => (
               <button
                 key={i}
@@ -62,6 +72,15 @@ export function ProductGallery({
           </div>
         ) : null}
       </div>
+
+      <ProductImageGalleryModal
+        open={galleryOpen}
+        images={images}
+        name={name}
+        initialIndex={active}
+        onClose={() => setGalleryOpen(false)}
+        onIndexChange={setActive}
+      />
     </div>
   );
 }

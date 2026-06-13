@@ -16,6 +16,8 @@ import {
   marketingFooterLegalNavClass,
   marketingFooterLegalPairRowClass,
   marketingFooterMainBandClass,
+  marketingFooterOfficeLineClass,
+  marketingFooterOfficeTitleClass,
 } from "@/components/layout/marketing-footer-layout";
 import { APP_STORE_BADGES } from "@/components/layout/app-store-badges";
 import { MarketingFooterArt } from "@/components/layout/MarketingFooterArt";
@@ -33,12 +35,13 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
   const playStore = env.NEXT_PUBLIC_PLAY_STORE_URL ?? "/notify";
   const badgeHref = { appStore, playStore };
 
-  const totalColumns = content.groups.length + 1;
+  const totalColumns =
+    content.groups.length + (content.office ? 1 : 0) + 1;
 
   return (
     <footer
       role="contentinfo"
-      className="bg-brand-600 text-white-soft relative mt-8 overflow-hidden"
+      className="bg-brand-600 text-white-soft relative mt-0 overflow-hidden lg:mt-8"
     >
       <div className={marketingFooterMainBandClass}>
         <MarketingFooterArt />
@@ -60,6 +63,13 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
               }))}
             />
           ))}
+
+          {content.office ? (
+            <FooterOfficeColumn
+              title={content.office.title}
+              lines={content.office.lines}
+            />
+          ) : null}
 
           <div>
               <h3 className="mb-4 font-sans text-[1.125rem] leading-6 font-bold tracking-normal">
@@ -165,6 +175,24 @@ function FooterColumn({
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function FooterOfficeColumn({
+  title,
+  lines,
+}: Readonly<{ title: string; lines: readonly string[] }>) {
+  return (
+    <div>
+      <h3 className={marketingFooterOfficeTitleClass}>{title}</h3>
+      <address className="space-y-2 not-italic">
+        {lines.map((line) => (
+          <p key={line} className={marketingFooterOfficeLineClass}>
+            {line}
+          </p>
+        ))}
+      </address>
     </div>
   );
 }

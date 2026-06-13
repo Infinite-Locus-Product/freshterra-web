@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { dummyImages } from "@/lib/dummy-images";
+import { cn } from "@/lib/utils/cn";
 
 import {
   homeSourcingBgImageClass,
@@ -25,10 +26,10 @@ import {
   homeSourcingTitleClass,
 } from "@/components/homepage/home-sourcing";
 
-import type { HomePageDraftContent } from "@/features/cms-content/homepage";
+import type { HomePageContent } from "@/features/cms-content/web-homepage-types";
 
 type HomeSourcingSectionProps = Readonly<{
-  content: HomePageDraftContent["sourcing"];
+  content: HomePageContent["sourcing"];
 }>;
 
 function SourcingChevronIcon() {
@@ -50,16 +51,31 @@ function SourcingChevronIcon() {
 }
 
 export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
+  const readMoreHref = content.readMoreHref ?? "/food-philosophy";
+  const bgImage = content.backgroundImage ?? "/home-sourcing-bg.png";
+  const bgImageMobile = content.backgroundImageMobile ?? bgImage;
+  const mediaImage = content.mediaImage ?? dummyImages.homeSourcingMedia.src;
+  const mediaImageMobile = content.mediaImageMobile ?? mediaImage;
+
   return (
     <section className={homeSourcingSectionOuterClass}>
       <div className={homeSourcingSectionFrameClass}>
         <Image
-          src="/home-sourcing-bg.png"
+          src={bgImageMobile}
           alt=""
           aria-hidden
           fill
           sizes="(max-width: 1024px) 100vw, 1200px"
-          className={`${homeSourcingBgImageClass} z-0`}
+          className={cn(homeSourcingBgImageClass, "z-0 md:hidden")}
+          priority={false}
+        />
+        <Image
+          src={bgImage}
+          alt=""
+          aria-hidden
+          fill
+          sizes="(max-width: 1024px) 100vw, 1200px"
+          className={cn(homeSourcingBgImageClass, "z-0 hidden md:block")}
           priority={false}
         />
 
@@ -71,7 +87,7 @@ export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
                 <p className={homeSourcingSubtitleClass}>{content.subtitle}</p>
               </div>
               <Link
-                href="/food-philosophy"
+                href={readMoreHref}
                 aria-label={content.ctaLabel}
                 className={homeSourcingCtaLinkClass}
               >
@@ -83,10 +99,17 @@ export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
               <div className={homeSourcingMediaColumnClass}>
                 <div className={homeSourcingMediaClass}>
                   <Image
-                    src={dummyImages.homeSourcingMedia.src}
+                    src={mediaImageMobile}
                     alt="Fresh, wholesome and gourmet produce from our sourcing partners"
                     fill
-                    className={homeSourcingMediaImageClass}
+                    className={cn(homeSourcingMediaImageClass, "md:hidden")}
+                    sizes="(max-width: 1024px) 100vw, 628px"
+                  />
+                  <Image
+                    src={mediaImage}
+                    alt="Fresh, wholesome and gourmet produce from our sourcing partners"
+                    fill
+                    className={cn(homeSourcingMediaImageClass, "hidden md:block")}
                     sizes="(max-width: 1024px) 100vw, 628px"
                   />
                   <p className={homeSourcingMediaOverlayClass}>
@@ -106,7 +129,7 @@ export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
                     </p>
                   ))}
                 </div>
-                <Link href="/food-philosophy" className={homeSourcingReadMoreClass}>
+                <Link href={readMoreHref} className={homeSourcingReadMoreClass}>
                   {content.ctaLabel}
                 </Link>
               </div>

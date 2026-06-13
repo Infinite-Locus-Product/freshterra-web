@@ -55,7 +55,7 @@ function mapSaleorProductToListing(node: {
  */
 export async function getCategoryProductsFromSaleor(
   slugOrId: string,
-  params: { page?: number; pageSize?: number } = {},
+  params: { page?: number; pageSize?: number; storeId?: string | null } = {},
 ): Promise<CategoryProductsData> {
   const listing = await getSaleorCategoryProductListing(slugOrId, params);
 

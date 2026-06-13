@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-import { apiFetch } from "@/lib/clients/freshterra-api";
+import { getContentEntry } from "./content-entry-service";
 
 import {
   pageContentDataSchema,
   type PageContent,
 } from "./page-content-types";
 
-const PAGES_PATH = "/api/v1/content/pages";
+export const PAGES_CONTENT_TYPE = "pages";
 
 export const DEFAULT_PAGE_LOCALE = "en-IN";
 
@@ -26,27 +26,10 @@ export interface PageContentRequestOptions {
 }
 
 /**
- * Encodes a (possibly nested) page slug for the URL path, e.g.
- * `policies/refund` → `policies/refund` (each segment encoded, slashes kept).
- */
-function encodeSlugPath(slug: string): string {
-  return slug
-    .replace(/^\/+|\/+$/g, "")
-    .split("/")
-    .filter(Boolean)
-    .map(encodeURIComponent)
-    .join("/");
-}
-
-/**
  * Fetches a single CMS page by slug (about, FAQ, policies/*, blog/*, …).
  *
- * - Validates `slug` (required); supports nested slugs with slashes.
- * - Forwards `locale` (default `en-IN`).
- * - Attaches a JWT automatically when available (anon browse allowed).
- * - Returns the page, or throws a `FreshTerraApiError`
- *   (`AUTH_TOKEN_INVALID` | `FORBIDDEN` | `NOT_FOUND` | `UPSTREAM_UNAVAILABLE` |
- *   `NETWORK_ERROR` | `PARSE_ERROR` | `ABORTED`).
+ * Thin wrapper over {@link getContentEntry} →
+ * `GET /api/v1/content/pages/:slug?locale=`.
  */
 export async function getPage(
   slug: string,
@@ -55,11 +38,14 @@ export async function getPage(
 ): Promise<PageContent> {
   const validated = slugSchema.parse(slug);
 
-  return apiFetch(`${PAGES_PATH}/${encodeSlugPath(validated)}`, {
-    method: "GET",
-    searchParams: { locale: params.locale ?? DEFAULT_PAGE_LOCALE },
-    signal: options.signal,
-    token: options.token,
-    schema: pageContentDataSchema,
-  });
+  return getContentEntry<PageContent>(
+    PAGES_CONTENT_TYPE,
+    validated,
+    { locale: params.locale ?? DEFAULT_PAGE_LOCALE },
+    {
+      signal: options.signal,
+      token: options.token,
+      schema: pageContentDataSchema,
+    },
+  );
 }

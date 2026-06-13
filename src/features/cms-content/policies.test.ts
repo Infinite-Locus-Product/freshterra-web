@@ -1,31 +1,75 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { getPolicyDocument } from "./policies";
+import { fetchPrivacyPolicyDocumentSafe } from "./privacy-policy-service";
+import { fetchRefundsPolicyDocumentSafe } from "./refunds-policy-service";
+import { fetchTermsConditionDocumentSafe } from "./terms-condition-service";
+
+vi.mock("./privacy-policy-service", () => ({
+  fetchPrivacyPolicyDocumentSafe: vi.fn(),
+}));
+
+vi.mock("./refunds-policy-service", () => ({
+  fetchRefundsPolicyDocumentSafe: vi.fn(),
+}));
+
+vi.mock("./terms-condition-service", () => ({
+  fetchTermsConditionDocumentSafe: vi.fn(),
+}));
+
+const mockFetchPrivacyPolicy = vi.mocked(fetchPrivacyPolicyDocumentSafe);
+const mockFetchRefundsPolicy = vi.mocked(fetchRefundsPolicyDocumentSafe);
+const mockFetchTermsCondition = vi.mocked(fetchTermsConditionDocumentSafe);
 
 describe("getPolicyDocument", () => {
-  it("returns the Privacy Policy document for slug 'privacy'", async () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns the Privacy Policy document from Strapi for slug 'privacy'", async () => {
+    mockFetchPrivacyPolicy.mockResolvedValue({
+      slug: "privacy",
+      title: "Privacy Policy",
+      breadcrumbLabel: "Privacy Policy",
+      lastUpdated: "2026-05-02",
+      sections: [],
+    });
+
     const doc = await getPolicyDocument("privacy");
-    expect(doc).not.toBeNull();
     expect(doc?.title).toBe("Privacy Policy");
-    expect(doc?.sections.length).toBeGreaterThan(0);
-    expect(doc?.lastUpdated).toBeTruthy();
+    expect(mockFetchPrivacyPolicy).toHaveBeenCalled();
   });
 
-  it("returns the Terms document for slug 'terms'", async () => {
+  it("returns the Terms document from Strapi for slug 'terms'", async () => {
+    mockFetchTermsCondition.mockResolvedValue({
+      slug: "terms",
+      title: "Terms & Conditions",
+      breadcrumbLabel: "Terms & Conditions",
+      lastUpdated: "2026-05-02",
+      sections: [
+        {
+          heading: "1. Nature of App, Website and Use",
+          blocks: [{ type: "paragraph", spans: [{ text: "Body." }] }],
+        },
+      ],
+    });
+
     const doc = await getPolicyDocument("terms");
-    expect(doc).not.toBeNull();
     expect(doc?.title).toBe("Terms & Conditions");
-    expect(doc?.sections.length).toBeGreaterThan(0);
+    expect(mockFetchTermsCondition).toHaveBeenCalled();
   });
 
-  it("returns null for slug 'refund-return' (no content yet)", async () => {
+  it("returns the Refund & Return document from Strapi for slug 'refund-return'", async () => {
+    mockFetchRefundsPolicy.mockResolvedValue({
+      slug: "refund-return",
+      title: "Refunds & Returns Policy",
+      breadcrumbLabel: "Refunds & Returns Policy",
+      lastUpdated: "2026-05-02",
+      sections: [],
+    });
+
     const doc = await getPolicyDocument("refund-return");
-    expect(doc).toBeNull();
-  });
-
-  it("each document has a non-empty intro section", async () => {
-    const privacy = await getPolicyDocument("privacy");
-    expect(privacy?.intro).toBeTruthy();
-    expect(privacy?.intro?.blocks.length ?? 0).toBeGreaterThan(0);
+    expect(doc?.title).toBe("Refunds & Returns Policy");
+    expect(mockFetchRefundsPolicy).toHaveBeenCalled();
   });
 });
