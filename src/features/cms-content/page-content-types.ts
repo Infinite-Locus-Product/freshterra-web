@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * Types + zod schemas for a single CMS page by slug.
  *
- * Endpoint: GET /api/v1/content/pages/:slug?locale=
+ * Endpoint: GET /api/v1/content/pages/:slug?locale= (via {@link getContentEntry})
  * Response: { success, data: { slug, title, locale, blocks, publishedAt }, error }
  *
  * `blocks` is an ordered list of typed content blocks (richText today; more

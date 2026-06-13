@@ -43,7 +43,7 @@ export function HomeCategoryTile({
             fill
             loader={useImageKitTiles ? categoryTileImageLoader : undefined}
             className={homeCategoriesImageClass}
-            sizes="(max-width: 768px) 78.4px, 140px"
+            sizes="(max-width: 768px) 74.94px, 140px"
           />
         ) : null}
       </div>

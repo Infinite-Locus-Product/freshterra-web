@@ -1,13 +1,61 @@
-/**
- * About page placeholder content until Strapi is integrated.
- */
 import { dummyImages } from "@/lib/dummy-images";
 
-export const aboutPageDraftContent = {
+export type AboutPageDraftContent = {
+  hero: {
+    title: string;
+    bannerAlt: string;
+    bannerSrc: string;
+    bannerSrcMobile?: string;
+  };
+  story: {
+    title: string;
+    subtitle: string;
+    paragraphs: readonly string[];
+  };
+  mission: {
+    title: string;
+    description: string;
+  };
+  missionBanner: {
+    alt: string;
+    src: string;
+  };
+  coreValues: {
+    title: string;
+    subtitle: string;
+    items: readonly {
+      label: string;
+      description: string;
+      imageSrc: string;
+    }[];
+  };
+  customerStories: {
+    title: string;
+    subtitle: string;
+    items: readonly {
+      name: string;
+      ageLabel: string;
+      imageSrc: string;
+      quote: string;
+    }[];
+  };
+  milestones: {
+    title: string;
+    events: readonly { year: string; text: string }[];
+  };
+  team: {
+    title: string;
+    subtitle: string;
+    members: readonly { name: string; role: string }[];
+  };
+};
+
+export const aboutPageDraftContent: AboutPageDraftContent = {
   hero: {
     title: "About FreshTerra",
     bannerAlt: "Thoughtfully picked and curated with care",
     bannerSrc: dummyImages.aboutBanner.src,
+    bannerSrcMobile: dummyImages.aboutBanner.src,
   },
   story: {
     title: "Our Story",
@@ -103,6 +151,4 @@ export const aboutPageDraftContent = {
       { name: "Dev Khanna", role: "Head of Sourcing" },
     ],
   },
-} as const;
-
-export type AboutPageDraftContent = typeof aboutPageDraftContent;
+};

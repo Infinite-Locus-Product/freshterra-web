@@ -236,6 +236,62 @@ function inferCategoryFromListingPayload(
   });
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+/**
+ * Staging BFF returns facets as `{ key, options[] }[]`; the PLP UI expects
+ * `{ [facetKey]: { value, count, name? }[] }`.
+ */
+function normalizeCategoryFacets(facets: unknown): CategoryFacets {
+  if (!facets) return {};
+  if (isRecord(facets) && !Array.isArray(facets)) {
+    return facets as CategoryFacets;
+  }
+  if (!Array.isArray(facets)) return {};
+
+  const out: CategoryFacets = {};
+  for (const group of facets) {
+    if (!isRecord(group)) continue;
+    const key =
+      typeof group.key === "string"
+        ? group.key
+        : typeof group.slug === "string"
+          ? group.slug
+          : "";
+    if (!key) continue;
+
+    const options = Array.isArray(group.options) ? group.options : [];
+    const values = options
+      .map((option) => {
+        if (!isRecord(option)) return null;
+        const value =
+          typeof option.value === "string"
+            ? option.value
+            : typeof option.slug === "string"
+              ? option.slug
+              : "";
+        if (!value) return null;
+        const count =
+          typeof option.count === "number" && Number.isFinite(option.count)
+            ? option.count
+            : 0;
+        const name =
+          typeof option.label === "string"
+            ? option.label
+            : typeof option.name === "string"
+              ? option.name
+              : undefined;
+        return { value, count, ...(name ? { name } : {}) };
+      })
+      .filter((entry): entry is CategoryFacetValue => entry !== null);
+
+    if (values.length > 0) out[key] = values;
+  }
+  return out;
+}
+
 /** The `data` payload returned inside the success envelope. */
 function normalizeCategoryProductsPayload(input: unknown): unknown {
   if (!input || typeof input !== "object" || Array.isArray(input)) return input;
@@ -245,6 +301,7 @@ function normalizeCategoryProductsPayload(input: unknown): unknown {
     ...record,
     category: record.category ?? inferCategoryFromListingPayload(record),
     items: record.items.map((item) => normalizeBffListingProduct(item)),
+    facets: normalizeCategoryFacets(record.facets),
   };
 }
 

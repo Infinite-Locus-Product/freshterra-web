@@ -46,3 +46,10 @@ export const marketingFooterLegalLinkClass =
 /** Column grid — gap scales up on desktop to match Figma spacing. */
 export const marketingFooterGridClass =
   "grid w-full gap-x-8 gap-y-8 md:grid-cols-2 lg:gap-x-12 xl:gap-x-[5rem]";
+
+/** Head Office column — mWeb + web address lines. */
+export const marketingFooterOfficeTitleClass =
+  "mb-4 font-sans text-[1.125rem] leading-6 font-bold tracking-normal";
+
+export const marketingFooterOfficeLineClass =
+  "text-white-soft/80 font-sans text-sm font-normal leading-[1.4] tracking-[0]";

@@ -14,6 +14,7 @@ import {
   mobileAppDownloadBannerDismissFullBleedClass,
   mobileAppDownloadBannerFullBleedClass,
   mobileAppDownloadBannerMessageClass,
+  mobileAppDownloadBannerMessageFullBleedClass,
 } from "@/components/layout/mobile-header-chrome";
 import { Button } from "@/components/ui/Button";
 
@@ -76,7 +77,10 @@ export function AppDownloadBanner({
       </button>
 
       <p
-        className={mobileAppDownloadBannerMessageClass}
+        className={cn(
+          mobileAppDownloadBannerMessageClass,
+          fullBleed && mobileAppDownloadBannerMessageFullBleedClass,
+        )}
         aria-label={fullMessage}
       >
         <span className="block">{messageLine1}</span>

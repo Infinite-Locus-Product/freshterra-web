@@ -17,11 +17,13 @@ import {
   storesInfoRowIconClass,
   storesInfoTitleClass,
   storesCategoryCardClass,
+  storesCategoryCardLabelClass,
   storesInStoreCategoriesGridClass,
   storesInStoreCategoriesTitleClass,
   storesMapBannerClass,
   storesMapBannerShellClass,
   storesMapSectionClass,
+  storesPageSectionClass,
   storesPageShellClass,
   storesPageTitleClass,
   storesSecondaryImageClass,
@@ -45,7 +47,7 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
     <main className="bg-white text-text-primary">
       <MarketingHeader />
 
-      <section className="py-8 md:py-10">
+      <section className={storesPageSectionClass}>
         <PageShell pad={false} className={storesPageShellClass}>
           <div className="mb-4 flex items-center gap-2 text-sm text-text-secondary">
             <Link href="/" className="hover:underline">
@@ -114,7 +116,7 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
             <div className={storesInStoreCategoriesGridClass}>
               {content.inStoreCategories.map((category) => (
                 <article key={category} className={storesCategoryCardClass}>
-                  <p className="text-sm leading-tight font-semibold">{category}</p>
+                  <p className={storesCategoryCardLabelClass}>{category}</p>
                 </article>
               ))}
             </div>

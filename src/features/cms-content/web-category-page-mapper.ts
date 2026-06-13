@@ -170,6 +170,35 @@ export function buildExploreCatalogSections(
     .filter((section): section is ExploreCatalogSection => section !== null);
 }
 
+/**
+ * Flattens curated `l3_tiles` across all L2 sections for the homepage rail.
+ * Tiles are sorted by CMS `position` and optionally capped by `limit`.
+ */
+export function buildHomepageCategoryTiles(
+  page: WebCategoryPageContent | null | undefined,
+  options: {
+    limit?: number;
+    categoryLookup?: CategoryLookup;
+    preferMobileImages?: boolean;
+  } = {},
+): ExploreCatalogTile[] {
+  if (!page) return [];
+
+  const { limit, categoryLookup, preferMobileImages = false } = options;
+
+  const tiles = page.sections
+    .flatMap((section) => section.tiles)
+    .sort((a, b) => a.position - b.position)
+    .map((tile) => mapTile(tile, categoryLookup, preferMobileImages))
+    .filter((tile): tile is ExploreCatalogTile => tile !== null);
+
+  if (typeof limit === "number" && limit > 0) {
+    return tiles.slice(0, limit);
+  }
+
+  return tiles;
+}
+
 /** Collects unique Saleor category IDs that still need name/slug resolution. */
 export function collectUnresolvedCategoryIds(
   page: WebCategoryPageContent | null | undefined,

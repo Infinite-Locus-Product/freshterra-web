@@ -84,6 +84,14 @@ export function normalizeSaleorGlobalId(id: string): string {
   return current;
 }
 
+/** Resolves the Saleor channel slug used to scope product pricing/stock. */
+export function resolveSaleorChannel(storeId?: string | null): string {
+  const trimmed = storeId?.trim();
+  return trimmed && trimmed.length > 0
+    ? trimmed
+    : env.SALEOR_DEFAULT_CHANNEL ?? "default-channel";
+}
+
 const CATEGORY_BY_ID_QUERY = gql`
   query CategoryById($id: ID!, $childrenFirst: Int!) {
     category(id: $id) {
@@ -162,12 +170,12 @@ const saleorCategoryListingSchema = z.object({
 export type SaleorCategoryListing = z.infer<typeof saleorCategoryListingSchema>;
 
 const CATEGORY_PRODUCTS_BY_SLUG_QUERY = gql`
-  query CategoryProductsBySlug($slug: String!, $first: Int!) {
+  query CategoryProductsBySlug($slug: String!, $first: Int!, $channel: String!) {
     category(slug: $slug) {
       id
       name
       slug
-      products(first: $first) {
+      products(first: $first, channel: $channel) {
         totalCount
         edges {
           node {
@@ -206,12 +214,12 @@ const CATEGORY_PRODUCTS_BY_SLUG_QUERY = gql`
 `;
 
 const CATEGORY_PRODUCTS_BY_ID_QUERY = gql`
-  query CategoryProductsById($id: ID!, $first: Int!) {
+  query CategoryProductsById($id: ID!, $first: Int!, $channel: String!) {
     category(id: $id) {
       id
       name
       slug
-      products(first: $first) {
+      products(first: $first, channel: $channel) {
         totalCount
         edges {
           node {
@@ -257,12 +265,13 @@ function isLikelySaleorGlobalId(value: string): boolean {
 async function fetchSaleorCategoryListing(
   slugOrId: string,
   first: number,
+  channel: string,
 ): Promise<SaleorCategoryListing | null> {
   const client = getSaleorClient();
   const useId = isLikelySaleorGlobalId(slugOrId);
   const variables = useId
-    ? { id: normalizeSaleorGlobalId(slugOrId), first }
-    : { slug: slugOrId.trim(), first };
+    ? { id: normalizeSaleorGlobalId(slugOrId), first, channel }
+    : { slug: slugOrId.trim(), first, channel };
 
   const data = await client.request<{ category: unknown }>(
     useId ? CATEGORY_PRODUCTS_BY_ID_QUERY : CATEGORY_PRODUCTS_BY_SLUG_QUERY,
@@ -287,18 +296,20 @@ export interface SaleorCategoryListingPage {
  */
 export async function getSaleorCategoryProductListing(
   slugOrId: string,
-  options: { page?: number; pageSize?: number } = {},
+  options: { page?: number; pageSize?: number; storeId?: string | null } = {},
 ): Promise<SaleorCategoryListingPage | null> {
   const page = Math.max(1, options.page ?? 1);
   const pageSize = Math.min(Math.max(1, options.pageSize ?? 20), 100);
   const fetchCount = page * pageSize;
+  const channel = resolveSaleorChannel(options.storeId);
 
-  let listing = await fetchSaleorCategoryListing(slugOrId, fetchCount);
+  let listing = await fetchSaleorCategoryListing(slugOrId, fetchCount, channel);
 
   if (!listing && !isLikelySaleorGlobalId(slugOrId)) {
     listing = await fetchSaleorCategoryListing(
       normalizeSaleorGlobalId(slugOrId),
       fetchCount,
+      channel,
     );
   }
 
@@ -344,7 +355,7 @@ export async function getSaleorCategoryById(
 }
 
 const TOP_CATEGORIES_QUERY = gql`
-  query TopCategories($first: Int!) {
+  query TopCategories($first: Int!, $channel: String!) {
     categories(level: 0, first: $first) {
       edges {
         node {
@@ -354,7 +365,7 @@ const TOP_CATEGORIES_QUERY = gql`
           backgroundImage {
             url
           }
-          products {
+          products(channel: $channel) {
             totalCount
           }
         }
@@ -390,12 +401,13 @@ const SALEOR_DEFAULT_CATEGORY_SLUG = "default-category";
  * Excludes Saleor's built-in "Default Category" placeholder.
  */
 export async function getSaleorTopCategories(
-  options: { first?: number } = {},
+  options: { first?: number; storeId?: string | null } = {},
 ): Promise<SaleorTopCategory[]> {
   const client = getSaleorClient();
+  const channel = resolveSaleorChannel(options.storeId);
   const data = await client.request<{
     categories: { edges: { node: unknown }[] } | null;
-  }>(TOP_CATEGORIES_QUERY, { first: options.first ?? 100 });
+  }>(TOP_CATEGORIES_QUERY, { first: options.first ?? 100, channel });
 
   const out: SaleorTopCategory[] = [];
   for (const edge of data.categories?.edges ?? []) {

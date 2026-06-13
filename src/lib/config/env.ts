@@ -8,6 +8,8 @@ const serverSchema = z.object({
     .default("development"),
 
   SALEOR_APP_TOKEN: z.string().min(1).optional(),
+  /** Saleor channel slug for product pricing/availability when no store cookie is set. */
+  SALEOR_DEFAULT_CHANNEL: z.string().min(1).default("default-channel"),
   ERPNEXT_API_URL: z.string().url().optional(),
   ERPNEXT_API_KEY: z.string().optional(),
   ERPNEXT_API_SECRET: z.string().optional(),
@@ -122,6 +124,7 @@ const isServer = typeof window === "undefined";
 const serverEnvRaw = {
   NODE_ENV: blankAsUndefined(process.env.NODE_ENV),
   SALEOR_APP_TOKEN: blankAsUndefined(process.env.SALEOR_APP_TOKEN),
+  SALEOR_DEFAULT_CHANNEL: blankAsUndefined(process.env.SALEOR_DEFAULT_CHANNEL),
   ERPNEXT_API_URL: blankAsUndefined(process.env.ERPNEXT_API_URL),
   ERPNEXT_API_KEY: blankAsUndefined(process.env.ERPNEXT_API_KEY),
   ERPNEXT_API_SECRET: blankAsUndefined(process.env.ERPNEXT_API_SECRET),

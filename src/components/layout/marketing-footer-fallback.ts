@@ -8,41 +8,46 @@ import type { FooterContent } from "@/features/cms-content/footer-content-types"
 export const STATIC_FOOTER_CONTENT: FooterContent = {
   groups: [
     {
-      title: "Company",
+      title: "About FreshTerra",
       links: [
         { label: "About Us", url: "/about" },
-        { label: "Our Food Philosophy", url: "/food-philosophy" },
+        { label: "Our Story", url: "/about" },
         { label: "Careers", url: "/careers" },
         { label: "Contact Us", url: "/contact" },
+        { label: "FAQs", url: "/faq" },
       ],
     },
     {
-      title: "Shop",
+      title: "Quick Links",
       links: [
-        { label: "Find a Store", url: "/stores" },
-        { label: "Search", url: "/search" },
-      ],
-    },
-    {
-      title: "Help",
-      links: [
-        { label: "FAQ", url: "/faq" },
-        { label: "Privacy Policy", url: "/privacy-policy" },
-        { label: "Terms & Conditions", url: "/terms" },
-        { label: "Refund & Return", url: "/refund-return" },
+        { label: "Fresh Fruits", url: "/category/fruits" },
+        { label: "Vegetables", url: "/category/vegetables" },
+        { label: "Dairy & Eggs", url: "/category/dairy-eggs" },
+        { label: "Organic Range", url: "/category/organic-range" },
+        { label: "Explore Catalog", url: "/c/explore-catalog" },
       ],
     },
   ],
+  office: {
+    title: "Head Office",
+    lines: [
+      "Elixiir Foods Private Limited",
+      "WeWork Eldeco Centre, Block A, Shivalik Colony",
+      "Malviya Nagar, New Delhi",
+      "110017",
+    ],
+  },
   social: [
     { platform: "instagram", url: "https://instagram.com/elixiirfoods" },
     { platform: "youtube", url: "https://youtube.com/@elixiirfoods" },
+    { platform: "x", url: "https://x.com/elixiirfoods" },
     { platform: "linkedin", url: "https://linkedin.com/company/elixiirfoods" },
     { platform: "facebook", url: "https://facebook.com/elixiirfoods" },
   ],
   legal: [
     { label: "Privacy Policy", url: "/privacy-policy" },
     { label: "Terms & Conditions", url: "/terms" },
-    { label: "Refund & Return", url: "/refund-return" },
+    { label: "Refund & Return Policy", url: "/refund-return" },
   ],
   copyrightLine: `© ${new Date().getFullYear()} FreshTerra. All rights reserved.`,
 };

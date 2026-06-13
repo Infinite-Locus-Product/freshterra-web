@@ -1,14 +1,28 @@
 /** Figma Food Philosophy marketing page — mWeb tokens. */
+export const FOOD_PHILOSOPHY_BREADCRUMB_MWEB_FONT_SIZE = 12;
+
+export const foodPhilosophyPageBreadcrumbClass =
+  "text-text-secondary mb-4 flex items-center gap-2 text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
+
+export const FOOD_PHILOSOPHY_SUSTAINABILITY_TO_FOOTER_GAP_WEB = 115;
+
+/** `lg:-mb-8` cancels the marketing footer’s `lg:mt-8` so only the 115px pb remains. */
+export const foodPhilosophyPageSectionClass =
+  "bg-white pt-8 pb-8 md:pt-10 md:pb-[115px] lg:-mb-8";
+
 export const FOOD_PHILOSOPHY_TITLE_MWEB_FONT_SIZE = 28;
+export const FOOD_PHILOSOPHY_TITLE_TO_BANNER_GAP_MWEB = 36;
 export const FOOD_PHILOSOPHY_HERO_BANNER_MWEB_WIDTH = 393;
 export const FOOD_PHILOSOPHY_HERO_BANNER_MWEB_HEIGHT = 228;
 
 export const foodPhilosophyPageTitleClass =
-  "font-display text-text-primary mb-6 text-[28px] font-semibold leading-none tracking-[0] md:max-w-[21.4375rem] md:text-[2.25rem] md:leading-[150%]";
+  "font-display text-text-primary mb-9 text-[28px] font-semibold leading-none tracking-[0] md:mb-6 md:text-[2.25rem] md:leading-[150%]";
+
+export const FOOD_PHILOSOPHY_BANNER_TO_SOURCING_GAP_MWEB = 24;
 
 /** mWeb: full-bleed hero — no horizontal inset. */
 export const foodPhilosophyHeroBannerShellClass =
-  "relative left-1/2 mb-10 w-screen max-w-none -translate-x-1/2 md:relative md:left-auto md:mb-10 md:w-full md:translate-x-0";
+  "relative left-1/2 mb-6 w-screen max-w-none -translate-x-1/2 md:relative md:left-auto md:mb-10 md:w-full md:translate-x-0";
 
 export const foodPhilosophyHeroBannerOuterClass =
   "relative h-[228px] w-full overflow-hidden md:mx-auto md:aspect-auto md:h-114.5 md:w-340 md:rounded-[10px]";
@@ -31,6 +45,13 @@ export const foodPhilosophySourcingTitleClass = foodPhilosophySectionTitleClass;
 export const foodPhilosophySourcingSubtitleClass =
   "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:text-[1.875rem] md:leading-[1.625rem] md:tracking-normal";
 
+export const FOOD_PHILOSOPHY_SOURCING_SUBTITLE_TO_BODY_GAP_MWEB = 16;
+
+export const foodPhilosophySourcingArticleClass =
+  "flex min-w-0 flex-col gap-4 md:gap-6";
+
+export const foodPhilosophySourcingParagraphsClass = "flex flex-col gap-4";
+
 export const foodPhilosophySourcingBodyClass = foodPhilosophySectionBodyClass;
 
 /** “Quality Standards & Certifications” block. */
@@ -43,6 +64,17 @@ export const foodPhilosophyCertificationsSubtitleClass =
 export const foodPhilosophyCertificationsBodyClass =
   "mt-4 text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:mt-5 md:text-[1.125rem] md:leading-7 md:tracking-normal";
 
+export const FOOD_PHILOSOPHY_CERTIFICATION_ICON_LABEL_GAP_WEB = 4;
+
+/** Trust-marker tile — mWeb keeps 12px icon-to-label gap; web uses 4px. */
+export const foodPhilosophyCertificationItemClass =
+  "flex flex-col items-center gap-3 text-center md:gap-1 md:h-36.25 md:w-30";
+
+export const FOOD_PHILOSOPHY_CERTIFICATION_LABEL_MWEB_FONT_SIZE = 12;
+
+export const foodPhilosophyCertificationItemLabelClass =
+  "text-xs font-bold md:text-sm md:h-5.25 md:w-29.25";
+
 /** “Farmer & Producer Partnerships” block. */
 export const foodPhilosophyPartnershipsTitleClass =
   "font-display text-text-primary text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-[1.75rem] md:font-semibold lg:ml-2";
@@ -53,41 +85,27 @@ export const foodPhilosophyPartnershipsSubtitleClass =
 export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_MWEB_WIDTH = 360;
 export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_MWEB_HEIGHT = 441;
 
+export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_GAP_WEB = 40;
+
 export const foodPhilosophyPartnershipsStackClass =
-  "mt-6 flex flex-col items-center [--stack-peek:1.25rem] [--stack-top:4.5rem] md:block md:[--stack-peek:2.25rem] md:[--stack-top:6rem]";
+  "mt-6 flex flex-col items-center [--stack-peek:1.25rem] [--stack-top:4.5rem] md:gap-[40px] md:[--stack-peek:40px] md:[--stack-top:6rem]";
 
-export const FOOD_PHILOSOPHY_PARTNERSHIP_IMAGE_MWEB_WIDTH = 328;
-export const FOOD_PHILOSOPHY_PARTNERSHIP_IMAGE_MWEB_HEIGHT = 204;
-export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_MWEB_GAP = 10;
-export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_MWEB_PADDING = 36;
+/** Sticky stack shell — shared mWeb + web. */
+export const foodPhilosophyPartnershipCardShellClass =
+  "sticky mb-4 w-full max-w-[360px] min-w-0 overflow-hidden rounded-[10px] shadow-[0_-2px_24px_rgba(16,24,40,0.06)] md:mb-0 md:max-w-none";
 
-/** mWeb: 360 × 441 card — 36px vertical padding, 16px horizontal (328px image). */
-export const foodPhilosophyPartnershipCardClass =
-  "sticky mb-4 box-border flex h-[441px] w-full max-w-[360px] min-w-0 flex-col gap-[10px] overflow-hidden rounded-[10px] px-4 py-9 shadow-[0_-2px_24px_rgba(16,24,40,0.06)] md:grid md:h-auto md:max-w-none md:grid-cols-[1fr_1fr] md:gap-12 md:p-8 lg:mx-auto lg:max-w-full lg:grid-cols-[minmax(0,50.8125rem)_minmax(0,1fr)]";
+/**
+ * CMS farmer banners are full composite cards (photo + quote + name baked in).
+ * Render at natural size on mWeb and web — never crop into a media slot.
+ */
+export const foodPhilosophyPartnershipCardCompositeImageMobileClass =
+  "block h-auto w-full max-w-[360px] object-contain object-center md:hidden";
 
-/** mWeb image placeholder — 328 × 204, radius-sm (4px). */
-export const foodPhilosophyPartnershipCardMediaClass =
-  "relative h-[204px] w-[328px] max-w-full shrink-0 self-center overflow-hidden rounded-[var(--radius-sm)] md:min-h-[320px] md:h-auto md:w-auto md:flex-none md:self-auto md:rounded-[10px] lg:h-109 lg:min-h-0 lg:w-203.25";
+export const foodPhilosophyPartnershipCardCompositeImageWebClass =
+  "hidden h-auto w-full object-contain object-center md:block md:rounded-[10px]";
 
-export const foodPhilosophyPartnershipCardMediaImageClass = "object-cover object-center";
-
-export const foodPhilosophyPartnershipCardCopyClass =
-  "flex min-h-0 flex-1 flex-col justify-between gap-[10px] md:gap-6";
-
-export const foodPhilosophyPartnershipQuoteClass =
-  "font-handsome text-[24px] leading-[26px] font-bold tracking-[0] md:text-[2.5rem] md:leading-[2.5rem]";
-
-export const foodPhilosophyPartnershipNameClass =
-  "text-text-primary font-display text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-[1.75rem] md:font-semibold";
-
-export const foodPhilosophyPartnershipLocationClass =
-  "font-sans text-xs font-normal leading-[1.4] tracking-[0] md:text-base";
-
-export const foodPhilosophyPartnershipThemeTextClass = {
-  amber: "text-[#7f581b]",
-  olive: "text-[#5a6b43]",
-  sky: "text-[#153e5a]",
-} as const;
+export const foodPhilosophyPartnershipCardCompositeImageClass =
+  "block h-auto w-full max-w-[360px] object-contain object-center md:max-w-full";
 
 /** “Sustainability Commitments” block. */
 export const foodPhilosophySustainabilityTitleClass = foodPhilosophySectionTitleClass;
@@ -98,8 +116,10 @@ export const foodPhilosophySustainabilitySubtitleClass =
 export const FOOD_PHILOSOPHY_SUSTAINABILITY_CARD_MWEB_WIDTH = 172;
 export const FOOD_PHILOSOPHY_SUSTAINABILITY_CARD_MWEB_HEIGHT = 250;
 
+export const FOOD_PHILOSOPHY_SUSTAINABILITY_CARD_GAP_WEB = 34;
+
 export const foodPhilosophySustainabilityGridClass =
-  "mt-6 grid grid-cols-[repeat(2,172px)] justify-center gap-4 md:grid-cols-2 md:justify-start lg:grid-cols-4";
+  "mt-6 grid grid-cols-[repeat(2,172px)] justify-center gap-4 md:grid-cols-2 md:justify-start md:gap-[34px] lg:grid-cols-4";
 
 /** mWeb: 172 × 250 placeholder cards, 10px corner radius. */
 export const foodPhilosophySustainabilityCardClass =

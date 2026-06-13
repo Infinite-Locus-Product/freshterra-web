@@ -7,10 +7,10 @@ import {
   homeTestimonialsTitleClass,
 } from "@/components/homepage/home-testimonials";
 
-import type { HomePageDraftContent } from "@/features/cms-content/homepage";
+import type { HomePageContent } from "@/features/cms-content/web-homepage-types";
 
 type HomeTestimonialsSectionProps = Readonly<{
-  content: HomePageDraftContent["testimonials"];
+  content: HomePageContent["testimonials"];
 }>;
 
 export function HomeTestimonialsSection({ content }: HomeTestimonialsSectionProps) {
