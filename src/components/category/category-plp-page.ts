@@ -73,6 +73,14 @@ export const categoryPlpSortTriggerClass =
 export const categoryPlpCountClass =
   "text-text-secondary mb-4 font-sans text-[14px] font-normal leading-[1.2] tracking-[0.2px] lg:mb-6 lg:text-sm";
 
+/** Active filter chips row — left-aligned on web. */
+export const categoryPlpActiveFiltersClass =
+  "mb-5 flex flex-wrap items-center justify-start gap-2.5";
+
+/** Sidebar + product grid layout. */
+export const categoryPlpListingGridClass =
+  "grid min-w-0 gap-8 lg:grid-cols-[minmax(0,16.25rem)_minmax(0,1fr)]";
+
 /** mWeb: strict 2-col grid with 16px horizontal gap. */
 export const categoryPlpProductGridClass =
   "grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-y-8";
