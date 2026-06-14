@@ -29,8 +29,9 @@ export const homeSourcingHeaderRowClass =
 export const homeSourcingTitleClass =
   "font-display text-[#445133] text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-[2.25rem] md:font-medium md:leading-tight";
 
+/** mWeb only — hidden on web per Figma. */
 export const homeSourcingSubtitleClass =
-  "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:text-[1.875rem] md:leading-[1.625rem]";
+  "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:hidden";
 
 /** mWeb: chevron only. Desktop: hidden (Read more lives in copy). */
 export const homeSourcingCtaLinkClass =
@@ -61,7 +62,7 @@ export const homeSourcingBodyParagraphsClass = "flex flex-col gap-4 md:gap-5";
 
 /** mWeb: Manrope 14px regular, 150% line-height. Web: 20px, 100% line-height. */
 export const homeSourcingBodyParagraphClass =
-  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
+  "font-sans text-[#000000] text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
 
 export const homeSourcingReadMoreClass =
   "text-brand-500 mt-4 text-left text-sm leading-4 font-bold tracking-[0] underline md:mt-6 md:text-lg md:leading-7 md:no-underline";

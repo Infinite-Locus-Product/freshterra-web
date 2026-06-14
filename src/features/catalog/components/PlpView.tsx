@@ -8,6 +8,7 @@ import Link from "next/link";
 import type { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
 import {
+  categoryPlpActiveFiltersClass,
   categoryPlpBannerBleedClass,
   categoryPlpBannerCopyClass,
   categoryPlpBannerImageClass,
@@ -18,6 +19,7 @@ import {
   categoryPlpBreadcrumbClass,
   categoryPlpBreadcrumbCurrentClass,
   categoryPlpCountClass,
+  categoryPlpListingGridClass,
   categoryPlpMobileFiltersClass,
   categoryPlpPageShellClass,
   categoryPlpProductGridClass,
@@ -141,6 +143,18 @@ export function PlpView<TSort extends string>({
 }: PlpViewProps<TSort>) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const listingRef = useRef<HTMLDivElement>(null);
+  const skipFilterScrollRef = useRef(true);
+  const selectionsKey = JSON.stringify(selections);
+
+  useEffect(() => {
+    if (skipFilterScrollRef.current) {
+      skipFilterScrollRef.current = false;
+      return;
+    }
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    listingRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
+  }, [selectionsKey]);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const el = sentinelRef.current;
@@ -284,34 +298,16 @@ export function PlpView<TSort extends string>({
         </div>
       ) : null}
 
-      {activeChips.length > 0 ? (
-        <div className="mb-5 flex flex-wrap items-center justify-center gap-2.5">
-          {activeChips.map((chip) => (
-            <button
-              key={`${chip.group}:${chip.value}`}
-              type="button"
-              onClick={() => removeChip(chip)}
-              className="text-text-secondary hover:bg-gray-50 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-sm"
-            >
-              <span aria-hidden className="text-text-tertiary">
-                ✕
-              </span>
-              <span>{chip.label}</span>
-              <span className="sr-only">Remove filter</span>
-            </button>
-          ))}
-        </div>
-      ) : null}
-
       <div
+        ref={listingRef}
         className={
           filterGroups && filterGroups.length > 0
-            ? "grid min-w-0 gap-8 lg:grid-cols-[minmax(0,16.25rem)_minmax(0,1fr)]"
+            ? categoryPlpListingGridClass
             : "grid min-w-0 gap-8 lg:grid-cols-1"
         }
       >
         {filterGroups && filterGroups.length > 0 ? (
-          <aside className="hidden lg:block">
+          <aside className="hidden lg:block lg:self-start">
             <PlpFilters
               groups={filterGroups}
               selections={selections}
@@ -321,7 +317,26 @@ export function PlpView<TSort extends string>({
           </aside>
         ) : null}
 
-        <div>
+        <div className="min-w-0">
+          {activeChips.length > 0 ? (
+            <div className={categoryPlpActiveFiltersClass}>
+              {activeChips.map((chip) => (
+                <button
+                  key={`${chip.group}:${chip.value}`}
+                  type="button"
+                  onClick={() => removeChip(chip)}
+                  className="text-text-secondary hover:bg-gray-50 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-sm"
+                >
+                  <span aria-hidden className="text-text-tertiary">
+                    ✕
+                  </span>
+                  <span>{chip.label}</span>
+                  <span className="sr-only">Remove filter</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           {hasFilters ? (
             <div className={categoryPlpToolbarClass}>
               <button
