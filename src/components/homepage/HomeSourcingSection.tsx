@@ -17,7 +17,6 @@ import {
   homeSourcingMediaClass,
   homeSourcingMediaColumnClass,
   homeSourcingMediaImageClass,
-  homeSourcingMediaOverlayClass,
   homeSourcingReadMoreClass,
   homeSourcingSectionDesktopShellClass,
   homeSourcingSectionFrameClass,
@@ -112,9 +111,7 @@ export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
                     className={cn(homeSourcingMediaImageClass, "hidden md:block")}
                     sizes="(max-width: 1024px) 100vw, 628px"
                   />
-                  <p className={homeSourcingMediaOverlayClass}>
-                    {content.mediaOverlay}
-                  </p>
+                  {/* Strapi mediaOverlay heading — hidden for now */}
                 </div>
               </div>
 

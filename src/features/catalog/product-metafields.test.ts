@@ -265,5 +265,8 @@ describe("normalizeBffListingProduct", () => {
     expect(product.price.currency).toBe("INR");
     expect(product.inStock).toBe(true);
     expect(product.variants[0]?.id).toBe("UHJvZHVjdFZhcmlhbnQ6MjA=");
+    expect(product.variants[0]?.name).toBe("250g");
+    expect(product.variants[0]?.weightG).toBe(250);
+    expect(product.variantCount).toBe(2);
   });
 });

@@ -9,6 +9,7 @@ import { dummyImages } from "@/lib/dummy-images";
 import { cn } from "@/lib/utils/cn";
 
 import {
+  exploreCatalogBannerHeaderGapClass,
   exploreCatalogBannerImageClass,
   exploreCatalogBannerOuterClass,
   exploreCatalogBannerShellClass,
@@ -21,7 +22,6 @@ import {
 } from "@/components/category/category-section-header";
 import { homeCategoriesGridClass } from "@/components/homepage/home-categories";
 import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
-import { HEADER_TO_HERO_GAP_CLASS } from "@/components/layout/header-chrome";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
@@ -112,7 +112,7 @@ export function ExploreCatalogView() {
     <>
       <section className="from-header-tint bg-linear-to-b to-white pt-0 pb-0">
         <div
-          className={`${exploreCatalogBannerShellClass} ${HEADER_TO_HERO_GAP_CLASS}`}
+          className={`${exploreCatalogBannerShellClass} ${exploreCatalogBannerHeaderGapClass}`}
         >
           <div className={exploreCatalogBannerOuterClass}>
             <Image

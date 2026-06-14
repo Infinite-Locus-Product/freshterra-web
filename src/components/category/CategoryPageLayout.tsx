@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils/cn";
 import { slugify } from "@/lib/utils/slug";
 
 import {
+  exploreCatalogBannerHeaderGapClass,
   exploreCatalogBannerImageClass,
   exploreCatalogBannerOuterClass,
   exploreCatalogBannerShellClass,
@@ -24,7 +25,6 @@ import {
   homeCategoriesViewAllTileClass,
 } from "@/components/homepage/home-categories";
 import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
-import { HEADER_TO_HERO_GAP_CLASS } from "@/components/layout/header-chrome";
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 import { PageShell } from "@/components/layout/PageShell";
@@ -65,7 +65,7 @@ function CategoryHeaderHeroSection({
       />
 
       <div
-        className={`${exploreCatalogBannerShellClass} ${HEADER_TO_HERO_GAP_CLASS}`}
+        className={`${exploreCatalogBannerShellClass} ${exploreCatalogBannerHeaderGapClass}`}
       >
         <div className={exploreCatalogBannerOuterClass}>
           <Image

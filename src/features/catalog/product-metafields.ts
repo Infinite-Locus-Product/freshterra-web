@@ -1,3 +1,5 @@
+import { parseWeightGrams } from "./variant-meta";
+
 import type { ProductDetail, ProductRegulatory } from "./types";
 
 /**
@@ -323,10 +325,34 @@ function priceFromRecord(record: UnknownRecord): {
   };
 }
 
+function enrichVariantRecord(variant: UnknownRecord, unit?: string): UnknownRecord {
+  const name = asString(variant.name) ?? unit;
+  const weightG =
+    typeof variant.weightG === "number" && Number.isFinite(variant.weightG)
+      ? variant.weightG
+      : parseWeightGrams(name);
+
+  return {
+    ...variant,
+    sku: asString(variant.sku) ?? "",
+    ...(name ? { name } : {}),
+    ...(weightG != null ? { weightG } : {}),
+  };
+}
+
 /** Maps staging BFF catalog shapes onto the canonical ProductDetail schema. */
 function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   const out: UnknownRecord = { ...input };
   const name = asString(input.name);
+  const unit = asString(input.unit);
+  const variantCount =
+    typeof input.variantCount === "number" && Number.isFinite(input.variantCount)
+      ? input.variantCount
+      : undefined;
+
+  if (variantCount != null && variantCount > 0) {
+    out.variantCount = variantCount;
+  }
 
   if (!asString(out.id)) {
     const saleorId =
@@ -370,22 +396,12 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   if (!Array.isArray(out.variants) || out.variants.length === 0) {
     const variantId = asString(input.defaultVariantId);
     if (variantId) {
-      out.variants = [
-        {
-          id: variantId,
-          sku: asString(input.sku) ?? "",
-          name: asString(input.unit),
-        },
-      ];
+      out.variants = [enrichVariantRecord({ id: variantId, sku: asString(input.sku) ?? "" }, unit)];
     }
   } else {
-    out.variants = out.variants.map((variant) => {
-      if (!isRecord(variant)) return variant;
-      return {
-        ...variant,
-        sku: asString(variant.sku) ?? "",
-      };
-    });
+    out.variants = out.variants.map((variant) =>
+      isRecord(variant) ? enrichVariantRecord(variant, unit) : variant,
+    );
   }
 
   if (typeof input.inStock !== "boolean") {

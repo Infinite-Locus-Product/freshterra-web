@@ -51,6 +51,7 @@ export function MobileMarketingHeader({
       <div
         className={cn(
           mobileHeaderShellClass,
+          bannerFullBleed && "bg-transparent",
           bannerFullBleed && "pb-0",
           HEADER_EDGE_PADDING_CLASS,
           className,

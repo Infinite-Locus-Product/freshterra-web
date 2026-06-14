@@ -206,7 +206,15 @@ export function PlpView<TSort extends string>({
                   {crumb.label}
                 </Link>
               ) : (
-                <span className={categoryPlpBreadcrumbCurrentClass}>{crumb.label}</span>
+                <span
+                  className={
+                    i === breadcrumbs.length - 1
+                      ? categoryPlpBreadcrumbCurrentClass
+                      : undefined
+                  }
+                >
+                  {crumb.label}
+                </span>
               )}
               {i < breadcrumbs.length - 1 ? <span aria-hidden>›</span> : null}
             </span>
@@ -308,6 +316,7 @@ export function PlpView<TSort extends string>({
               groups={filterGroups}
               selections={selections}
               onChange={onFiltersChange}
+              variant="sidebar"
             />
           </aside>
         ) : null}

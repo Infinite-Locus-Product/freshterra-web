@@ -36,8 +36,9 @@ export const CAREERS_PARAGRAPH_GAP_WEB = 24;
 export const careersHeroParagraphsClass =
   "flex flex-col gap-[12.64px] md:gap-6";
 
+/** mWeb: Manrope 14px regular, 150% lh. Web: 20px, 100% lh. */
 export const careersHeroBodyClass =
-  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[1.125rem] md:leading-7 md:tracking-normal";
+  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
 
 /** mWeb image placeholder — 361 × 247, 16px radius. */
 export const careersHeroImageClass =
@@ -68,9 +69,9 @@ export const careersOpeningsSectionClass =
 export const careersJobCardGridClass =
   "grid w-full gap-3 md:grid-cols-2 md:gap-12 xl:grid-cols-3";
 
-/** mWeb: 361 × 152. Web: 421.33 × 169. */
+/** mWeb: 361 × 152 with top drop shadow. Web: 421.33 × 169. */
 export const careersJobCardClass =
-  "box-border flex h-[152px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-[10px] border border-gray-200 bg-white p-4 shadow-sm md:h-[169px] md:w-[421.333px] md:max-w-[421.333px] md:shrink-0 md:p-5";
+  "box-border flex h-[152px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-[10px] border border-gray-200 bg-white p-4 shadow-[0_-4px_24px_rgba(19,25,39,0.08)] md:h-[169px] md:w-[421.333px] md:max-w-[421.333px] md:shrink-0 md:p-5 md:shadow-sm";
 
 /** Job title — Manrope 18px bold, 24px line-height. */
 export const careersJobCardTitleClass =
