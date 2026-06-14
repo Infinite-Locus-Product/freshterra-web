@@ -1,6 +1,7 @@
 /** Explore Catalog page — hero / first banner. */
 export const EXPLORE_CATALOG_BANNER_MWEB_WIDTH = 393;
 export const EXPLORE_CATALOG_BANNER_MWEB_HEIGHT = 171;
+export const EXPLORE_CATALOG_BANNER_HEADER_GAP_MWEB = 22;
 export const EXPLORE_CATALOG_BANNER_WIDTH = 1440;
 export const EXPLORE_CATALOG_BANNER_HEIGHT = 422;
 
@@ -13,5 +14,6 @@ export const exploreCatalogBannerOuterClass =
 
 export const exploreCatalogBannerImageClass = "object-cover object-center";
 
-/** mWeb: 24px below navbar. Web: flush under header. */
-export const exploreCatalogBannerHeaderGapClass = "max-lg:mt-6 lg:mt-0";
+/** mWeb: 22px below search bar. Web: flush under header. */
+export const exploreCatalogBannerHeaderGapClass =
+  "max-lg:mt-[22px] lg:mt-0";

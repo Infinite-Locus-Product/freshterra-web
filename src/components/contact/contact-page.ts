@@ -1,8 +1,10 @@
 /** Figma Contact page — mWeb tokens. */
 export const CONTACT_PAGE_BREADCRUMB_MWEB_FONT_SIZE = 12;
 
+export const CONTACT_BREADCRUMB_TO_TITLE_GAP_MWEB = 8;
+
 export const contactPageBreadcrumbClass =
-  "text-text-secondary mb-6 flex items-center gap-2 text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
+  "text-text-secondary mb-2 flex items-center gap-2 text-xs leading-none tracking-[0] md:mb-6 md:text-sm md:leading-[17px]";
 
 export const CONTACT_PAGE_TITLE_MWEB_FONT_SIZE = 28;
 
@@ -47,9 +49,9 @@ export const contactSectionHeadingClass =
 export const contactInfoRowLabelClass =
   "text-text-primary font-sans text-[16px] font-medium leading-5 tracking-[0]";
 
-/** Get In Touch row value lines — mWeb: 12px / 140%. Web: Manrope 14px regular, 150% lh, #131927. */
+/** Get In Touch row value lines — mWeb & web: #131927. mWeb: 12px / 140%. Web: 14px / 150%. */
 export const contactInfoRowLineClass =
-  "text-text-secondary font-sans text-xs font-normal leading-[1.4] tracking-[0] lg:text-text-primary lg:text-[14px] lg:leading-[1.5]";
+  "text-text-primary font-sans text-xs font-normal leading-[1.4] tracking-[0] lg:text-[14px] lg:leading-[1.5]";
 
 export const CONTACT_FORM_NAME_INPUT_MWEB_WIDTH = 361;
 export const CONTACT_FORM_NAME_INPUT_MWEB_HEIGHT = 48;
@@ -75,6 +77,6 @@ export const contactFormMessageSubmitGroupClass =
 export const contactFormClass =
   "flex min-h-0 flex-1 flex-col gap-4 lg:gap-[18px]";
 
-/** Submit Application — web: Manrope 16px bold, 20px line-height, centered. */
+/** Submit Application — mWeb: Manrope 16px. Web: 16px bold, 20px line-height, centered. */
 export const contactFormSubmitButtonClass =
-  "h-12 shrink-0 rounded-[var(--radius-xxl)] px-5 py-[14px] text-[18px] font-semibold tracking-[0] opacity-100 lg:mt-auto md:text-center md:text-[16px] md:font-bold md:leading-5 md:tracking-[0]";
+  "h-12 shrink-0 rounded-[var(--radius-xxl)] px-5 py-[14px] text-[16px] font-semibold tracking-[0] opacity-100 md:text-center md:font-bold md:leading-5 lg:mt-auto";

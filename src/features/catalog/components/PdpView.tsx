@@ -21,11 +21,15 @@ import {
   pdpProductTagPillClass,
   pdpProductTagsRowClass,
   pdpStoreButtonClass,
+  pdpStoreButtonIconClass,
+  pdpStoreButtonTopLineClass,
+  pdpStoreButtonBrandLineClass,
   pdpStoryClass,
   pdpTitleClass,
   pdpTrustHeadingClass,
   pdpTrustItemClass,
-  pdpTrustSectionClass,
+  pdpTrustSectionInnerClass,
+  pdpTrustSectionShellClass,
   pdpTrustRowClass,
   pdpVariantLabelClass,
   pdpVariantPillActiveClass,
@@ -184,22 +188,24 @@ function TrustMarkers({
     : TRUST_MARKERS.filter((marker) => marker.label !== "12hr Return Window");
 
   return (
-    <div className={pdpTrustSectionClass}>
-      <p className={pdpTrustHeadingClass}>Trust Markers</p>
-      <div className={pdpTrustRowClass}>
-        {markers.map((marker) => (
-          <div key={marker.label} className={pdpTrustItemClass}>
-            <Image
-              src={marker.iconSrc}
-              alt=""
-              aria-hidden
-              width={28}
-              height={28}
-              className="shrink-0"
-            />
-            <span>{marker.label}</span>
-          </div>
-        ))}
+    <div className={pdpTrustSectionShellClass}>
+      <div className={pdpTrustSectionInnerClass}>
+        <p className={pdpTrustHeadingClass}>Trust Markers</p>
+        <div className={pdpTrustRowClass}>
+          {markers.map((marker) => (
+            <div key={marker.label} className={pdpTrustItemClass}>
+              <Image
+                src={marker.iconSrc}
+                alt=""
+                aria-hidden
+                width={28}
+                height={28}
+                className="shrink-0"
+              />
+              <span>{marker.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -241,15 +247,11 @@ function StoreButton({
         aria-hidden
         width={30}
         height={30}
-        className="size-6 shrink-0 lg:size-7.5"
+        className={pdpStoreButtonIconClass}
       />
       <span className="leading-tight">
-        <span className="text-text-tertiary block text-[10px]">
-          {badge.topLine}
-        </span>
-        <span className="text-text-primary block text-sm font-semibold">
-          {badge.brandLine}
-        </span>
+        <span className={pdpStoreButtonTopLineClass}>{badge.topLine}</span>
+        <span className={pdpStoreButtonBrandLineClass}>{badge.brandLine}</span>
       </span>
     </Link>
   );

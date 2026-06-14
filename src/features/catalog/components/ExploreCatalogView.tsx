@@ -15,12 +15,16 @@ import {
   exploreCatalogBannerShellClass,
 } from "@/components/category/category-explore-catalog-banner";
 import {
+  categoryPageCircleClass,
+  categoryPageGridClass,
+  categoryPageTileClass,
+} from "@/components/category/category-page-tiles";
+import {
   categorySectionCtaLabelClass,
   categorySectionCtaLinkClass,
   categorySectionSubtitleClass,
   categorySectionTitleClass,
 } from "@/components/category/category-section-header";
-import { homeCategoriesGridClass } from "@/components/homepage/home-categories";
 import { HomeCategoryTile } from "@/components/homepage/HomeCategoryTile";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
@@ -146,13 +150,15 @@ function ExploreCatalogSkeleton() {
         {Array.from({ length: 2 }).map((_, i) => (
           <div key={`explore-skeleton-${i}`} className="space-y-5">
             <div className="h-10 w-64 animate-pulse rounded bg-gray-100" />
-            <div className={homeCategoriesGridClass}>
+            <div className={categoryPageGridClass}>
               {Array.from({ length: 4 }).map((_, j) => (
                 <div
                   key={`explore-tile-skeleton-${i}-${j}`}
-                  className="flex w-[74.94px] flex-col items-center gap-3 p-0 md:w-auto md:p-2"
-                  >
-                  <div className="h-[74px] w-[74.94px] animate-pulse rounded-[100px] bg-gray-100 md:size-[140px] md:rounded-full" />
+                  className={categoryPageTileClass}
+                >
+                  <div
+                    className={`${categoryPageCircleClass} animate-pulse bg-gray-100`}
+                  />
                   <div className="h-5 w-20 animate-pulse rounded bg-gray-100" />
                 </div>
               ))}
@@ -199,13 +205,16 @@ function ExploreCatalogSectionBlock({
         </Link>
       </div>
 
-      <div className={homeCategoriesGridClass}>
+      <div className={categoryPageGridClass}>
         {section.tiles.map((tile) => (
           <HomeCategoryTile
             key={tile.key}
             name={tile.name}
             imageSrc={tile.imageSrc}
             href={tile.href}
+            circleClassName={categoryPageCircleClass}
+            imageSizes="(max-width: 768px) 79px, 140px"
+            tileClassName={categoryPageTileClass}
           />
         ))}
       </div>

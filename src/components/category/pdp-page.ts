@@ -42,9 +42,15 @@ export const pdpVariantPillActiveClass =
 export const pdpTrustHeadingClass =
   "text-text-primary mb-4 hidden font-sans text-base font-semibold uppercase leading-[1.3] tracking-[0] lg:block";
 
-/** mWeb: no heading. Dividers within content inset. */
-export const pdpTrustSectionClass =
+/** mWeb PDP full-bleed horizontal rule — edge-to-edge within viewport. */
+export const pdpMwebFullBleedDividerClass =
+  "relative left-1/2 h-px w-screen max-w-none shrink-0 -translate-x-1/2 bg-gray-divider lg:hidden";
+
+/** Trust markers — mWeb + web: in-content dividers (not full bleed). */
+export const pdpTrustSectionShellClass =
   "border-gray-divider border-t border-b py-4 lg:py-6";
+
+export const pdpTrustSectionInnerClass = "lg:px-0";
 
 export const pdpTrustRowClass =
   "grid w-full grid-cols-3 items-start gap-1 lg:flex lg:justify-start lg:gap-12";
@@ -58,9 +64,9 @@ export const PDP_APP_CARD_WEB_HEIGHT = 169;
 export const PDP_APP_CARD_WEB_PADDING = 24;
 export const PDP_APP_CARD_WEB_GAP = 16;
 
-/** Download App card — mWeb: 361 × 140, radius-sm; web: full width × 169, 10px corners, 24px padding, 16px gap. */
+/** Download App card — mWeb: 361 × 140, 10px corners; web: full width × 169, 10px corners, 24px padding, 16px gap. */
 export const pdpAppCardClass =
-  "box-border mx-auto flex h-[140px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-[var(--radius-sm)] border border-gray-200 bg-[#E8EEEA] p-4 lg:mx-0 lg:h-[169px] lg:max-w-none lg:w-full lg:justify-between lg:gap-4 lg:rounded-[10px] lg:p-[24px]";
+  "box-border mx-auto flex h-[140px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-[10px] border border-gray-200 bg-[#E8EEEA] p-4 lg:mx-0 lg:h-[169px] lg:max-w-none lg:w-full lg:justify-between lg:gap-4 lg:p-[24px]";
 
 export const pdpAppCardTitleClass =
   "text-text-primary font-sans text-base font-bold leading-5 tracking-[0] lg:text-lg lg:leading-6";
@@ -70,8 +76,23 @@ export const pdpAppCardBodyClass =
 
 export const pdpAppCardButtonsClass = "flex gap-2 max-lg:flex-nowrap lg:gap-3";
 
+export const PDP_STORE_BUTTON_MWEB_WIDTH = 156;
+export const PDP_STORE_BUTTON_MWEB_HEIGHT = 56;
+
 export const pdpStoreButtonClass =
-  "box-border flex h-9 min-w-0 flex-1 items-center gap-2 rounded-[9.78px] border-[0.73px] border-gray-200 bg-white px-2 transition-colors hover:bg-gray-50 lg:h-14 lg:w-[14.375rem] lg:flex-none lg:gap-[11.73px]";
+  "box-border flex h-14 w-[156px] shrink-0 items-center gap-[11.73px] rounded-[9.78px] border-[0.73px] border-gray-200 bg-white px-2 transition-colors hover:bg-gray-50 lg:h-14 lg:w-[14.375rem] lg:gap-[11.73px]";
+
+/** Store badge icon — mWeb: 30×30, radius-xxs. Web: 30×30. */
+export const pdpStoreButtonIconClass =
+  "size-[30px] shrink-0 rounded-[var(--radius-xxs)] object-contain";
+
+/** mWeb store badge top line (e.g. “Download on the”) — 11.73px / 15.64px lh. */
+export const pdpStoreButtonTopLineClass =
+  "text-text-tertiary block font-sans text-[11.73px] font-normal leading-[15.64px] tracking-[0] lg:text-[10px] lg:leading-tight";
+
+/** mWeb store badge brand line (e.g. “App Store”) — 13.69px semibold / 19.55px lh. */
+export const pdpStoreButtonBrandLineClass =
+  "text-text-primary block font-sans text-[13.69px] font-semibold leading-[19.55px] tracking-[-0.15px] lg:text-sm lg:leading-tight lg:tracking-normal";
 
 /** Tab row — mWeb: horizontal scroll. Web: full-bleed grey-50 strip; pills keep their own bg. */
 export const pdpTabsRowClass =
@@ -83,7 +104,7 @@ export const pdpTabActiveClass =
 export const pdpTabInactiveClass =
   "text-text-secondary shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium";
 
-export const pdpTabsSectionClass = "border-t border-gray-200 lg:border-t-0";
+export const pdpTabsSectionClass = "";
 
 /** mWeb: Manrope 16px bold, 20px lh, primary black. Web: 20px bold, #555555. */
 export const pdpProductDetailsHeadingClass =
@@ -100,6 +121,9 @@ export const pdpDetailsBodyTextClass =
   "text-text-secondary font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
 
 export const pdpKeyFeaturesSectionClass = "[&+div]:!mt-6";
+
+/** mWeb: vertical padding between full-bleed dividers. */
+export const pdpKeyFeaturesSectionShellClass = "py-4 lg:py-0";
 
 export const pdpKeyFeaturesListClass =
   "flex flex-wrap items-start justify-start gap-8 lg:gap-[24px]";

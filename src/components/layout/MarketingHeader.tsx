@@ -43,6 +43,8 @@ export type MarketingHeaderProps = Readonly<{
   embedded?: boolean;
   /** Homepage mWeb — app download strip spans full viewport width. */
   bannerFullBleed?: boolean;
+  /** Category hub mWeb — search bar sits flush above hero banner. */
+  mwebFlushBelowSearch?: boolean;
   className?: string;
 }>;
 
@@ -55,6 +57,7 @@ export function MarketingHeader({
   downloadLabel = "Download the App",
   embedded = false,
   bannerFullBleed = false,
+  mwebFlushBelowSearch = false,
   className,
 }: MarketingHeaderProps) {
   const desktopInner = (
@@ -101,6 +104,7 @@ export function MarketingHeader({
         navLinks={navLinks}
         downloadHref={downloadHref}
         bannerFullBleed={bannerFullBleed}
+        flushBelowSearch={mwebFlushBelowSearch}
       />
     </div>
   );
