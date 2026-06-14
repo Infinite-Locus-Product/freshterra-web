@@ -53,3 +53,16 @@ export const marketingFooterOfficeTitleClass =
 
 export const marketingFooterOfficeLineClass =
   "text-white-soft/80 font-sans text-sm font-normal leading-[1.4] tracking-[0]";
+
+/** Download App store badges — Figma mWeb 173 × 56. */
+export const MARKETING_FOOTER_STORE_BUTTON_MWEB_WIDTH = 173;
+export const MARKETING_FOOTER_STORE_BUTTON_MWEB_HEIGHT = 56;
+
+export const marketingFooterStoreButtonClass =
+  "bg-white-soft text-text-primary box-border inline-flex h-[56px] w-[173px] shrink-0 items-center gap-3 rounded-[0.5rem] px-3 text-sm font-semibold lg:h-12 lg:w-full lg:max-w-[14.375rem] lg:bg-brand-100";
+
+/** mWeb: 17px horizontal gap between App Store and Google Play badges. */
+export const MARKETING_FOOTER_STORE_BUTTON_GAP_MWEB = 17;
+
+export const marketingFooterStoreButtonStackClass =
+  "flex flex-row flex-wrap gap-[17px] lg:flex-col lg:gap-3";

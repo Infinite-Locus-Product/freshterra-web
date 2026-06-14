@@ -10,6 +10,8 @@ import {
   pdpKeyFeatureItemClass,
   pdpKeyFeaturesListClass,
   pdpKeyFeaturesSectionClass,
+  pdpKeyFeaturesSectionShellClass,
+  pdpMwebFullBleedDividerClass,
   pdpProductDetailsHeadingClass,
   pdpTabActiveClass,
   pdpTabInactiveClass,
@@ -136,17 +138,21 @@ function DetailsPanel({
 
       {features.length > 0 ? (
         <div className={pdpKeyFeaturesSectionClass}>
-          <h3 className={pdpProductDetailsHeadingClass}>Key Features</h3>
-          <div className={pdpKeyFeaturesListClass}>
-            {features.map((feature) => (
-              <div key={feature} className={pdpKeyFeatureItemClass}>
-                <span className={pdpKeyFeatureIconClass}>
-                  <LeafIcon />
-                </span>
-                <span className="capitalize">{feature}</span>
-              </div>
-            ))}
+          <div className={pdpMwebFullBleedDividerClass} aria-hidden />
+          <div className={pdpKeyFeaturesSectionShellClass}>
+            <h3 className={pdpProductDetailsHeadingClass}>Key Features</h3>
+            <div className={pdpKeyFeaturesListClass}>
+              {features.map((feature) => (
+                <div key={feature} className={pdpKeyFeatureItemClass}>
+                  <span className={pdpKeyFeatureIconClass}>
+                    <LeafIcon />
+                  </span>
+                  <span className="capitalize">{feature}</span>
+                </div>
+              ))}
+            </div>
           </div>
+          <div className={pdpMwebFullBleedDividerClass} aria-hidden />
         </div>
       ) : null}
 

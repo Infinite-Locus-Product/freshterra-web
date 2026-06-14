@@ -6,8 +6,10 @@ export const faqPageBreadcrumbClass =
 
 export const FAQ_PAGE_BG_WEB = "#FEFEFE";
 
+export const FAQ_PAGE_HEADER_TO_BREADCRUMB_GAP_MWEB = 10;
+
 export const faqPageSectionClass =
-  "bg-gray-50 py-8 text-text-primary md:bg-[#FEFEFE] md:py-10";
+  "bg-gray-50 pt-[10px] pb-8 text-text-primary md:bg-[#FEFEFE] md:py-10";
 
 export const FAQ_PAGE_TITLE_MWEB_FONT_SIZE = 28;
 

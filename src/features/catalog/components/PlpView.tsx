@@ -10,12 +10,8 @@ import type { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import {
   categoryPlpActiveFiltersClass,
   categoryPlpBannerBleedClass,
-  categoryPlpBannerCopyClass,
   categoryPlpBannerImageClass,
-  categoryPlpBannerOverlayClass,
   categoryPlpBannerShellClass,
-  categoryPlpBannerSubtitleClass,
-  categoryPlpBannerTitleClass,
   categoryPlpBreadcrumbClass,
   categoryPlpBreadcrumbCurrentClass,
   categoryPlpCountClass,
@@ -285,15 +281,6 @@ export function PlpView<TSort extends string>({
               sizes="(max-width: 1024px) 100vw, 1440px"
               className={categoryPlpBannerImageClass}
             />
-            <div aria-hidden className={categoryPlpBannerOverlayClass} />
-            <div className={categoryPlpBannerCopyClass}>
-              {banner.title ? (
-                <p className={categoryPlpBannerTitleClass}>{banner.title}</p>
-              ) : null}
-              {banner.subtitle ? (
-                <p className={categoryPlpBannerSubtitleClass}>{banner.subtitle}</p>
-              ) : null}
-            </div>
           </div>
         </div>
       ) : null}

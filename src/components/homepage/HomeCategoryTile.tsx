@@ -21,6 +21,12 @@ type HomeCategoryTileProps = Readonly<{
   href?: string;
   /** Override the label styling (defaults to the homepage tile look). */
   labelClassName?: string;
+  /** Override circle frame (defaults to homepage 78.4px mWeb). */
+  circleClassName?: string;
+  /** next/image sizes for the tile photo. */
+  imageSizes?: string;
+  /** Override tile wrapper width (defaults to homepage 78.4px mWeb). */
+  tileClassName?: string;
   className?: string;
 }>;
 
@@ -31,11 +37,14 @@ export function HomeCategoryTile({
   imageSrc,
   href,
   labelClassName = homeCategoriesTileLabelClass,
+  circleClassName = homeCategoriesCircleClass,
+  imageSizes = "(max-width: 768px) 78.4px, 140px",
+  tileClassName = homeCategoriesTileClass,
   className,
 }: HomeCategoryTileProps) {
   const content = (
     <>
-      <div className={homeCategoriesCircleClass}>
+      <div className={circleClassName}>
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -43,7 +52,7 @@ export function HomeCategoryTile({
             fill
             loader={useImageKitTiles ? categoryTileImageLoader : undefined}
             className={homeCategoriesImageClass}
-            sizes="(max-width: 768px) 74.94px, 140px"
+            sizes={imageSizes}
           />
         ) : null}
       </div>
@@ -53,7 +62,7 @@ export function HomeCategoryTile({
     </>
   );
 
-  const baseClass = cn(homeCategoriesTileClass, className);
+  const baseClass = cn(tileClassName, className);
 
   if (href) {
     return (

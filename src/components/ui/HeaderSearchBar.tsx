@@ -9,7 +9,7 @@ export const HEADER_SEARCH_WIDTH = 566;
 export const HEADER_SEARCH_HEIGHT = 48;
 
 const headerSearchClass =
-  `border-gray-200 bg-white-soft flex h-12 shrink-0 items-center gap-3 rounded-full border px-4 lg:h-12 ${HEADER_SEARCH_MAX_CLASS}`;
+  `border-gray-200 bg-white-soft flex h-12 shrink-0 items-center gap-3 rounded-full border px-4 shadow-[0_1px_4px_rgba(19,25,39,0.04)] lg:h-12 lg:shadow-none ${HEADER_SEARCH_MAX_CLASS}`;
 
 type HeaderSearchBarProps = Readonly<{
   className?: string;
