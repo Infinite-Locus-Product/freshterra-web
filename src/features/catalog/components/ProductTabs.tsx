@@ -3,10 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  pdpDetailsHeadingClass,
+  pdpDetailsBodyTextClass,
+  pdpDetailsRowLabelClass,
+  pdpDetailsRowValueClass,
+  pdpKeyFeatureIconClass,
   pdpKeyFeatureItemClass,
   pdpKeyFeaturesListClass,
   pdpKeyFeaturesSectionClass,
+  pdpProductDetailsHeadingClass,
   pdpTabActiveClass,
   pdpTabInactiveClass,
   pdpTabsRowClass,
@@ -116,8 +120,8 @@ function DetailsPanel({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className={pdpDetailsHeadingClass}>Product Details</h2>
-        <dl className="space-y-1.5 text-sm">
+        <h2 className={pdpProductDetailsHeadingClass}>Product Details</h2>
+        <dl className="space-y-1.5">
           {brand ? <Row label="Brand" value={brand} /> : null}
           {meta?.foodType ? <Row label="Type" value={meta.foodType} /> : null}
           {product.category ? (
@@ -131,29 +135,25 @@ function DetailsPanel({
       </div>
 
       {features.length > 0 ? (
-        <div>
-          <h3 className={pdpDetailsHeadingClass}>Key Features</h3>
-          <div className={pdpKeyFeaturesSectionClass}>
-            <div className={pdpKeyFeaturesListClass}>
-              {features.map((feature) => (
-                <div key={feature} className={pdpKeyFeatureItemClass}>
-                  <span className="bg-header-tint text-brand-500 grid h-11 w-11 shrink-0 place-items-center rounded-full">
-                    <LeafIcon />
-                  </span>
-                  <span className="capitalize">{feature}</span>
-                </div>
-              ))}
-            </div>
+        <div className={pdpKeyFeaturesSectionClass}>
+          <h3 className={pdpProductDetailsHeadingClass}>Key Features</h3>
+          <div className={pdpKeyFeaturesListClass}>
+            {features.map((feature) => (
+              <div key={feature} className={pdpKeyFeatureItemClass}>
+                <span className={pdpKeyFeatureIconClass}>
+                  <LeafIcon />
+                </span>
+                <span className="capitalize">{feature}</span>
+              </div>
+            ))}
           </div>
         </div>
       ) : null}
 
       {healthBenefits.length > 0 ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Health Benefits
-          </h3>
-          <ul className="text-text-secondary list-disc space-y-1 pl-5 text-sm">
+          <h3 className={pdpProductDetailsHeadingClass}>Health Benefits</h3>
+          <ul className={cn(pdpDetailsBodyTextClass, "list-disc space-y-1 pl-5")}>
             {healthBenefits.map((benefit) => (
               <li key={benefit}>{benefit}</li>
             ))}
@@ -163,23 +163,15 @@ function DetailsPanel({
 
       {ingredients ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Ingredients
-          </h3>
-          <p className="text-text-secondary text-sm leading-relaxed">
-            {ingredients}
-          </p>
+          <h3 className={pdpProductDetailsHeadingClass}>Ingredients</h3>
+          <p className={pdpDetailsBodyTextClass}>{ingredients}</p>
         </div>
       ) : null}
 
       {allergenInfo ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Allergen Information
-          </h3>
-          <p className="text-text-secondary text-sm leading-relaxed">
-            {allergenInfo}
-          </p>
+          <h3 className={pdpProductDetailsHeadingClass}>Allergen Information</h3>
+          <p className={pdpDetailsBodyTextClass}>{allergenInfo}</p>
         </div>
       ) : null}
     </div>
@@ -202,7 +194,11 @@ function NutritionPanel({
   return (
     <div className="space-y-6">
       {hasMacros ? (
-        <dl className="max-w-sm space-y-1.5 text-sm">
+        <div>
+          <h3 className={pdpProductDetailsHeadingClass}>
+            Nutritional Information
+          </h3>
+          <dl className="max-w-sm space-y-1.5">
           {n?.kcal != null ? (
             <Row label="Energy" value={`${n.kcal} kcal`} />
           ) : null}
@@ -212,14 +208,13 @@ function NutritionPanel({
           {n?.carbs != null ? (
             <Row label="Carbohydrates" value={`${n.carbs} g`} />
           ) : null}
-        </dl>
+          </dl>
+        </div>
       ) : null}
       {healthBenefits.length > 0 ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Health Benefits
-          </h3>
-          <ul className="text-text-secondary list-disc space-y-1 pl-5 text-sm">
+          <h3 className={pdpProductDetailsHeadingClass}>Health Benefits</h3>
+          <ul className={cn(pdpDetailsBodyTextClass, "list-disc space-y-1 pl-5")}>
             {healthBenefits.map((benefit) => (
               <li key={benefit}>{benefit}</li>
             ))}
@@ -236,31 +231,23 @@ function InstructionsPanel({ meta }: { meta?: ProductMetafields }) {
   const shelfLife = meta?.shelfLife;
 
   return (
-    <div className="space-y-6 text-sm">
+    <div className="space-y-6">
       {shelfLife ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Shelf Life
-          </h3>
-          <p className="text-text-secondary leading-relaxed">{shelfLife}</p>
+          <h3 className={pdpProductDetailsHeadingClass}>Shelf Life</h3>
+          <p className={pdpDetailsBodyTextClass}>{shelfLife}</p>
         </div>
       ) : null}
       {storageTips ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Storage Tips
-          </h3>
-          <p className="text-text-secondary leading-relaxed">{storageTips}</p>
+          <h3 className={pdpProductDetailsHeadingClass}>Storage Tips</h3>
+          <p className={pdpDetailsBodyTextClass}>{storageTips}</p>
         </div>
       ) : null}
       {usageSuggestions ? (
         <div>
-          <h3 className="text-text-primary mb-2 text-base font-semibold">
-            Usage Suggestions
-          </h3>
-          <p className="text-text-secondary leading-relaxed">
-            {usageSuggestions}
-          </p>
+          <h3 className={pdpProductDetailsHeadingClass}>Usage Suggestions</h3>
+          <p className={pdpDetailsBodyTextClass}>{usageSuggestions}</p>
         </div>
       ) : null}
     </div>
@@ -275,7 +262,9 @@ function RegulatoryPanel({
   meta?: ProductMetafields;
 }) {
   return (
-    <dl className="max-w-xl space-y-1.5 text-sm">
+    <div>
+      <h3 className={pdpProductDetailsHeadingClass}>Regulatory Information</h3>
+      <dl className="max-w-xl space-y-1.5">
       {product.fssai ? <Row label="FSSAI License" value={product.fssai} /> : null}
       {meta?.foodType ? <Row label="Food Type" value={meta.foodType} /> : null}
       {product.regulatory?.veg != null ? (
@@ -304,15 +293,16 @@ function RegulatoryPanel({
       {meta?.bestBefore ? <Row label="Best Before" value={meta.bestBefore} /> : null}
       {meta?.ccEmail ? <Row label="Customer Care Email" value={meta.ccEmail} /> : null}
       {meta?.ccPhone ? <Row label="Customer Care Phone" value={meta.ccPhone} /> : null}
-    </dl>
+      </dl>
+    </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-2">
-      <dt className="text-text-tertiary shrink-0">{label}:</dt>
-      <dd className="text-text-primary">{value}</dd>
+      <dt className={pdpDetailsRowLabelClass}>{label}:</dt>
+      <dd className={pdpDetailsRowValueClass}>{value}</dd>
     </div>
   );
 }

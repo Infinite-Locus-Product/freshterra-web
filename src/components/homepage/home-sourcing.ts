@@ -59,8 +59,9 @@ export const homeSourcingBodyCopyClass =
 
 export const homeSourcingBodyParagraphsClass = "flex flex-col gap-4 md:gap-5";
 
+/** mWeb: Manrope 14px regular, 150% line-height. Web: 20px, 100% line-height. */
 export const homeSourcingBodyParagraphClass =
-  "font-sans text-sm font-normal leading-[1.5] tracking-[0] text-[#000000] md:text-lg md:leading-7 md:tracking-normal md:text-[#445133]";
+  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
 
 export const homeSourcingReadMoreClass =
   "text-brand-500 mt-4 text-left text-sm leading-4 font-bold tracking-[0] underline md:mt-6 md:text-lg md:leading-7 md:no-underline";

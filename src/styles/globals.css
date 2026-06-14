@@ -18,9 +18,11 @@
   --color-gray-200: #e5e7ea;
   --color-gray-divider: #e5e7ea;
   --color-header-tint: #ecfcec;
+  --color-surface-olive: #e9f0e2;
   --color-text-primary: #131927;
   --color-text-secondary: #6d717f;
   --color-text-tertiary: #9ea2ae;
+  --color-icon-black: #131927;
   --color-input-border: rgba(0, 0, 0, 0.38);
   --color-input-text: rgba(0, 0, 0, 0.87);
   --color-input-label: rgba(0, 0, 0, 0.6);

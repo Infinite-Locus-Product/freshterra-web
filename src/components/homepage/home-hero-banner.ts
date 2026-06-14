@@ -3,12 +3,25 @@ export const HOME_HERO_BANNER_WIDTH = 1440;
 export const HOME_HERO_BANNER_HEIGHT = 777;
 export const HOME_HERO_BANNER_HEADER_GAP_MWEB = 22;
 
+/** Homepage header shell — mint green at top fading to white above the banner. */
+export const HOME_HERO_HEADER_GRADIENT =
+  "linear-gradient(180deg, #ECFCEC 0%, #FFFFFF 100%)";
+
+export const homeHeroHeaderSectionClass = "bg-white pb-0 lg:pb-10";
+
+/** Gradient confined to header chrome — green at top, white above banner. */
+export const homeHeroHeaderShellClass =
+  "relative bg-[linear-gradient(180deg,#ECFCEC_0%,#FFFFFF_100%)] pt-0 lg:pt-8 lg:pb-4";
+
+export const homeHeroHeaderFadeClass =
+  "pointer-events-none absolute inset-x-0 bottom-0 z-0 h-12 bg-linear-to-b from-transparent to-white lg:h-16";
+
 /** mWeb: 22px below search bar. Desktop: 24px below header chrome. */
 export const homeHeroBannerHeaderGapClass = "max-lg:mt-[22px] lg:mt-6";
 
-/** mWeb: full-bleed breakout. Desktop: constrained content shell. */
+/** Full-bleed breakout — mWeb and web. */
 export const homeHeroBannerShellClass =
-  "relative left-1/2 w-screen max-w-none -translate-x-1/2 max-lg:px-0 lg:relative lg:left-auto lg:w-full lg:translate-x-0 lg:mx-auto lg:max-w-content lg:px-page";
+  "relative left-1/2 w-screen max-w-none -translate-x-1/2 px-0";
 
 /** mWeb: horizontal snap carousel. Desktop: same track with dot nav. */
 export const homeHeroBannerTrackClass =
@@ -16,11 +29,10 @@ export const homeHeroBannerTrackClass =
 
 /** One slide per viewport width. */
 export const homeHeroBannerSlideFrameClass =
-  "relative box-border flex-[0_0_100%] snap-start snap-always overflow-hidden min-h-[17.5rem] aspect-[16/9] max-lg:max-w-none lg:aspect-[1440/777] lg:max-h-[48.5625rem]";
+  "relative box-border flex-[0_0_100%] snap-start snap-always overflow-hidden min-h-[17.5rem] w-full aspect-[16/9] lg:aspect-[1440/777] lg:max-h-[48.5625rem]";
 
-/** Desktop-only constrained shell around the track. */
 export const homeHeroBannerOuterClass =
-  "relative box-border w-full overflow-hidden lg:mx-auto lg:max-w-content";
+  "relative box-border w-full overflow-hidden";
 
 export const homeHeroBannerImageClass = "object-cover object-center";
 

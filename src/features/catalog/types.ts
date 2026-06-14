@@ -116,6 +116,8 @@ export const plpProductSchema = z.preprocess(
     category: productCategorySchema.optional(),
     images: z.array(productImageSchema).default([]),
     variants: z.array(productVariantSchema).default([]),
+    /** Total Saleor variants when the BFF sends a count without listing all. */
+    variantCount: z.number().optional(),
     price: productPriceSchema,
     fssai: z.string().optional(),
     story: z.string().optional(),

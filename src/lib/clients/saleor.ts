@@ -148,6 +148,7 @@ const saleorListingProductNodeSchema = z.object({
       z.object({
         id: z.string(),
         sku: z.string().nullish(),
+        name: z.string().nullish(),
       }),
     )
     .optional(),
@@ -205,6 +206,7 @@ const CATEGORY_PRODUCTS_BY_SLUG_QUERY = gql`
             variants {
               id
               sku
+              name
             }
           }
         }
@@ -249,6 +251,7 @@ const CATEGORY_PRODUCTS_BY_ID_QUERY = gql`
             variants {
               id
               sku
+              name
             }
           }
         }
