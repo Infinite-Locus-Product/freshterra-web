@@ -14,7 +14,7 @@ import { useTrendingTerms } from "../useTrendingTerms";
 
 /** Closed-state pill — matches the static HeaderSearchBar exactly. */
 const PILL_CLASS =
-  "border-gray-200 bg-white-soft flex h-12 w-full items-center gap-3 rounded-full border px-4 lg:h-12";
+  "border-gray-200 bg-white-soft flex h-12 w-full items-center gap-3 rounded-full border px-4 shadow-[0_1px_4px_rgba(19,25,39,0.04)] lg:h-12 lg:shadow-none";
 
 const DEFAULT_PLACEHOLDER = "Search for fresh produce, groceries, and more...";
 

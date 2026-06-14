@@ -163,9 +163,10 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
   );
 }
 
-const formLabelClass = "text-text-tertiary font-sans text-[16px] leading-[1.3]";
+const formLabelClass =
+  "text-text-tertiary font-sans text-[14px] leading-[1.3] lg:text-[16px]";
 const formControlClass = cn(
-  "border-gray-200 text-text-primary h-[52px] w-full rounded-full border bg-white px-5 text-[16px] leading-[1.3] lg:text-[18px]",
+  "border-gray-200 text-text-primary h-[52px] w-full rounded-full border bg-white px-5 text-[14px] leading-[1.3] lg:text-[18px]",
   "placeholder:text-text-tertiary",
   "focus:border-brand-500 focus:ring-brand-500 focus:ring-1 focus:outline-none",
   // Suppress the browser autofill blue/yellow tint — mask it with the field's

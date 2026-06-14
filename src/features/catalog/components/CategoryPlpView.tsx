@@ -21,8 +21,6 @@ import type { SortOption } from "./PlpSortMenu";
  */
 const PLACEHOLDER_BANNER: PlpBanner = {
   imageSrc: dummyImages.exploreCatalogBanner.src,
-  title: "Organic Picks",
-  subtitle: "Wholesome produce, grown with care.",
 };
 
 /**

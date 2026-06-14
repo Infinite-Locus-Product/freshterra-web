@@ -39,7 +39,7 @@ export default async function CategoryHubPage({
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <MarketingHeader />
+      <MarketingHeader mwebFlushBelowSearch />
       <main className="text-text-primary flex-1">
         <ExploreCatalogView />
       </main>

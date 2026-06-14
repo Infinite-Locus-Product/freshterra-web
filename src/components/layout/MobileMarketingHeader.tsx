@@ -32,6 +32,8 @@ type MobileMarketingHeaderProps = Readonly<{
   navLinks?: readonly MarketingNavLink[];
   downloadHref?: string;
   bannerFullBleed?: boolean;
+  /** Category hub mWeb — no padding below search before hero banner. */
+  flushBelowSearch?: boolean;
   className?: string;
 }>;
 
@@ -40,6 +42,7 @@ export function MobileMarketingHeader({
   navLinks = DEFAULT_NAV_LINKS,
   downloadHref = "/open",
   bannerFullBleed = false,
+  flushBelowSearch = false,
   className,
 }: MobileMarketingHeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -52,7 +55,7 @@ export function MobileMarketingHeader({
         className={cn(
           mobileHeaderShellClass,
           bannerFullBleed && "bg-transparent",
-          bannerFullBleed && "pb-0",
+          (bannerFullBleed || flushBelowSearch) && "pb-0",
           HEADER_EDGE_PADDING_CLASS,
           className,
         )}

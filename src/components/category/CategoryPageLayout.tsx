@@ -12,15 +12,17 @@ import {
   exploreCatalogBannerShellClass,
 } from "@/components/category/category-explore-catalog-banner";
 import {
+  categoryPageCircleClass,
+  categoryPageGridClass,
+  categoryPageTileClass,
+} from "@/components/category/category-page-tiles";
+import {
   categorySectionCtaLabelClass,
   categorySectionCtaLinkClass,
   categorySectionSubtitleClass,
   categorySectionTitleClass,
 } from "@/components/category/category-section-header";
 import {
-  homeCategoriesCircleClass,
-  homeCategoriesGridClass,
-  homeCategoriesTileClass,
   homeCategoriesTileLabelClass,
   homeCategoriesViewAllTileClass,
 } from "@/components/homepage/home-categories";
@@ -124,7 +126,7 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
               </Link>
             </div>
 
-            <div className={homeCategoriesGridClass}>
+            <div className={categoryPageGridClass}>
               {section.items.map((item: CategorySectionItem) => {
                 const imageSrc = "imageSrc" in item ? item.imageSrc : undefined;
                 const isViewAllTile = item.name.toLowerCase() === "view all";
@@ -144,6 +146,9 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                       name={item.name}
                       imageSrc={imageSrc}
                       href={tileHref}
+                      circleClassName={categoryPageCircleClass}
+                      imageSizes="(max-width: 768px) 79px, 140px"
+                      tileClassName={categoryPageTileClass}
                       className={viewAllTileClass}
                     />
                   );
@@ -152,9 +157,9 @@ function CategorySections({ content }: Readonly<CategoryPageLayoutProps>) {
                 return (
                   <article
                     key={item.name}
-                    className={cn(homeCategoriesTileClass, viewAllTileClass)}
+                    className={cn(categoryPageTileClass, viewAllTileClass)}
                   >
-                    <div className={homeCategoriesCircleClass} aria-hidden />
+                    <div className={categoryPageCircleClass} aria-hidden />
                     <Body size="sm" className={homeCategoriesTileLabelClass}>
                       {item.name}
                     </Body>

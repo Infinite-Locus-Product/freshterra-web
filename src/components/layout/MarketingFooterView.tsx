@@ -18,6 +18,8 @@ import {
   marketingFooterMainBandClass,
   marketingFooterOfficeLineClass,
   marketingFooterOfficeTitleClass,
+  marketingFooterStoreButtonClass,
+  marketingFooterStoreButtonStackClass,
 } from "@/components/layout/marketing-footer-layout";
 import { APP_STORE_BADGES } from "@/components/layout/app-store-badges";
 import { MarketingFooterArt } from "@/components/layout/MarketingFooterArt";
@@ -75,12 +77,12 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
               <h3 className="mb-4 font-sans text-[1.125rem] leading-6 font-bold tracking-normal">
                 Download App
               </h3>
-              <div className="space-y-3">
+              <div className={marketingFooterStoreButtonStackClass}>
                 {APP_STORE_BADGES.map((badge) => (
                   <Link
                     key={badge.brandLine}
                     href={badgeHref[badge.hrefKey]}
-                    className="bg-brand-100 text-text-primary inline-flex h-[3rem] w-full max-w-[14.375rem] items-center gap-3 rounded-[0.5rem] px-3 text-sm font-semibold"
+                    className={marketingFooterStoreButtonClass}
                   >
                     <Image
                       src={badge.iconSrc}
