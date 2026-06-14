@@ -20,9 +20,11 @@ export const homeCategoriesHeaderRowClass =
 
 /** mWeb: chevron only (#131927). Desktop: label + chevron (brand green). */
 export const homeCategoriesCtaLinkClass =
-  "text-text-primary inline-flex shrink-0 items-center gap-1.5 text-sm font-bold md:text-base md:text-brand-500";
+  "text-text-primary inline-flex shrink-0 items-center gap-1.5 text-sm font-bold md:gap-2 md:text-brand-500";
 
-export const homeCategoriesCtaLabelClass = "hidden md:inline";
+/** Web “View All” CTA — Manrope 18px bold, 24px line-height. */
+export const homeCategoriesCtaLabelClass =
+  "hidden font-sans text-[18px] font-bold leading-6 tracking-[0] md:inline";
 
 export const homeCategoriesViewAllTileClass = "hidden md:flex";
 

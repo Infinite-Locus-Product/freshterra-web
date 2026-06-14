@@ -55,10 +55,12 @@ export const pdpTrustItemClass =
 export const PDP_APP_CARD_MWEB_WIDTH = 361;
 export const PDP_APP_CARD_MWEB_HEIGHT = 140;
 export const PDP_APP_CARD_WEB_HEIGHT = 169;
+export const PDP_APP_CARD_WEB_PADDING = 24;
+export const PDP_APP_CARD_WEB_GAP = 16;
 
-/** Download App card — mWeb: 361 × 140; web: full width × 169. */
+/** Download App card — mWeb: 361 × 140, radius-sm; web: full width × 169, 10px corners, 24px padding, 16px gap. */
 export const pdpAppCardClass =
-  "box-border mx-auto flex h-[140px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-sm border border-gray-200 bg-[#E8EEEA] p-4 lg:mx-0 lg:h-[169px] lg:max-w-none lg:w-full lg:justify-between lg:gap-4 lg:p-8";
+  "box-border mx-auto flex h-[140px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-[var(--radius-sm)] border border-gray-200 bg-[#E8EEEA] p-4 lg:mx-0 lg:h-[169px] lg:max-w-none lg:w-full lg:justify-between lg:gap-4 lg:rounded-[10px] lg:p-[24px]";
 
 export const pdpAppCardTitleClass =
   "text-text-primary font-sans text-base font-bold leading-5 tracking-[0] lg:text-lg lg:leading-6";
@@ -71,9 +73,9 @@ export const pdpAppCardButtonsClass = "flex gap-2 max-lg:flex-nowrap lg:gap-3";
 export const pdpStoreButtonClass =
   "box-border flex h-9 min-w-0 flex-1 items-center gap-2 rounded-[9.78px] border-[0.73px] border-gray-200 bg-white px-2 transition-colors hover:bg-gray-50 lg:h-14 lg:w-[14.375rem] lg:flex-none lg:gap-[11.73px]";
 
-/** Tab row — mWeb: horizontal scroll. */
+/** Tab row — mWeb: horizontal scroll. Web: full-bleed grey-50 strip; pills keep their own bg. */
 export const pdpTabsRowClass =
-  "flex gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-wrap [&::-webkit-scrollbar]:hidden";
+  "flex gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:relative lg:left-1/2 lg:flex-wrap lg:w-screen lg:max-w-none lg:-translate-x-1/2 lg:overflow-visible lg:bg-gray-50 lg:px-page [&::-webkit-scrollbar]:hidden";
 
 export const pdpTabActiveClass =
   "bg-brand-500 text-beige-100 shrink-0 rounded-full px-4 py-2 text-sm font-medium";
@@ -100,7 +102,7 @@ export const pdpDetailsBodyTextClass =
 export const pdpKeyFeaturesSectionClass = "[&+div]:!mt-6";
 
 export const pdpKeyFeaturesListClass =
-  "flex flex-wrap items-start justify-start gap-8 lg:gap-12";
+  "flex flex-wrap items-start justify-start gap-8 lg:gap-[24px]";
 
 export const pdpKeyFeatureItemClass =
   "text-brand-600 inline-flex flex-col items-center gap-2 font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:leading-[130%]";
