@@ -12,3 +12,6 @@ export const exploreCatalogBannerOuterClass =
   "relative box-border h-[171px] w-full overflow-hidden lg:aspect-[1440/422] lg:h-auto lg:min-h-[12.5rem] lg:max-h-[26.375rem]";
 
 export const exploreCatalogBannerImageClass = "object-cover object-center";
+
+/** mWeb: 24px below navbar. Web: flush under header. */
+export const exploreCatalogBannerHeaderGapClass = "max-lg:mt-6 lg:mt-0";

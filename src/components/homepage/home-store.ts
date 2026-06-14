@@ -6,8 +6,10 @@ export const HOME_STORE_MEDIA_WIDTH = 1360;
 export const HOME_STORE_MEDIA_HEIGHT = 437;
 
 export const HOME_STORE_TITLE_MWEB_FONT_SIZE = 18;
+export const HOME_STORE_TITLE_WEB_FONT_SIZE = 36;
 export const HOME_STORE_CTA_MWEB_WIDTH = 174.45;
 export const HOME_STORE_CTA_MWEB_HEIGHT = 48;
+export const HOME_STORE_CTA_FONT_SIZE = 20;
 export const HOME_STORE_FOOTER_GAP_MWEB = 25;
 
 export const homeStoreSectionClass =
@@ -19,8 +21,9 @@ export const homeStoreSectionShellClass = "px-4 md:px-page";
 export const homeStoreHeaderRowClass =
   "mb-4 flex items-center justify-between gap-4 md:mb-[34.84px]";
 
+/** Playfair 36px medium, 150% line-height, #101828 (web); mWeb 18px. */
 export const homeStoreTitleClass =
-  "font-display text-[#101828] text-[18px] font-semibold leading-[1.3] tracking-[0] md:text-2xl md:font-medium md:leading-tight";
+  "font-display text-[#101828] text-[18px] font-medium leading-[1.3] tracking-[0] md:text-[36px] md:leading-[150%]";
 
 /** mWeb: chevron only. */
 export const homeStoreCtaLinkClass =
@@ -46,5 +49,6 @@ export const homeStoreAddressClass =
 export const homeStoreCtaRowClass =
   "mt-3.5 flex flex-nowrap items-center gap-3 md:flex-wrap";
 
+/** View Store / Locate Us — mWeb: Manrope 16px bold, 20px lh; web: 20px, 130% lh. */
 export const homeStoreCtaPillClass =
-  "box-border h-12 w-[174.45px] shrink-0 rounded-[var(--radius-xxl)] border-[1.5px] border-brand-500 bg-white-soft px-4 py-0 text-base leading-5 font-bold text-brand-500 normal-case tracking-[0] hover:bg-beige-100 md:h-[3.625rem] md:w-[17.875rem] md:max-w-full md:shrink md:px-6 md:py-4 md:leading-6 md:tracking-normal";
+  "box-border flex h-12 w-[174.45px] shrink-0 items-center justify-center rounded-[var(--radius-xxl)] border-[1.5px] border-brand-500 bg-white-soft px-4 py-0 text-center font-sans text-[16px] font-bold leading-5 tracking-[0] text-brand-500 normal-case hover:bg-beige-100 md:h-[3.625rem] md:w-[17.875rem] md:max-w-full md:shrink md:px-6 md:py-4 md:text-[20px] md:leading-[1.3]";

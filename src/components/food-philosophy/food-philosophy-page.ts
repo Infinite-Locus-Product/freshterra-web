@@ -47,12 +47,16 @@ export const foodPhilosophySourcingSubtitleClass =
 
 export const FOOD_PHILOSOPHY_SOURCING_SUBTITLE_TO_BODY_GAP_MWEB = 16;
 
+export const FOOD_PHILOSOPHY_SOURCING_BODY_FONT_SIZE = 20;
+
 export const foodPhilosophySourcingArticleClass =
   "flex min-w-0 flex-col gap-4 md:gap-6";
 
 export const foodPhilosophySourcingParagraphsClass = "flex flex-col gap-4";
 
-export const foodPhilosophySourcingBodyClass = foodPhilosophySectionBodyClass;
+/** mWeb: Manrope 14px regular, 150% lh. Web: 20px, 100% lh. */
+export const foodPhilosophySourcingBodyClass =
+  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
 
 /** “Quality Standards & Certifications” block. */
 export const foodPhilosophyCertificationsTitleClass = foodPhilosophySectionTitleClass;
@@ -62,7 +66,7 @@ export const foodPhilosophyCertificationsSubtitleClass =
   "text-brand-500 font-handsome mt-1 hidden text-[1.875rem] leading-[1.625rem] font-bold tracking-normal md:block";
 
 export const foodPhilosophyCertificationsBodyClass =
-  "mt-4 text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:mt-5 md:text-[1.125rem] md:leading-7 md:tracking-normal";
+  "text-text-primary mt-4 font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:mt-5 md:text-[20px] md:leading-none";
 
 export const FOOD_PHILOSOPHY_CERTIFICATION_ICON_LABEL_GAP_WEB = 4;
 

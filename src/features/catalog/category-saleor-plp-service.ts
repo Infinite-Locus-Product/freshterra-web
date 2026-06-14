@@ -22,7 +22,7 @@ function mapSaleorProductToListing(node: {
     priceRange?: { start?: { gross?: { amount: number; currency: string } } };
   } | null;
   isAvailable?: boolean;
-  variants?: { id: string; sku?: string | null }[];
+  variants?: { id: string; sku?: string | null; name?: string | null }[];
 }): ReturnType<typeof plpProductSchema.parse> {
   const gross = node.pricing?.priceRange?.start?.gross;
   const list = gross ? toMinorUnits(gross.amount) : 0;
@@ -40,6 +40,7 @@ function mapSaleorProductToListing(node: {
       node.variants?.map((variant) => ({
         id: variant.id,
         sku: variant.sku ?? "",
+        name: variant.name ?? undefined,
       })) ?? [],
     price: { list, mrp: list, currency },
     inStock: node.isAvailable ?? false,

@@ -13,24 +13,27 @@ import {
   pdpAppCardButtonsClass,
   pdpAppCardClass,
   pdpAppCardTitleClass,
-  pdpStoreButtonClass,
   pdpContentShellClass,
   pdpGalleryBleedClass,
   pdpInfoShellClass,
   pdpMainGridClass,
   pdpPageShellClass,
+  pdpProductTagPillClass,
+  pdpProductTagsRowClass,
+  pdpStoreButtonClass,
   pdpStoryClass,
   pdpTitleClass,
   pdpTrustHeadingClass,
   pdpTrustItemClass,
+  pdpTrustSectionClass,
   pdpTrustRowClass,
   pdpVariantLabelClass,
+  pdpVariantPillActiveClass,
   pdpVariantPillClass,
 } from "@/components/category/pdp-page";
 import { APP_STORE_BADGE_BY_STORE } from "@/components/layout/app-store-badges";
 import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
-
 
 import { ProductCard } from "./ProductCard";
 import { ProductGallery } from "./ProductGallery";
@@ -105,17 +108,14 @@ function ProductInfo({ product }: { product: ProductDetail }) {
           <p className={cn(pdpStoryClass, "lg:order-last")}>{product.story}</p>
         ) : null}
         {product.tags.length > 0 || product.metafields?.foodType ? (
-          <div className="order-2 mt-3 hidden flex-wrap gap-2 lg:flex">
+          <div className={pdpProductTagsRowClass}>
             {product.metafields?.foodType ? (
-              <span className="border-brand-300 text-brand-600 rounded-full border px-3 py-1 text-xs font-medium">
+              <span className={pdpProductTagPillClass}>
                 {product.metafields.foodType}
               </span>
             ) : null}
             {product.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="border-brand-300 text-brand-600 rounded-full border px-3 py-1 text-xs font-medium capitalize"
-              >
+              <span key={tag} className={cn(pdpProductTagPillClass, "capitalize")}>
                 {tag}
               </span>
             ))}
@@ -156,9 +156,7 @@ function VariantSelector({
               onClick={() => setActive(i)}
               className={cn(
                 pdpVariantPillClass,
-                i === active
-                  ? "border-brand-500 bg-header-tint text-brand-600 font-medium"
-                  : "text-text-primary border-gray-200 hover:border-gray-300",
+                i === active && pdpVariantPillActiveClass,
               )}
             >
               {label}
@@ -171,10 +169,10 @@ function VariantSelector({
 }
 
 const TRUST_MARKERS = [
-  { label: "Fast Delivery", icon: <TruckIcon /> },
-  { label: "12hr Return Window", icon: <BoxIcon /> },
-  { label: "Quality Checked", icon: <CheckIcon /> },
-];
+  { label: "Fast Delivery", iconSrc: "/Vehicle Truck Checkmark.svg" },
+  { label: "12hr Return Window", iconSrc: "/Box.svg" },
+  { label: "Quality Checked", iconSrc: "/Checkmark.svg" },
+] as const;
 
 function TrustMarkers({
   showReturn = true,
@@ -186,12 +184,19 @@ function TrustMarkers({
     : TRUST_MARKERS.filter((marker) => marker.label !== "12hr Return Window");
 
   return (
-    <div>
+    <div className={pdpTrustSectionClass}>
       <p className={pdpTrustHeadingClass}>Trust Markers</p>
       <div className={pdpTrustRowClass}>
         {markers.map((marker) => (
           <div key={marker.label} className={pdpTrustItemClass}>
-            <span className="text-brand-500">{marker.icon}</span>
+            <Image
+              src={marker.iconSrc}
+              alt=""
+              aria-hidden
+              width={28}
+              height={28}
+              className="shrink-0"
+            />
             <span>{marker.label}</span>
           </div>
         ))}
@@ -286,29 +291,4 @@ function SimilarProducts({
   );
 }
 
-/* ---- icons ---- */
-
-function TruckIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width={22} height={22} aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z" />
-      <circle cx="7" cy="18" r="1.6" />
-      <circle cx="17.5" cy="18" r="1.6" />
-    </svg>
-  );
-}
-function BoxIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width={22} height={22} aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8" />
-    </svg>
-  );
-}
-function CheckIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width={22} height={22} aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
 export default PdpView;

@@ -26,11 +26,8 @@ const PLACEHOLDER_BANNER: PlpBanner = {
 };
 
 /**
- * Placeholder quick-filter tabs + filter groups, used only when the API
- * returns no facets (staging: BFF 404 + Saleor products have no attributes).
- * Real facets from the API take precedence. These are presentational scaffolds
- * — on Saleor-only categories the fallback ignores the filter params, so they
- * don't yet narrow results.
+ * Placeholder quick-filter tabs, used only when the API returns no tag facets.
+ * Real facets from the API take precedence.
  */
 const PLACEHOLDER_TABS: PlpTab[] = [
   { label: "All", value: "all" },
@@ -39,36 +36,6 @@ const PLACEHOLDER_TABS: PlpTab[] = [
   { label: "Seasonal", value: "seasonal" },
   { label: "Leafy Greens", value: "leafy-greens" },
   { label: "Root", value: "root" },
-];
-
-const PLACEHOLDER_FILTER_GROUPS: PlpFilterGroup[] = [
-  {
-    key: "brand",
-    label: "Brand",
-    options: [
-      { value: "brand-a", label: "Brand A" },
-      { value: "brand-b", label: "Brand B" },
-      { value: "brand-c", label: "Brand C" },
-    ],
-  },
-  {
-    key: "dietary",
-    label: "Dietary",
-    options: [
-      { value: "organic", label: "Organic" },
-      { value: "vegan", label: "Vegan" },
-      { value: "gluten-free", label: "Gluten-free" },
-    ],
-  },
-  {
-    key: "health-tags",
-    label: "Health Tags",
-    options: [
-      { value: "high-protein", label: "High protein" },
-      { value: "low-carb", label: "Low carb" },
-      { value: "sugar-free", label: "Sugar free" },
-    ],
-  },
 ];
 
 const SORT_OPTIONS: SortOption<CategorySort>[] = [
@@ -139,13 +106,10 @@ export function CategoryPlpView({ slug, polygonId }: CategoryPlpViewProps) {
 
   const ctrl = useCategoryProducts({ slug, polygonId, sort, filters });
 
-  // Prefer real API facets; fall back to placeholders so the filter/tab UI is
-  // visible on staging, where the BFF 404s and Saleor products carry no
-  // attributes (→ no facets). Real facets take over automatically when present.
-  const filterGroups = useMemo(() => {
-    const apiGroups = facetsToGroups(ctrl.facets);
-    return apiGroups.length > 0 ? apiGroups : PLACEHOLDER_FILTER_GROUPS;
-  }, [ctrl.facets]);
+  const filterGroups = useMemo(
+    () => facetsToGroups(ctrl.facets),
+    [ctrl.facets],
+  );
 
   const tabs = useMemo(
     () => facetsToTabs(ctrl.facets) ?? PLACEHOLDER_TABS,

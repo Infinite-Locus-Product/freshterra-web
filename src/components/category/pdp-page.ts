@@ -21,28 +21,44 @@ export const pdpTitleClass =
   "text-text-primary font-sans text-[18px] font-bold leading-[24px] tracking-[0] lg:text-[2rem] lg:leading-[1.3]";
 
 export const pdpStoryClass =
-  "font-handsome text-text-primary mt-[10px] text-[20px] leading-[20px] font-bold tracking-[0] lg:mt-6 lg:text-2xl lg:leading-[26px]";
+  "font-handsome text-text-primary mt-[10px] text-[20px] font-bold leading-5 tracking-[0] lg:mt-6 lg:text-[24px] lg:leading-[26px]";
+
+/** Tag pills under product name — Manrope 14px medium, 100% line-height, brand green. */
+export const pdpProductTagsRowClass = "order-2 mt-3 hidden flex-wrap gap-2 lg:flex";
+
+export const pdpProductTagPillClass =
+  "border-brand-300 text-brand-500 inline-flex h-[37px] items-center justify-center rounded-full border px-3 text-center align-middle font-sans text-[14px] font-medium leading-none tracking-[0]";
 
 export const pdpVariantLabelClass =
   "mb-2 hidden font-sans text-base font-semibold uppercase leading-[1.3] tracking-[0] lg:block";
 
+/** mWeb: Manrope 14px medium, 16px lh, centered. Web: 16px / 20px lh. */
 export const pdpVariantPillClass =
-  "flex h-8 min-w-[5.125rem] shrink-0 items-center justify-center rounded-full border px-4 text-sm transition-colors lg:h-11";
+  "text-text-secondary inline-flex h-8 min-w-[5.125rem] shrink-0 items-center justify-center rounded-full border border-gray-200 px-4 text-center font-sans text-[14px] font-medium leading-4 tracking-[0] transition-colors hover:border-gray-300 lg:h-11 lg:text-[16px] lg:leading-5";
 
-export const pdpTrustHeadingClass = "mb-3 hidden font-sans text-base font-semibold uppercase lg:block";
+export const pdpVariantPillActiveClass =
+  "border-brand-500 bg-header-tint text-brand-500";
+
+export const pdpTrustHeadingClass =
+  "text-text-primary mb-4 hidden font-sans text-base font-semibold uppercase leading-[1.3] tracking-[0] lg:block";
+
+/** mWeb: no heading. Dividers within content inset. */
+export const pdpTrustSectionClass =
+  "border-gray-divider border-t border-b py-4 lg:py-6";
 
 export const pdpTrustRowClass =
-  "flex items-start justify-between gap-2 border-y border-[#E5E7EB] py-4 lg:justify-start lg:gap-8 lg:border-y-0 lg:py-0";
+  "grid w-full grid-cols-3 items-start gap-1 lg:flex lg:justify-start lg:gap-12";
 
 export const pdpTrustItemClass =
-  "text-text-secondary flex flex-1 flex-col items-center gap-1.5 text-center text-xs";
+  "text-brand-500 flex min-w-0 flex-col items-center gap-1.5 text-center font-sans text-xs font-medium leading-tight lg:shrink-0";
 
 export const PDP_APP_CARD_MWEB_WIDTH = 361;
 export const PDP_APP_CARD_MWEB_HEIGHT = 140;
+export const PDP_APP_CARD_WEB_HEIGHT = 169;
 
-/** Download App card — mWeb: 361 × 140 within 16px-inset content width. */
+/** Download App card — mWeb: 361 × 140; web: full width × 169. */
 export const pdpAppCardClass =
-  "box-border mx-auto flex h-[140px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-sm border border-gray-200 bg-[#E8EEEA] p-4 lg:mx-0 lg:h-auto lg:max-w-none lg:justify-start lg:gap-4 lg:p-8";
+  "box-border mx-auto flex h-[140px] w-full max-w-[361px] flex-col justify-between overflow-hidden rounded-sm border border-gray-200 bg-[#E8EEEA] p-4 lg:mx-0 lg:h-[169px] lg:max-w-none lg:w-full lg:justify-between lg:gap-4 lg:p-8";
 
 export const pdpAppCardTitleClass =
   "text-text-primary font-sans text-base font-bold leading-5 tracking-[0] lg:text-lg lg:leading-6";
@@ -67,17 +83,27 @@ export const pdpTabInactiveClass =
 
 export const pdpTabsSectionClass = "border-t border-gray-200 lg:border-t-0";
 
-export const pdpDetailsHeadingClass =
-  "text-text-primary mb-3 text-base font-bold leading-5 lg:text-lg lg:font-semibold";
+/** mWeb: Manrope 16px bold, 20px lh, primary black. Web: 20px bold, #555555. */
+export const pdpProductDetailsHeadingClass =
+  "text-text-primary mb-3 font-sans text-[16px] font-bold leading-5 tracking-[0] lg:text-[20px] lg:leading-[130%] lg:text-[#555555]";
 
-export const pdpDetailsRowLabelClass = "text-text-tertiary shrink-0 text-sm";
+/** mWeb subtext — Manrope 14px medium, 16px lh. Web: 16px regular, 130% lh. */
+export const pdpDetailsRowLabelClass =
+  "text-text-tertiary shrink-0 font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
 
-export const pdpDetailsRowValueClass = "text-text-primary text-sm";
+export const pdpDetailsRowValueClass =
+  "text-text-primary font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
 
-export const pdpKeyFeaturesSectionClass = "border-y border-[#E5E7EB] py-4";
+export const pdpDetailsBodyTextClass =
+  "text-text-secondary font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
+
+export const pdpKeyFeaturesSectionClass = "[&+div]:!mt-6";
 
 export const pdpKeyFeaturesListClass =
-  "flex items-start justify-between gap-4 lg:justify-start lg:gap-8";
+  "flex flex-wrap items-start justify-start gap-8 lg:gap-12";
 
 export const pdpKeyFeatureItemClass =
-  "text-brand-600 flex flex-1 flex-col items-center gap-2 text-center text-xs";
+  "text-brand-600 inline-flex flex-col items-center gap-2 font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:leading-[130%]";
+
+export const pdpKeyFeatureIconClass =
+  "bg-header-tint text-brand-500 grid h-[48px] w-[48px] shrink-0 place-items-center rounded-full";

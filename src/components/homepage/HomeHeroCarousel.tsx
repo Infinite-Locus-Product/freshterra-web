@@ -105,7 +105,7 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
                   fill
                   priority={index === 0}
                   className={cn(homeHeroBannerImageClass, "hidden md:block")}
-                  sizes="(max-width: 1024px) 100vw, 1440px"
+                  sizes="100vw"
                 />
               </>
             );

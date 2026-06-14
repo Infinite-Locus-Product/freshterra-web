@@ -2,8 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { categoryPlpToolbarButtonClass, categoryPlpToolbarLabelClass } from "@/components/category/category-plp-page";
 import { cn } from "@/lib/utils/cn";
+
+import {
+  categoryPlpSortTriggerClass,
+  categoryPlpToolbarButtonClass,
+  categoryPlpToolbarLabelClass,
+} from "@/components/category/category-plp-page";
 
 export type SortOption<T extends string = string> = {
   value: T;
@@ -42,7 +47,7 @@ export function PlpSortMenu<T extends string>({
   const triggerClass =
     variant === "plp-toolbar"
       ? cn(categoryPlpToolbarButtonClass, categoryPlpToolbarLabelClass, "w-full gap-2")
-      : "text-text-primary flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm";
+      : categoryPlpSortTriggerClass;
 
   return (
     <div
@@ -64,7 +69,7 @@ export function PlpSortMenu<T extends string>({
         ) : (
           <>
             <span>
-              Sort: <span className="font-medium">{current?.label}</span>
+              Sort: {current?.label}
             </span>
             <Chevron open={open} />
           </>

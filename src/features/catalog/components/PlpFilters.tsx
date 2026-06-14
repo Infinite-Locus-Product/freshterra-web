@@ -2,6 +2,21 @@
 
 import { cn } from "@/lib/utils/cn";
 
+import {
+  categoryPlpClearTextClass,
+  categoryPlpFiltersGroupsClass,
+  categoryPlpFiltersPanelGroupClass,
+  categoryPlpFiltersPanelShellClass,
+  categoryPlpFiltersSidebarGroupClass,
+  categoryPlpFiltersSidebarShellClass,
+  categoryPlpFiltersTitleClass,
+  categoryPlpFilterCheckboxBoxClass,
+  categoryPlpFilterCheckboxCheckClass,
+  categoryPlpFilterCheckboxInputClass,
+  categoryPlpFilterOptionLabelClass,
+  categoryPlpFilterOptionRowClass,
+} from "@/components/category/category-plp-page";
+
 export type PlpFilterOption = {
   value: string;
   label: string;
@@ -21,9 +36,16 @@ type PlpFiltersProps = {
   groups?: PlpFilterGroup[];
   selections: FilterSelections;
   onChange: (next: FilterSelections) => void;
+  /** Web sidebar: borderless with dividers between groups. mWeb panel: bordered card. */
+  variant?: "panel" | "sidebar";
 };
 
-export function PlpFilters({ groups, selections, onChange }: PlpFiltersProps) {
+export function PlpFilters({
+  groups,
+  selections,
+  onChange,
+  variant = "panel",
+}: Readonly<PlpFiltersProps>) {
   const resolvedGroups = groups ?? [];
   const hasAny = Object.values(selections).some((vals) => vals.length > 0);
 
@@ -42,10 +64,19 @@ export function PlpFilters({ groups, selections, onChange }: PlpFiltersProps) {
     onChange(next);
   }
 
+  const shellClass =
+    variant === "sidebar"
+      ? categoryPlpFiltersSidebarShellClass
+      : categoryPlpFiltersPanelShellClass;
+  const groupClass =
+    variant === "sidebar"
+      ? categoryPlpFiltersSidebarGroupClass
+      : categoryPlpFiltersPanelGroupClass;
+
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5">
+    <div className={shellClass}>
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-text-primary flex items-center gap-2 font-semibold">
+        <span className={categoryPlpFiltersTitleClass}>
           <FilterIcon />
           Filters
         </span>
@@ -53,18 +84,15 @@ export function PlpFilters({ groups, selections, onChange }: PlpFiltersProps) {
           type="button"
           onClick={() => onChange({})}
           disabled={!hasAny}
-          className="text-brand-500 text-sm underline underline-offset-2 disabled:opacity-40"
+          className={cn(categoryPlpClearTextClass, "disabled:opacity-40")}
         >
           Clear
         </button>
       </div>
 
-      <div className="space-y-5">
+      <div className={categoryPlpFiltersGroupsClass}>
         {resolvedGroups.map((group) => (
-          <fieldset
-            key={group.key}
-            className="border-t border-gray-100 pt-4 first:border-t-0 first:pt-0"
-          >
+          <fieldset key={group.key} className={groupClass}>
             <legend className="text-text-primary mb-2 text-sm font-semibold">
               {group.label}
             </legend>
@@ -76,17 +104,23 @@ export function PlpFilters({ groups, selections, onChange }: PlpFiltersProps) {
                 return (
                   <label
                     key={option.value}
-                    className="text-text-secondary flex cursor-pointer items-center gap-2.5 text-sm"
+                    className={categoryPlpFilterOptionRowClass}
                   >
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggle(group.key, option.value)}
-                      className={cn(
-                        "text-brand-500 focus:ring-brand-500 h-4 w-4 rounded border-gray-300",
-                      )}
+                      className={categoryPlpFilterCheckboxInputClass}
                     />
-                    <span className="flex-1">{option.label}</span>
+                    <span
+                      className={categoryPlpFilterCheckboxBoxClass}
+                      aria-hidden
+                    >
+                      {checked ? <FilterCheckboxCheck /> : null}
+                    </span>
+                    <span className={categoryPlpFilterOptionLabelClass}>
+                      {option.label}
+                    </span>
                     {typeof option.count === "number" ? (
                       <span className="text-text-tertiary text-xs">
                         {option.count}
@@ -103,12 +137,29 @@ export function PlpFilters({ groups, selections, onChange }: PlpFiltersProps) {
   );
 }
 
+function FilterCheckboxCheck() {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      className={categoryPlpFilterCheckboxCheckClass}
+      aria-hidden
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2.5 6 5 8.5 9.5 3.5" />
+    </svg>
+  );
+}
+
 function FilterIcon() {
   return (
     <svg
       viewBox="0 0 16 16"
-      width={16}
-      height={16}
+      width={18}
+      height={18}
       aria-hidden
       fill="none"
       stroke="currentColor"
