@@ -1,5 +1,9 @@
 import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
+import {
+  buildHomepageL2CategoryTileItems,
+  hasHomepageL2CategoryTiles,
+} from "./homepage-l2-category-tiles";
 import { buildHomepageCategoryTiles } from "./web-category-page-mapper";
 
 import type { HomeCategoryTileItem } from "./web-homepage-types";
@@ -24,13 +28,17 @@ function collectHomepageSaleorCategoryIds(
 }
 
 /**
- * Builds homepage category tiles from `web-category-page` L2/L3 CMS data,
- * enriched with Saleor name/slug via the BFF categories API.
+ * Builds homepage category tiles from `web-homepage.l2_category.l2_category_tile`
+ * when present, otherwise falls back to curated `web-category-page` L3 tiles.
  */
 export async function resolveHomepageCategoryItems(
   homepage: WebHomepageContent,
   categoryPage: WebCategoryPageContent | null,
 ): Promise<HomeCategoryTileItem[]> {
+  if (hasHomepageL2CategoryTiles(homepage)) {
+    return buildHomepageL2CategoryTileItems(homepage);
+  }
+
   if (!categoryPage || categoryPage.sections.length === 0) {
     return [];
   }

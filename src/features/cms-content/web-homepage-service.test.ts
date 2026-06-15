@@ -62,6 +62,7 @@ describe("getWebHomepageContent", () => {
 
 describe("fetchWebHomepageContentSafe", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(console, "warn").mockImplementation(() => undefined);
   });
 
@@ -88,6 +89,41 @@ describe("fetchWebHomepageContentSafe", () => {
     expect(mockResolveHomepageCategoryItems).toHaveBeenCalledWith(
       apiEntry,
       expect.anything(),
+    );
+  });
+
+  it("skips web-category-page fetch when homepage l2_category_tile is populated", async () => {
+    const homepageWithTiles = {
+      ...apiEntry,
+      l2_category: {
+        title: "Categories",
+        slug: "/categories",
+        l2_category_tile: [
+          {
+            image_web: "https://cms-stg.freshterra.in/uploads/tile.png",
+            saleor_category_slug: "fruits",
+            is_active: true,
+            position: 1,
+          },
+        ],
+      },
+    };
+    mockGetSingleContent.mockResolvedValue(homepageWithTiles);
+    mockResolveHomepageCategoryItems.mockResolvedValue([
+      {
+        key: "fruits",
+        name: "Fruits",
+        imageSrc: "https://cms-stg.freshterra.in/uploads/tile.png",
+        href: "/category/fruits",
+      },
+    ]);
+
+    await fetchWebHomepageContentSafe();
+
+    expect(mockGetWebCategoryPage).not.toHaveBeenCalled();
+    expect(mockResolveHomepageCategoryItems).toHaveBeenCalledWith(
+      homepageWithTiles,
+      null,
     );
   });
 

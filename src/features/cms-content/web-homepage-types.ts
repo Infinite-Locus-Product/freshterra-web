@@ -1,31 +1,34 @@
 import { z } from "zod";
 
+/** Strapi often sends `null` for empty optional text fields. */
+const cmsString = z.string().nullable().optional();
+
 export const webHomepageHeroSchema = z
   .object({
     id: z.union([z.string(), z.number()]).optional(),
-    image: z.string().optional(),
-    iamge_mweb: z.string().optional(),
-    image_mweb: z.string().optional(),
-    heading: z.string().optional(),
-    tagline: z.string().nullable().optional(),
-    cta_slug: z.string().nullable().optional(),
-    cta_label: z.string().nullable().optional(),
-    position: z.number().optional(),
+    image: cmsString,
+    iamge_mweb: cmsString,
+    image_mweb: cmsString,
+    heading: cmsString,
+    tagline: cmsString,
+    cta_slug: cmsString,
+    cta_label: cmsString,
+    position: z.number().nullable().optional(),
     is_active: z.boolean().optional(),
-    saleor_collection_id: z.string().nullable().optional(),
+    saleor_collection_id: cmsString,
   })
   .catchall(z.unknown());
 
 export const webHomepageSourceSchema = z
   .object({
-    section_heading: z.string().optional(),
-    description: z.string().optional(),
-    read_more_label: z.string().optional(),
-    read_more_slug: z.string().nullable().optional(),
-    editorial_image: z.string().optional(),
-    editorial_image_mweb: z.string().optional(),
-    background_image: z.string().optional(),
-    background_image_mweb: z.string().optional(),
+    section_heading: cmsString,
+    description: cmsString,
+    read_more_label: cmsString,
+    read_more_slug: cmsString,
+    editorial_image: cmsString,
+    editorial_image_mweb: cmsString,
+    background_image: cmsString,
+    background_image_mweb: cmsString,
     is_active: z.boolean().optional(),
   })
   .catchall(z.unknown());
@@ -33,37 +36,61 @@ export const webHomepageSourceSchema = z
 export const webHomepageStorySchema = z
   .object({
     id: z.union([z.string(), z.number()]).optional(),
-    quote: z.string().optional(),
-    position: z.number().optional(),
+    quote: cmsString,
+    position: z.number().nullable().optional(),
     is_active: z.boolean().optional(),
-    thumbnail: z.string().optional(),
-    thumbnail_image_mweb: z.string().optional(),
-    customer_name: z.string().optional(),
-    customer_title: z.string().optional(),
+    thumbnail: cmsString,
+    thumbnail_image_mweb: cmsString,
+    customer_name: cmsString,
+    customer_title: cmsString,
+  })
+  .catchall(z.unknown());
+
+export const webHomepageStoreBannerSchema = z
+  .object({
+    id: z.union([z.string(), z.number()]).optional(),
+    store_image: cmsString,
+    store_image_mweb: cmsString,
   })
   .catchall(z.unknown());
 
 export const webHomepageStoreSchema = z
   .object({
     id: z.union([z.string(), z.number()]).optional(),
-    position: z.number().optional(),
-    store_name: z.string().optional(),
-    store_image: z.string().optional(),
-    store_image_mweb: z.string().optional(),
-    store_address: z.string().optional(),
-    view_store_cta: z.string().optional(),
-    view_store_slug: z.string().nullable().optional(),
-    locate_us_cta: z.string().optional(),
-    locate_us_url: z.string().nullable().optional(),
+    position: z.number().nullable().optional(),
+    store_name: cmsString,
+    store_image: cmsString,
+    store_image_mweb: cmsString,
+    store_address: cmsString,
+    view_store_cta: cmsString,
+    view_store_slug: cmsString,
+    locate_us_cta: cmsString,
+    locate_us_url: cmsString,
+    banner: z.array(webHomepageStoreBannerSchema).optional(),
+  })
+  .catchall(z.unknown());
+
+export const webHomepageL2CategoryTileSchema = z
+  .object({
+    id: z.union([z.string(), z.number()]).optional(),
+    image_web: cmsString,
+    iamge_mweb: cmsString,
+    image_mweb: cmsString,
+    saleor_category_id: cmsString,
+    saleor_category_slug: cmsString,
+    is_active: z.boolean().optional(),
+    position: z.number().nullable().optional(),
+    type: cmsString,
   })
   .catchall(z.unknown());
 
 export const webHomepageL2CategorySchema = z
   .object({
-    title: z.string().optional(),
-    tagline: z.string().optional(),
-    slug: z.string().optional(),
-    limit: z.number().optional(),
+    title: cmsString,
+    tagline: cmsString,
+    slug: cmsString,
+    limit: z.number().nullable().optional(),
+    l2_category_tile: z.array(webHomepageL2CategoryTileSchema).optional(),
   })
   .catchall(z.unknown());
 
@@ -74,10 +101,10 @@ export const webHomepageContentSchema = z
     source: webHomepageSourceSchema.optional(),
     stories: z.array(webHomepageStorySchema).optional(),
     our_store: z.array(webHomepageStoreSchema).optional(),
-    store_section_heading: z.string().optional(),
-    store_section_tagline: z.string().nullable().optional(),
-    stories_section_title: z.string().optional(),
-    stories_section_tagline: z.string().optional(),
+    store_section_heading: cmsString,
+    store_section_tagline: cmsString,
+    stories_section_title: cmsString,
+    stories_section_tagline: cmsString,
   })
   .catchall(z.unknown());
 
