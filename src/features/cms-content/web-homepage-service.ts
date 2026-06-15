@@ -3,6 +3,7 @@ import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import { homePageDraftContent } from "@/features/cms-content/homepage";
 
 import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
+import { hasHomepageL2CategoryTiles } from "./homepage-l2-category-tiles";
 import { mapWebHomepageContent } from "./web-homepage-mapper";
 import { getSingleContent } from "./single-content-service";
 import { getWebCategoryPage } from "./web-category-page-service";
@@ -39,13 +40,15 @@ async function enrichHomepageCategories(
   content: HomePageContent,
 ): Promise<HomePageContent> {
   let categoryPage = null;
-  try {
-    categoryPage = await getWebCategoryPage();
-  } catch (error) {
-    console.warn(
-      "[web-homepage] web-category-page fetch failed; categories rail omitted:",
-      error instanceof Error ? error.message : error,
-    );
+  if (!hasHomepageL2CategoryTiles(entry)) {
+    try {
+      categoryPage = await getWebCategoryPage();
+    } catch (error) {
+      console.warn(
+        "[web-homepage] web-category-page fetch failed; categories rail omitted:",
+        error instanceof Error ? error.message : error,
+      );
+    }
   }
 
   const items = await resolveHomepageCategoryItems(entry, categoryPage);

@@ -37,7 +37,8 @@ function CategoriesChevronIcon() {
 }
 
 /**
- * Homepage category rail — curated L3 tiles from `web-category-page` CMS data.
+ * Homepage category rail — tiles from `web-homepage.l2_category.l2_category_tile`
+ * or curated L3 tiles from `web-category-page`.
  */
 export function HomeCategoriesSection({
   categories,

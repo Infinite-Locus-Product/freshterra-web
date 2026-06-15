@@ -32,7 +32,7 @@ export const homeHeroBannerSlideFrameClass =
   "relative box-border flex-[0_0_100%] snap-start snap-always overflow-hidden min-h-[17.5rem] w-full aspect-[16/9] lg:aspect-[1440/777] lg:max-h-[48.5625rem]";
 
 export const homeHeroBannerOuterClass =
-  "relative box-border w-full overflow-hidden";
+  "relative box-border min-h-[17.5rem] w-full overflow-hidden lg:min-h-0 lg:aspect-[1440/777] lg:max-h-[48.5625rem]";
 
 export const homeHeroBannerImageClass = "object-cover object-center";
 
