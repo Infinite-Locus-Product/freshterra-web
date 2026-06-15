@@ -101,29 +101,31 @@ export async function buildHomepageL2CategoryTileItems(
 
   const preferMobile = options.preferMobileImages ?? false;
 
-  return sorted
-    .map((tile, index) => {
-      const imageSrc = pickTileImage(tile, preferMobile);
-      if (!imageSrc) return null;
+  return sorted.flatMap((tile, index): HomeCategoryTileItem[] => {
+    const imageSrc = pickTileImage(tile, preferMobile);
+    if (!imageSrc) return [];
 
-      const category = resolveTileCategory(tile, lookup);
-      if (category) {
-        return {
+    const category = resolveTileCategory(tile, lookup);
+    if (category) {
+      return [
+        {
           key: tileKey(tile, index),
           name: category.name,
           imageSrc,
           href: `/category/${category.slug}`,
-        } satisfies HomeCategoryTileItem;
-      }
+        },
+      ];
+    }
 
-      return {
+    return [
+      {
         key: tileKey(tile, index),
         name: "Explore",
         imageSrc,
         href: viewAllHref,
-      } satisfies HomeCategoryTileItem;
-    })
-    .filter((item): item is HomeCategoryTileItem => item !== null);
+      },
+    ];
+  });
 }
 
 export function hasHomepageL2CategoryTiles(
