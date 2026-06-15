@@ -144,9 +144,15 @@ function mapStore(
     ? splitParagraphs(address.replace(/\n/g, "\n"))
     : [fallback.addressLine1, fallback.addressLine2];
 
-  const mediaImage = readMediaUrl(record, "store_image");
+  const bannerEntry = Array.isArray(record.banner)
+    ? (record.banner[0] as UnknownRecord | undefined)
+    : undefined;
+  const imageSource =
+    bannerEntry && isRecord(bannerEntry) ? bannerEntry : record;
+
+  const mediaImage = readMediaUrl(imageSource, "store_image");
   const mediaImageMobile =
-    readMediaUrl(record, "store_image_mweb") || mediaImage;
+    readMediaUrl(imageSource, "store_image_mweb") || mediaImage;
 
   return {
     title: fallback.title,
@@ -261,10 +267,7 @@ export function mapWebHomepageContent(
         input.stories_section_tagline?.trim() || fallback.testimonials.title,
       subtitle:
         input.stories_section_title?.trim() || fallback.testimonials.subtitle,
-      items:
-        stories.length > 0
-          ? stories
-          : [...fallback.testimonials.items],
+      items: stories,
     },
     store: storeEntry
       ? {

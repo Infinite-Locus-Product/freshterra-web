@@ -14,6 +14,8 @@ type HomeTestimonialsSectionProps = Readonly<{
 }>;
 
 export function HomeTestimonialsSection({ content }: HomeTestimonialsSectionProps) {
+  if (content.items.length === 0) return null;
+
   return (
     <section className={homeTestimonialsSectionClass}>
       <div className={homeTestimonialsSectionShellClass}>
