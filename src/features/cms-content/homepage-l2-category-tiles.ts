@@ -112,7 +112,7 @@ export async function buildHomepageL2CategoryTileItems(
           key: tileKey(tile, index),
           name: category.name,
           imageSrc,
-          href: `/category/${category.slug}`,
+          href: `/c/${category.slug}`,
         },
       ];
     }
