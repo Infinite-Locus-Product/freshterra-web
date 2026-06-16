@@ -129,6 +129,7 @@ function normalizeL2Category(raw: unknown) {
   const saleorId = readString(
     record,
     "saleor_l2_category_id",
+    "saleor_l2category_id",
     "saleorL2CategoryId",
     "categoryId",
     "category_id",
