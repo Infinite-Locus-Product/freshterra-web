@@ -36,6 +36,30 @@ const milkChocolateMetadata = [
   { key: "seller_name", value: "F&W Foods" },
   { key: "tags_json", value: '["Organic","Fresh"]' },
   { key: "trust_marker_return", value: "true" },
+  {
+    key: "product_informations",
+    value: JSON.stringify({
+      trust_markers: {
+        items: [
+          {
+            icon_link:
+              "https://cms-stg.freshterra.in/uploads/Shape_6392111dfe.png",
+            label: "Fast Delivery",
+          },
+          {
+            icon_link:
+              "https://cms-stg.freshterra.in/uploads/Shape_1_2b047bd543.png",
+            label: "12hr Return Window",
+          },
+          {
+            icon_link:
+              "https://cms-stg.freshterra.in/uploads/Shape_2_eb92c7c0bd.png",
+            label: "Quality Checked",
+          },
+        ],
+      },
+    }),
+  },
 ];
 
 describe("PdpView with Saleor metadata", () => {
@@ -62,12 +86,15 @@ describe("PdpView with Saleor metadata", () => {
 
     render(<PdpView product={product} related={[]} relatedLoading={false} />);
 
+    expect(product.tagPills).toEqual(["Organic", "Fresh"]);
     expect(
       screen.getByRole("heading", { name: "Milk Chocolate Bar" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Rich, creamy milk chocolate bar.")).toBeInTheDocument();
-    expect(screen.getByText("Veg")).toBeInTheDocument();
     expect(screen.getAllByText("Organic").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Fast Delivery")).toBeInTheDocument();
+    expect(screen.getByText("12hr Return Window")).toBeInTheDocument();
+    expect(screen.getByText("Quality Checked")).toBeInTheDocument();
     expect(screen.getByText("Cocoa, milk solids, sugar")).toBeInTheDocument();
     expect(screen.getByText(/contains milk/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "50g" })).toBeInTheDocument();

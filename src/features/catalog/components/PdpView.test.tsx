@@ -28,6 +28,16 @@ const product: ProductDetail = {
   nutrition: { kcal: 18, protein: 0.9, carbs: 3.9 },
   regulatory: { veg: true, organic: true },
   tags: ["organic", "fresh"],
+  tagPills: ["organic", "fresh"],
+  productInformations: {
+    trustMarkers: {
+      items: [
+        { label: "Fast Delivery", iconLink: "/Vehicle Truck Checkmark.svg" },
+        { label: "12hr Return Window", iconLink: "/Box.svg" },
+        { label: "Quality Checked", iconLink: "/Checkmark.svg" },
+      ],
+    },
+  },
   rating: { avg: 4.5, count: 132 },
   inStock: true,
   etaMin: 35,

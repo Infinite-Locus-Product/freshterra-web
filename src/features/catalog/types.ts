@@ -4,6 +4,9 @@ import {
   normalizeBffListingProduct,
   normalizeProductDetailPayload,
 } from "./product-metafields";
+import { type ProductInformations } from "./product-informations";
+
+export type { ProductInformations } from "./product-informations";
 
 /**
  * Types + zod schemas for the product detail (PDP) API.
@@ -342,10 +345,14 @@ const productDetailDataSchema = z.object({
   nutrition: productNutritionSchema.optional(),
   regulatory: productRegulatorySchema.optional(),
   tags: z.array(z.string()).default([]),
+  /** Marketing pills below the PDP title — sourced from Saleor `tags_json` only. */
+  tagPills: z.array(z.string()).default([]),
   rating: productRatingSchema.optional(),
   inStock: z.boolean(),
   etaMin: z.number().optional(),
   metafields: productMetafieldsSchema.optional(),
+  /** Structured CMS product content from Saleor `product_informations` metadata. */
+  productInformations: z.custom<ProductInformations>().optional(),
 });
 
 /** Validates + normalizes Saleor metadata from the BFF PDP payload. */

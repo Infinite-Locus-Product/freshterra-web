@@ -89,6 +89,7 @@ describe("normalizeProductDetailPayload", () => {
     expect(normalized.fssai).toBe("12345678901234");
     expect(normalized.regulatory?.veg).toBe(true);
     expect(normalized.tags).toEqual(expect.arrayContaining(["Organic", "Fresh"]));
+    expect(normalized.tagPills).toEqual(["Organic", "Fresh"]);
     expect(normalized.metafields?.ingredients).toContain("Organic tomatoes");
     expect(normalized.metafields?.storageTips).toContain("cool, dry place");
     expect(normalized.metafields?.trustMarkerReturn).toBe(true);
