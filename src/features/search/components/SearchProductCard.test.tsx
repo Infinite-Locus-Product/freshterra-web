@@ -28,7 +28,7 @@ describe("SearchProductCard", () => {
     render(<SearchProductCard product={base} />);
 
     const link = screen.getByRole("link", { name: /organic tomatoes/i });
-    expect(link).toHaveAttribute("href", "/product/organic-tomatoes");
+    expect(link).toHaveAttribute("href", "/product/prd_1");
     expect(screen.getByText("Organic Tomatoes")).toBeInTheDocument();
     // weight from first variant + option count from variant length.
     expect(screen.getByText("250g (5 Options)")).toBeInTheDocument();

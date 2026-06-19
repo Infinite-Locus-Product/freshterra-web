@@ -73,6 +73,10 @@ export async function getSearchResults(
     MAX_SEARCH_PAGE_SIZE,
   );
 
+  // Default relevance ordering is implied by the BFF — omit `sort=relevance`.
+  const sort =
+    params.sort && params.sort !== "relevance" ? params.sort : undefined;
+
   return apiFetch(SEARCH_RESULTS_PATH, {
     method: "GET",
     searchParams: {
@@ -80,7 +84,7 @@ export async function getSearchResults(
       polygonId: params.polygonId,
       page,
       pageSize,
-      sort: params.sort,
+      sort,
       filters: params.filters ? JSON.stringify(params.filters) : undefined,
     },
     signal: options.signal,

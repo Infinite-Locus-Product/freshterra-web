@@ -2,28 +2,74 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import {
+  categoryPlpActiveFiltersClass,
+  categoryPlpCountClass,
+  categoryPlpListingGridClass,
+  categoryPlpMobileFiltersClass,
+  categoryPlpPageShellClass,
+  categoryPlpProductGridClass,
+  categoryPlpTitleClass,
+  categoryPlpToolbarButtonClass,
+  categoryPlpToolbarClass,
+  categoryPlpToolbarDividerClass,
+  categoryPlpToolbarLabelClass,
+} from "@/components/category/category-plp-page";
 import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
-
+import {
+  PlpFilters,
+  type FilterSelections,
+  type PlpFilterGroup,
+} from "@/features/catalog/components/PlpFilters";
+import { PlpSortMenu } from "@/features/catalog/components/PlpSortMenu";
+import {
+  SEARCH_FILTER_GROUPS,
+  SEARCH_SORT_OPTIONS,
+} from "../search-plp-config";
 import { useSearchResults } from "../useSearchResults";
 
-
-import { SearchFilters, type FilterSelections } from "./SearchFilters";
 import { SearchProductCard } from "./SearchProductCard";
-import { SearchSortMenu } from "./SearchSortMenu";
 import { SearchError, SearchNoResults, SearchPrompt } from "./SearchStatus";
 
 import type { SearchSort } from "../types";
 
 const PAGE_SIZE = 20;
 
+type ActiveChip = { group: string; value: string; label: string };
+
+function prettify(value: string): string {
+  return value
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((w) => w[0]?.toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+function toActiveChips(
+  selections: FilterSelections,
+  groups: PlpFilterGroup[],
+): ActiveChip[] {
+  const chips: ActiveChip[] = [];
+  for (const [group, values] of Object.entries(selections)) {
+    const groupDef = groups.find((g) => g.key === group);
+    for (const value of values) {
+      const label =
+        groupDef?.options.find((o) => o.value === value)?.label ??
+        prettify(value);
+      chips.push({ group, value, label });
+    }
+  }
+  return chips;
+}
+
 export function SearchResultsView({ query }: { query: string }) {
   const trimmed = query.trim();
 
   const [sort, setSort] = useState<SearchSort>("relevance");
   const [selections, setSelections] = useState<FilterSelections>({});
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Only forward non-empty filter groups; `undefined` means "no filters".
   const filters = useMemo(() => {
     const entries = Object.entries(selections).filter(
       ([, values]) => values.length > 0,
@@ -42,7 +88,6 @@ export function SearchResultsView({ query }: { query: string }) {
     reload,
   } = useSearchResults({ query: trimmed, sort, filters, pageSize: PAGE_SIZE });
 
-  // Auto-load the next page when the sentinel scrolls into view.
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
@@ -69,35 +114,107 @@ export function SearchResultsView({ query }: { query: string }) {
   }
 
   const isInitialLoad = loading && items.length === 0;
+  const activeChips = toActiveChips(selections, SEARCH_FILTER_GROUPS);
+  const hasFilters = SEARCH_FILTER_GROUPS.length > 0;
+
+  function removeChip(chip: ActiveChip) {
+    const current = selections[chip.group] ?? [];
+    const nextValues = current.filter((v) => v !== chip.value);
+    const next: FilterSelections = { ...selections, [chip.group]: nextValues };
+    if (nextValues.length === 0) delete next[chip.group];
+    setSelections(next);
+  }
 
   return (
-    <PageShell className="py-8">
-      <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,16.25rem)_minmax(0,1fr)]">
-        <aside className="hidden lg:block">
-          <SearchFilters selections={selections} onChange={setSelections} />
-        </aside>
+    <PageShell pad={false} className={categoryPlpPageShellClass}>
+      <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
+        Search results for “{trimmed}”
+      </Heading>
 
-        <div>
-          <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <Heading level={1} variant="h2">
-                Search results for “{trimmed}”
-              </Heading>
-              <p className="text-text-secondary mt-1 text-sm">
-                {isInitialLoad
-                  ? "Searching…"
-                  : `Showing ${total} ${total === 1 ? "product" : "products"}`}
-              </p>
+      <div className={categoryPlpListingGridClass}>
+        {hasFilters ? (
+          <aside className="hidden lg:block lg:self-start">
+            <PlpFilters
+              groups={SEARCH_FILTER_GROUPS}
+              selections={selections}
+              onChange={setSelections}
+              variant="sidebar"
+            />
+          </aside>
+        ) : null}
+
+        <div className="min-w-0">
+          {activeChips.length > 0 ? (
+            <div className={categoryPlpActiveFiltersClass}>
+              {activeChips.map((chip) => (
+                <button
+                  key={`${chip.group}:${chip.value}`}
+                  type="button"
+                  onClick={() => removeChip(chip)}
+                  className="text-text-secondary hover:bg-gray-50 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-sm"
+                >
+                  <span aria-hidden className="text-text-tertiary">
+                    ✕
+                  </span>
+                  <span>{chip.label}</span>
+                  <span className="sr-only">Remove filter</span>
+                </button>
+              ))}
             </div>
-            <SearchSortMenu value={sort} onChange={setSort} />
+          ) : null}
+
+          {hasFilters ? (
+            <div className={categoryPlpToolbarClass}>
+              <button
+                type="button"
+                className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass}`}
+                aria-expanded={mobileFiltersOpen}
+                onClick={() => setMobileFiltersOpen((open) => !open)}
+              >
+                <FiltersIcon />
+                <span>Filters</span>
+              </button>
+              <div className={categoryPlpToolbarDividerClass}>
+                <PlpSortMenu
+                  variant="plp-toolbar"
+                  value={sort}
+                  options={SEARCH_SORT_OPTIONS}
+                  onChange={setSort}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          <p className={`${categoryPlpCountClass} lg:hidden`}>
+            {isInitialLoad
+              ? "Searching…"
+              : `Showing ${total} ${total === 1 ? "product" : "products"}`}
+          </p>
+
+          <div className="mb-6 hidden flex-wrap items-center justify-between gap-4 lg:flex">
+            <p className="text-text-secondary text-sm">
+              {isInitialLoad
+                ? "Searching…"
+                : `Showing ${total} ${total === 1 ? "product" : "products"}`}
+            </p>
+            <PlpSortMenu
+              value={sort}
+              options={SEARCH_SORT_OPTIONS}
+              onChange={setSort}
+            />
           </div>
 
-          {/* Mobile filters appear above the grid. */}
-          <div className="mb-6 lg:hidden">
-            <SearchFilters selections={selections} onChange={setSelections} />
-          </div>
+          {hasFilters && mobileFiltersOpen ? (
+            <div className={categoryPlpMobileFiltersClass}>
+              <PlpFilters
+                groups={SEARCH_FILTER_GROUPS}
+                selections={selections}
+                onChange={setSelections}
+              />
+            </div>
+          ) : null}
 
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+          <ul className={categoryPlpProductGridClass}>
             {isInitialLoad
               ? Array.from({ length: 8 }).map((_, i) => (
                   <li key={`skeleton-${i}`}>
@@ -111,7 +228,6 @@ export function SearchResultsView({ query }: { query: string }) {
                 ))}
           </ul>
 
-          {/* Infinite-scroll sentinel + accessible fallback. */}
           <div ref={sentinelRef} className="mt-8 flex justify-center">
             {loadingMore ? (
               <span
@@ -144,6 +260,23 @@ function ProductSkeleton() {
       <div className="mt-3 h-4 w-2/3 rounded bg-gray-100" />
       <div className="mt-2 h-3 w-1/3 rounded bg-gray-100" />
     </div>
+  );
+}
+
+function FiltersIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width={16}
+      height={16}
+      aria-hidden
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+    >
+      <path d="M2 4h12M4 8h8M6 12h4" />
+    </svg>
   );
 }
 
