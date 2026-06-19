@@ -185,6 +185,7 @@ describe("getSearchResults", () => {
 
     const data = await getSearchResults({ query: "Golden Delight Mango" });
     expect(data.items).toHaveLength(1);
+    expect(data.total).toBe(2);
     expect(data.items[0]?.id).toBe("UHJvZHVjdDoyNQ==");
     expect(data.items[0]?.images[0]?.url).toContain("wp2756462");
     expect(data.page).toBe(1);
