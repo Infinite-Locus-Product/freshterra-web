@@ -49,7 +49,9 @@ describe("useSearchResults", () => {
 
   it("loads the first page on mount", async () => {
     mockGet.mockResolvedValue(page(["a", "b"], 1, 4));
-    const { result } = renderHook(() => useSearchResults({ query: "tomato" }));
+    const { result } = renderHook(() =>
+      useSearchResults({ query: "tomato", pageSize: 2 }),
+    );
 
     await waitFor(() => expect(result.current.items).toHaveLength(2));
     expect(mockGet).toHaveBeenCalledWith(
@@ -63,16 +65,24 @@ describe("useSearchResults", () => {
 
   it("appends the next page via loadMore", async () => {
     mockGet
-      .mockResolvedValueOnce(page(["a", "b"], 1, 4))
-      .mockResolvedValueOnce(page(["c", "d"], 2, 4));
-    const { result } = renderHook(() => useSearchResults({ query: "tomato" }));
+      .mockResolvedValueOnce(page(["a", "b"], 1, 3))
+      .mockResolvedValueOnce({
+        items: [makeProduct("c")],
+        page: 2,
+        pageSize: 2,
+        total: 3,
+        facets: {},
+      });
+    const { result } = renderHook(() =>
+      useSearchResults({ query: "tomato", pageSize: 2 }),
+    );
 
     await waitFor(() => expect(result.current.items).toHaveLength(2));
 
     act(() => result.current.loadMore());
 
-    await waitFor(() => expect(result.current.items).toHaveLength(4));
-    expect(result.current.items.map((i) => i.id)).toEqual(["a", "b", "c", "d"]);
+    await waitFor(() => expect(result.current.items).toHaveLength(3));
+    expect(result.current.items.map((i) => i.id)).toEqual(["a", "b", "c"]);
     expect(result.current.page).toBe(2);
     expect(result.current.hasMore).toBe(false);
     expect(mockGet).toHaveBeenLastCalledWith(
@@ -82,8 +92,16 @@ describe("useSearchResults", () => {
   });
 
   it("does not load more once exhausted", async () => {
-    mockGet.mockResolvedValue(page(["a", "b"], 1, 2));
-    const { result } = renderHook(() => useSearchResults({ query: "tomato" }));
+    mockGet.mockResolvedValue({
+      items: [makeProduct("a"), makeProduct("b")],
+      page: 1,
+      pageSize: 20,
+      total: 2,
+      facets: {},
+    });
+    const { result } = renderHook(() =>
+      useSearchResults({ query: "tomato", pageSize: 20 }),
+    );
 
     await waitFor(() => expect(result.current.items).toHaveLength(2));
     expect(result.current.hasMore).toBe(false);
@@ -118,6 +136,26 @@ describe("useSearchResults", () => {
     expect(mockGet).not.toHaveBeenCalled();
     expect(result.current.items).toEqual([]);
     expect(result.current.hasMore).toBe(false);
+  });
+
+  it("surfaces BFF total even when only one product card is on the page", async () => {
+    mockGet.mockResolvedValue({
+      items: [makeProduct("UHJvZHVjdDoyNg==")],
+      page: 1,
+      pageSize: 20,
+      total: 2,
+      facets: {},
+    });
+    const { result } = renderHook(() =>
+      useSearchResults({ query: "grapes", pageSize: 20 }),
+    );
+
+    await waitFor(() => expect(result.current.items).toHaveLength(1));
+    expect(result.current.total).toBe(2);
+    expect(result.current.hasMore).toBe(false);
+
+    act(() => result.current.loadMore());
+    expect(mockGet).toHaveBeenCalledTimes(1);
   });
 
   it("surfaces a typed error on failure", async () => {

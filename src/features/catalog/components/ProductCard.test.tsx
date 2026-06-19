@@ -47,6 +47,20 @@ describe("ProductCard", () => {
     expect(screen.getByText("250g (5 Options)")).toBeInTheDocument();
   });
 
+  it("hides variant meta when showVariantMeta is false", () => {
+    render(<ProductCard product={base} showVariantMeta={false} />);
+    expect(screen.queryByText("500g (2 Options)")).not.toBeInTheDocument();
+  });
+
+  it("uses mWeb card layout on the PDP similar-products rail", () => {
+    const { container } = render(
+      <ProductCard product={base} layout="pdp-rail" />,
+    );
+    const article = container.querySelector("article");
+    expect(article?.className).toContain("rounded-[10px]");
+    expect(article?.className).not.toContain("lg:w-[240px]");
+  });
+
   it("hides the vegetarian badge for non-veg products", () => {
     render(
       <ProductCard

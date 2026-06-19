@@ -102,8 +102,6 @@ export const searchProductSchema = z.object({
   category: productCategorySchema.optional(),
   images: z.array(productImageSchema).default([]),
   variants: z.array(productVariantSchema).default([]),
-  /** Total variants when the BFF sends a count without listing all. */
-  variantCount: z.number().optional(),
   price: moneySchema,
   fssai: z.string().optional(),
   story: z.string().optional(),

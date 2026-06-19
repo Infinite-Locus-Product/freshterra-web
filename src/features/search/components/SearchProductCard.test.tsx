@@ -24,14 +24,23 @@ const base: SearchProduct = {
 };
 
 describe("SearchProductCard", () => {
-  it("links to the PDP and renders name + variant meta", () => {
-    render(<SearchProductCard product={base} />);
+  it("links to the PDP and renders the product name without variant meta", () => {
+    render(
+      <SearchProductCard
+        product={{
+          ...base,
+          unit: "500g",
+          variantCount: 2,
+        } as SearchProduct & { unit?: string; variantCount?: number }}
+      />,
+    );
 
     const link = screen.getByRole("link", { name: /organic tomatoes/i });
     expect(link).toHaveAttribute("href", "/product/prd_1");
     expect(screen.getByText("Organic Tomatoes")).toBeInTheDocument();
-    // weight from first variant + option count from variant length.
-    expect(screen.getByText("250g (5 Options)")).toBeInTheDocument();
+    expect(screen.queryByText(/options/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/250g/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/500g/i)).not.toBeInTheDocument();
   });
 
   it("renders tag pills", () => {
@@ -40,21 +49,8 @@ describe("SearchProductCard", () => {
     expect(screen.getByText("fresh")).toBeInTheDocument();
   });
 
-  it("shows the in-stock badge only when in stock", () => {
-    const { rerender } = render(<SearchProductCard product={base} />);
-    expect(screen.getByLabelText("In stock")).toBeInTheDocument();
-
-    rerender(<SearchProductCard product={{ ...base, inStock: false }} />);
-    expect(screen.queryByLabelText("In stock")).not.toBeInTheDocument();
-  });
-
-  it("omits the options suffix for single-variant products", () => {
-    render(
-      <SearchProductCard
-        product={{ ...base, variants: [{ id: "v1", sku: "a", weightG: 250 }] }}
-      />,
-    );
-    expect(screen.getByText("250g")).toBeInTheDocument();
-    expect(screen.queryByText(/Options/)).not.toBeInTheDocument();
+  it("shows the vegetarian badge", () => {
+    render(<SearchProductCard product={base} />);
+    expect(screen.getByAltText("Vegetarian")).toBeInTheDocument();
   });
 });

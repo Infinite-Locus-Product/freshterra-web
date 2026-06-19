@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import {
   normalizeBffListingProduct,
-  normalizeProductDetailPayload,
+  normalizeProductDetailEnvelope,
 } from "./product-metafields";
 import { type ProductInformations } from "./product-informations";
 
@@ -353,11 +353,13 @@ const productDetailDataSchema = z.object({
   metafields: productMetafieldsSchema.optional(),
   /** Structured CMS product content from Saleor `product_informations` metadata. */
   productInformations: z.custom<ProductInformations>().optional(),
+  /** Cross-sell rail from the PDP BFF payload (`similarProducts`). */
+  similarProducts: z.array(plpProductSchema).default([]),
 });
 
 /** Validates + normalizes Saleor metadata from the BFF PDP payload. */
 export const productDetailSchema = z.preprocess(
-  normalizeProductDetailPayload,
+  normalizeProductDetailEnvelope,
   productDetailDataSchema,
 );
 export type ProductDetail = z.infer<typeof productDetailDataSchema>;

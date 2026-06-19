@@ -34,6 +34,8 @@ import {
   pdpVariantLabelClass,
   pdpVariantPillActiveClass,
   pdpVariantPillClass,
+  pdpSimilarProductsGridClass,
+  pdpSimilarProductCardShellClass,
 } from "@/components/category/pdp-page";
 import { APP_STORE_BADGE_BY_STORE } from "@/components/layout/app-store-badges";
 import { PageShell } from "@/components/layout/PageShell";
@@ -261,23 +263,20 @@ function SimilarProducts({
       <Heading level={2} variant="h3" className="mb-6">
         Similar Products
       </Heading>
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <div className={pdpSimilarProductsGridClass}>
         {loading && products.length === 0
           ? Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="w-[min(100%,13.125rem)] min-w-[12rem] max-w-[14rem] shrink-0 animate-pulse"
+                className={`${pdpSimilarProductCardShellClass} animate-pulse`}
               >
                 <div className="aspect-square rounded-xl bg-gray-100" />
                 <div className="mt-3 h-4 w-2/3 rounded bg-gray-100" />
               </div>
             ))
           : products.map((product) => (
-              <div
-                key={product.id}
-                className="w-[min(100%,13.125rem)] min-w-[12rem] max-w-[14rem] shrink-0"
-              >
-                <ProductCard product={product} />
+              <div key={product.id} className={pdpSimilarProductCardShellClass}>
+                <ProductCard product={product} layout="pdp-rail" />
               </div>
             ))}
       </div>

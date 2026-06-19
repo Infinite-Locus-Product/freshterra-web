@@ -96,12 +96,16 @@ export const categoryPlpFiltersPanelShellClass =
 export const categoryPlpFiltersSidebarShellClass = "";
 
 export const categoryPlpFiltersPanelGroupClass =
-  "border-t border-gray-100 pt-4 first:border-t-0 first:pt-0";
+  "border-t border-gray-100 mt-4 pt-4 first:mt-0 first:border-t-0 first:pt-0";
 
 export const categoryPlpFiltersSidebarGroupClass =
-  "border-gray-divider border-t pt-5 first:border-t-0 first:pt-0";
+  "border-gray-divider border-t mt-5 pt-5 first:mt-0 first:border-t-0 first:pt-0";
 
-export const categoryPlpFiltersGroupsClass = "space-y-5 lg:space-y-0";
+export const categoryPlpFiltersGroupsClass = "space-y-0";
+
+/** Filter group heading — sits above options, below the section divider. */
+export const categoryPlpFilterGroupTitleClass =
+  "text-text-primary mb-2.5 block w-full text-sm font-semibold leading-[120%] tracking-[0]";
 
 /** Filters panel heading — Manrope 18px semibold. */
 export const categoryPlpFiltersTitleClass =

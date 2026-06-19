@@ -14,6 +14,16 @@ import type {
 
 const MIN_QUERY_LENGTH = 1;
 
+/** BFF search may return one row per variant — keep one card per product id. */
+function dedupeSearchProducts(products: SearchProduct[]): SearchProduct[] {
+  const seen = new Set<string>();
+  return products.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
+
 export interface UseSearchResultsArgs {
   /** Required search term. Sub-threshold values yield an empty result set. */
   query: string;
@@ -27,7 +37,7 @@ export interface UseSearchResultsResult {
   /** Accumulated items across all loaded pages. */
   items: SearchProduct[];
   facets: SearchFacets;
-  /** Total matches reported by the server (across all pages). */
+  /** Total matches reported by the BFF (`total` / `itemCount`). */
   total: number;
   /** Last loaded page number. */
   page: number;
@@ -62,6 +72,7 @@ export function useSearchResults(
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<FreshTerraApiError | null>(null);
+  const [hasMore, setHasMore] = useState(false);
 
   // Latest args, read inside callbacks without re-creating them.
   const argsRef = useRef(args);
@@ -79,6 +90,7 @@ export function useSearchResults(
     setError(null);
     setLoading(false);
     setLoadingMore(false);
+    setHasMore(false);
   }, []);
 
   const fetchPage = useCallback(async (target: number, append: boolean) => {
@@ -106,11 +118,17 @@ export function useSearchResults(
         { signal: controller.signal },
       );
       if (controller.signal.aborted) return;
+      const pageSize = current.pageSize ?? 20;
+
+      setItems((prev) =>
+        dedupeSearchProducts(append ? [...prev, ...data.items] : data.items),
+      );
       pageRef.current = data.page;
       setPage(data.page);
       setTotal(data.total);
       setFacets(data.facets);
-      setItems((prev) => (append ? [...prev, ...data.items] : data.items));
+      // BFF `total` may count variants; paginate on full pages of `items`.
+      setHasMore(data.items.length >= pageSize);
       setError(null);
     } catch (err: unknown) {
       if (controller.signal.aborted) return;
@@ -119,6 +137,7 @@ export function useSearchResults(
         setItems([]);
         setTotal(0);
         setFacets(EMPTY_FACETS);
+        setHasMore(false);
       }
       setError(
         err instanceof FreshTerraApiError
@@ -155,13 +174,10 @@ export function useSearchResults(
     return () => abortRef.current?.abort();
   }, []);
 
-  const hasMore = items.length < total;
-
   const loadMore = useCallback(() => {
-    if (loading || loadingMore) return;
-    if (items.length >= total) return;
+    if (loading || loadingMore || !hasMore) return;
     void fetchPage(pageRef.current + 1, true);
-  }, [loading, loadingMore, items.length, total, fetchPage]);
+  }, [loading, loadingMore, hasMore, fetchPage]);
 
   const reload = useCallback(() => {
     void fetchPage(1, false);

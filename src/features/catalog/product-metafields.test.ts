@@ -208,6 +208,61 @@ describe("normalizeProductDetailPayload", () => {
     expect(product.variants[1]?.sku).toBe("");
     expect(product.inStock).toBe(true);
   });
+
+  it("normalizes similarProducts from the PDP BFF payload", () => {
+    const product = productDetailSchema.parse({
+      saleorProductId: "UHJvZHVjdDoyMw==",
+      name: "Milk Chocolate Bar",
+      slug: "chocolate",
+      price: 4500,
+      mrp: 5000,
+      currency: "INR",
+      inStock: true,
+      similarProducts: [
+        {
+          saleorProductId: "UHJvZHVjdDo1Mw==",
+          brand: "TropicPure",
+          rating: null,
+          tags: ["Natural", "Oil"],
+          name: "Coconut Oil",
+          slug: "coconut-oil-7010",
+          mainImage:
+            "https://saleor.stage.freshterra.in/media/thumbnails/products/coconut-oil.jpg",
+          defaultVariantId: "UHJvZHVjdFZhcmlhbnQ6NTk=",
+          unit: "Coconut Oil 500ml",
+          variantCount: 1,
+          foodType: "Veg",
+          veg: true,
+          price: 210,
+          mrp: 160,
+          currency: "INR",
+          inStock: true,
+        },
+        {
+          saleorProductId: "UHJvZHVjdDoyMg==",
+          name: "Peanut Butter",
+          slug: "peanut-butter",
+          mainImage:
+            "https://saleor.stage.freshterra.in/media/thumbnails/products/peanut.jpg",
+          defaultVariantId: "UHJvZHVjdFZhcmlhbnQ6MTk=",
+          unit: "0.5 KG",
+          variantCount: 2,
+          veg: true,
+          price: 450,
+          mrp: 350,
+          currency: "INR",
+          inStock: true,
+          tags: ["Fresh", "Organic"],
+        },
+      ],
+    });
+
+    expect(product.similarProducts).toHaveLength(2);
+    expect(product.similarProducts[0]?.id).toBe("UHJvZHVjdDo1Mw==");
+    expect(product.similarProducts[0]?.name).toBe("Coconut Oil");
+    expect(product.similarProducts[0]?.images[0]?.url).toContain("coconut-oil");
+    expect(product.similarProducts[1]?.variantCount).toBe(2);
+  });
 });
 
 describe("normalizeBffListingProduct", () => {
