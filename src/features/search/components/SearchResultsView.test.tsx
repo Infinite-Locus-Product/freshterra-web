@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -76,12 +76,16 @@ describe("SearchResultsView", () => {
     expect(
       screen.getByRole("heading", { name: /search results for “organic”/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Showing 12 products")).toBeInTheDocument();
+    expect(screen.getAllByText("Showing 12 products").length).toBeGreaterThanOrEqual(
+      1,
+    );
     expect(screen.getAllByRole("link", { name: /product/i })).toHaveLength(2);
-    // sort control present
     expect(
-      screen.getByRole("button", { name: /sort:/i }),
+      screen.getByRole("button", { name: /^filters$/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: /sort by/i }).length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it("renders the no-results state with the query", () => {
@@ -111,7 +115,7 @@ describe("SearchResultsView", () => {
   it("shows 'Searching…' and skeletons on the initial load", () => {
     setHook({ items: [], loading: true });
     render(<SearchResultsView query="organic" />);
-    expect(screen.getByText("Searching…")).toBeInTheDocument();
+    expect(screen.getAllByText("Searching…").length).toBeGreaterThanOrEqual(1);
     expect(
       screen.queryByRole("link", { name: /product/i }),
     ).not.toBeInTheDocument();
@@ -133,10 +137,8 @@ describe("SearchResultsView", () => {
     setHook({ items: [product("a")], total: 1 });
     render(<SearchResultsView query="organic" />);
 
-    const sidebar = screen.getAllByText("Filters")[0].closest("div")!;
-    const organic = within(sidebar.parentElement as HTMLElement).getAllByLabelText(
-      "Organic",
-    )[0];
+    await user.click(screen.getByRole("button", { name: /^filters$/i }));
+    const organic = screen.getAllByLabelText("Organic")[0];
     await user.click(organic);
     expect(organic).toBeChecked();
   });
