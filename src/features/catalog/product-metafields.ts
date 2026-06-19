@@ -31,7 +31,7 @@ import type { ProductDetail, ProductRegulatory } from "./types";
  * | Nutrition macros   | BFF `nutrition` or `nutrition_kcal` / `_protein` / `_carbs` |
  * | FSSAI, veg, seller | `fssai_license`, `foodType`, seller_* fields         |
  * | Return trust mark  | `trust_marker_return` (boolean)                      |
- * | Related products   | BFF `GET /products/:id/related` (Saleor category)    |
+ * | Related products   | BFF `similarProducts[]` on `GET /products/:id`         |
  * | Tabs + trust marks | `product_informations` JSON (CMS structured content) |
  * | Trust marker icons | `product_informations.trust_markers.items[]` (`icon_link`, `label`) |
  */
@@ -370,6 +370,15 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
     if (saleorId) out.id = saleorId;
   }
 
+  const slug = asString(input.slug);
+  if (slug) {
+    out.slug = slug;
+  } else {
+    const id = asString(out.id);
+    if (id) out.slug = id;
+    else delete out.slug;
+  }
+
   if (Array.isArray(input.images)) {
     out.images = input.images.map((image) => {
       if (typeof image === "string") {
@@ -441,6 +450,27 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
 export function normalizeBffListingProduct(input: unknown): unknown {
   if (!isRecord(input)) return input;
   return normalizeBffCatalogShape(input);
+}
+
+/**
+ * Normalizes the BFF PDP payload: product detail fields plus `similarProducts`
+ * cards from `GET /api/v1/products/:id`.
+ */
+export function normalizeProductDetailEnvelope(input: unknown): unknown {
+  if (!isRecord(input)) return input;
+
+  const { similarProducts: rawSimilar, ...rest } = input;
+  const product = normalizeProductDetailPayload(rest);
+  if (!isRecord(product)) return product;
+
+  const similarProducts = Array.isArray(rawSimilar)
+    ? rawSimilar.map((item) => normalizeBffListingProduct(item))
+    : [];
+
+  return {
+    ...product,
+    similarProducts,
+  };
 }
 
 /**

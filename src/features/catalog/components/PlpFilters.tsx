@@ -13,6 +13,7 @@ import {
   categoryPlpFilterCheckboxBoxClass,
   categoryPlpFilterCheckboxCheckClass,
   categoryPlpFilterCheckboxInputClass,
+  categoryPlpFilterGroupTitleClass,
   categoryPlpFilterOptionLabelClass,
   categoryPlpFilterOptionRowClass,
 } from "@/components/category/category-plp-page";
@@ -92,10 +93,18 @@ export function PlpFilters({
 
       <div className={categoryPlpFiltersGroupsClass}>
         {resolvedGroups.map((group) => (
-          <fieldset key={group.key} className={groupClass}>
-            <legend className="text-text-primary mb-2 text-sm font-semibold">
+          <div
+            key={group.key}
+            role="group"
+            aria-labelledby={`plp-filter-${group.key}`}
+            className={groupClass}
+          >
+            <p
+              id={`plp-filter-${group.key}`}
+              className={categoryPlpFilterGroupTitleClass}
+            >
               {group.label}
-            </legend>
+            </p>
             <div className="space-y-2.5">
               {group.options.map((option) => {
                 const checked = (selections[group.key] ?? []).includes(
@@ -130,7 +139,7 @@ export function PlpFilters({
                 );
               })}
             </div>
-          </fieldset>
+          </div>
         ))}
       </div>
     </div>

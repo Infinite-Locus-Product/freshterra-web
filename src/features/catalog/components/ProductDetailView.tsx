@@ -7,13 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { Heading } from "@/components/ui/Heading";
 
 import { useProduct } from "../useProduct";
-import { useRelatedProducts } from "../useRelatedProducts";
 
 import { PdpView } from "./PdpView";
 
 import type { Crumb } from "./PlpView";
-
-const RELATED_LIMIT = 10;
 
 type ProductDetailViewProps = {
   /** Product ULID or slug (from the /product/[slug] route). */
@@ -28,12 +25,6 @@ export function ProductDetailView({
   const { product, loading, error, notFound, reload } = useProduct({
     id: idOrSlug,
     polygonId,
-  });
-  const related = useRelatedProducts({
-    id: idOrSlug,
-    polygonId,
-    limit: RELATED_LIMIT,
-    enabled: !notFound,
   });
 
   if (notFound) {
@@ -83,8 +74,8 @@ export function ProductDetailView({
   return (
     <PdpView
       product={product}
-      related={related.products}
-      relatedLoading={related.loading}
+      related={product.similarProducts}
+      relatedLoading={false}
       breadcrumbs={breadcrumbs}
     />
   );

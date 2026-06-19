@@ -133,3 +133,31 @@ export const pdpKeyFeatureItemClass =
 
 export const pdpKeyFeatureIconClass =
   "bg-header-tint text-brand-500 grid h-[48px] w-[48px] shrink-0 place-items-center rounded-full";
+
+/** Similar products — horizontal scroll; mWeb card sizing on all breakpoints. */
+export const pdpSimilarProductsGridClass =
+  "flex flex-nowrap items-stretch gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+/** Fixed rail card width — matches mWeb similar-products shell (12–14rem). */
+export const pdpSimilarProductCardShellClass =
+  "w-[min(100%,13.125rem)] min-w-[12rem] max-w-[14rem] shrink-0";
+
+/** mWeb PLP card chrome — reused on web PDP similar-products rail. */
+export const pdpSimilarProductCardClass =
+  "h-full w-full overflow-hidden rounded-[10px] border border-gray-200 bg-white";
+
+export const pdpSimilarProductCardImageClass =
+  "relative aspect-[240/226] w-full overflow-hidden bg-gray-50";
+
+export const pdpSimilarProductCardBodyClass = "p-3";
+
+export const pdpSimilarProductCardNameClass =
+  "text-text-primary min-w-0 font-sans text-[14px] font-medium leading-4 tracking-[0]";
+
+export const pdpSimilarProductCardMetaClass =
+  "text-text-secondary mt-0.5 font-sans text-[12px] font-normal leading-[1.4] tracking-[0]";
+
+export const pdpSimilarProductCardTagClass =
+  "bg-surface-olive text-brand-500 rounded-full px-2.5 py-1 text-xs font-medium capitalize";
+
+export const pdpSimilarProductCardTagsRowClass = "mt-2 flex flex-wrap gap-1.5";
