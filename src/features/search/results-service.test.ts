@@ -42,10 +42,20 @@ function resultsResponse(
   );
 }
 
+function resolveFetchUrl(input: unknown): string {
+  if (typeof input === "string") return input;
+  if (input instanceof URL) return input.href;
+  if (input instanceof Request) return input.url;
+  return String(input);
+}
+
 /** Reads back the query params fetch was called with. */
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
-  const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  const [input] = fetchSpy.mock.calls.at(-1) as unknown as [unknown];
+  const href = resolveFetchUrl(input);
+  return href.startsWith("http")
+    ? new URL(href)
+    : new URL(href, "https://api.stage.freshterra.in");
 }
 
 describe("getSearchResults", () => {
@@ -80,10 +90,22 @@ describe("getSearchResults", () => {
     await getSearchResults({ query: "tomato" });
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/search/results");
+    expect(url.pathname).toBe("/bff/api/v1/search/results");
     expect(url.searchParams.get("q")).toBe("tomato");
     expect(url.searchParams.get("page")).toBe("1");
     expect(url.searchParams.get("pageSize")).toBe("20");
+    expect(url.searchParams.has("sort")).toBe(false);
+  });
+
+  it("omits sort when relevance is selected", async () => {
+    const fetchSpy = vi.fn(async () => resultsResponse());
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await getSearchResults({ query: "Tomato Ketchup", sort: "relevance" });
+
+    const url = lastUrl(fetchSpy);
+    expect(url.searchParams.get("q")).toBe("Tomato Ketchup");
+    expect(url.searchParams.has("sort")).toBe(false);
   });
 
   it("clamps pageSize to the 100 maximum and page to a 1 minimum", async () => {
@@ -134,6 +156,39 @@ describe("getSearchResults", () => {
       Error,
     );
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("parses staging BFF search results payload (PLP card shape)", async () => {
+    globalThis.fetch = vi.fn(async () =>
+      resultsResponse({
+        items: [
+          {
+            saleorProductId: "UHJvZHVjdDoyNQ==",
+            name: "Golden Delight Mango",
+            slug: "golden-delight-mango",
+            price: 75,
+            mrp: 75,
+            currency: "INR",
+            inStock: true,
+            mainImage:
+              "https://saleor.stage.freshterra.in/media/thumbnails/products/wp2756462_6a54bd3e_thumbnail_4096.jpg",
+            defaultVariantId: "UHJvZHVjdFZhcmlhbnQ6MjY=",
+            unit: "500g",
+            variantCount: 2,
+            tags: ["Fresh", "Organic"],
+          },
+        ],
+        total: 2,
+        facets: { brand: [], categories: [] },
+      }),
+    ) as unknown as typeof fetch;
+
+    const data = await getSearchResults({ query: "Golden Delight Mango" });
+    expect(data.items).toHaveLength(1);
+    expect(data.items[0]?.id).toBe("UHJvZHVjdDoyNQ==");
+    expect(data.items[0]?.images[0]?.url).toContain("wp2756462");
+    expect(data.page).toBe(1);
+    expect(data.pageSize).toBe(20);
   });
 
   it("propagates a typed UPSTREAM_UNAVAILABLE error on 502", async () => {

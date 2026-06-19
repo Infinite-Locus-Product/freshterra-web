@@ -3,27 +3,18 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils/cn";
 
-import type { SearchProduct } from "../types";
+import { productPageHref } from "@/features/catalog/product-href";
+import { formatPlpVariantMeta } from "@/features/catalog/variant-meta";
 
-/** Builds the "250g (5 Options)" metadata line from the product's variants. */
-function variantMeta(product: SearchProduct): string {
-  const weightG = product.variants[0]?.weightG;
-  const optionCount = product.variants.length;
-  return [
-    weightG ? `${weightG}g` : null,
-    optionCount > 1 ? `(${optionCount} Options)` : null,
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
+import type { SearchProduct } from "../types";
 
 export function SearchProductCard({ product }: { product: SearchProduct }) {
   const image = product.images[0];
-  const meta = variantMeta(product);
+  const meta = formatPlpVariantMeta(product);
 
   return (
     <Link
-      href={`/product/${product.slug}`}
+      href={productPageHref(product)}
       className="group block focus-visible:outline-none"
     >
       <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { normalizeSearchResultsPayload } from "./search-results-normalizer";
+
 /**
  * Types + zod schemas for the FreshTerra search autocomplete API.
  *
@@ -100,6 +102,8 @@ export const searchProductSchema = z.object({
   category: productCategorySchema.optional(),
   images: z.array(productImageSchema).default([]),
   variants: z.array(productVariantSchema).default([]),
+  /** Total variants when the BFF sends a count without listing all. */
+  variantCount: z.number().optional(),
   price: moneySchema,
   fssai: z.string().optional(),
   story: z.string().optional(),
@@ -128,13 +132,16 @@ export const searchFacetsSchema = z.record(
 export type SearchFacets = z.infer<typeof searchFacetsSchema>;
 
 /** The `data` payload returned inside the success envelope. */
-export const searchResultsDataSchema = z.object({
-  items: z.array(searchProductSchema),
-  page: z.number(),
-  pageSize: z.number(),
-  total: z.number(),
-  facets: searchFacetsSchema.default({}),
-});
+export const searchResultsDataSchema = z.preprocess(
+  normalizeSearchResultsPayload,
+  z.object({
+    items: z.array(searchProductSchema),
+    page: z.number(),
+    pageSize: z.number(),
+    total: z.number(),
+    facets: searchFacetsSchema.default({}),
+  }),
+);
 export type SearchResultsData = z.infer<typeof searchResultsDataSchema>;
 
 /* -------------------------------------------------------------------------- *
