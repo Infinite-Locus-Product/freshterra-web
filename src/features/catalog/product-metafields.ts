@@ -1,3 +1,7 @@
+import {
+  parseProductInformations,
+  type ProductInformations,
+} from "./product-informations";
 import { parseWeightGrams } from "./variant-meta";
 
 import type { ProductDetail, ProductRegulatory } from "./types";
@@ -16,7 +20,8 @@ import type { ProductDetail, ProductRegulatory } from "./types";
  * | URL `/product/…`   | Product `slug`                                       |
  * | Title, gallery     | Product `name`, `media` → BFF `images[]`             |
  * | Story (italic)     | `PRODUCT_DETAILS` metadata                           |
- * | Tags               | `tags_json` metadata or BFF `tags[]`                 |
+ * | Tag pills (title)  | `tags_json` metadata only                              |
+ * | Tags (fallback)    | BFF `tags[]` merged with `tags_json` for tab content   |
  * | Variants           | Saleor variants → BFF `variants[]` (sku, name, weight)|
  * | Brand              | `brand` or `manufacturer_name`                       |
  * | Ingredients        | `INGREDIENTS`                                        |
@@ -27,6 +32,8 @@ import type { ProductDetail, ProductRegulatory } from "./types";
  * | FSSAI, veg, seller | `fssai_license`, `foodType`, seller_* fields         |
  * | Return trust mark  | `trust_marker_return` (boolean)                      |
  * | Related products   | BFF `GET /products/:id/related` (Saleor category)    |
+ * | Tabs + trust marks | `product_informations` JSON (CMS structured content) |
+ * | Trust marker icons | `product_informations.trust_markers.items[]` (`icon_link`, `label`) |
  */
 export const SALEOR_PRODUCT_METADATA_KEYS = [
   "best_before",
@@ -54,6 +61,7 @@ export const SALEOR_PRODUCT_METADATA_KEYS = [
   "nutrition_kcal",
   "nutrition_protein",
   "nutrition_carbs",
+  "product_informations",
 ] as const;
 
 export type SaleorProductMetadataKey =
@@ -504,6 +512,17 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
 
   const nutrition = nutritionFromMetadata(rawMeta, catalog.nutrition);
 
+  const productInformations =
+    parseProductInformations(
+      lookupMetadata(rawMeta, "product_informations") ??
+        (isRecord(catalog.productInformations)
+          ? catalog.productInformations
+          : undefined),
+    ) ??
+    parseProductInformations(
+      isRecord(input.productInformations) ? input.productInformations : undefined,
+    );
+
   const {
     metadata: _metadata,
     metafields: _metafields,
@@ -525,7 +544,9 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     fssai,
     regulatory,
     tags,
+    tagPills: tagsFromMeta,
     nutrition,
     metafields: meta,
+    ...(productInformations ? { productInformations } : {}),
   } satisfies Partial<ProductDetail>;
 }

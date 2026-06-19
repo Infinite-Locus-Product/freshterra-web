@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import Image from "next/image";
+
 import {
   pdpDetailsBodyTextClass,
   pdpDetailsRowLabelClass,
@@ -24,6 +26,7 @@ import {
   type PdpTabKey,
   visiblePdpTabs,
 } from "../pdp-tab-content";
+import { formatProductInformationsAddress } from "../product-informations";
 
 import type { ProductDetail, ProductMetafields } from "../types";
 
@@ -40,6 +43,7 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
     visibleTabs[0] ?? "details",
   );
   const meta = product.metafields;
+  const info = product.productInformations;
 
   useEffect(() => {
     if (!visibleTabs.includes(active)) {
@@ -84,16 +88,16 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
         className="py-4"
       >
         {active === "details" ? (
-          <DetailsPanel product={product} meta={meta} />
+          <DetailsPanel product={product} meta={meta} info={info} />
         ) : null}
         {active === "nutrition" ? (
-          <NutritionPanel product={product} meta={meta} />
+          <NutritionPanel product={product} meta={meta} info={info} />
         ) : null}
         {active === "instructions" ? (
-          <InstructionsPanel meta={meta} />
+          <InstructionsPanel meta={meta} info={info} />
         ) : null}
         {active === "regulatory" ? (
-          <RegulatoryPanel product={product} meta={meta} />
+          <RegulatoryPanel product={product} meta={meta} info={info} />
         ) : null}
       </div>
     </section>
@@ -103,10 +107,82 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
 function DetailsPanel({
   product,
   meta,
+  info,
 }: {
   product: ProductDetail;
   meta?: ProductMetafields;
+  info?: ProductDetail["productInformations"];
 }) {
+  const cms = info?.productDetails;
+  if (cms) {
+    const features = cms.keyFeatures?.items ?? [];
+    const ingredients = cms.ingredients;
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <h2 className={pdpProductDetailsHeadingClass}>
+            {cms.heading ?? "Product Details"}
+          </h2>
+          <dl className="space-y-1.5">
+            {cms.brand ? <Row label="Brand" value={cms.brand} /> : null}
+            {cms.type ? <Row label="Type" value={cms.type} /> : null}
+            {cms.category ? <Row label="Category" value={cms.category} /> : null}
+            {product.sku ? <Row label="SKU" value={product.sku} /> : null}
+          </dl>
+        </div>
+
+        {features.length > 0 ? (
+          <div className={pdpKeyFeaturesSectionClass}>
+            <div className={pdpMwebFullBleedDividerClass} aria-hidden />
+            <div className={pdpKeyFeaturesSectionShellClass}>
+              <h3 className={pdpProductDetailsHeadingClass}>
+                {cms.keyFeatures?.heading ?? "Key Features"}
+              </h3>
+              <div className={pdpKeyFeaturesListClass}>
+                {features.map((feature) => (
+                  <div
+                    key={`${feature.label}-${feature.iconLink ?? "default"}`}
+                    className={pdpKeyFeatureItemClass}
+                  >
+                    <FeatureIcon iconLink={feature.iconLink} />
+                    <span>{feature.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className={pdpMwebFullBleedDividerClass} aria-hidden />
+          </div>
+        ) : null}
+
+        {ingredients?.contains?.value ? (
+          <div>
+            <h3 className={pdpProductDetailsHeadingClass}>
+              {ingredients.heading ?? "Ingredients"}
+            </h3>
+            {ingredients.contains.heading ? (
+              <p className={cn(pdpDetailsBodyTextClass, "font-medium")}>
+                {ingredients.contains.heading}
+              </p>
+            ) : null}
+            <p className={pdpDetailsBodyTextClass}>
+              {ingredients.contains.value}
+            </p>
+          </div>
+        ) : null}
+
+        {ingredients?.allergenInfo ? (
+          <div>
+            <h3 className={pdpProductDetailsHeadingClass}>
+              Allergen Information
+            </h3>
+            <p className={pdpDetailsBodyTextClass}>{ingredients.allergenInfo}</p>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   const brand = product.manufacturer ?? meta?.brand;
   const features =
     product.tags.length > 0
@@ -187,10 +263,14 @@ function DetailsPanel({
 function NutritionPanel({
   product,
   meta,
+  info,
 }: {
   product: ProductDetail;
   meta?: ProductMetafields;
+  info?: ProductDetail["productInformations"];
 }) {
+  const cms = info?.nutritionalInformation;
+  const cmsBenefits = cms?.healthBenefits?.items ?? [];
   const n = product.nutrition;
   const hasMacros =
     n != null &&
@@ -202,28 +282,32 @@ function NutritionPanel({
       {hasMacros ? (
         <div>
           <h3 className={pdpProductDetailsHeadingClass}>
-            Nutritional Information
+            {cms?.heading ?? "Nutritional Information"}
           </h3>
           <dl className="max-w-sm space-y-1.5">
-          {n?.kcal != null ? (
-            <Row label="Energy" value={`${n.kcal} kcal`} />
-          ) : null}
-          {n?.protein != null ? (
-            <Row label="Protein" value={`${n.protein} g`} />
-          ) : null}
-          {n?.carbs != null ? (
-            <Row label="Carbohydrates" value={`${n.carbs} g`} />
-          ) : null}
+            {n?.kcal != null ? (
+              <Row label="Energy" value={`${n.kcal} kcal`} />
+            ) : null}
+            {n?.protein != null ? (
+              <Row label="Protein" value={`${n.protein} g`} />
+            ) : null}
+            {n?.carbs != null ? (
+              <Row label="Carbohydrates" value={`${n.carbs} g`} />
+            ) : null}
           </dl>
         </div>
       ) : null}
-      {healthBenefits.length > 0 ? (
+      {(cmsBenefits.length > 0 ? cmsBenefits : healthBenefits).length > 0 ? (
         <div>
-          <h3 className={pdpProductDetailsHeadingClass}>Health Benefits</h3>
+          <h3 className={pdpProductDetailsHeadingClass}>
+            {cms?.healthBenefits?.heading ?? "Health Benefits"}
+          </h3>
           <ul className={cn(pdpDetailsBodyTextClass, "list-disc space-y-1 pl-5")}>
-            {healthBenefits.map((benefit) => (
-              <li key={benefit}>{benefit}</li>
-            ))}
+            {(cmsBenefits.length > 0 ? cmsBenefits : healthBenefits).map(
+              (benefit) => (
+                <li key={benefit}>{benefit}</li>
+              ),
+            )}
           </ul>
         </div>
       ) : null}
@@ -231,7 +315,54 @@ function NutritionPanel({
   );
 }
 
-function InstructionsPanel({ meta }: { meta?: ProductMetafields }) {
+function InstructionsPanel({
+  meta,
+  info,
+}: {
+  meta?: ProductMetafields;
+  info?: ProductDetail["productInformations"];
+}) {
+  const cms = info?.instructions;
+  if (cms) {
+    const shelfLife = cms.shelfLife;
+    return (
+      <div className="space-y-6">
+        {shelfLife?.duration ||
+        shelfLife?.manufacturingDate ||
+        shelfLife?.bestBefore ? (
+          <div>
+            <h3 className={pdpProductDetailsHeadingClass}>
+              {shelfLife.heading ?? "Shelf Life"}
+            </h3>
+            <dl className="space-y-1.5">
+              {shelfLife.duration ? (
+                <Row label="Duration" value={shelfLife.duration} />
+              ) : null}
+              {shelfLife.manufacturingDate ? (
+                <Row label="Manufacturing Date" value={shelfLife.manufacturingDate} />
+              ) : null}
+              {shelfLife.bestBefore ? (
+                <Row label="Best Before" value={shelfLife.bestBefore} />
+              ) : null}
+            </dl>
+          </div>
+        ) : null}
+        {cms.storageTips?.points.length ? (
+          <PointsSection
+            heading={cms.storageTips.heading ?? "Storage Tips"}
+            points={cms.storageTips.points}
+          />
+        ) : null}
+        {cms.usageSuggestions?.points.length ? (
+          <PointsSection
+            heading={cms.usageSuggestions.heading ?? "Usage Suggestions"}
+            points={cms.usageSuggestions.points}
+          />
+        ) : null}
+      </div>
+    );
+  }
+
   const storageTips = meta?.storageTips;
   const usageSuggestions = meta?.usageSuggestions;
   const shelfLife = meta?.shelfLife;
@@ -263,44 +394,159 @@ function InstructionsPanel({ meta }: { meta?: ProductMetafields }) {
 function RegulatoryPanel({
   product,
   meta,
+  info,
 }: {
   product: ProductDetail;
   meta?: ProductMetafields;
+  info?: ProductDetail["productInformations"];
 }) {
+  const cms = info?.regulatoryInformation;
+  if (cms) {
+    const manufacturer = cms.manufacturerDetails;
+    const seller = cms.sellerDetails;
+    const manufacturerAddress = formatProductInformationsAddress(
+      manufacturer?.address,
+    );
+    const sellerAddress = formatProductInformationsAddress(
+      seller?.registeredAddress,
+    );
+
+    return (
+      <div>
+        <h3 className={pdpProductDetailsHeadingClass}>
+          {cms.heading ?? "Regulatory Information"}
+        </h3>
+        <dl className="max-w-xl space-y-1.5">
+          {cms.fssai?.licenseNumber ? (
+            <Row
+              label={cms.fssai.licenseLabel ?? "FSSAI License"}
+              value={cms.fssai.licenseNumber}
+            />
+          ) : null}
+          {cms.fssai?.licenseExpiry ? (
+            <Row
+              label={cms.fssai.licenseExpiryLabel ?? "FSSAI License Expiry"}
+              value={cms.fssai.licenseExpiry}
+            />
+          ) : null}
+          {manufacturer?.name ? (
+            <Row
+              label={manufacturer.nameLabel ?? "Manufacturer"}
+              value={manufacturer.name}
+            />
+          ) : null}
+          {manufacturerAddress ? (
+            <Row
+              label={manufacturer?.addressLabel ?? "Manufacturer Address"}
+              value={manufacturerAddress}
+            />
+          ) : null}
+          {manufacturer?.contact?.email ? (
+            <Row
+              label={manufacturer.contactLabel ?? "Contact Email"}
+              value={manufacturer.contact.email}
+            />
+          ) : null}
+          {manufacturer?.contact?.phone ? (
+            <Row
+              label={manufacturer.contactLabel ?? "Contact Phone"}
+              value={manufacturer.contact.phone}
+            />
+          ) : null}
+          {seller?.soldBy ? (
+            <Row label={seller.soldByLabel ?? "Sold By"} value={seller.soldBy} />
+          ) : null}
+          {sellerAddress ? (
+            <Row
+              label={seller?.registeredAddressLabel ?? "Registered Address"}
+              value={sellerAddress}
+            />
+          ) : null}
+          {seller?.gstin ? (
+            <Row label={seller.gstinLabel ?? "GSTIN"} value={seller.gstin} />
+          ) : null}
+          {seller?.phone ? (
+            <Row label={seller.phoneLabel ?? "Phone"} value={seller.phone} />
+          ) : null}
+        </dl>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h3 className={pdpProductDetailsHeadingClass}>Regulatory Information</h3>
       <dl className="max-w-xl space-y-1.5">
-      {product.fssai ? <Row label="FSSAI License" value={product.fssai} /> : null}
-      {meta?.foodType ? <Row label="Food Type" value={meta.foodType} /> : null}
-      {product.regulatory?.veg != null ? (
-        <Row
-          label="Dietary"
-          value={product.regulatory.veg ? "Vegetarian" : "Non-vegetarian"}
-        />
-      ) : null}
-      {product.regulatory?.organic != null ? (
-        <Row label="Organic" value={product.regulatory.organic ? "Yes" : "No"} />
-      ) : null}
-      {meta?.countryOfOrigin ? (
-        <Row label="Country of Origin" value={meta.countryOfOrigin} />
-      ) : null}
-      {meta?.manufacturerName ? (
-        <Row label="Manufacturer" value={meta.manufacturerName} />
-      ) : null}
-      {meta?.manufacturerAddress ? (
-        <Row label="Manufacturer Address" value={meta.manufacturerAddress} />
-      ) : null}
-      {meta?.sellerName ? <Row label="Seller" value={meta.sellerName} /> : null}
-      {meta?.sellerAddress ? (
-        <Row label="Seller Address" value={meta.sellerAddress} />
-      ) : null}
-      {meta?.mfgDate ? <Row label="Mfg. Date" value={meta.mfgDate} /> : null}
-      {meta?.bestBefore ? <Row label="Best Before" value={meta.bestBefore} /> : null}
-      {meta?.ccEmail ? <Row label="Customer Care Email" value={meta.ccEmail} /> : null}
-      {meta?.ccPhone ? <Row label="Customer Care Phone" value={meta.ccPhone} /> : null}
+        {product.fssai ? <Row label="FSSAI License" value={product.fssai} /> : null}
+        {meta?.foodType ? <Row label="Food Type" value={meta.foodType} /> : null}
+        {product.regulatory?.veg != null ? (
+          <Row
+            label="Dietary"
+            value={product.regulatory.veg ? "Vegetarian" : "Non-vegetarian"}
+          />
+        ) : null}
+        {product.regulatory?.organic != null ? (
+          <Row label="Organic" value={product.regulatory.organic ? "Yes" : "No"} />
+        ) : null}
+        {meta?.countryOfOrigin ? (
+          <Row label="Country of Origin" value={meta.countryOfOrigin} />
+        ) : null}
+        {meta?.manufacturerName ? (
+          <Row label="Manufacturer" value={meta.manufacturerName} />
+        ) : null}
+        {meta?.manufacturerAddress ? (
+          <Row label="Manufacturer Address" value={meta.manufacturerAddress} />
+        ) : null}
+        {meta?.sellerName ? <Row label="Seller" value={meta.sellerName} /> : null}
+        {meta?.sellerAddress ? (
+          <Row label="Seller Address" value={meta.sellerAddress} />
+        ) : null}
+        {meta?.mfgDate ? <Row label="Mfg. Date" value={meta.mfgDate} /> : null}
+        {meta?.bestBefore ? <Row label="Best Before" value={meta.bestBefore} /> : null}
+        {meta?.ccEmail ? <Row label="Customer Care Email" value={meta.ccEmail} /> : null}
+        {meta?.ccPhone ? <Row label="Customer Care Phone" value={meta.ccPhone} /> : null}
       </dl>
     </div>
+  );
+}
+
+function PointsSection({
+  heading,
+  points,
+}: {
+  heading: string;
+  points: string[];
+}) {
+  return (
+    <div>
+      <h3 className={pdpProductDetailsHeadingClass}>{heading}</h3>
+      <ul className={cn(pdpDetailsBodyTextClass, "list-disc space-y-1 pl-5")}>
+        {points.map((point) => (
+          <li key={point}>{point}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function FeatureIcon({ iconLink }: { iconLink?: string }) {
+  if (iconLink) {
+    return (
+      <Image
+        src={iconLink}
+        alt=""
+        aria-hidden
+        width={18}
+        height={18}
+        className={pdpKeyFeatureIconClass}
+      />
+    );
+  }
+
+  return (
+    <span className={pdpKeyFeatureIconClass}>
+      <LeafIcon />
+    </span>
   );
 }
 

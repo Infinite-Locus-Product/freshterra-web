@@ -104,6 +104,9 @@ export function PdpView({
 }
 
 function ProductInfo({ product }: { product: ProductDetail }) {
+  const tagPills = product.tagPills;
+  const trustMarkers = product.productInformations?.trustMarkers?.items;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col">
@@ -111,14 +114,9 @@ function ProductInfo({ product }: { product: ProductDetail }) {
         {product.story ? (
           <p className={cn(pdpStoryClass, "lg:order-last")}>{product.story}</p>
         ) : null}
-        {product.tags.length > 0 || product.metafields?.foodType ? (
+        {tagPills.length > 0 ? (
           <div className={pdpProductTagsRowClass}>
-            {product.metafields?.foodType ? (
-              <span className={pdpProductTagPillClass}>
-                {product.metafields.foodType}
-              </span>
-            ) : null}
-            {product.tags.slice(0, 3).map((tag) => (
+            {tagPills.slice(0, 3).map((tag) => (
               <span key={tag} className={cn(pdpProductTagPillClass, "capitalize")}>
                 {tag}
               </span>
@@ -131,7 +129,9 @@ function ProductInfo({ product }: { product: ProductDetail }) {
         <VariantSelector variants={product.variants} />
       ) : null}
 
-      <TrustMarkers showReturn={product.metafields?.trustMarkerReturn} />
+      {trustMarkers && trustMarkers.length > 0 ? (
+        <TrustMarkers items={trustMarkers} />
+      ) : null}
 
       <AppDownloadCard />
     </div>
@@ -172,35 +172,27 @@ function VariantSelector({
   );
 }
 
-const TRUST_MARKERS = [
-  { label: "Fast Delivery", iconSrc: "/Vehicle Truck Checkmark.svg" },
-  { label: "12hr Return Window", iconSrc: "/Box.svg" },
-  { label: "Quality Checked", iconSrc: "/Checkmark.svg" },
-] as const;
-
 function TrustMarkers({
-  showReturn = true,
+  items,
 }: {
-  showReturn?: boolean;
+  items: Array<{ label: string; iconLink?: string }>;
 }) {
-  const markers = showReturn
-    ? TRUST_MARKERS
-    : TRUST_MARKERS.filter((marker) => marker.label !== "12hr Return Window");
+  if (items.length === 0) return null;
 
   return (
     <div className={pdpTrustSectionShellClass}>
       <div className={pdpTrustSectionInnerClass}>
         <p className={pdpTrustHeadingClass}>Trust Markers</p>
         <div className={pdpTrustRowClass}>
-          {markers.map((marker) => (
+          {items.map((marker) => (
             <div key={marker.label} className={pdpTrustItemClass}>
               <Image
-                src={marker.iconSrc}
+                src={marker.iconLink ?? "/Checkmark.svg"}
                 alt=""
                 aria-hidden
                 width={28}
                 height={28}
-                className="shrink-0"
+                className="shrink-0 object-contain"
               />
               <span>{marker.label}</span>
             </div>
