@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils/cn";
 import { HEADER_SEARCH_MAX_CLASS } from "@/components/layout/layout-classes";
 
 import { useAutocompleteSearch } from "../useAutocompleteSearch";
+import { useRecentSearches } from "../useRecentSearches";
 import { useTrendingTerms } from "../useTrendingTerms";
 
 /** Closed-state pill — matches the static HeaderSearchBar exactly. */
@@ -24,7 +25,7 @@ type Option = {
   href: string;
   /** Secondary label, e.g. "Product" for product-type suggestions. */
   sub?: string;
-  kind: "trending" | "suggestion";
+  kind: "recent" | "trending" | "suggestion";
 };
 
 type SearchBoxProps = Readonly<{
@@ -45,6 +46,8 @@ export function SearchBox({
 
   const { query, suggestions, loading, error, search } =
     useAutocompleteSearch();
+  const { searches: recentSearches, addSearch: addRecentSearch } =
+    useRecentSearches();
   const trimmed = query.trim();
   const showSuggestions = trimmed.length >= 1;
 
@@ -58,6 +61,24 @@ export function SearchBox({
   const optionRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const listboxId = useId();
 
+  const recordRecentSearch = (term: string) => {
+    addRecentSearch(term);
+  };
+
+  const recentOptions: Option[] = recentSearches.map((term, i) => ({
+    id: `${listboxId}-recent-${i}`,
+    label: term,
+    href: searchHref(term),
+    kind: "recent",
+  }));
+
+  const trendingOptions: Option[] = trending.terms.map((t, i) => ({
+    id: `${listboxId}-trending-${i}`,
+    label: t.term,
+    href: searchHref(t.term),
+    kind: "trending",
+  }));
+
   const options: Option[] = showSuggestions
     ? suggestions.map((s, i) => ({
         id: `${listboxId}-opt-${i}`,
@@ -66,12 +87,7 @@ export function SearchBox({
         sub: s.type === "product" ? "Product" : undefined,
         kind: "suggestion",
       }))
-    : trending.terms.map((t, i) => ({
-        id: `${listboxId}-opt-${i}`,
-        label: t.term,
-        href: searchHref(t.term),
-        kind: "trending",
-      }));
+    : [...recentOptions, ...trendingOptions];
   optionRefs.current.length = options.length;
 
   // Close on outside click.
@@ -123,6 +139,12 @@ export function SearchBox({
 
   const activeId = activeIndex >= 0 ? options[activeIndex]?.id : undefined;
   const showPanel = open;
+  const zeroStateLabel =
+    recentOptions.length > 0 && trendingOptions.length > 0
+      ? "Recent and trending searches"
+      : recentOptions.length > 0
+        ? "Recent searches"
+        : "Trending searches";
 
   return (
     <div
@@ -135,7 +157,10 @@ export function SearchBox({
         method="get"
         role="search"
         className={PILL_CLASS}
-        onSubmit={() => setOpen(false)}
+        onSubmit={() => {
+          if (trimmed) recordRecentSearch(trimmed);
+          setOpen(false);
+        }}
       >
         <button
           type="submit"
@@ -176,43 +201,67 @@ export function SearchBox({
             id={listboxId}
             role="listbox"
             aria-label={
-              showSuggestions ? "Search suggestions" : "Trending searches"
+              showSuggestions ? "Search suggestions" : zeroStateLabel
             }
             className="max-h-[min(420px,60vh)] overflow-y-auto py-2"
           >
-            {!showSuggestions ? (
+            {!showSuggestions && recentOptions.length > 0 ? (
+              <SectionLabel>Recent searches</SectionLabel>
+            ) : null}
+
+            {!showSuggestions
+              ? recentOptions.map((opt, i) => (
+                  <OptionRow
+                    key={opt.id}
+                    opt={opt}
+                    index={i}
+                    activeIndex={activeIndex}
+                    optionRefs={optionRefs}
+                    onHover={() => setActiveIndex(i)}
+                    onSelect={() => {
+                      recordRecentSearch(opt.label);
+                      setOpen(false);
+                    }}
+                  />
+                ))
+              : null}
+
+            {!showSuggestions && trendingOptions.length > 0 ? (
               <SectionLabel>Trending searches</SectionLabel>
             ) : null}
 
-            {options.map((opt, i) => (
-              <li key={opt.id} role="presentation">
-                <Link
-                  ref={(el) => {
-                    optionRefs.current[i] = el;
-                  }}
-                  id={opt.id}
-                  role="option"
-                  aria-selected={i === activeIndex}
-                  href={opt.href}
-                  onMouseEnter={() => setActiveIndex(i)}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors",
-                    i === activeIndex
-                      ? "bg-header-tint text-text-primary"
-                      : "text-text-primary hover:bg-gray-50",
-                  )}
-                >
-                  <OptionIcon kind={opt.kind} />
-                  <span className="min-w-0 flex-1 truncate">{opt.label}</span>
-                  {opt.sub ? (
-                    <span className="text-text-tertiary shrink-0 text-xs">
-                      {opt.sub}
-                    </span>
-                  ) : null}
-                </Link>
-              </li>
-            ))}
+            {!showSuggestions
+              ? trendingOptions.map((opt, i) => {
+                  const index = recentOptions.length + i;
+                  return (
+                    <OptionRow
+                      key={opt.id}
+                      opt={opt}
+                      index={index}
+                      activeIndex={activeIndex}
+                      optionRefs={optionRefs}
+                      onHover={() => setActiveIndex(index)}
+                      onSelect={() => {
+                        recordRecentSearch(opt.label);
+                        setOpen(false);
+                      }}
+                    />
+                  );
+                })
+              : options.map((opt, i) => (
+                  <OptionRow
+                    key={opt.id}
+                    opt={opt}
+                    index={i}
+                    activeIndex={activeIndex}
+                    optionRefs={optionRefs}
+                    onHover={() => setActiveIndex(i)}
+                    onSelect={() => {
+                      recordRecentSearch(opt.label);
+                      setOpen(false);
+                    }}
+                  />
+                ))}
 
             <StatusRow
               showSuggestions={showSuggestions}
@@ -221,6 +270,7 @@ export function SearchBox({
               suggestionsLoading={loading}
               suggestionsError={Boolean(error)}
               trendingLoading={trending.loading}
+              recentCount={recentOptions.length}
             />
           </ul>
         </div>
@@ -229,7 +279,51 @@ export function SearchBox({
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function OptionRow({
+  opt,
+  index,
+  activeIndex,
+  optionRefs,
+  onHover,
+  onSelect,
+}: {
+  opt: Option;
+  index: number;
+  activeIndex: number;
+  optionRefs: MutableRefObject<(HTMLAnchorElement | null)[]>;
+  onHover: () => void;
+  onSelect: () => void;
+}) {
+  return (
+    <li role="presentation">
+      <Link
+        ref={(el) => {
+          optionRefs.current[index] = el;
+        }}
+        id={opt.id}
+        role="option"
+        aria-selected={index === activeIndex}
+        href={opt.href}
+        onMouseEnter={onHover}
+        onClick={onSelect}
+        className={cn(
+          "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors",
+          index === activeIndex
+            ? "bg-header-tint text-text-primary"
+            : "text-text-primary hover:bg-gray-50",
+        )}
+      >
+        <OptionIcon kind={opt.kind} />
+        <span className="min-w-0 flex-1 truncate">{opt.label}</span>
+        {opt.sub ? (
+          <span className="text-text-tertiary shrink-0 text-xs">{opt.sub}</span>
+        ) : null}
+      </Link>
+    </li>
+  );
+}
+
+function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <li
       role="presentation"
@@ -248,6 +342,7 @@ function StatusRow({
   suggestionsLoading,
   suggestionsError,
   trendingLoading,
+  recentCount,
 }: {
   showSuggestions: boolean;
   query: string;
@@ -255,6 +350,7 @@ function StatusRow({
   suggestionsLoading: boolean;
   suggestionsError: boolean;
   trendingLoading: boolean;
+  recentCount: number;
 }) {
   if (showSuggestions) {
     if (suggestionsLoading && optionCount === 0) {
@@ -269,7 +365,7 @@ function StatusRow({
     return null;
   }
 
-  if (trendingLoading && optionCount === 0) {
+  if (trendingLoading && optionCount === 0 && recentCount === 0) {
     return <Hint>Loading trending searches…</Hint>;
   }
   if (optionCount === 0) {
@@ -278,7 +374,7 @@ function StatusRow({
   return null;
 }
 
-function Hint({ children }: { children: React.ReactNode }) {
+function Hint({ children }: { children: ReactNode }) {
   return (
     <li
       role="presentation"
@@ -291,6 +387,26 @@ function Hint({ children }: { children: React.ReactNode }) {
 }
 
 function OptionIcon({ kind }: { kind: Option["kind"] }) {
+  if (kind === "recent") {
+    return (
+      <svg
+        viewBox="0 0 16 16"
+        width={16}
+        height={16}
+        aria-hidden
+        className="text-text-tertiary shrink-0"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M8 4v4l2.5 2.5" />
+        <circle cx="8" cy="8" r="5.5" />
+      </svg>
+    );
+  }
+
   if (kind === "trending") {
     return (
       <svg

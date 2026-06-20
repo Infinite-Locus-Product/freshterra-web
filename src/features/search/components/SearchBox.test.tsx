@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useAutocompleteSearch } from "../useAutocompleteSearch";
+import { useRecentSearches } from "../useRecentSearches";
 import { useTrendingTerms } from "../useTrendingTerms";
 
 import { SearchBox } from "./SearchBox";
@@ -10,14 +11,19 @@ import { SearchBox } from "./SearchBox";
 vi.mock("../useAutocompleteSearch", () => ({
   useAutocompleteSearch: vi.fn(),
 }));
+vi.mock("../useRecentSearches", () => ({
+  useRecentSearches: vi.fn(),
+}));
 vi.mock("../useTrendingTerms", () => ({
   useTrendingTerms: vi.fn(),
 }));
 
 const mockAutocomplete = vi.mocked(useAutocompleteSearch);
+const mockRecent = vi.mocked(useRecentSearches);
 const mockTrending = vi.mocked(useTrendingTerms);
 
 const search = vi.fn();
+const addRecentSearch = vi.fn();
 
 function setAutocomplete(
   over: Partial<ReturnType<typeof useAutocompleteSearch>> = {},
@@ -28,6 +34,15 @@ function setAutocomplete(
     loading: false,
     error: null,
     search,
+    ...over,
+  });
+}
+
+function setRecent(over: Partial<ReturnType<typeof useRecentSearches>> = {}) {
+  mockRecent.mockReturnValue({
+    searches: [],
+    addSearch: addRecentSearch,
+    removeSearch: vi.fn(),
     ...over,
   });
 }
@@ -45,7 +60,9 @@ function setTrending(over: Partial<ReturnType<typeof useTrendingTerms>> = {}) {
 describe("SearchBox", () => {
   beforeEach(() => {
     search.mockReset();
+    addRecentSearch.mockReset();
     setAutocomplete();
+    setRecent();
     setTrending({
       terms: [
         { term: "mango", rank: 1 },
@@ -81,6 +98,32 @@ describe("SearchBox", () => {
     expect(options.map((o) => o.textContent)).toEqual(["mango", "onion"]);
     // Trending links point at the SRP.
     expect(options[0]).toHaveAttribute("href", "/search?q=mango");
+  });
+
+  it("shows recent searches above trending in the zero-state", async () => {
+    const user = userEvent.setup();
+    setRecent({
+      searches: ["tomato", "milk"],
+    });
+    render(<SearchBox />);
+
+    await user.click(
+      screen.getByRole("combobox", { name: /search products/i }),
+    );
+
+    const listbox = await screen.findByRole("listbox", {
+      name: /recent and trending searches/i,
+    });
+    expect(within(listbox).getByText("Recent searches")).toBeInTheDocument();
+    expect(within(listbox).getByText("Trending searches")).toBeInTheDocument();
+
+    const options = within(listbox).getAllByRole("option");
+    expect(options.map((o) => o.textContent)).toEqual([
+      "tomato",
+      "milk",
+      "mango",
+      "onion",
+    ]);
   });
 
   it("shows autocomplete suggestions while typing and calls search()", async () => {
