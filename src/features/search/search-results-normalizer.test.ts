@@ -51,6 +51,7 @@ describe("searchResultsDataSchema", () => {
     expect(data.items[0]).not.toHaveProperty("variantCount");
     expect(data.items[0]).not.toHaveProperty("defaultVariantId");
     expect(data.items[0]?.tags).toEqual(["Fresh", "Organic"]);
+    expect(data.items[0]?.tagPills).toEqual(["Fresh", "Organic"]);
     expect(data.items[0]?.inStock).toBe(true);
   });
 

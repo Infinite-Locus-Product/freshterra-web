@@ -108,6 +108,8 @@ export const searchProductSchema = z.object({
   nutrition: productNutritionSchema.optional(),
   regulatory: productRegulatorySchema.optional(),
   tags: z.array(z.string()).default([]),
+  /** Marketing pills on SRP cards — `tags_json` preferred, else BFF `tags[]`. */
+  tagPills: z.array(z.string()).default([]),
   rating: productRatingSchema.optional(),
   inStock: z.boolean(),
   etaMin: z.number().optional(),

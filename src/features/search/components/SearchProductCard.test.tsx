@@ -20,6 +20,7 @@ const base: SearchProduct = {
   ],
   price: { list: 8900, mrp: 9900, currency: "INR" },
   tags: ["organic", "fresh"],
+  tagPills: ["organic", "fresh"],
   inStock: true,
 };
 
