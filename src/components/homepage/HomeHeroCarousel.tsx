@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -27,6 +27,41 @@ type HomeHeroCarouselProps = Readonly<{
 }>;
 
 const SLIDE_SELECTOR = "[data-hero-banner-slide]";
+
+function isExternalHref(href: string): boolean {
+  return /^https?:\/\//i.test(href);
+}
+
+function HeroBannerLink({
+  href,
+  ariaLabel,
+  children,
+}: Readonly<{
+  href: string;
+  ariaLabel: string;
+  children: ReactNode;
+}>) {
+  const className = "absolute inset-0 block";
+  if (isExternalHref(href)) {
+    return (
+      <a
+        href={href}
+        className={className}
+        aria-label={ariaLabel}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className} aria-label={ariaLabel}>
+      {children}
+    </Link>
+  );
+}
 
 export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -119,13 +154,9 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
                 className={homeHeroBannerSlideFrameClass}
               >
                 {slide.href ? (
-                  <Link
-                    href={slide.href}
-                    className="absolute inset-0 block"
-                    aria-label={slide.imageAlt}
-                  >
+                  <HeroBannerLink href={slide.href} ariaLabel={slide.imageAlt}>
                     {imageBlock}
-                  </Link>
+                  </HeroBannerLink>
                 ) : (
                   imageBlock
                 )}
