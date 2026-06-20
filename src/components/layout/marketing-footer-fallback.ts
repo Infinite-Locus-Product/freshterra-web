@@ -10,8 +10,9 @@ export const STATIC_FOOTER_CONTENT: FooterContent = {
     {
       title: "About FreshTerra",
       links: [
+        { label: "Home", url: "/" },
         { label: "About Us", url: "/about" },
-        { label: "Our Story", url: "/about" },
+        { label: "Our Story", url: "/food-philosophy" },
         { label: "Careers", url: "/careers" },
         { label: "Contact Us", url: "/contact" },
         { label: "FAQs", url: "/faq" },
