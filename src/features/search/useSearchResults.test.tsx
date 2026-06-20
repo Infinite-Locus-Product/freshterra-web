@@ -23,6 +23,7 @@ const makeProduct = (id: string): SearchProduct => ({
   variants: [],
   price: { list: 8900, mrp: 9900, currency: "INR" },
   tags: [],
+  tagPills: [],
   inStock: true,
 });
 
