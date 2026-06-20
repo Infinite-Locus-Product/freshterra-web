@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatProductInformationsAddress,
   parseProductInformations,
+  parseTrustMarkers,
 } from "./product-informations";
 import { productDetailSchema } from "./types";
 
@@ -136,6 +137,46 @@ describe("parseProductInformations", () => {
     );
   });
 
+  it("parses trust_markers from a top-level BFF field", () => {
+    const parsed = parseTrustMarkers({
+      trust_markers: {
+        items: [
+          {
+            icon_link: "https://cms-stg.freshterra.in/uploads/shape.png",
+            label: "Fast Delivery",
+          },
+        ],
+      },
+    });
+
+    expect(parsed).toEqual([
+      {
+        iconLink: "https://cms-stg.freshterra.in/uploads/shape.png",
+        label: "Fast Delivery",
+      },
+    ]);
+  });
+
+  it("returns trust markers even when other CMS sections fail validation", () => {
+    const parsed = parseProductInformations({
+      trust_markers: {
+        items: [{ icon_link: "https://cms.example/icon.png", label: "Quality Checked" }],
+      },
+      product_details: {
+        key_features: {
+          items: [{ icon_link: 123, label: "Broken" }],
+        },
+      },
+    });
+
+    expect(parsed?.trustMarkers?.items).toEqual([
+      {
+        iconLink: "https://cms.example/icon.png",
+        label: "Quality Checked",
+      },
+    ]);
+  });
+
   it("formats multi-line CMS addresses", () => {
     expect(
       formatProductInformationsAddress({
@@ -167,5 +208,48 @@ describe("productDetailSchema with product_informations", () => {
       "cms-stg.freshterra.in",
     );
     expect(product.tagPills).toEqual([]);
+  });
+
+  it("reads trust_markers from a top-level BFF PDP field", () => {
+    const product = productDetailSchema.parse({
+      id: "prd_1",
+      name: "Almond Butter",
+      slug: "almond-butter",
+      price: { list: 100, mrp: 100, currency: "INR" },
+      inStock: true,
+      trust_markers: {
+        items: [
+          {
+            icon_link: "https://cms-stg.freshterra.in/uploads/shape.png",
+            label: "Fast Delivery",
+          },
+        ],
+      },
+    });
+
+    expect(product.productInformations?.trustMarkers?.items[0]?.label).toBe(
+      "Fast Delivery",
+    );
+  });
+
+  it("reads product_informations from metadata objects", () => {
+    const product = productDetailSchema.parse({
+      id: "prd_2",
+      name: "New Product",
+      slug: "new-product",
+      price: { list: 100, mrp: 100, currency: "INR" },
+      inStock: true,
+      metadata: {
+        product_informations: {
+          trust_markers: {
+            items: [{ label: "Quality Checked" }],
+          },
+        },
+      },
+    });
+
+    expect(product.productInformations?.trustMarkers?.items[0]?.label).toBe(
+      "Quality Checked",
+    );
   });
 });

@@ -1,7 +1,9 @@
 import {
   parseProductInformations,
+  parseTrustMarkers,
   type ProductInformations,
 } from "./product-informations";
+import { plainTextFromDescription } from "./product-description";
 import { parseWeightGrams } from "./variant-meta";
 
 import type { ProductDetail, ProductRegulatory } from "./types";
@@ -19,8 +21,9 @@ import type { ProductDetail, ProductRegulatory } from "./types";
  * |--------------------|------------------------------------------------------|
  * | URL `/product/…`   | Product `slug`                                       |
  * | Title, gallery     | Product `name`, `media` → BFF `images[]`             |
- * | Story (italic)     | `PRODUCT_DETAILS` metadata                           |
- * | Tag pills (title)  | `tags_json` metadata only                              |
+ * | Story (italic)     | BFF `description` (fallback: `story`, `PRODUCT_DETAILS`) |
+ * | Tag pills (PLP)    | `tags_json`, else BFF `tags[]` when json absent (max 2) |
+ * | Tag pills (title)  | `tags_json` metadata only (max 3 on PDP)                 |
  * | Tags (fallback)    | BFF `tags[]` merged with `tags_json` for tab content   |
  * | Variants           | Saleor variants → BFF `variants[]` (sku, name, weight)|
  * | Brand              | `brand` or `manufacturer_name`                       |
@@ -109,6 +112,9 @@ function asString(value: unknown): string | undefined {
   }
   if (typeof value === "number" || typeof value === "boolean") {
     return String(value);
+  }
+  if (value !== null && typeof value === "object") {
+    return JSON.stringify(value);
   }
   return undefined;
 }
@@ -443,7 +449,24 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
     out.tags = parseTagsInput(input.tags);
   }
 
+  const tagPills = tagPillsFromInput(input);
+  if (tagPills.length > 0) {
+    out.tagPills = tagPills;
+  }
+
   return out;
+}
+
+/** Parses marketing pills — prefer `tags_json`; PLP cards often only send `tags[]`. */
+function tagPillsFromInput(input: UnknownRecord): string[] {
+  const rawMeta = parseSaleorMetadataInput(
+    input.metadata ?? input.metafields ?? input.meta,
+  );
+  const fromTagsJson = parseStringArray(
+    lookupMetadata(rawMeta, "tags_json") ?? asString(input.tags_json) ?? "",
+  );
+  if (fromTagsJson.length > 0) return fromTagsJson;
+  return parseTagsInput(input.tags);
 }
 
 /** Normalizes a BFF product card / listing payload before PLP or PDP zod validation. */
@@ -511,7 +534,8 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
   );
 
   const story =
-    asString(catalog.story) ??
+    plainTextFromDescription(catalog.description) ??
+    plainTextFromDescription(catalog.story) ??
     meta.productDetails;
 
   const manufacturer =
@@ -542,16 +566,17 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
 
   const nutrition = nutritionFromMetadata(rawMeta, catalog.nutrition);
 
-  const productInformations =
-    parseProductInformations(
-      lookupMetadata(rawMeta, "product_informations") ??
-        (isRecord(catalog.productInformations)
-          ? catalog.productInformations
-          : undefined),
-    ) ??
-    parseProductInformations(
-      isRecord(input.productInformations) ? input.productInformations : undefined,
-    );
+  const productInformationsRaw =
+    lookupMetadata(rawMeta, "product_informations") ??
+    (isRecord(catalog.productInformations)
+      ? catalog.productInformations
+      : undefined) ??
+    (isRecord(input.productInformations) ? input.productInformations : undefined);
+
+  const productInformations = mergeProductInformationsWithTrustMarkers(
+    parseProductInformations(productInformationsRaw),
+    [productInformationsRaw, input, catalog],
+  );
 
   const {
     metadata: _metadata,
@@ -579,4 +604,27 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     metafields: meta,
     ...(productInformations ? { productInformations } : {}),
   } satisfies Partial<ProductDetail>;
+}
+
+/** Prefer the richest trust-marker list across BFF payload locations. */
+function mergeProductInformationsWithTrustMarkers(
+  info: ProductInformations | undefined,
+  sources: unknown[],
+): ProductInformations | undefined {
+  let trustItems = info?.trustMarkers?.items ?? [];
+
+  for (const source of sources) {
+    if (source == null) continue;
+    const parsed = parseTrustMarkers(source);
+    if (parsed.length > trustItems.length) {
+      trustItems = parsed;
+    }
+  }
+
+  if (!info && trustItems.length === 0) return undefined;
+
+  return {
+    ...info,
+    ...(trustItems.length > 0 ? { trustMarkers: { items: trustItems } } : {}),
+  };
 }

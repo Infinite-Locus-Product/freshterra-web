@@ -1,17 +1,23 @@
 /** Figma PDP — mWeb tokens. */
 export const PDP_MWEB_CONTENT_INSET = 16;
 
-export const pdpPageShellClass = "py-0 lg:px-page lg:py-8";
+export const pdpPageShellClass = "overflow-x-hidden py-0 lg:px-page lg:py-8";
 
 /** Padded copy block below full-bleed gallery on mWeb. */
-export const pdpContentShellClass = "px-4 lg:px-0";
+export const pdpContentShellClass = "min-w-0 px-4 lg:px-0";
 
-/** mWeb: edge-to-edge gallery — no horizontal inset. */
-export const pdpGalleryBleedClass =
-  "relative left-1/2 w-screen max-w-none -translate-x-1/2 max-lg:px-0 lg:relative lg:left-auto lg:w-full lg:translate-x-0";
+/** mWeb: gallery spans the content column — avoid `100vw` (adds scrollbar overflow). */
+export const pdpGalleryBleedClass = "relative w-full min-w-0";
 
 export const pdpGalleryFrameClass =
   "relative aspect-square w-full overflow-hidden bg-gray-50 max-lg:rounded-none lg:rounded-2xl";
+
+/** mWeb PDP hero — horizontal snap scroll between product images. */
+export const pdpGalleryScrollTrackClass =
+  "flex w-full min-w-0 max-w-full snap-x snap-mandatory overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden";
+
+export const pdpGalleryScrollSlideClass =
+  "relative aspect-square w-full shrink-0 snap-center snap-always bg-gray-50";
 
 export const pdpMainGridClass = "grid min-w-0 gap-0 lg:grid-cols-2 lg:gap-12";
 
@@ -23,8 +29,9 @@ export const pdpTitleClass =
 export const pdpStoryClass =
   "font-handsome text-text-primary mt-[10px] text-[20px] font-bold leading-5 tracking-[0] lg:mt-6 lg:text-[24px] lg:leading-[26px]";
 
-/** Tag pills under product name — Manrope 14px medium, 100% line-height, brand green. */
-export const pdpProductTagsRowClass = "order-2 mt-3 hidden flex-wrap gap-2 lg:flex";
+/** Tag pills under product name — web only; hidden on mWeb. */
+export const pdpProductTagsRowClass =
+  "order-2 mt-3 hidden flex-wrap gap-2 lg:flex";
 
 export const pdpProductTagPillClass =
   "border-brand-300 text-brand-500 inline-flex h-[37px] items-center justify-center rounded-full border px-3 text-center align-middle font-sans text-[14px] font-medium leading-none tracking-[0]";
@@ -42,9 +49,13 @@ export const pdpVariantPillActiveClass =
 export const pdpTrustHeadingClass =
   "text-text-primary mb-4 hidden font-sans text-base font-semibold uppercase leading-[1.3] tracking-[0] lg:block";
 
-/** mWeb PDP full-bleed horizontal rule — edge-to-edge within viewport. */
+/** Break out of `pdpContentShellClass` inset on mWeb without `100vw` page overflow. */
+export const pdpMwebContentBleedXClass =
+  "-mx-4 w-[calc(100%+2rem)] max-w-none lg:mx-0 lg:w-full";
+
+/** mWeb PDP full-bleed horizontal rule inside padded tab content. */
 export const pdpMwebFullBleedDividerClass =
-  "relative left-1/2 h-px w-screen max-w-none shrink-0 -translate-x-1/2 bg-gray-divider lg:hidden";
+  `relative h-px shrink-0 bg-gray-divider lg:hidden ${pdpMwebContentBleedXClass}`;
 
 /** Trust markers — mWeb + web: in-content dividers (not full bleed). */
 export const pdpTrustSectionShellClass =
@@ -94,9 +105,9 @@ export const pdpStoreButtonTopLineClass =
 export const pdpStoreButtonBrandLineClass =
   "text-text-primary block font-sans text-[13.69px] font-semibold leading-[19.55px] tracking-[-0.15px] lg:text-sm lg:leading-tight lg:tracking-normal";
 
-/** Tab row — mWeb: horizontal scroll. Web: full-bleed grey-50 strip; pills keep their own bg. */
+/** Tab row — mWeb: horizontal scroll contained in parent. Web: full-bleed grey-50 strip. */
 export const pdpTabsRowClass =
-  "flex gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:relative lg:left-1/2 lg:flex-wrap lg:w-screen lg:max-w-none lg:-translate-x-1/2 lg:overflow-visible lg:bg-gray-50 lg:px-page [&::-webkit-scrollbar]:hidden";
+  "flex min-w-0 max-w-full gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:relative lg:left-1/2 lg:flex-wrap lg:w-screen lg:max-w-none lg:-translate-x-1/2 lg:overflow-visible lg:bg-gray-50 lg:px-page [&::-webkit-scrollbar]:hidden";
 
 export const pdpTabActiveClass =
   "bg-brand-500 text-beige-100 shrink-0 rounded-full px-4 py-2 text-sm font-medium";
@@ -104,7 +115,7 @@ export const pdpTabActiveClass =
 export const pdpTabInactiveClass =
   "text-text-secondary shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium";
 
-export const pdpTabsSectionClass = "";
+export const pdpTabsSectionClass = "min-w-0";
 
 /** mWeb: Manrope 16px bold, 20px lh, primary black. Web: 20px bold, #555555. */
 export const pdpProductDetailsHeadingClass =
@@ -120,23 +131,33 @@ export const pdpDetailsRowValueClass =
 export const pdpDetailsBodyTextClass =
   "text-text-secondary font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
 
+export const PDP_KEY_FEATURE_MWEB_ITEM_WIDTH = 76;
+export const PDP_KEY_FEATURE_MWEB_ITEM_HEIGHT = 72;
+export const PDP_KEY_FEATURE_ICON_SIZE = 48;
+
 export const pdpKeyFeaturesSectionClass = "[&+div]:!mt-6";
 
 /** mWeb: vertical padding between full-bleed dividers. */
 export const pdpKeyFeaturesSectionShellClass = "py-4 lg:py-0";
 
+/** mWeb: four-column grid of 76×72 tiles; web: wrapped row. */
 export const pdpKeyFeaturesListClass =
-  "flex flex-wrap items-start justify-start gap-8 lg:gap-[24px]";
+  "grid w-full min-w-0 grid-cols-4 items-start justify-items-center lg:flex lg:flex-wrap lg:justify-start lg:gap-[24px]";
 
+/** mWeb tile — 76×72 (icon + label); web: auto-sized column. */
 export const pdpKeyFeatureItemClass =
-  "text-brand-600 inline-flex flex-col items-center gap-2 font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:leading-[130%]";
+  "box-border flex h-[72px] w-[76px] shrink-0 flex-col items-center justify-start gap-1 text-center lg:h-auto lg:w-auto lg:gap-2";
+
+/** mWeb label — Manrope 12px regular, 140% lh. Web: 16px medium. */
+export const pdpKeyFeatureLabelClass =
+  "text-brand-600 w-full min-w-0 text-center font-sans text-[12px] font-normal leading-[1.4] tracking-[0] lg:text-[16px] lg:font-medium lg:leading-[130%]";
 
 export const pdpKeyFeatureIconClass =
-  "bg-header-tint text-brand-500 grid h-[48px] w-[48px] shrink-0 place-items-center rounded-full";
+  "bg-header-tint text-brand-500 grid size-12 shrink-0 place-items-center rounded-full";
 
-/** Similar products — horizontal scroll; mWeb card sizing on all breakpoints. */
+/** Similar products — horizontal scroll contained within padded shell. */
 export const pdpSimilarProductsGridClass =
-  "flex flex-nowrap items-stretch gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+  "flex w-full min-w-0 max-w-full flex-nowrap items-stretch gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
 /** Fixed rail card width — matches mWeb similar-products shell (12–14rem). */
 export const pdpSimilarProductCardShellClass =

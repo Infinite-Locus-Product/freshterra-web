@@ -4,12 +4,13 @@ const labeledIconSchema = z
   .object({
     icon_link: z.string().optional(),
     iconLink: z.string().optional(),
-    label: z.string(),
+    label: z.union([z.string(), z.number()]).optional(),
   })
   .transform(({ icon_link, iconLink, label }) => ({
     icon_link: icon_link ?? iconLink,
-    label,
-  }));
+    label: label != null ? String(label).trim() : "",
+  }))
+  .refine((item) => item.label.length > 0);
 
 const trustMarkersSchema = z.object({
   items: z.array(labeledIconSchema).default([]),
@@ -476,6 +477,58 @@ export function formatProductInformationsAddress(
   return parts.length > 0 ? parts.join(", ") : undefined;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function readTrustMarkersBlock(raw: unknown): unknown {
+  if (!isRecord(raw)) return undefined;
+  if (raw.trust_markers || raw.trustMarkers) {
+    return raw.trust_markers ?? raw.trustMarkers;
+  }
+  if (Array.isArray(raw.items)) return raw;
+  return undefined;
+}
+
+/** Lenient parser for BFF `trust_markers` / `trustMarkers` blocks. */
+export function parseTrustMarkers(raw: unknown): ProductInformationsLabeledIcon[] {
+  if (raw == null) return [];
+
+  let parsed: unknown = raw;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (!trimmed) return [];
+    try {
+      parsed = JSON.parse(trimmed) as unknown;
+    } catch {
+      return [];
+    }
+  }
+
+  const block = readTrustMarkersBlock(parsed);
+  if (!isRecord(block) || !Array.isArray(block.items)) return [];
+
+  return block.items
+    .map((item): ProductInformationsLabeledIcon | null => {
+      if (!isRecord(item)) return null;
+      const label =
+        typeof item.label === "string"
+          ? item.label.trim()
+          : typeof item.label === "number"
+            ? String(item.label)
+            : "";
+      if (!label) return null;
+      const iconLink =
+        typeof item.icon_link === "string"
+          ? item.icon_link
+          : typeof item.iconLink === "string"
+            ? item.iconLink
+            : undefined;
+      return iconLink ? { label, iconLink } : { label };
+    })
+    .filter((item): item is ProductInformationsLabeledIcon => item !== null);
+}
+
 /** Parses the Saleor `product_informations` metadata JSON blob. */
 export function parseProductInformations(
   raw: unknown,
@@ -493,10 +546,21 @@ export function parseProductInformations(
     }
   }
 
+  const trustFromWire = parseTrustMarkers(parsed);
   const result = productInformationsWireSchema.safeParse(parsed);
-  if (!result.success) return undefined;
+  if (!result.success) {
+    return trustFromWire.length > 0
+      ? { trustMarkers: { items: trustFromWire } }
+      : undefined;
+  }
 
   const mapped = mapWireToProductInformations(result.data);
+  if (
+    trustFromWire.length > 0 &&
+    (mapped.trustMarkers?.items.length ?? 0) < trustFromWire.length
+  ) {
+    mapped.trustMarkers = { items: trustFromWire };
+  }
   return Object.keys(mapped).length > 0 ? mapped : undefined;
 }
 

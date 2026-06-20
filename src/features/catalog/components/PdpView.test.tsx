@@ -59,7 +59,7 @@ const related: PlpProduct[] = [
 describe("PdpView", () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it("renders the name, story, tags and variants", () => {
+  it("renders the name, story and variants", () => {
     render(<PdpView product={product} related={related} relatedLoading={false} />);
 
     expect(
