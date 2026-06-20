@@ -27,6 +27,7 @@ import {
   SEARCH_FILTER_GROUPS,
   SEARCH_SORT_OPTIONS,
 } from "../search-plp-config";
+import { addRecentSearch } from "../recent-searches";
 import { useSearchResults } from "../useSearchResults";
 
 import { SearchProductCard } from "./SearchProductCard";
@@ -65,6 +66,10 @@ function toActiveChips(
 
 export function SearchResultsView({ query }: { query: string }) {
   const trimmed = query.trim();
+
+  useEffect(() => {
+    if (trimmed) addRecentSearch(trimmed);
+  }, [trimmed]);
 
   const [sort, setSort] = useState<SearchSort>("relevance");
   const [selections, setSelections] = useState<FilterSelections>({});
