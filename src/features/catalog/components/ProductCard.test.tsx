@@ -17,6 +17,7 @@ const base: PlpProduct = {
   ],
   price: { list: 8900, mrp: 9900, currency: "INR" },
   tags: ["organic", "fresh"],
+  tagPills: ["organic", "fresh", "local"],
   inStock: true,
 };
 
@@ -31,6 +32,8 @@ describe("ProductCard", () => {
   it("renders tag pills and the vegetarian badge", () => {
     render(<ProductCard product={base} />);
     expect(screen.getByText("organic")).toBeInTheDocument();
+    expect(screen.getByText("fresh")).toBeInTheDocument();
+    expect(screen.queryByText("local")).not.toBeInTheDocument();
     expect(screen.getByAltText("Vegetarian")).toBeInTheDocument();
   });
 

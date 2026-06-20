@@ -10,6 +10,7 @@ import {
   pdpDetailsRowValueClass,
   pdpKeyFeatureIconClass,
   pdpKeyFeatureItemClass,
+  pdpKeyFeatureLabelClass,
   pdpKeyFeaturesListClass,
   pdpKeyFeaturesSectionClass,
   pdpKeyFeaturesSectionShellClass,
@@ -146,7 +147,7 @@ function DetailsPanel({
                     className={pdpKeyFeatureItemClass}
                   >
                     <FeatureIcon iconLink={feature.iconLink} />
-                    <span>{feature.label}</span>
+                    <span className={pdpKeyFeatureLabelClass}>{feature.label}</span>
                   </div>
                 ))}
               </div>
@@ -223,7 +224,9 @@ function DetailsPanel({
                   <span className={pdpKeyFeatureIconClass}>
                     <LeafIcon />
                   </span>
-                  <span className="capitalize">{feature}</span>
+                  <span className={cn(pdpKeyFeatureLabelClass, "capitalize")}>
+                    {feature}
+                  </span>
                 </div>
               ))}
             </div>
@@ -532,14 +535,16 @@ function PointsSection({
 function FeatureIcon({ iconLink }: { iconLink?: string }) {
   if (iconLink) {
     return (
-      <Image
-        src={iconLink}
-        alt=""
-        aria-hidden
-        width={18}
-        height={18}
-        className={pdpKeyFeatureIconClass}
-      />
+      <span className={pdpKeyFeatureIconClass}>
+        <Image
+          src={iconLink}
+          alt=""
+          aria-hidden
+          width={48}
+          height={48}
+          className="max-h-full max-w-full object-contain"
+        />
+      </span>
     );
   }
 
@@ -563,8 +568,8 @@ function LeafIcon() {
   return (
     <svg
       viewBox="0 0 20 20"
-      width={18}
-      height={18}
+      width={24}
+      height={24}
       aria-hidden
       fill="none"
       stroke="currentColor"

@@ -13,13 +13,28 @@ const images = [
 describe("ProductGallery", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  function mobileTrack() {
+    return screen.getByLabelText("Product images");
+  }
+
+  it("renders a horizontal scroll track on mWeb when multiple images exist", () => {
+    render(<ProductGallery images={images} name="Almond Butter" />);
+
+    expect(mobileTrack()).toBeInTheDocument();
+    expect(
+      within(mobileTrack()).getAllByRole("button", { name: "Open image gallery" }),
+    ).toHaveLength(3);
+  });
+
   it("opens the full-screen gallery when the hero image is clicked", async () => {
     const user = userEvent.setup();
     render(<ProductGallery images={images} name="Almond Butter" />);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Open image gallery" }));
+    await user.click(
+      within(mobileTrack()).getAllByRole("button", { name: "Open image gallery" })[0]!,
+    );
 
     const dialog = screen.getByRole("dialog", { name: "Image gallery" });
     expect(within(dialog).getByRole("img", { name: "Front" })).toBeInTheDocument();
@@ -29,7 +44,9 @@ describe("ProductGallery", () => {
     const user = userEvent.setup();
     render(<ProductGallery images={images} name="Almond Butter" />);
 
-    await user.click(screen.getByRole("button", { name: "Open image gallery" }));
+    await user.click(
+      within(mobileTrack()).getAllByRole("button", { name: "Open image gallery" })[0]!,
+    );
     const dialog = screen.getByRole("dialog");
 
     await user.click(within(dialog).getByRole("button", { name: "Next image" }));
@@ -43,14 +60,17 @@ describe("ProductGallery", () => {
     const user = userEvent.setup();
     render(<ProductGallery images={images} name="Almond Butter" />);
 
-    await user.click(screen.getByRole("button", { name: "Open image gallery" }));
+    await user.click(
+      within(mobileTrack()).getAllByRole("button", { name: "Open image gallery" })[0]!,
+    );
     await user.click(screen.getByRole("button", { name: "Next image" }));
     await user.click(screen.getByRole("button", { name: "Close image gallery" }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "View image 2" })).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
+    expect(
+      within(mobileTrack().parentElement as HTMLElement).getAllByRole("button", {
+        name: "View image 2",
+      })[0],
+    ).toHaveAttribute("aria-current", "true");
   });
 });

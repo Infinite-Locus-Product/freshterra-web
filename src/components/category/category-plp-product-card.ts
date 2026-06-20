@@ -11,9 +11,9 @@ export const categoryPlpProductCardImageClass =
 
 export const categoryPlpProductCardBodyClass = "p-3 lg:p-4";
 
-/** mWeb: Manrope 14px medium, 16px lh. Web: 18px bold. */
+/** mWeb: Manrope 14px medium, 2-line clamp. Web: 18px bold, 2-line clamp. */
 export const categoryPlpProductCardNameClass =
-  "text-text-primary min-w-0 font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[18px] lg:font-bold";
+  "text-text-primary line-clamp-2 min-w-0 font-sans text-[14px] font-medium leading-5 tracking-[0] lg:text-[18px] lg:font-bold lg:leading-[1.35]";
 
 /** mWeb variant meta — Manrope 12px regular, 140% lh. Web: 14px, 120% lh. */
 export const categoryPlpProductCardMetaClass =
