@@ -77,6 +77,25 @@ function normalizeHref(slug: string | null | undefined): string | undefined {
   return `/c/${encodeURIComponent(trimmed)}`;
 }
 
+/** Resolves CMS deeplink strings — absolute URLs, site paths, or category slugs. */
+function normalizeDeeplink(value: string | null | undefined): string | undefined {
+  if (!value?.trim()) return undefined;
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (trimmed.startsWith("/")) return trimmed;
+  if (trimmed.includes("/")) return `/${trimmed.replace(/^\/+/, "")}`;
+  return normalizeHref(trimmed);
+}
+
+function readDeeplink(record: UnknownRecord): string {
+  const raw = record.deeplink;
+  if (typeof raw === "string") return readString(record, "deeplink");
+  if (isRecord(raw)) {
+    return readString(raw, "link", "url", "href", "slug", "deeplink");
+  }
+  return "";
+}
+
 function mapHeroSlide(raw: WebHomepageHero, index: number): HomeHeroSlide | null {
   const record = raw as UnknownRecord;
   const imageWeb = readMediaUrl(record, "image");
@@ -85,9 +104,11 @@ function mapHeroSlide(raw: WebHomepageHero, index: number): HomeHeroSlide | null
   if (!imageWeb && !imageMobile) return null;
 
   const heading = readString(record, "heading");
+  const deeplink = readDeeplink(record);
   const ctaSlug = readString(record, "cta_slug");
   const collectionId = readString(record, "saleor_collection_id");
   const href =
+    normalizeDeeplink(deeplink) ||
     normalizeHref(ctaSlug) ||
     (collectionId ? `/collection/${encodeURIComponent(collectionId)}` : undefined);
 

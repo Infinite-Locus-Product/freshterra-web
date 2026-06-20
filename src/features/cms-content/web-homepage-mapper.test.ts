@@ -73,6 +73,40 @@ describe("mapWebHomepageContent", () => {
     expect(content.store.mediaImage).toContain("store.png");
   });
 
+  it("maps hero deeplink to a clickable banner href", () => {
+    const content = mapWebHomepageContent({
+      web_herosection: [
+        {
+          id: 42,
+          image: "https://cms-stg.freshterra.in/uploads/Banner_web.png",
+          iamge_mweb: "https://cms-stg.freshterra.in/uploads/Banner_mweb.png",
+          heading: "Diwali Sale",
+          deeplink: "/c/diwali",
+          position: 1,
+          is_active: true,
+        },
+      ],
+    });
+
+    expect(content.heroSlides[0]?.href).toBe("/c/diwali");
+  });
+
+  it("prefers deeplink over cta_slug when both are present", () => {
+    const content = mapWebHomepageContent({
+      web_herosection: [
+        {
+          image: "https://cms-stg.freshterra.in/uploads/Banner_web.png",
+          deeplink: "/collection/summer",
+          cta_slug: "winter",
+          is_active: true,
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.heroSlides[0]?.href).toBe("/collection/summer");
+  });
+
   it("falls back to draft content when CMS fields are absent", () => {
     const content = mapWebHomepageContent({}, homePageDraftContent);
 

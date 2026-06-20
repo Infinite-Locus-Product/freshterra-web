@@ -13,6 +13,7 @@ export const webHomepageHeroSchema = z
     tagline: cmsString,
     cta_slug: cmsString,
     cta_label: cmsString,
+    deeplink: cmsString,
     position: z.number().nullable().optional(),
     is_active: z.boolean().optional(),
     saleor_collection_id: cmsString,
