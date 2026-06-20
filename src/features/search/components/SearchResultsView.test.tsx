@@ -28,6 +28,7 @@ function product(id: string): SearchProduct {
     variants: [{ id: "v", sku: "s", weightG: 250 }],
     price: { list: 8900, mrp: 9900, currency: "INR" },
     tags: ["organic"],
+    tagPills: ["organic"],
     inStock: true,
   };
 }

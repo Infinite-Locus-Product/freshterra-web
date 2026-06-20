@@ -27,6 +27,9 @@ import { productPageHref } from "../product-href";
 
 import type { PlpProduct } from "../types";
 
+/** Max marketing pills from `tags_json` on PLP product cards. */
+const PLP_TAG_PILL_LIMIT = 2;
+
 export function ProductCard({
   product,
   showVariantMeta = true,
@@ -41,6 +44,7 @@ export function ProductCard({
   const image = product.images[0];
   const meta = showVariantMeta ? formatPlpVariantMeta(product) : null;
   const isPdpRail = layout === "pdp-rail";
+  const tagPills = (product.tagPills ?? []).slice(0, PLP_TAG_PILL_LIMIT);
 
   return (
     <Link
@@ -107,7 +111,7 @@ export function ProductCard({
             </p>
           ) : null}
 
-          {product.tags.length > 0 ? (
+          {tagPills.length > 0 ? (
             <div
               className={
                 isPdpRail
@@ -115,7 +119,7 @@ export function ProductCard({
                   : categoryPlpProductCardTagsRowClass
               }
             >
-              {product.tags.slice(0, 3).map((tag) => (
+              {tagPills.map((tag) => (
                 <span
                   key={tag}
                   className={

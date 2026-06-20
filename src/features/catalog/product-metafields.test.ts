@@ -95,6 +95,35 @@ describe("normalizeProductDetailPayload", () => {
     expect(normalized.metafields?.trustMarkerReturn).toBe(true);
   });
 
+  it("maps BFF description to the PDP story line below the title", () => {
+    const normalized = productDetailSchema.parse({
+      id: "prd_1",
+      name: "Tomato",
+      slug: "tomato",
+      price: { list: 100, mrp: 100, currency: "INR" },
+      inStock: true,
+      description: "Sweet heirloom tomatoes from local farms.",
+      metadata: [{ key: "PRODUCT_DETAILS", value: "From metadata" }],
+    });
+
+    expect(normalized.story).toBe("Sweet heirloom tomatoes from local farms.");
+  });
+
+  it("extracts plain text from EditorJS description JSON", () => {
+    const normalized = productDetailSchema.parse({
+      id: "prd_milk",
+      name: "Milk Chocolate Bar",
+      slug: "chocolate",
+      price: { list: 19900, mrp: 24900, currency: "INR" },
+      inStock: true,
+      description: JSON.stringify({
+        blocks: [{ data: { text: "Smooth milk chocolate" }, type: "paragraph" }],
+      }),
+    });
+
+    expect(normalized.story).toBe("Smooth milk chocolate");
+  });
+
   it("preserves existing BFF-flattened fields over metadata", () => {
     const normalized = normalizeProductDetailPayload({
       id: "prd_1",
@@ -324,5 +353,41 @@ describe("normalizeBffListingProduct", () => {
     expect(product.variants[0]?.name).toBe("250g");
     expect(product.variants[0]?.weightG).toBe(250);
     expect(product.variantCount).toBe(2);
+  });
+
+  it("maps tags_json to tagPills on PLP cards", () => {
+    const product = plpProductSchema.parse({
+      saleorProductId: "UHJvZHVjdDoyMw==",
+      name: "Milk Chocolate Bar",
+      slug: "chocolate",
+      tags_json: '["Organic","Fresh","Original"]',
+      mainImage:
+        "https://saleor.stage.freshterra.in/media/thumbnails/products/chocolate2_db33acfd_thumbnail_4096.webp",
+      defaultVariantId: "UHJvZHVjdFZhcmlhbnQ6MjA=",
+      price: 0,
+      mrp: 0,
+      currency: "INR",
+      inStock: true,
+    });
+
+    expect(product.tagPills).toEqual(["Organic", "Fresh", "Original"]);
+  });
+
+  it("falls back to BFF tags when tags_json is absent on PLP cards", () => {
+    const product = plpProductSchema.parse({
+      saleorProductId: "UHJvZHVjdDoyMw==",
+      name: "Milk Chocolate Bar",
+      slug: "chocolate",
+      tags: ["Organic", "Fresh", "Heathy", "Original"],
+      mainImage:
+        "https://saleor.stage.freshterra.in/media/thumbnails/products/chocolate2_db33acfd_thumbnail_4096.webp",
+      defaultVariantId: "UHJvZHVjdFZhcmlhbnQ6MjA=",
+      price: 0,
+      mrp: 0,
+      currency: "INR",
+      inStock: true,
+    });
+
+    expect(product.tagPills).toEqual(["Organic", "Fresh", "Heathy", "Original"]);
   });
 });

@@ -105,6 +105,9 @@ export function PdpView({
   );
 }
 
+/** Max marketing pills from `tags_json` below the PDP title. */
+const PDP_TAG_PILL_LIMIT = 3;
+
 function ProductInfo({ product }: { product: ProductDetail }) {
   const tagPills = product.tagPills;
   const trustMarkers = product.productInformations?.trustMarkers?.items;
@@ -118,7 +121,7 @@ function ProductInfo({ product }: { product: ProductDetail }) {
         ) : null}
         {tagPills.length > 0 ? (
           <div className={pdpProductTagsRowClass}>
-            {tagPills.slice(0, 3).map((tag) => (
+            {tagPills.slice(0, PDP_TAG_PILL_LIMIT).map((tag) => (
               <span key={tag} className={cn(pdpProductTagPillClass, "capitalize")}>
                 {tag}
               </span>
