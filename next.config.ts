@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ik.imagekit.io" },
       { protocol: "https", hostname: "**.saleor.cloud" },
       { protocol: "https", hostname: "**.freshterra.in" },
+      { protocol: "https", hostname: "strapi.tenxyou.com" },
+      { protocol: "https", hostname: "cms-stg.freshterra.in" },
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },

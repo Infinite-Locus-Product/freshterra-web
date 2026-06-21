@@ -2,8 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
-import { homePageDraftContent } from "@/features/cms-content/homepage";
-
+import {
+  CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS,
+  CMS_WEB_HOMEPAGE_TAGS,
+} from "./cms-cache-tags";
 import {
   WEB_HOMEPAGE_CONTENT_TYPE,
   fetchWebHomepageContentSafe,
@@ -11,14 +13,9 @@ import {
 } from "./web-homepage-service";
 import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
 import { getSingleContent } from "./single-content-service";
-import { getWebCategoryPage } from "./web-category-page-service";
 
 vi.mock("./single-content-service", () => ({
   getSingleContent: vi.fn(),
-}));
-
-vi.mock("./web-category-page-service", () => ({
-  getWebCategoryPage: vi.fn(),
 }));
 
 vi.mock("./homepage-categories-resolver", () => ({
@@ -26,7 +23,6 @@ vi.mock("./homepage-categories-resolver", () => ({
 }));
 
 const mockGetSingleContent = vi.mocked(getSingleContent);
-const mockGetWebCategoryPage = vi.mocked(getWebCategoryPage);
 const mockResolveHomepageCategoryItems = vi.mocked(resolveHomepageCategoryItems);
 
 const apiEntry = {
@@ -39,7 +35,12 @@ const apiEntry = {
       position: 1,
     },
   ],
-  l2_category: { title: "Categories", tagline: "Explore" },
+  l2_category: {
+    title: "Categories",
+    tagline: "Explore",
+    slug: "/categories",
+    is_active: true,
+  },
 };
 
 describe("getWebHomepageContent", () => {
@@ -55,7 +56,13 @@ describe("getWebHomepageContent", () => {
     expect(mockGetSingleContent).toHaveBeenCalledWith(
       WEB_HOMEPAGE_CONTENT_TYPE,
       {},
-      expect.objectContaining({ schema: expect.any(Object) }),
+      expect.objectContaining({
+        schema: expect.any(Object),
+        next: {
+          tags: [...CMS_WEB_HOMEPAGE_TAGS],
+          revalidate: CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS,
+        },
+      }),
     );
   });
 });
@@ -72,7 +79,6 @@ describe("fetchWebHomepageContentSafe", () => {
 
   it("returns mapped homepage content on success", async () => {
     mockGetSingleContent.mockResolvedValue(apiEntry);
-    mockGetWebCategoryPage.mockResolvedValue({ sections: [] });
     mockResolveHomepageCategoryItems.mockResolvedValue([
       {
         key: "fruits",
@@ -86,55 +92,37 @@ describe("fetchWebHomepageContentSafe", () => {
     expect(content.heroSlides).toHaveLength(1);
     expect(content.categories.title).toBe("Categories");
     expect(content.categories.items).toHaveLength(1);
-    expect(mockResolveHomepageCategoryItems).toHaveBeenCalledWith(
-      apiEntry,
-      expect.anything(),
-    );
+    expect(mockResolveHomepageCategoryItems).toHaveBeenCalledWith(apiEntry);
   });
 
-  it("skips web-category-page fetch when homepage l2_category_tile is populated", async () => {
-    const homepageWithTiles = {
+  it("returns empty homepage when l2_category is inactive", async () => {
+    const inactiveL2 = {
       ...apiEntry,
       l2_category: {
         title: "Categories",
+        tagline: "Explore",
         slug: "/categories",
-        l2_category_tile: [
-          {
-            image_web: "https://cms-stg.freshterra.in/uploads/tile.png",
-            saleor_category_slug: "fruits",
-            is_active: true,
-            position: 1,
-          },
-        ],
+        is_active: false,
       },
     };
-    mockGetSingleContent.mockResolvedValue(homepageWithTiles);
-    mockResolveHomepageCategoryItems.mockResolvedValue([
-      {
-        key: "fruits",
-        name: "Fruits",
-        imageSrc: "https://cms-stg.freshterra.in/uploads/tile.png",
-        href: "/category/fruits",
-      },
-    ]);
+    mockGetSingleContent.mockResolvedValue(inactiveL2);
+    mockResolveHomepageCategoryItems.mockResolvedValue([]);
 
-    await fetchWebHomepageContentSafe();
+    const content = await fetchWebHomepageContentSafe();
 
-    expect(mockGetWebCategoryPage).not.toHaveBeenCalled();
-    expect(mockResolveHomepageCategoryItems).toHaveBeenCalledWith(
-      homepageWithTiles,
-      null,
-    );
+    expect(content.categories.title).toBe("");
+    expect(content.categories.items).toEqual([]);
+    expect(mockResolveHomepageCategoryItems).toHaveBeenCalledWith(inactiveL2);
   });
 
-  it("returns draft fallback when the CMS entry is missing", async () => {
+  it("returns empty homepage when the CMS entry is missing", async () => {
     mockGetSingleContent.mockRejectedValue(
       new FreshTerraApiError("missing", "NOT_FOUND", 404),
     );
 
     const content = await fetchWebHomepageContentSafe();
     expect(content.heroSlides).toHaveLength(0);
-    expect(content.categories.title).toBe(homePageDraftContent.categories.title);
+    expect(content.categories.title).toBe("");
     expect(console.warn).not.toHaveBeenCalled();
   });
 });

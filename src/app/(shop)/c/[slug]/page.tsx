@@ -36,15 +36,21 @@ type Params = Promise<{ slug: string }>;
 const EXPLORE_CATALOG_SLUG = "explore-catalog";
 const STORE_COOKIE = "ft_store_id";
 
-function l3TileHref(tile: {
-  plp_deeplink?: string | null;
-  saleor_l3_category_slug?: string | null;
-}): string | null {
+function l3TileHref(
+  tile: {
+    plp_deeplink?: string | null;
+    saleor_l3_category_slug?: string | null;
+  },
+  parentSlug: string,
+): string | null {
   const deepLink = tile.plp_deeplink?.trim();
   if (deepLink) return deepLink.startsWith("/") ? deepLink : `/${deepLink}`;
-  const slug = tile.saleor_l3_category_slug?.trim();
-  if (!slug) return null;
-  return `/c/${slug}`;
+  const tileSlug = tile.saleor_l3_category_slug?.trim();
+  if (!tileSlug) return null;
+  if (tileSlug === parentSlug) return `/c/${tileSlug}`;
+  const params = new URLSearchParams();
+  params.set("parent", parentSlug);
+  return `/c/${tileSlug}?${params.toString()}`;
 }
 
 export async function generateMetadata({
@@ -101,6 +107,7 @@ function WebCategoryLandingView({
   content,
 }: Readonly<{ content: Awaited<ReturnType<typeof getWebCategoryContent>> }>) {
   const title = content.label?.trim() || "Category";
+  const parentSlug = content.slug?.trim() || title.toLowerCase().replace(/\s+/g, "-");
   const hero = content.category_hero_section;
   const heroImage = hero?.image_web || hero?.image_mweb;
   const tiles = [...(content.l2_category[0]?.l3_tiles ?? [])]
@@ -160,7 +167,7 @@ function WebCategoryLandingView({
 
         <div className={categoryPageGridClass}>
           {tiles.map((tile) => {
-            const href = l3TileHref(tile);
+            const href = l3TileHref(tile, parentSlug);
             if (!href) return null;
             const imageSrc = tile.image_url_web?.trim() || tile.image_url_mweb?.trim();
             if (!imageSrc) return null;

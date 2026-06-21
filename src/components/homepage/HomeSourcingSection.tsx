@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { dummyImages } from "@/lib/dummy-images";
 import { cn } from "@/lib/utils/cn";
 
 import {
@@ -50,69 +49,95 @@ function SourcingChevronIcon() {
 }
 
 export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
-  const readMoreHref = content.readMoreHref ?? "/food-philosophy";
-  const bgImage = content.backgroundImage ?? "/home-sourcing-bg.png";
+  const hasContent =
+    content.title.trim() ||
+    content.subtitle.trim() ||
+    content.paragraphs.length > 0 ||
+    content.backgroundImage ||
+    content.mediaImage;
+
+  if (!hasContent) return null;
+
+  const readMoreHref = content.readMoreHref;
+  const bgImage = content.backgroundImage;
   const bgImageMobile = content.backgroundImageMobile ?? bgImage;
-  const mediaImage = content.mediaImage ?? dummyImages.homeSourcingMedia.src;
+  const mediaImage = content.mediaImage;
   const mediaImageMobile = content.mediaImageMobile ?? mediaImage;
 
   return (
     <section className={homeSourcingSectionOuterClass}>
       <div className={homeSourcingSectionFrameClass}>
-        <Image
-          src={bgImageMobile}
-          alt=""
-          aria-hidden
-          fill
-          sizes="(max-width: 1024px) 100vw, 1200px"
-          className={cn(homeSourcingBgImageClass, "z-0 md:hidden")}
-          priority={false}
-        />
-        <Image
-          src={bgImage}
-          alt=""
-          aria-hidden
-          fill
-          sizes="(max-width: 1024px) 100vw, 1200px"
-          className={cn(homeSourcingBgImageClass, "z-0 hidden md:block")}
-          priority={false}
-        />
+        {bgImageMobile ? (
+          <Image
+            src={bgImageMobile}
+            alt=""
+            aria-hidden
+            fill
+            sizes="(max-width: 1024px) 100vw, 1200px"
+            className={cn(homeSourcingBgImageClass, "z-0 md:hidden")}
+            priority={false}
+          />
+        ) : null}
+        {bgImage ? (
+          <Image
+            src={bgImage}
+            alt=""
+            aria-hidden
+            fill
+            sizes="(max-width: 1024px) 100vw, 1200px"
+            className={cn(homeSourcingBgImageClass, "z-0 hidden md:block")}
+            priority={false}
+          />
+        ) : null}
 
         <div className={homeSourcingSectionDesktopShellClass}>
           <div className={homeSourcingInnerClass}>
             <div className={`${homeSourcingHeaderRowClass} ${homeSourcingContentInsetClass}`}>
-              <div>
-                <h2 className={homeSourcingTitleClass}>{content.title}</h2>
-                <p className={homeSourcingSubtitleClass}>{content.subtitle}</p>
-              </div>
-              <Link
-                href={readMoreHref}
-                aria-label={content.ctaLabel}
-                className={homeSourcingCtaLinkClass}
-              >
-                <SourcingChevronIcon />
-              </Link>
+              {content.title.trim() || content.subtitle.trim() ? (
+                <div>
+                  {content.title.trim() ? (
+                    <h2 className={homeSourcingTitleClass}>{content.title}</h2>
+                  ) : null}
+                  {content.subtitle.trim() ? (
+                    <p className={homeSourcingSubtitleClass}>{content.subtitle}</p>
+                  ) : null}
+                </div>
+              ) : null}
+              {readMoreHref ? (
+                <Link
+                  href={readMoreHref}
+                  aria-label={content.ctaLabel || undefined}
+                  className={homeSourcingCtaLinkClass}
+                >
+                  <SourcingChevronIcon />
+                </Link>
+              ) : null}
             </div>
 
             <div className={homeSourcingBodyRowClass}>
               <div className={homeSourcingMediaColumnClass}>
-                <div className={homeSourcingMediaClass}>
-                  <Image
-                    src={mediaImageMobile}
-                    alt="Fresh, wholesome and gourmet produce from our sourcing partners"
-                    fill
-                    className={cn(homeSourcingMediaImageClass, "md:hidden")}
-                    sizes="(max-width: 1024px) 100vw, 628px"
-                  />
-                  <Image
-                    src={mediaImage}
-                    alt="Fresh, wholesome and gourmet produce from our sourcing partners"
-                    fill
-                    className={cn(homeSourcingMediaImageClass, "hidden md:block")}
-                    sizes="(max-width: 1024px) 100vw, 628px"
-                  />
-                  {/* Strapi mediaOverlay heading — hidden for now */}
-                </div>
+                {mediaImage || mediaImageMobile ? (
+                  <div className={homeSourcingMediaClass}>
+                    {mediaImageMobile ? (
+                      <Image
+                        src={mediaImageMobile}
+                        alt=""
+                        fill
+                        className={cn(homeSourcingMediaImageClass, "md:hidden")}
+                        sizes="(max-width: 1024px) 100vw, 628px"
+                      />
+                    ) : null}
+                    {mediaImage ? (
+                      <Image
+                        src={mediaImage}
+                        alt=""
+                        fill
+                        className={cn(homeSourcingMediaImageClass, "hidden md:block")}
+                        sizes="(max-width: 1024px) 100vw, 628px"
+                      />
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
 
               <div className={`${homeSourcingBodyCopyClass} ${homeSourcingContentInsetClass}`}>
@@ -126,9 +151,11 @@ export function HomeSourcingSection({ content }: HomeSourcingSectionProps) {
                     </p>
                   ))}
                 </div>
-                <Link href={readMoreHref} className={homeSourcingReadMoreClass}>
-                  {content.ctaLabel}
-                </Link>
+                {readMoreHref && content.ctaLabel.trim() ? (
+                  <Link href={readMoreHref} className={homeSourcingReadMoreClass}>
+                    {content.ctaLabel}
+                  </Link>
+                ) : null}
               </div>
             </div>
           </div>

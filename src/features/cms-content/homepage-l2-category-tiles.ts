@@ -1,5 +1,8 @@
 import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
+import { isCmsActive } from "./cms-boolean";
+import { normalizeCmsDeeplink, normalizeCmsSlugHref } from "./cms-href";
+
 import type { CategoryLookup } from "./web-category-page-mapper";
 import type {
   HomeCategoryTileItem,
@@ -26,6 +29,12 @@ function slugToTitle(slug: string): string {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function tileLabel(tile: WebHomepageL2CategoryTile): string | undefined {
+  const label = tile.label?.trim();
+  if (label) return label;
+  return undefined;
 }
 
 function resolveTileCategory(
@@ -68,11 +77,19 @@ function tileKey(tile: WebHomepageL2CategoryTile, index: number): string {
   return `homepage-l2-tile-${index}`;
 }
 
-function normalizeViewAllHref(slug: string | null | undefined): string {
-  const trimmed = slug?.trim();
-  if (!trimmed) return "/c/explore-catalog";
-  if (trimmed.startsWith("/")) return trimmed;
-  return `/c/${encodeURIComponent(trimmed)}`;
+function normalizeViewAllHref(slug: string | null | undefined): string | undefined {
+  return normalizeCmsSlugHref(slug) ?? normalizeCmsDeeplink(slug) ?? undefined;
+}
+
+function resolveTileHref(
+  tile: WebHomepageL2CategoryTile,
+  categorySlug: string | undefined,
+  viewAllHref: string,
+): string {
+  const deeplink = normalizeCmsDeeplink(tile.deeplink);
+  if (deeplink) return deeplink;
+  if (categorySlug) return `/c/${categorySlug}`;
+  return viewAllHref;
 }
 
 /**
@@ -83,15 +100,17 @@ export async function buildHomepageL2CategoryTileItems(
   options: { preferMobileImages?: boolean } = {},
 ): Promise<HomeCategoryTileItem[]> {
   const l2 = homepage.l2_category;
-  const rawTiles = l2?.l2_category_tile ?? [];
+  if (!l2 || !isCmsActive(l2.is_active)) return [];
+
+  const rawTiles = l2.l2_category_tile ?? [];
   if (rawTiles.length === 0) return [];
 
   const limit =
     l2?.limit && l2.limit > 0 ? l2.limit : rawTiles.length;
-  const viewAllHref = normalizeViewAllHref(l2?.slug);
+  const viewAllHref = normalizeViewAllHref(l2?.slug) ?? "";
 
   const sorted = [...rawTiles]
-    .filter((tile) => tile.is_active !== false)
+    .filter((tile) => isCmsActive(tile.is_active))
     .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
     .slice(0, limit);
 
@@ -106,35 +125,42 @@ export async function buildHomepageL2CategoryTileItems(
     if (!imageSrc) return [];
 
     const category = resolveTileCategory(tile, lookup);
-    if (category) {
-      return [
-        {
-          key: tileKey(tile, index),
-          name: category.name,
-          imageSrc,
-          href: `/c/${category.slug}`,
-        },
-      ];
-    }
+    const displayName = tileLabel(tile) ?? category?.name;
+    if (!displayName) return [];
+
+    const href = resolveTileHref(tile, category?.slug, viewAllHref);
+    if (!href) return [];
 
     return [
       {
         key: tileKey(tile, index),
-        name: "Explore",
+        name: displayName,
         imageSrc,
-        href: viewAllHref,
+        href,
       },
     ];
   });
 }
 
+/** When CMS sends `l2_category.is_active: false`, the whole rail is hidden. */
+export function isHomepageL2CategorySectionEnabled(
+  homepage: WebHomepageContent,
+): boolean {
+  const l2 = homepage.l2_category;
+  if (!l2) return false;
+  return isCmsActive(l2.is_active);
+}
+
 export function hasHomepageL2CategoryTiles(
   homepage: WebHomepageContent,
 ): boolean {
-  const tiles = homepage.l2_category?.l2_category_tile ?? [];
+  const l2 = homepage.l2_category;
+  if (!l2 || !isCmsActive(l2.is_active)) return false;
+
+  const tiles = l2.l2_category_tile ?? [];
   return tiles.some(
     (tile) =>
-      tile.is_active !== false &&
+      isCmsActive(tile.is_active) &&
       Boolean(
         tile.image_web?.trim() ||
           tile.iamge_mweb?.trim() ||
