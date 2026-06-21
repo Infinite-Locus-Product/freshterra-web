@@ -32,6 +32,7 @@ describe("buildHomepageL2CategoryTileItems", () => {
       l2_category: {
         limit: 10,
         slug: "/categories",
+        is_active: true,
         l2_category_tile: [
           {
             id: 220,
@@ -61,21 +62,22 @@ describe("buildHomepageL2CategoryTileItems", () => {
         key: "Q2F0ZWdvcnk6Mw==",
         name: "Fruits & Vegetables",
         imageSrc: "https://cms-stg.freshterra.in/uploads/fruits-web.png",
-        href: "/category/fruits-vegetable",
+        href: "/c/fruits-vegetable",
       },
       {
         key: "dairy-breads-eggs",
         name: "Dairy Breads Eggs",
         imageSrc: "https://cms-stg.freshterra.in/uploads/dairy-web.png",
-        href: "/category/dairy-breads-eggs",
+        href: "/c/dairy-breads-eggs",
       },
     ]);
   });
 
-  it("includes image-only tiles without Saleor metadata", async () => {
+  it("skips image-only tiles without a label or Saleor category", async () => {
     const items = await buildHomepageL2CategoryTileItems({
       l2_category: {
         slug: "/categories",
+        is_active: true,
         l2_category_tile: [
           {
             id: 222,
@@ -89,14 +91,7 @@ describe("buildHomepageL2CategoryTileItems", () => {
       },
     });
 
-    expect(items).toEqual([
-      {
-        key: "222",
-        name: "Explore",
-        imageSrc: "https://cms-stg.freshterra.in/uploads/snacks.png",
-        href: "/categories",
-      },
-    ]);
+    expect(items).toEqual([]);
     expect(mockBuildCategoryLookup).not.toHaveBeenCalled();
   });
 });
@@ -106,91 +101,91 @@ describe("resolveHomepageCategoryItems", () => {
     vi.clearAllMocks();
   });
 
-  it("prefers homepage l2_category_tile over web-category-page", async () => {
+  it("returns homepage l2_category_tile items only", async () => {
     mockBuildCategoryLookup.mockResolvedValue({});
 
-    const items = await resolveHomepageCategoryItems(
-      {
-        l2_category: {
-          l2_category_tile: [
-            {
-              image_web: "https://cms-stg.freshterra.in/uploads/tile.png",
-              saleor_category_slug: "snacks",
-              is_active: true,
-              position: 1,
-            },
-          ],
-        },
-      },
-      {
-        sections: [
+    const items = await resolveHomepageCategoryItems({
+      l2_category: {
+        is_active: true,
+        l2_category_tile: [
           {
-            saleorCategoryId: "x",
-            name: "Should not be used",
-            slug: "ignored",
-            tagline: "",
+            image_web: "https://cms-stg.freshterra.in/uploads/tile.png",
+            saleor_category_slug: "snacks",
+            is_active: true,
             position: 1,
-            tiles: [],
           },
         ],
       },
-    );
+    });
 
     expect(items).toHaveLength(1);
-    expect(items[0]?.href).toBe("/category/snacks");
+    expect(items[0]?.href).toBe("/c/snacks");
   });
 
-  it("returns empty when category page has no sections and no homepage tiles", async () => {
-    const items = await resolveHomepageCategoryItems(
-      { l2_category: { limit: 7 } },
-      { sections: [] },
-    );
+  it("uses tile deeplink when provided by CMS", async () => {
+    mockBuildCategoryLookup.mockResolvedValue({});
+
+    const items = await buildHomepageL2CategoryTileItems({
+      l2_category: {
+        is_active: true,
+        l2_category_tile: [
+          {
+            image_web: "https://cms-stg.freshterra.in/uploads/tile.png",
+            saleor_category_slug: "fruits-vegetable",
+            deeplink: "/category/fruits-vegetable",
+            is_active: true,
+          },
+        ],
+      },
+    });
+
+    expect(items[0]?.href).toBe("/category/fruits-vegetable");
+  });
+
+  it("hides inactive tiles and inactive l2 sections", async () => {
+    expect(
+      await buildHomepageL2CategoryTileItems({
+        l2_category: { is_active: false, l2_category_tile: [] },
+      }),
+    ).toEqual([]);
+
+    const items = await buildHomepageL2CategoryTileItems({
+      l2_category: {
+        is_active: true,
+        l2_category_tile: [
+          {
+            image_web: "https://cms-stg.freshterra.in/uploads/active.png",
+            saleor_category_slug: "snacks",
+            is_active: true,
+          },
+          {
+            image_web: "https://cms-stg.freshterra.in/uploads/inactive.png",
+            saleor_category_slug: "ignored",
+            is_active: false,
+          },
+        ],
+      },
+    });
+
+    expect(items).toHaveLength(1);
+  });
+
+  it("returns empty when l2_category is inactive", async () => {
+    const items = await resolveHomepageCategoryItems({
+      l2_category: {
+        is_active: false,
+        title: "Categories",
+        l2_category_tile: [],
+      },
+    });
+
     expect(items).toEqual([]);
     expect(mockBuildCategoryLookup).not.toHaveBeenCalled();
   });
 
-  it("maps curated tiles with Saleor lookup enrichment from web-category-page", async () => {
-    mockBuildCategoryLookup.mockResolvedValue({
-      "Q2F0ZWdvcnk6NA==": {
-        id: "Q2F0ZWdvcnk6NA==",
-        name: "Fruits",
-        slug: "fruits",
-      },
-    });
-
-    const items = await resolveHomepageCategoryItems(
-      { l2_category: { limit: 5 } },
-      {
-        sections: [
-          {
-            saleorCategoryId: "Q2F0ZWdvcnk6Mw==",
-            name: "Fruits and Vegetables",
-            slug: "fruits-vegetables",
-            tagline: "Fresh from the farm",
-            position: 1,
-            tiles: [
-              {
-                saleorCategoryId: "Q2F0ZWdvcnk6NA==",
-                name: "",
-                slug: "",
-                imageWeb: "https://cms-stg.freshterra.in/uploads/fruits.png",
-                imageMweb: "",
-                position: 1,
-              },
-            ],
-          },
-        ],
-      },
-    );
-
-    expect(items).toEqual([
-      {
-        key: "Q2F0ZWdvcnk6NA==",
-        name: "Fruits",
-        imageSrc: "https://cms-stg.freshterra.in/uploads/fruits.png",
-        href: "/category/fruits",
-      },
-    ]);
+  it("returns empty when l2_category is absent", async () => {
+    const items = await resolveHomepageCategoryItems({});
+    expect(items).toEqual([]);
   });
 });
 
@@ -199,6 +194,7 @@ describe("hasHomepageL2CategoryTiles", () => {
     expect(
       hasHomepageL2CategoryTiles({
         l2_category: {
+          is_active: true,
           l2_category_tile: [
             {
               image_web: "https://cms-stg.freshterra.in/uploads/tile.png",

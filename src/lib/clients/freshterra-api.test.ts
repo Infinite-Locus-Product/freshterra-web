@@ -41,6 +41,35 @@ describe("apiFetch", () => {
     expect(result).toEqual({ value: 42 });
   });
 
+  it("passes Next.js cache options on the server", async () => {
+    const fetchSpy = vi.fn(async () => jsonResponse(successEnvelope({})));
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    const windowDescriptor = Object.getOwnPropertyDescriptor(globalThis, "window");
+    Object.defineProperty(globalThis, "window", { value: undefined });
+
+    try {
+      await apiFetch("/api/v1/content/single/web-homepage", {
+        next: {
+          tags: ["cms:web-homepage", "cms:home"],
+          revalidate: 600,
+        },
+      });
+    } finally {
+      if (windowDescriptor) {
+        Object.defineProperty(globalThis, "window", windowDescriptor);
+      }
+    }
+
+    const [, init] = fetchSpy.mock.calls[0] as unknown as [
+      string,
+      RequestInit & { next?: { tags: string[]; revalidate: number } },
+    ];
+    expect(init.next).toEqual({
+      tags: ["cms:web-homepage", "cms:home"],
+      revalidate: 600,
+    });
+  });
+
   it("builds the URL with base + path + query params", async () => {
     const fetchSpy = vi.fn(async () => jsonResponse(successEnvelope({})));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;

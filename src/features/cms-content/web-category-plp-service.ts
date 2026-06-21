@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { cmsBoolSchema } from "./cms-boolean";
 import { getContentEntry } from "./content-entry-service";
 
 const cmsString = z.string().nullable().optional();
@@ -10,7 +11,7 @@ const webCategoryPlpHeroBannerSchema = z
     hero_image_mweb: cmsString,
     heading: cmsString,
     tagline: cmsString,
-    is_active: z.boolean().nullable().optional(),
+    is_active: cmsBoolSchema,
   })
   .catchall(z.unknown());
 
@@ -18,8 +19,9 @@ const webCategoryPlpL4TabSchema = z
   .object({
     l4_category_id: cmsString,
     l4_category_slug: cmsString,
+    label: cmsString,
     position: z.number().nullable().optional(),
-    is_active: z.boolean().nullable().optional(),
+    is_active: cmsBoolSchema,
     hero_banner: z.array(webCategoryPlpHeroBannerSchema).default([]),
   })
   .catchall(z.unknown());

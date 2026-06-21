@@ -145,8 +145,6 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
               </>
             );
 
-            const heading = slide.heading ?? slide.imageAlt;
-
             return (
               <div
                 key={`${slide.id}-${index}`}
@@ -160,9 +158,9 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
                 ) : (
                   imageBlock
                 )}
-                {heading ? (
+                {slide.heading ? (
                   <div className={homeHeroBannerHeadingWrapClass}>
-                    <p className={homeHeroBannerHeadingClass}>{heading}</p>
+                    <p className={homeHeroBannerHeadingClass}>{slide.heading}</p>
                   </div>
                 ) : null}
               </div>

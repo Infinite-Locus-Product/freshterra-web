@@ -1,12 +1,13 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
-import { homePageDraftContent } from "@/features/cms-content/homepage";
+import {
+  CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS,
+  CMS_WEB_HOMEPAGE_TAGS,
+} from "./cms-cache-tags";
 
 import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
-import { hasHomepageL2CategoryTiles } from "./homepage-l2-category-tiles";
 import { mapWebHomepageContent } from "./web-homepage-mapper";
 import { getSingleContent } from "./single-content-service";
-import { getWebCategoryPage } from "./web-category-page-service";
 
 import {
   webHomepageContentSchema,
@@ -28,30 +29,21 @@ export async function getWebHomepageContent(
   return getSingleContent<WebHomepageContent>(
     WEB_HOMEPAGE_CONTENT_TYPE,
     params,
-    { schema: webHomepageContentSchema },
+    {
+      schema: webHomepageContentSchema,
+      next: {
+        tags: [...CMS_WEB_HOMEPAGE_TAGS],
+        revalidate: CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS,
+      },
+    },
   );
 }
 
-/**
- * Server-side fetch with graceful fallback to static draft content.
- */
 async function enrichHomepageCategories(
   entry: WebHomepageContent,
   content: HomePageContent,
 ): Promise<HomePageContent> {
-  let categoryPage = null;
-  if (!hasHomepageL2CategoryTiles(entry)) {
-    try {
-      categoryPage = await getWebCategoryPage();
-    } catch (error) {
-      console.warn(
-        "[web-homepage] web-category-page fetch failed; categories rail omitted:",
-        error instanceof Error ? error.message : error,
-      );
-    }
-  }
-
-  const items = await resolveHomepageCategoryItems(entry, categoryPage);
+  const items = await resolveHomepageCategoryItems(entry);
   return {
     ...content,
     categories: {
@@ -71,10 +63,10 @@ export async function fetchWebHomepageContentSafe(
   } catch (error) {
     if (!(error instanceof FreshTerraApiError && error.code === "NOT_FOUND")) {
       console.warn(
-        "[web-homepage] fetch failed; using static fallback:",
+        "[web-homepage] fetch failed; rendering empty homepage:",
         error instanceof Error ? error.message : error,
       );
     }
-    return mapWebHomepageContent({}, homePageDraftContent);
+    return mapWebHomepageContent({});
   }
 }

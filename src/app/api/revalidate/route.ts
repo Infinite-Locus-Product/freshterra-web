@@ -1,7 +1,8 @@
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { isHomepageCmsCacheTag } from "@/features/cms-content/cms-cache-tags";
 import { env } from "@/lib/config/env";
 
 /**
@@ -19,7 +20,20 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json().catch(() => ({}))) as { tags?: string[] };
   const tags = Array.isArray(body.tags) ? body.tags : [];
-  for (const tag of tags) revalidateTag(tag);
+  let revalidatedHomepage = false;
 
-  return NextResponse.json({ ok: true, revalidated: tags });
+  for (const tag of tags) {
+    revalidateTag(tag);
+    if (isHomepageCmsCacheTag(tag)) revalidatedHomepage = true;
+  }
+
+  if (revalidatedHomepage) {
+    revalidatePath("/");
+  }
+
+  return NextResponse.json({
+    ok: true,
+    revalidated: tags,
+    paths: revalidatedHomepage ? ["/"] : [],
+  });
 }

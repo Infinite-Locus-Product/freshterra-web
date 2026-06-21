@@ -1,6 +1,9 @@
 import { z, type ZodType } from "zod";
 
-import { apiFetch } from "@/lib/clients/freshterra-api";
+import {
+  apiFetch,
+  type ApiFetchNextOptions,
+} from "@/lib/clients/freshterra-api";
 
 import {
   contentEntryDataSchema,
@@ -29,6 +32,8 @@ export interface ContentEntryRequestOptions<T> {
    * {@link contentEntryDataSchema} (common fields + passthrough).
    */
   schema?: ZodType<T>;
+  /** Next.js Data Cache options for server-side GET requests. */
+  next?: ApiFetchNextOptions;
 }
 
 /**
@@ -74,6 +79,7 @@ export async function getContentEntry<T = ContentEntry>(
       signal: options.signal,
       token: options.token,
       schema,
+      next: options.next,
     },
   );
 }

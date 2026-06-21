@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { homePageDraftContent } from "@/features/cms-content/homepage";
-
 import { mapWebHomepageContent } from "./web-homepage-mapper";
 import { webHomepageContentSchema } from "./web-homepage-types";
 
@@ -22,6 +20,7 @@ describe("mapWebHomepageContent", () => {
         title: "Categories ",
         tagline: "Explore our entire selection",
         slug: "/categories",
+        is_active: true,
       },
       source: {
         section_heading: "How We Source",
@@ -30,6 +29,7 @@ describe("mapWebHomepageContent", () => {
         read_more_label: "Read more",
         editorial_image: "https://cms-stg.freshterra.in/uploads/editorial.png",
         background_image: "https://cms-stg.freshterra.in/uploads/bg.png",
+        is_active: true,
       },
       stories: [
         {
@@ -107,12 +107,47 @@ describe("mapWebHomepageContent", () => {
     expect(content.heroSlides[0]?.href).toBe("/collection/summer");
   });
 
-  it("falls back to draft content when CMS fields are absent", () => {
-    const content = mapWebHomepageContent({}, homePageDraftContent);
+  it("returns empty sections when CMS fields are absent", () => {
+    const content = mapWebHomepageContent({});
 
     expect(content.heroSlides).toHaveLength(0);
-    expect(content.categories.title).toBe(homePageDraftContent.categories.title);
+    expect(content.categories.title).toBe("");
+    expect(content.sourcing.title).toBe("");
     expect(content.testimonials.items).toEqual([]);
+    expect(content.store.name).toBe("");
+  });
+
+  it("omits hero headline when CMS banner heading is empty", () => {
+    const content = mapWebHomepageContent({
+      web_herosection: [
+        {
+          image: "https://cms-stg.freshterra.in/uploads/Banner_web.png",
+          iamge_mweb: "https://cms-stg.freshterra.in/uploads/Banner_mweb.png",
+          heading: null,
+          is_active: true,
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.heroSlides[0]?.heading).toBeUndefined();
+    expect(content.heroSlides[0]?.imageAlt).toBe("");
+    expect(content.hero.headline).toBe("");
+  });
+
+  it("hides categories section copy when l2_category is inactive", () => {
+    const content = mapWebHomepageContent({
+      l2_category: {
+        title: "Categories",
+        tagline: "Explore our entire selection",
+        slug: "/categories",
+        is_active: false,
+      },
+    });
+
+    expect(content.categories.title).toBe("");
+    expect(content.categories.subtitle).toBe("");
+    expect(content.categories.items).toEqual([]);
   });
 
   it("parses staging BFF payload with null section fields and maps hero + store banner", () => {
@@ -159,6 +194,57 @@ describe("mapWebHomepageContent", () => {
     expect(content.heroSlides[0]?.imageMobile).toContain("Banner_10ea13ed1e");
     expect(content.testimonials.items).toEqual([]);
     expect(content.store.mediaImage).toContain("Button_3ef39d5db6");
+    expect(content.store.primaryCtaLabel).toBe("View Store");
+    expect(content.store.primaryCtaHref).toBe("/stores");
+    expect(content.store.secondaryCtaLabel).toBe("Locate Us");
+    expect(content.store.secondaryCtaHref).toContain("google.com/maps/search");
+  });
+
+  it("maps view_store_slug to a store page route", () => {
+    const content = mapWebHomepageContent({
+      our_store: [
+        {
+          view_store_cta: "View Store",
+          view_store_slug: "freshterra-gurugram",
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.store.primaryCtaHref).toBe("/stores/freshterra-gurugram");
+  });
+
+  it("uses Strapi slug paths for view store and locate us CTAs", () => {
+    const content = mapWebHomepageContent({
+      our_store: [
+        {
+          store_address: "Golf Course Road, Sector 5\n",
+          view_store_cta: "View Store",
+          view_store_slug: "/stores",
+          locate_us_cta: "Locate Us",
+          locate_us_url: "/stores",
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.store.primaryCtaHref).toBe("/stores");
+    expect(content.store.secondaryCtaHref).toBe("/stores");
+  });
+
+  it("prefers locate_us_slug over locate_us_url when both are set", () => {
+    const content = mapWebHomepageContent({
+      our_store: [
+        {
+          locate_us_cta: "Locate Us",
+          locate_us_slug: "/stores/freshterra-gurugram",
+          locate_us_url: "/stores",
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.store.secondaryCtaHref).toBe("/stores/freshterra-gurugram");
   });
 
   it("accepts null Strapi section fields in the BFF schema", () => {

@@ -20,7 +20,7 @@ export function HeaderLocationBadge({ children, className }: HeaderLocationBadge
   return (
     <div className={cn(headerLocationBadgeClass, className)}>
       <Image
-        src="/Icon.svg"
+        src="/header-location.svg"
         alt=""
         aria-hidden
         width={24}
