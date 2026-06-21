@@ -41,5 +41,6 @@ export async function getSingleContent<T = ContentEntry>(
     signal: options.signal,
     token: options.token,
     schema,
+    next: options.next,
   });
 }

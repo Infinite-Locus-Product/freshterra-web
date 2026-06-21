@@ -1,17 +1,5 @@
-import Image from "next/image";
-
-import { dummyImages } from "@/lib/dummy-images";
-
 import {
-  homeHeroBannerDotActiveClass,
-  homeHeroBannerDotInactiveClass,
-  homeHeroBannerDotsClass,
-  homeHeroBannerHeadingClass,
   homeHeroBannerHeaderGapClass,
-  homeHeroBannerHeadingWrapClass,
-  homeHeroBannerImageClass,
-  homeHeroBannerOuterClass,
-  homeHeroBannerShellClass,
   homeHeroHeaderSectionClass,
   homeHeroHeaderShellClass,
   homeHeroHeaderFadeClass,
@@ -45,6 +33,11 @@ export function HomepageLayout({ content }: Readonly<HomepageLayoutProps>) {
 
 function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
   const hasCmsHero = content.heroSlides.length > 0;
+  const tagline = content.hero.eyebrow.trim() || undefined;
+  const downloadLabel = content.hero.ctaLabel.trim() || undefined;
+  const locationLabel = content.nav.locationLabel.trim() || undefined;
+  const navLinks =
+    content.nav.links.length > 0 ? content.nav.links : undefined;
 
   return (
     <section className={homeHeroHeaderSectionClass}>
@@ -53,11 +46,11 @@ function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
           embedded
           bannerFullBleed
           className="relative z-10 bg-transparent"
-          tagline={content.hero.eyebrow}
+          tagline={tagline}
           taglineAs="h1"
-          locationLabel={content.nav.locationLabel}
-          navLinks={content.nav.links}
-          downloadLabel={content.hero.ctaLabel}
+          locationLabel={locationLabel}
+          navLinks={navLinks}
+          downloadLabel={downloadLabel}
         />
         <div aria-hidden className={homeHeroHeaderFadeClass} />
       </div>
@@ -67,41 +60,7 @@ function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
           slides={content.heroSlides}
           className={homeHeroBannerHeaderGapClass}
         />
-      ) : (
-        <div
-          className={`${homeHeroBannerShellClass} ${homeHeroBannerHeaderGapClass}`}
-        >
-          <div className={homeHeroBannerOuterClass}>
-            <Image
-              src={dummyImages.homeHeroBanner.src}
-              alt={content.hero.headline}
-              fill
-              priority
-              className={homeHeroBannerImageClass}
-              sizes="100vw"
-            />
-            {content.hero.headline ? (
-              <div className={homeHeroBannerHeadingWrapClass}>
-                <p className={homeHeroBannerHeadingClass}>
-                  {content.hero.headline}
-                </p>
-              </div>
-            ) : null}
-            <div className={homeHeroBannerDotsClass} aria-hidden>
-              {[0, 1, 2, 3].map((dot) => (
-                <span
-                  key={dot}
-                  className={
-                    dot === 0
-                      ? homeHeroBannerDotActiveClass
-                      : homeHeroBannerDotInactiveClass
-                  }
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      ) : null}
     </section>
   );
 }

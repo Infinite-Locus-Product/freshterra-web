@@ -3,8 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { dummyImages } from "@/lib/dummy-images";
 import { useWebCategoryPlp } from "@/features/cms-content/useWebCategoryPlp";
+import {
+  buildPlpTabHref,
+  findAllL4Tab,
+  mapPlpL4Tabs,
+  mapPlpL4TabsToPlpTabs,
+  resolvePlpActiveTabValue,
+  resolvePlpBannerForTab,
+  resolvePlpProductSlug,
+} from "@/features/cms-content/web-category-plp-mapper";
 
 import { resolveListingTitle } from "../plp-listing-meta";
 import { useCategoryProducts } from "../useCategoryProducts";
@@ -14,29 +22,6 @@ import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 import type { CategoryFacets, CategorySort } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
 import type { SortOption } from "./PlpSortMenu";
-
-/**
- * Placeholder hero banner for the category PLP. The real content lives in the
- * Strapi `web-category-plp` single type, but the BFF doesn't expose a working
- * route yet (`/content/(single|categories)/web-category-plp` → NOT_FOUND).
- * Swap this for the CMS fetch once that endpoint lands.
- */
-const PLACEHOLDER_BANNER: PlpBanner = {
-  imageSrc: dummyImages.exploreCatalogBanner.src,
-};
-
-/**
- * Placeholder quick-filter tabs, used only when the API returns no tag facets.
- * Real facets from the API take precedence.
- */
-const PLACEHOLDER_TABS: PlpTab[] = [
-  { label: "All", value: "all" },
-  { label: "Bestsellers", value: "bestsellers" },
-  { label: "Organic", value: "organic" },
-  { label: "Seasonal", value: "seasonal" },
-  { label: "Leafy Greens", value: "leafy-greens" },
-  { label: "Root", value: "root" },
-];
 
 const SORT_OPTIONS: SortOption<CategorySort>[] = [
   { value: "relevance", label: "Relevance" },
@@ -62,7 +47,6 @@ function singularToken(value: string): string {
   return normalized.endsWith("s") ? normalized.slice(0, -1) : normalized;
 }
 
-/** Build filter groups from the category's `{ value, count }` facets. */
 function facetsToGroups(facets: CategoryFacets): PlpFilterGroup[] {
   return Object.entries(facets).map(([key, values]) => ({
     key,
@@ -75,7 +59,6 @@ function facetsToGroups(facets: CategoryFacets): PlpFilterGroup[] {
   }));
 }
 
-/** Quick-filter tabs derived from API tag facets only. */
 function facetsToTabs(facets: CategoryFacets): PlpTab[] | undefined {
   const tags = facets.tags;
   if (!tags?.length) return undefined;
@@ -90,15 +73,9 @@ function facetsToTabs(facets: CategoryFacets): PlpTab[] | undefined {
 
 type CategoryPlpViewProps = {
   slug: string;
-  /** Optional polygon scoping (category pricing/stock; not required). */
   polygonId?: string;
 };
 
-/**
- * Connects the category PLP API (`/api/v1/categories/:slug/products`) to the
- * presentational PLP. Title, tabs, and filters come from the API — no slug
- * placeholders or dummy banner content.
- */
 export function CategoryPlpView({
   slug,
   polygonId,
@@ -109,58 +86,92 @@ export function CategoryPlpView({
   const [sort, setSort] = useState<CategorySort>("price_asc");
   const [selections, setSelections] = useState<FilterSelections>({});
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [pendingL4Tab, setPendingL4Tab] = useState<string | null>(null);
+
+  const {
+    content: plpCms,
+    parentSlug: resolvedParentSlug,
+    loading: plpLoading,
+  } = useWebCategoryPlp({
+    categorySlug: slug,
+    parentSlug: parentFromQuery || undefined,
+  });
+
+  const parentSlug = resolvedParentSlug ?? parentFromQuery ?? slug;
+
+  const l4Tabs = useMemo(
+    () => (plpCms ? mapPlpL4Tabs(plpCms, parentSlug) : []),
+    [plpCms, parentSlug],
+  );
+
+  const cmsTabs = useMemo(
+    () => (l4Tabs.length > 0 ? mapPlpL4TabsToPlpTabs(l4Tabs) : undefined),
+    [l4Tabs],
+  );
+
+  const allL4TabValue = useMemo(
+    () => findAllL4Tab(l4Tabs)?.value ?? null,
+    [l4Tabs],
+  );
+
+  const routeActiveTab = useMemo(() => {
+    if (l4Tabs.length === 0) return null;
+    return resolvePlpActiveTabValue(slug, parentSlug, l4Tabs);
+  }, [l4Tabs, parentSlug, slug]);
+
+  const effectiveL4Tab =
+    pendingL4Tab ?? routeActiveTab ?? allL4TabValue ?? l4Tabs[0]?.value ?? "";
+
+  const productSlug = useMemo(() => {
+    if (l4Tabs.length === 0) return slug;
+    return resolvePlpProductSlug(slug, l4Tabs, effectiveL4Tab);
+  }, [effectiveL4Tab, l4Tabs, slug]);
+
   const baseCtrl = useCategoryProducts({
-    slug,
+    slug: productSlug,
     polygonId,
     sort,
     filters: undefined,
   });
-  const plpConfigSlug = parentFromQuery || slug;
-  const { content: plpCms } = useWebCategoryPlp({ slug: plpConfigSlug });
-
-  const cmsTabs = useMemo<PlpTab[] | undefined>(() => {
-    if (!plpCms?.l4_tab?.length) return undefined;
-    const items = [...plpCms.l4_tab]
-      .filter((tab) => tab.is_active !== false)
-      .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
-      .map((tab) => {
-        const label = tab.l4_category_id?.trim();
-        if (!label) return null;
-        const value =
-          tab.l4_category_slug?.trim() ||
-          (label.toLowerCase() === "all" ? "all" : label.toLowerCase());
-        return { label, value };
-      })
-      .filter((tab): tab is PlpTab => tab !== null);
-
-    return items.length > 0 ? items : undefined;
-  }, [plpCms]);
 
   const tabs = useMemo(() => {
     if (cmsTabs?.length) return cmsTabs;
-    return facetsToTabs(baseCtrl.facets) ?? PLACEHOLDER_TABS;
+    return facetsToTabs(baseCtrl.facets);
   }, [cmsTabs, baseCtrl.facets]);
 
-  const cmsSlugByTabValue = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const tab of plpCms?.l4_tab ?? []) {
-      if (tab.is_active === false) continue;
-      const value =
-        tab.l4_category_slug?.trim() ||
-        (tab.l4_category_id?.trim().toLowerCase() === "all" ? "all" : "");
-      const nextSlug = tab.l4_category_slug?.trim();
-      if (value && nextSlug) map.set(value, nextSlug);
-    }
-    return map;
-  }, [plpCms]);
+  useEffect(() => {
+    if (!plpCms || parentFromQuery || !resolvedParentSlug) return;
+    if (resolvedParentSlug === slug) return;
+    if (l4Tabs.every((tab) => tab.targetSlug !== slug)) return;
 
-  const parentSlug = useMemo(() => {
-    if (parentFromQuery) return parentFromQuery;
-    const fromCms = plpCms?.slug?.trim();
-    return fromCms || slug;
-  }, [parentFromQuery, plpCms, slug]);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("parent", resolvedParentSlug);
+    router.replace(`/c/${slug}?${params.toString()}`);
+  }, [
+    l4Tabs,
+    parentFromQuery,
+    plpCms,
+    resolvedParentSlug,
+    router,
+    searchParams,
+    slug,
+  ]);
 
   useEffect(() => {
+    setPendingL4Tab(null);
+  }, [slug]);
+
+  useEffect(() => {
+    if (pendingL4Tab && routeActiveTab === pendingL4Tab) {
+      setPendingL4Tab(null);
+    }
+  }, [pendingL4Tab, routeActiveTab]);
+
+  useEffect(() => {
+    if (l4Tabs.length > 0) return;
+
+    if (!tabs?.length) return;
+
     const match = tabs.find((tab) => tab.value === slug);
     if (match) {
       setActiveTab(match.value);
@@ -169,10 +180,12 @@ export function CategoryPlpView({
     if (slug === parentSlug) {
       setActiveTab("all");
     }
-  }, [tabs, slug, parentSlug]);
+  }, [l4Tabs.length, parentSlug, slug, tabs]);
 
   const resolvedActiveTag = useMemo(() => {
+    if (l4Tabs.length > 0) return undefined;
     if (activeTab === "all") return undefined;
+    if (!tabs?.length) return undefined;
 
     const selectedTab = tabs.find((tab) => tab.value === activeTab);
     const candidates = [activeTab, selectedTab?.label ?? "", selectedTab?.value ?? ""]
@@ -200,7 +213,7 @@ export function CategoryPlpView({
     });
 
     return mapped?.value ?? activeTab;
-  }, [activeTab, tabs, baseCtrl.facets.tags]);
+  }, [activeTab, baseCtrl.facets.tags, l4Tabs.length, tabs]);
 
   const filters = useMemo(() => {
     const base: Record<string, unknown> = {};
@@ -211,33 +224,21 @@ export function CategoryPlpView({
     return Object.keys(base).length > 0 ? base : undefined;
   }, [selections, resolvedActiveTag]);
 
-  const ctrl = useCategoryProducts({ slug, polygonId, sort, filters });
+  const ctrl = useCategoryProducts({ slug: productSlug, polygonId, sort, filters });
 
   const filterGroups = useMemo(
     () => facetsToGroups(ctrl.facets),
     [ctrl.facets],
   );
 
-  const banner = useMemo<PlpBanner>(() => {
-    if (!plpCms?.l4_tab?.length) return PLACEHOLDER_BANNER;
-    const activeConfig =
-      plpCms.l4_tab.find((tab) => {
-        if (tab.is_active === false) return false;
-        const value =
-          tab.l4_category_slug?.trim() ||
-          (tab.l4_category_id?.trim().toLowerCase() === "all" ? "all" : "");
-        return value === activeTab;
-      }) ??
-      plpCms.l4_tab.find(
-        (tab) =>
-          tab.is_active !== false &&
-          tab.l4_category_id?.trim().toLowerCase() === "all",
-      );
-
-    const hero = activeConfig?.hero_banner?.find((item) => item.is_active !== false);
-    const imageSrc = hero?.hero_image_web?.trim() || hero?.hero_image_mweb?.trim();
-    return imageSrc ? { imageSrc } : PLACEHOLDER_BANNER;
-  }, [plpCms, activeTab]);
+  const banner = useMemo<PlpBanner | undefined>(() => {
+    if (!plpCms?.l4_tab?.length) return undefined;
+    return resolvePlpBannerForTab(
+      plpCms,
+      l4Tabs.length > 0 ? effectiveL4Tab : activeTab,
+      parentSlug,
+    );
+  }, [activeTab, effectiveL4Tab, l4Tabs.length, parentSlug, plpCms]);
 
   const title = useMemo(
     () =>
@@ -260,27 +261,36 @@ export function CategoryPlpView({
   return (
     <PlpView
       title={title}
-      titleLoading={ctrl.loading && !title}
+      titleLoading={(ctrl.loading || plpLoading) && !title}
       breadcrumbs={breadcrumbs}
       banner={banner}
       tabs={tabs}
-      activeTab={activeTab}
+      activeTab={l4Tabs.length > 0 ? effectiveL4Tab : activeTab}
       onTabChange={(nextTab) => {
-        setActiveTab(nextTab);
-        if (nextTab === "all") {
-          if (parentSlug !== slug) {
-            router.push(`/c/${parentSlug}`);
+        if (l4Tabs.length > 0) {
+          const target =
+            l4Tabs.find((tab) => tab.value === nextTab) ?? findAllL4Tab(l4Tabs);
+          if (!target) return;
+
+          setPendingL4Tab(nextTab);
+
+          if (target.isAll) {
+            return;
+          }
+
+          const href = buildPlpTabHref(target.targetSlug, parentSlug);
+          const query = searchParams.toString();
+          const currentHref = query ? `/c/${slug}?${query}` : `/c/${slug}`;
+          if (href !== currentHref) {
+            router.push(href);
           }
           return;
         }
 
-        const nextSlug = cmsSlugByTabValue.get(nextTab);
-        if (nextSlug && nextSlug !== slug) {
-          const params = new URLSearchParams();
-          if (parentSlug) params.set("parent", parentSlug);
-          const query = params.toString();
-          const nextHref = query ? `/c/${nextSlug}?${query}` : `/c/${nextSlug}`;
-          router.push(nextHref);
+        setActiveTab(nextTab);
+
+        if (nextTab === "all" && parentSlug !== slug) {
+          router.push(`/c/${parentSlug}`);
         }
       }}
       items={ctrl.items}

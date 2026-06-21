@@ -37,16 +37,18 @@ function CategoriesChevronIcon() {
 }
 
 /**
- * Homepage category rail — tiles from `web-homepage.l2_category.l2_category_tile`
- * or curated L3 tiles from `web-category-page`.
+ * Homepage category rail — tiles from `web-homepage.l2_category.l2_category_tile`.
  */
 export function HomeCategoriesSection({
   categories,
 }: HomeCategoriesSectionProps) {
-  const { title, subtitle, ctaLabel, viewAllHref = "/categories", items } =
-    categories;
+  const { title, subtitle, ctaLabel, viewAllHref, items } = categories;
 
-  if (!title.trim() && items.length === 0) {
+  if (
+    items.length === 0 &&
+    !title.trim() &&
+    !subtitle.trim()
+  ) {
     return null;
   }
 
@@ -62,7 +64,7 @@ export function HomeCategoriesSection({
               <p className={homeCategoriesSubtitleClass}>{subtitle}</p>
             ) : null}
           </div>
-          {viewAllHref ? (
+          {viewAllHref && ctaLabel.trim() ? (
             <Link
               href={viewAllHref}
               aria-label={ctaLabel}

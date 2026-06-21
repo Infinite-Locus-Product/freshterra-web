@@ -6,7 +6,7 @@ import { fetchWebHomepageContentSafe } from "@/features/cms-content/web-homepage
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
-/** ISR: re-fetch homepage CMS content every 10 min (matches the BFF cache). */
+/** ISR fallback (keep in sync with `CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS`). */
 export const revalidate = 600;
 
 export const metadata: Metadata = {

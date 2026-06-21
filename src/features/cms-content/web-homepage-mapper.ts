@@ -1,7 +1,10 @@
+import { isCmsActive } from "./cms-boolean";
 import {
-  homePageDraftContent,
-  type HomePageDraftContent,
-} from "@/features/cms-content/homepage";
+  buildGoogleMapsSearchUrl,
+  normalizeCmsDeeplink,
+  normalizeCmsSlugHref,
+  normalizeStoreHref,
+} from "./cms-href";
 
 import type {
   HomeHeroSlide,
@@ -22,6 +25,23 @@ type WebHomepageStory = z.infer<typeof webHomepageStorySchema>;
 type WebHomepageStore = z.infer<typeof webHomepageStoreSchema>;
 
 type UnknownRecord = Record<string, unknown>;
+
+const EMPTY_SOURCING: HomePageContent["sourcing"] = {
+  title: "",
+  subtitle: "",
+  mediaOverlay: "",
+  paragraphs: [],
+  ctaLabel: "",
+};
+
+const EMPTY_STORE: HomePageContent["store"] = {
+  title: "",
+  name: "",
+  addressLine1: "",
+  addressLine2: "",
+  primaryCtaLabel: "",
+  secondaryCtaLabel: "",
+};
 
 function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -71,20 +91,11 @@ function splitParagraphs(text: string): string[] {
 }
 
 function normalizeHref(slug: string | null | undefined): string | undefined {
-  if (!slug?.trim()) return undefined;
-  const trimmed = slug.trim();
-  if (trimmed.startsWith("/")) return trimmed;
-  return `/c/${encodeURIComponent(trimmed)}`;
+  return normalizeCmsSlugHref(slug);
 }
 
-/** Resolves CMS deeplink strings — absolute URLs, site paths, or category slugs. */
 function normalizeDeeplink(value: string | null | undefined): string | undefined {
-  if (!value?.trim()) return undefined;
-  const trimmed = value.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  if (trimmed.startsWith("/")) return trimmed;
-  if (trimmed.includes("/")) return `/${trimmed.replace(/^\/+/, "")}`;
-  return normalizeHref(trimmed);
+  return normalizeCmsDeeplink(value);
 }
 
 function readDeeplink(record: UnknownRecord): string {
@@ -120,7 +131,7 @@ function mapHeroSlide(raw: WebHomepageHero, index: number): HomeHeroSlide | null
     id,
     imageWeb: imageWeb || imageMobile,
     imageMobile: imageMobile || imageWeb,
-    imageAlt: heading || "FreshTerra promotion",
+    imageAlt: heading,
     ...(heading ? { heading } : {}),
     ...(href ? { href } : {}),
   };
@@ -136,34 +147,67 @@ function readNumber(record: UnknownRecord, ...keys: string[]): number {
 
 function mapStory(
   raw: WebHomepageStory,
-  index: number,
-  fallback: HomePageDraftContent["testimonials"]["items"][number],
 ): HomePageContent["testimonials"]["items"][number] | null {
   const record = raw as UnknownRecord;
   const name = readString(record, "customer_name", "name");
   const quote = readString(record, "quote");
-  const imageSrc =
-    readMediaUrl(record, "thumbnail_image_mweb", "thumbnail", "image") ||
-    fallback.imageSrc;
+  const imageSrc = readMediaUrl(record, "thumbnail_image_mweb", "thumbnail", "image");
   if (!name || !quote) return null;
 
   return {
     name,
-    ageLabel: readString(record, "customer_title", "ageLabel") || fallback.ageLabel,
+    ageLabel: readString(record, "customer_title", "ageLabel"),
     quote,
     imageSrc,
   };
 }
 
+function resolveViewStoreHref(
+  record: UnknownRecord,
+  hasPrimaryLabel: boolean,
+): string | undefined {
+  const slug = readString(record, "view_store_slug", "store_slug");
+  const fromSlug = normalizeStoreHref(slug);
+  if (fromSlug) return fromSlug;
+
+  const deeplink = normalizeCmsDeeplink(
+    readString(record, "view_store_deeplink", "view_store_url"),
+  );
+  if (deeplink) return deeplink;
+
+  return hasPrimaryLabel ? "/stores" : undefined;
+}
+
+function resolveLocateUsHref(
+  record: UnknownRecord,
+  address: string,
+  hasSecondaryLabel: boolean,
+): string | undefined {
+  const slug = readString(record, "locate_us_slug");
+  const fromSlug =
+    normalizeStoreHref(slug) ?? normalizeCmsDeeplink(slug);
+  if (fromSlug) return fromSlug;
+
+  const explicit = normalizeCmsDeeplink(
+    readString(record, "locate_us_url", "locate_us_deeplink"),
+  );
+  if (explicit) return explicit;
+
+  if (!hasSecondaryLabel) return undefined;
+
+  const mapsQuery = address.replace(/\n+/g, ", ").trim();
+  return buildGoogleMapsSearchUrl(mapsQuery);
+}
+
 function mapStore(
   raw: WebHomepageStore,
-  fallback: HomePageDraftContent["store"],
+  sectionTitle: string,
 ): HomePageContent["store"] {
   const record = raw as UnknownRecord;
   const address = readString(record, "store_address");
-  const addressLines = address
-    ? splitParagraphs(address.replace(/\n/g, "\n"))
-    : [fallback.addressLine1, fallback.addressLine2];
+  const addressLines = address ? splitParagraphs(address.replace(/\n/g, "\n")) : [];
+  const primaryCtaLabel = readString(record, "view_store_cta");
+  const secondaryCtaLabel = readString(record, "locate_us_cta");
 
   const bannerEntry = Array.isArray(record.banner)
     ? (record.banner[0] as UnknownRecord | undefined)
@@ -174,35 +218,31 @@ function mapStore(
   const mediaImage = readMediaUrl(imageSource, "store_image");
   const mediaImageMobile =
     readMediaUrl(imageSource, "store_image_mweb") || mediaImage;
+  const primaryCtaHref = resolveViewStoreHref(record, Boolean(primaryCtaLabel));
+  const secondaryCtaHref = resolveLocateUsHref(
+    record,
+    address,
+    Boolean(secondaryCtaLabel),
+  );
 
   return {
-    title: fallback.title,
-    name: readString(record, "store_name") || fallback.name,
-    addressLine1: addressLines[0] ?? fallback.addressLine1,
-    addressLine2: addressLines[1] ?? fallback.addressLine2,
-    primaryCtaLabel:
-      readString(record, "view_store_cta") || fallback.primaryCtaLabel,
-    secondaryCtaLabel:
-      readString(record, "locate_us_cta") || fallback.secondaryCtaLabel,
-    primaryCtaHref:
-      normalizeHref(readString(record, "view_store_slug")) || "/stores",
-    ...(readString(record, "locate_us_url")
-      ? { secondaryCtaHref: readString(record, "locate_us_url") }
-      : {}),
+    title: sectionTitle,
+    name: readString(record, "store_name"),
+    addressLine1: addressLines[0] ?? "",
+    addressLine2: addressLines[1] ?? "",
+    primaryCtaLabel,
+    secondaryCtaLabel,
+    ...(primaryCtaHref ? { primaryCtaHref } : {}),
+    ...(secondaryCtaHref ? { secondaryCtaHref } : {}),
     ...(mediaImage ? { mediaImage } : {}),
     ...(mediaImageMobile ? { mediaImageMobile } : {}),
   };
 }
 
-function mapSource(
-  raw: WebHomepageSource,
-  fallback: HomePageDraftContent["sourcing"],
-): HomePageContent["sourcing"] {
+function mapSource(raw: WebHomepageSource): HomePageContent["sourcing"] {
   const record = raw as UnknownRecord;
   const description = readString(record, "description");
-  const paragraphs = description
-    ? splitParagraphs(description)
-    : [...fallback.paragraphs];
+  const paragraphs = description ? splitParagraphs(description) : [];
 
   const backgroundImage = readMediaUrl(record, "background_image");
   const backgroundImageMobile =
@@ -210,14 +250,15 @@ function mapSource(
   const mediaImage = readMediaUrl(record, "editorial_image");
   const mediaImageMobile =
     readMediaUrl(record, "editorial_image_mweb") || mediaImage;
+  const readMoreHref = normalizeHref(readString(record, "read_more_slug"));
 
   return {
-    title: readString(record, "section_heading") || fallback.title,
-    subtitle: fallback.subtitle,
-    mediaOverlay: fallback.mediaOverlay,
+    title: readString(record, "section_heading"),
+    subtitle: "",
+    mediaOverlay: "",
     paragraphs,
-    ctaLabel: readString(record, "read_more_label") || fallback.ctaLabel,
-    readMoreHref: normalizeHref(readString(record, "read_more_slug")),
+    ctaLabel: readString(record, "read_more_label"),
+    ...(readMoreHref ? { readMoreHref } : {}),
     ...(backgroundImage ? { backgroundImage } : {}),
     ...(backgroundImageMobile ? { backgroundImageMobile } : {}),
     ...(mediaImage ? { mediaImage } : {}),
@@ -225,30 +266,18 @@ function mapSource(
   };
 }
 
-/** Maps `web-homepage` CMS payload into the homepage view model. */
-export function mapWebHomepageContent(
-  input: WebHomepageContent,
-  fallback: HomePageDraftContent = homePageDraftContent,
-): HomePageContent {
+/** Maps `web-homepage` CMS payload into the homepage view model (CMS fields only). */
+export function mapWebHomepageContent(input: WebHomepageContent): HomePageContent {
   const heroSlides = (input.web_herosection ?? [])
-    .filter((slide) => slide.is_active !== false)
-    .sort(
-      (a, b) =>
-        (a.position ?? 0) - (b.position ?? 0),
-    )
+    .filter((slide) => isCmsActive(slide.is_active))
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     .map(mapHeroSlide)
     .filter((slide): slide is HomeHeroSlide => slide !== null);
 
   const stories = (input.stories ?? [])
-    .filter((story) => story.is_active !== false)
+    .filter((story) => isCmsActive(story.is_active))
     .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-    .map((story, index) =>
-      mapStory(
-        story,
-        index,
-        fallback.testimonials.items[index] ?? fallback.testimonials.items[0]!,
-      ),
-    )
+    .map(mapStory)
     .filter(
       (item): item is HomePageContent["testimonials"]["items"][number] =>
         item !== null,
@@ -259,53 +288,56 @@ export function mapWebHomepageContent(
   )[0];
 
   const l2 = input.l2_category;
-  const categoriesViewAllHref = l2?.slug
-    ? normalizeHref(l2.slug) ?? (l2.slug.startsWith("/") ? l2.slug : undefined)
-    : undefined;
+  const l2SectionActive = Boolean(l2 && isCmsActive(l2.is_active));
+  const categoriesViewAllHref =
+    l2SectionActive && l2?.slug
+      ? normalizeHref(l2.slug) ??
+        (l2.slug.startsWith("/") ? l2.slug : undefined)
+      : undefined;
 
-  const firstHeroHeading = heroSlides[0]?.heading ?? heroSlides[0]?.imageAlt;
+  const storeSectionTitle = input.store_section_heading?.trim() ?? "";
 
   return {
     hero: {
-      headline: firstHeroHeading || fallback.hero.headline,
-      eyebrow: fallback.hero.eyebrow,
-      ctaLabel: fallback.hero.ctaLabel,
+      headline: heroSlides[0]?.heading ?? "",
+      eyebrow: "",
+      ctaLabel: "",
     },
     heroSlides,
-    nav: { ...fallback.nav, links: [...fallback.nav.links] },
-    categories: {
-      title: l2?.title?.trim() || fallback.categories.title,
-      subtitle: l2?.tagline?.trim() || fallback.categories.subtitle,
-      ctaLabel: fallback.categories.ctaLabel,
-      items: [],
-      ...(categoriesViewAllHref ? { viewAllHref: categoriesViewAllHref } : {}),
-    },
-    sourcing: input.source
-      ? mapSource(input.source, fallback.sourcing)
-      : { ...fallback.sourcing, paragraphs: [...fallback.sourcing.paragraphs] },
+    nav: { locationLabel: "", links: [] },
+    categories: l2SectionActive
+      ? {
+          title: l2?.title?.trim() ?? "",
+          subtitle: l2?.tagline?.trim() ?? "",
+          ctaLabel: "",
+          items: [],
+          ...(categoriesViewAllHref ? { viewAllHref: categoriesViewAllHref } : {}),
+        }
+      : {
+          title: "",
+          subtitle: "",
+          ctaLabel: "",
+          items: [],
+        },
+    sourcing:
+      input.source && isCmsActive(input.source.is_active)
+        ? mapSource(input.source)
+        : EMPTY_SOURCING,
     testimonials: {
-      title:
-        input.stories_section_tagline?.trim() || fallback.testimonials.title,
-      subtitle:
-        input.stories_section_title?.trim() || fallback.testimonials.subtitle,
+      title: input.stories_section_tagline?.trim() ?? "",
+      subtitle: input.stories_section_title?.trim() ?? "",
       items: stories,
     },
     store: storeEntry
-      ? {
-          ...mapStore(storeEntry, fallback.store),
-          title:
-            input.store_section_heading?.trim() || fallback.store.title,
-        }
-      : {
-          ...fallback.store,
-          title:
-            input.store_section_heading?.trim() || fallback.store.title,
-        },
+      ? mapStore(storeEntry, storeSectionTitle)
+      : storeSectionTitle
+        ? { ...EMPTY_STORE, title: storeSectionTitle }
+        : EMPTY_STORE,
     footer: {
-      aboutLinks: [...fallback.footer.aboutLinks],
-      quickLinks: [...fallback.footer.quickLinks],
-      officeLines: [...fallback.footer.officeLines],
-      appBadges: [...fallback.footer.appBadges],
+      aboutLinks: [],
+      quickLinks: [],
+      officeLines: [],
+      appBadges: [],
     },
   };
 }

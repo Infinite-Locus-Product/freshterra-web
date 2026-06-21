@@ -19,8 +19,12 @@ export function HomeTestimonialsSection({ content }: HomeTestimonialsSectionProp
   return (
     <section className={homeTestimonialsSectionClass}>
       <div className={homeTestimonialsSectionShellClass}>
-        <h2 className={homeTestimonialsTitleClass}>{content.title}</h2>
-        <p className={homeTestimonialsSubtitleClass}>{content.subtitle}</p>
+        {content.title.trim() ? (
+          <h2 className={homeTestimonialsTitleClass}>{content.title}</h2>
+        ) : null}
+        {content.subtitle.trim() ? (
+          <p className={homeTestimonialsSubtitleClass}>{content.subtitle}</p>
+        ) : null}
       </div>
 
       <div className={homeTestimonialsCarouselBleedClass}>

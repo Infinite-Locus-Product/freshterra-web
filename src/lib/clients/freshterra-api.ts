@@ -72,6 +72,11 @@ const envelopeSchema = z.object({
 
 type QueryValue = string | number | boolean | undefined | null;
 
+export interface ApiFetchNextOptions {
+  tags?: string[];
+  revalidate?: number | false;
+}
+
 export interface ApiFetchOptions<T> {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   /** Query-string params; `undefined`/`null` entries are dropped. */
@@ -87,6 +92,11 @@ export interface ApiFetchOptions<T> {
   token?: string | null;
   /** When provided, the unwrapped `data` is validated against this schema. */
   schema?: ZodType<T>;
+  /**
+   * Next.js Data Cache options (server-only). Ignored in the browser where
+   * requests go through the `/bff` proxy.
+   */
+  next?: ApiFetchNextOptions;
 }
 
 function buildUrl(
@@ -170,7 +180,7 @@ export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions<T> = {},
 ): Promise<T> {
-  const { method = "GET", searchParams, body, signal, schema } = options;
+  const { method = "GET", searchParams, body, signal, schema, next } = options;
   const token = options.token === undefined ? getAuthToken() : options.token;
 
   const url = buildUrl(path, searchParams);
@@ -180,14 +190,19 @@ export async function apiFetch<T>(
 
   const logContext = { url, method };
 
+  const fetchInit: RequestInit & { next?: ApiFetchNextOptions } = {
+    method,
+    headers,
+    signal,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  };
+  if (typeof window === "undefined" && next) {
+    fetchInit.next = next;
+  }
+
   let res: Response;
   try {
-    res = await fetch(url, {
-      method,
-      headers,
-      signal,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
+    res = await fetch(url, fetchInit);
   } catch (err) {
     if (isAbortError(err)) {
       throw new FreshTerraApiError("Request aborted", "ABORTED");

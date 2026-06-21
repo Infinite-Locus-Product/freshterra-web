@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { cmsBoolSchema } from "./cms-boolean";
+
 /** Strapi often sends `null` for empty optional text fields. */
 const cmsString = z.string().nullable().optional();
 
@@ -15,7 +17,7 @@ export const webHomepageHeroSchema = z
     cta_label: cmsString,
     deeplink: cmsString,
     position: z.number().nullable().optional(),
-    is_active: z.boolean().optional(),
+    is_active: cmsBoolSchema,
     saleor_collection_id: cmsString,
   })
   .catchall(z.unknown());
@@ -30,7 +32,7 @@ export const webHomepageSourceSchema = z
     editorial_image_mweb: cmsString,
     background_image: cmsString,
     background_image_mweb: cmsString,
-    is_active: z.boolean().optional(),
+    is_active: cmsBoolSchema,
   })
   .catchall(z.unknown());
 
@@ -39,7 +41,7 @@ export const webHomepageStorySchema = z
     id: z.union([z.string(), z.number()]).optional(),
     quote: cmsString,
     position: z.number().nullable().optional(),
-    is_active: z.boolean().optional(),
+    is_active: cmsBoolSchema,
     thumbnail: cmsString,
     thumbnail_image_mweb: cmsString,
     customer_name: cmsString,
@@ -66,6 +68,7 @@ export const webHomepageStoreSchema = z
     view_store_cta: cmsString,
     view_store_slug: cmsString,
     locate_us_cta: cmsString,
+    locate_us_slug: cmsString,
     locate_us_url: cmsString,
     banner: z.array(webHomepageStoreBannerSchema).optional(),
   })
@@ -79,7 +82,9 @@ export const webHomepageL2CategoryTileSchema = z
     image_mweb: cmsString,
     saleor_category_id: cmsString,
     saleor_category_slug: cmsString,
-    is_active: z.boolean().optional(),
+    deeplink: cmsString,
+    label: cmsString,
+    is_active: cmsBoolSchema,
     position: z.number().nullable().optional(),
     type: cmsString,
   })
@@ -91,6 +96,7 @@ export const webHomepageL2CategorySchema = z
     tagline: cmsString,
     slug: cmsString,
     limit: z.number().nullable().optional(),
+    is_active: cmsBoolSchema,
     l2_category_tile: z.array(webHomepageL2CategoryTileSchema).optional(),
   })
   .catchall(z.unknown());
