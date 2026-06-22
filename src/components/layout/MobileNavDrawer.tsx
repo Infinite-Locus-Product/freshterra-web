@@ -6,7 +6,10 @@ import Link from "next/link";
 
 import { createPortal } from "react-dom";
 
-import type { MarketingNavLink } from "@/components/layout/MarketingHeader";
+import {
+  isExploreCatalogNavLink,
+  type MarketingNavLink,
+} from "@/components/layout/MarketingHeader";
 import {
   mobileNavDrawerCloseButtonClass,
   mobileNavDrawerHeaderClass,
@@ -125,6 +128,23 @@ export function MobileNavDrawer({
           aria-label="Primary"
           className={mobileNavDrawerLinksClass}
         >
+          {navLinks.map((link) =>
+            isExploreCatalogNavLink(link) ? (
+              <span key={link.label} className={mobileNavDrawerLinkClass}>
+                {link.label}
+              </span>
+            ) : (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={onClose}
+                className={mobileNavDrawerLinkClass}
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
+          {/* TODO: restore explore-catalog redirect when page is ready.
           {navLinks.map((link) => (
             <Link
               key={link.label}
@@ -135,6 +155,7 @@ export function MobileNavDrawer({
               {link.label}
             </Link>
           ))}
+          */}
         </nav>
       </aside>
     </dialog>,
