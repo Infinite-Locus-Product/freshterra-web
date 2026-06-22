@@ -71,9 +71,10 @@ describe("MobileNavDrawer", () => {
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText(/explore catalog/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /explore catalog/i }),
-    ).toHaveAttribute("href", "/c/explore-catalog");
+      screen.queryByRole("link", { name: /explore catalog/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("calls onClose when the close button is clicked", () => {

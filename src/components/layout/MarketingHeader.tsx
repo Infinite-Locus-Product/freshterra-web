@@ -22,6 +22,17 @@ export type MarketingNavLink = Readonly<{
   href: string;
 }>;
 
+const NAV_LINK_CLASS =
+  "text-text-primary text-sm leading-4 font-medium tracking-wide uppercase";
+
+/** Navbar explore-catalog redirect disabled until the page is ready. */
+export function isExploreCatalogNavLink(link: MarketingNavLink): boolean {
+  return (
+    link.href === "/c/explore-catalog" ||
+    link.label.trim().toLowerCase() === "explore catalog"
+  );
+}
+
 export const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
   { label: "Explore Catalog", href: "/c/explore-catalog" },
   { label: "Our Philosophy", href: "/food-philosophy" },
@@ -79,15 +90,21 @@ export function MarketingHeader({
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <nav aria-label="Primary" className={marketingHeaderNavClass}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-text-primary text-sm leading-4 font-medium tracking-wide uppercase hover:underline"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            isExploreCatalogNavLink(link) ? (
+              <span key={link.label} className={NAV_LINK_CLASS}>
+                {link.label}
+              </span>
+            ) : (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={`${NAV_LINK_CLASS} hover:underline`}
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <HeaderDownloadAppButton href={downloadHref}>
