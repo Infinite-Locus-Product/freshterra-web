@@ -73,4 +73,20 @@ describe("ProductGallery", () => {
       })[0],
     ).toHaveAttribute("aria-current", "true");
   });
+
+  it("renders web chevrons for multi-image desktop gallery navigation", async () => {
+    const user = userEvent.setup();
+    render(<ProductGallery images={images} name="Almond Butter" />);
+
+    const prev = screen.getByRole("button", { name: "Previous product image" });
+    const next = screen.getByRole("button", { name: "Next product image" });
+
+    expect(prev).toBeDisabled();
+    expect(next).toBeEnabled();
+
+    await user.click(next);
+    expect(
+      screen.getAllByRole("button", { name: "View image 2" })[0],
+    ).toHaveAttribute("aria-current", "true");
+  });
 });

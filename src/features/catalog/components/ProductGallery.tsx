@@ -50,6 +50,18 @@ export function ProductGallery({
     setActive(Math.min(Math.max(index, 0), images.length - 1));
   }, [images.length]);
 
+  const goToRelative = useCallback(
+    (delta: number) => {
+      const next = Math.min(
+        Math.max(active + delta, 0),
+        Math.max(images.length - 1, 0),
+      );
+      setActive(next);
+      scrollToIndex(next);
+    },
+    [active, images.length, scrollToIndex],
+  );
+
   return (
     <div className="relative">
       {images.length > 0 ? (
@@ -103,6 +115,29 @@ export function ProductGallery({
         />
 
         {images.length > 1 ? (
+          <>
+            <button
+              type="button"
+              aria-label="Previous product image"
+              disabled={active === 0}
+              onClick={() => goToRelative(-1)}
+              className="absolute top-1/2 left-4 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-40 lg:grid"
+            >
+              <GalleryChevronIcon direction="left" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next product image"
+              disabled={active === images.length - 1}
+              onClick={() => goToRelative(1)}
+              className="absolute top-1/2 right-4 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-40 lg:grid"
+            >
+              <GalleryChevronIcon direction="right" />
+            </button>
+          </>
+        ) : null}
+
+        {images.length > 1 ? (
           <div className="absolute bottom-4 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 lg:flex">
             {images.map((_, i) => (
               <button
@@ -110,7 +145,7 @@ export function ProductGallery({
                 type="button"
                 aria-label={`View image ${i + 1}`}
                 aria-current={i === active}
-                onClick={() => setActive(i)}
+                onClick={() => goToRelative(i - active)}
                 className={cn(
                   "h-2 rounded-full transition-all",
                   i === active ? "bg-brand-500 w-5" : "w-2 bg-white/70",
@@ -174,6 +209,21 @@ async function shareProduct(name: string) {
   } catch {
     // User dismissed the share sheet, or permission denied — ignore.
   }
+}
+
+function GalleryChevronIcon({
+  direction,
+}: Readonly<{ direction: "left" | "right" }>) {
+  return (
+    <Image
+      src="/Shape-5.svg"
+      alt=""
+      width={16}
+      height={14}
+      aria-hidden
+      className={cn(direction === "left" && "rotate-180")}
+    />
+  );
 }
 
 function ShareIcon() {
