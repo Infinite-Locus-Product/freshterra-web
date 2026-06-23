@@ -419,57 +419,60 @@ function RegulatoryPanel({
         <h3 className={pdpProductDetailsHeadingClass}>
           {cms.heading ?? "Regulatory Information"}
         </h3>
-        <dl className="max-w-xl space-y-1.5">
+        <dl className="space-y-1.5 lg:max-w-none">
           {cms.fssai?.licenseNumber ? (
-            <Row
+            <RegulatoryRow
               label={cms.fssai.licenseLabel ?? "FSSAI License"}
               value={cms.fssai.licenseNumber}
             />
           ) : null}
           {cms.fssai?.licenseExpiry ? (
-            <Row
+            <RegulatoryRow
               label={cms.fssai.licenseExpiryLabel ?? "FSSAI License Expiry"}
               value={cms.fssai.licenseExpiry}
             />
           ) : null}
           {manufacturer?.name ? (
-            <Row
+            <RegulatoryRow
               label={manufacturer.nameLabel ?? "Manufacturer"}
               value={manufacturer.name}
             />
           ) : null}
           {manufacturerAddress ? (
-            <Row
+            <RegulatoryRow
               label={manufacturer?.addressLabel ?? "Manufacturer Address"}
               value={manufacturerAddress}
             />
           ) : null}
           {manufacturer?.contact?.email ? (
-            <Row
+            <RegulatoryRow
               label={manufacturer.contactLabel ?? "Contact Email"}
               value={manufacturer.contact.email}
             />
           ) : null}
           {manufacturer?.contact?.phone ? (
-            <Row
+            <RegulatoryRow
               label={manufacturer.contactLabel ?? "Contact Phone"}
               value={manufacturer.contact.phone}
             />
           ) : null}
           {seller?.soldBy ? (
-            <Row label={seller.soldByLabel ?? "Sold By"} value={seller.soldBy} />
+            <RegulatoryRow
+              label={seller.soldByLabel ?? "Sold By"}
+              value={seller.soldBy}
+            />
           ) : null}
           {sellerAddress ? (
-            <Row
+            <RegulatoryRow
               label={seller?.registeredAddressLabel ?? "Registered Address"}
               value={sellerAddress}
             />
           ) : null}
           {seller?.gstin ? (
-            <Row label={seller.gstinLabel ?? "GSTIN"} value={seller.gstin} />
+            <RegulatoryRow label={seller.gstinLabel ?? "GSTIN"} value={seller.gstin} />
           ) : null}
           {seller?.phone ? (
-            <Row label={seller.phoneLabel ?? "Phone"} value={seller.phone} />
+            <RegulatoryRow label={seller.phoneLabel ?? "Phone"} value={seller.phone} />
           ) : null}
         </dl>
       </div>
@@ -479,35 +482,55 @@ function RegulatoryPanel({
   return (
     <div>
       <h3 className={pdpProductDetailsHeadingClass}>Regulatory Information</h3>
-      <dl className="max-w-xl space-y-1.5">
-        {product.fssai ? <Row label="FSSAI License" value={product.fssai} /> : null}
-        {meta?.foodType ? <Row label="Food Type" value={meta.foodType} /> : null}
+      <dl className="space-y-1.5 lg:max-w-none">
+        {product.fssai ? (
+          <RegulatoryRow label="FSSAI License" value={product.fssai} />
+        ) : null}
+        {meta?.foodType ? (
+          <RegulatoryRow label="Food Type" value={meta.foodType} />
+        ) : null}
         {product.regulatory?.veg != null ? (
-          <Row
+          <RegulatoryRow
             label="Dietary"
             value={product.regulatory.veg ? "Vegetarian" : "Non-vegetarian"}
           />
         ) : null}
         {product.regulatory?.organic != null ? (
-          <Row label="Organic" value={product.regulatory.organic ? "Yes" : "No"} />
+          <RegulatoryRow
+            label="Organic"
+            value={product.regulatory.organic ? "Yes" : "No"}
+          />
         ) : null}
         {meta?.countryOfOrigin ? (
-          <Row label="Country of Origin" value={meta.countryOfOrigin} />
+          <RegulatoryRow label="Country of Origin" value={meta.countryOfOrigin} />
         ) : null}
         {meta?.manufacturerName ? (
-          <Row label="Manufacturer" value={meta.manufacturerName} />
+          <RegulatoryRow label="Manufacturer" value={meta.manufacturerName} />
         ) : null}
         {meta?.manufacturerAddress ? (
-          <Row label="Manufacturer Address" value={meta.manufacturerAddress} />
+          <RegulatoryRow
+            label="Manufacturer Address"
+            value={meta.manufacturerAddress}
+          />
         ) : null}
-        {meta?.sellerName ? <Row label="Seller" value={meta.sellerName} /> : null}
+        {meta?.sellerName ? (
+          <RegulatoryRow label="Seller" value={meta.sellerName} />
+        ) : null}
         {meta?.sellerAddress ? (
-          <Row label="Seller Address" value={meta.sellerAddress} />
+          <RegulatoryRow label="Seller Address" value={meta.sellerAddress} />
         ) : null}
-        {meta?.mfgDate ? <Row label="Mfg. Date" value={meta.mfgDate} /> : null}
-        {meta?.bestBefore ? <Row label="Best Before" value={meta.bestBefore} /> : null}
-        {meta?.ccEmail ? <Row label="Customer Care Email" value={meta.ccEmail} /> : null}
-        {meta?.ccPhone ? <Row label="Customer Care Phone" value={meta.ccPhone} /> : null}
+        {meta?.mfgDate ? (
+          <RegulatoryRow label="Mfg. Date" value={meta.mfgDate} />
+        ) : null}
+        {meta?.bestBefore ? (
+          <RegulatoryRow label="Best Before" value={meta.bestBefore} />
+        ) : null}
+        {meta?.ccEmail ? (
+          <RegulatoryRow label="Customer Care Email" value={meta.ccEmail} />
+        ) : null}
+        {meta?.ccPhone ? (
+          <RegulatoryRow label="Customer Care Phone" value={meta.ccPhone} />
+        ) : null}
       </dl>
     </div>
   );
@@ -560,6 +583,15 @@ function Row({ label, value }: { label: string; value: string }) {
     <div className="flex gap-2">
       <dt className={pdpDetailsRowLabelClass}>{label}:</dt>
       <dd className={pdpDetailsRowValueClass}>{value}</dd>
+    </div>
+  );
+}
+
+function RegulatoryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex gap-2">
+      <dt className={pdpDetailsRowLabelClass}>{label}:</dt>
+      <dd className={cn(pdpDetailsRowValueClass, "min-w-0")}>{value}</dd>
     </div>
   );
 }

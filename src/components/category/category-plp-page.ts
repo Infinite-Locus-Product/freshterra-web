@@ -2,6 +2,9 @@
 export const CATEGORY_PLP_MWEB_INSET = 16;
 export const CATEGORY_PLP_BANNER_MWEB_WIDTH = 393;
 export const CATEGORY_PLP_BANNER_MWEB_HEIGHT = 171;
+/** CMS web hero assets (e.g. 3840 × 1200). */
+export const CATEGORY_PLP_BANNER_WEB_WIDTH = 3840;
+export const CATEGORY_PLP_BANNER_WEB_HEIGHT = 1200;
 
 export const categoryPlpPageShellClass = "px-4 py-6 lg:px-page lg:py-8";
 
@@ -32,9 +35,9 @@ export const categoryPlpBannerBleedClass =
   "relative left-1/2 mb-4 w-screen max-w-none -translate-x-1/2 lg:mb-6";
 
 export const categoryPlpBannerShellClass =
-  "relative h-[171px] w-full overflow-hidden lg:h-[18.75rem]";
+  "relative box-border h-[171px] w-full overflow-hidden lg:aspect-[16/5] lg:h-auto";
 
-export const categoryPlpBannerImageClass = "object-cover";
+export const categoryPlpBannerImageClass = "object-cover object-center";
 
 export const categoryPlpBannerOverlayClass =
   "from-text-primary/55 absolute inset-0 bg-linear-to-r to-transparent";
