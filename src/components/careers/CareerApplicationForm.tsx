@@ -10,9 +10,13 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import { cn } from "@/lib/utils/cn";
 
 import { Button } from "@/components/ui/Button";
+
+import { submitCareerApplication } from "@/features/careers/career-application-service";
+import { ResumeUploadError } from "@/features/careers/resume-upload-service";
 
 import {
   careerApplicationSchema,
@@ -33,6 +37,7 @@ export function CareerApplicationForm({
   onSubmitted,
 }: CareerApplicationFormProps) {
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -56,10 +61,25 @@ export function CareerApplicationForm({
   const phoneRegister = register("phone");
   const resume = watch("resume");
 
-  const onSubmit = (_values: CareerApplicationValues) => {
-    // Phase 1: validate client-side only; wire to BFF/ATS when available.
-    setSubmitted(true);
-    onSubmitted?.();
+  const onSubmit = async (values: CareerApplicationValues) => {
+    setSubmitError(null);
+    try {
+      await submitCareerApplication({
+        position: jobTitle,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        resume: values.resume,
+      });
+      setSubmitted(true);
+      onSubmitted?.();
+    } catch (error) {
+      setSubmitError(
+        error instanceof FreshTerraApiError || error instanceof ResumeUploadError
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    }
   };
 
   if (submitted) {
@@ -139,8 +159,14 @@ export function CareerApplicationForm({
         disabled={isSubmitting}
         className="mt-2 h-[56px] shrink-0 text-[18px] font-semibold tracking-[0]"
       >
-        Submit Application
+        {isSubmitting ? "Submitting…" : "Submit Application"}
       </Button>
+
+      {submitError ? (
+        <p role="alert" className="px-2 text-xs leading-tight text-red-600">
+          {submitError}
+        </p>
+      ) : null}
     </form>
   );
 }

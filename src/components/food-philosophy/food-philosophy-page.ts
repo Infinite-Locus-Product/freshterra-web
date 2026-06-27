@@ -4,11 +4,8 @@ export const FOOD_PHILOSOPHY_BREADCRUMB_MWEB_FONT_SIZE = 12;
 export const foodPhilosophyPageBreadcrumbClass =
   "text-text-secondary mb-4 flex items-center gap-2 text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
 
-export const FOOD_PHILOSOPHY_SUSTAINABILITY_TO_FOOTER_GAP_WEB = 115;
-
-/** `lg:-mb-8` cancels the marketing footer’s `lg:mt-8` so only the 115px pb remains. */
 export const foodPhilosophyPageSectionClass =
-  "bg-white pt-8 pb-8 md:pt-10 md:pb-[115px] lg:-mb-8";
+  "bg-white pt-8 pb-8 md:pt-10 md:pb-0";
 
 export const FOOD_PHILOSOPHY_TITLE_MWEB_FONT_SIZE = 28;
 export const FOOD_PHILOSOPHY_TITLE_TO_BANNER_GAP_MWEB = 36;
@@ -19,6 +16,11 @@ export const foodPhilosophyPageTitleClass =
   "font-display text-text-primary mb-9 text-[28px] font-semibold leading-none tracking-[0] md:mb-6 md:text-[2.25rem] md:leading-[150%]";
 
 export const FOOD_PHILOSOPHY_BANNER_TO_SOURCING_GAP_MWEB = 24;
+
+/** Vertical gap between philosophy content sections (web + mWeb). */
+export const FOOD_PHILOSOPHY_SECTION_GAP_CLASS = "flex flex-col gap-12";
+
+export const foodPhilosophyContentSectionsClass = FOOD_PHILOSOPHY_SECTION_GAP_CLASS;
 
 /** mWeb: full-bleed hero — no horizontal inset. */
 export const foodPhilosophyHeroBannerShellClass =
@@ -52,11 +54,13 @@ export const FOOD_PHILOSOPHY_SOURCING_BODY_FONT_SIZE = 20;
 export const foodPhilosophySourcingArticleClass =
   "flex min-w-0 flex-col gap-4 md:gap-6";
 
-export const foodPhilosophySourcingParagraphsClass = "flex flex-col gap-4";
+export const foodPhilosophySourcingParagraphsClass = "flex flex-col gap-4 md:gap-5";
 
-/** mWeb: Manrope 14px regular, 150% lh. Web: 20px, 100% lh. */
-export const foodPhilosophySourcingBodyClass =
-  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
+/** How We Source + Quality Standards body — mWeb: 14px / 150% lh; web: 20px / 130% lh. */
+export const foodPhilosophySectionParagraphBodyClass =
+  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-[1.3]";
+
+export const foodPhilosophySourcingBodyClass = foodPhilosophySectionParagraphBodyClass;
 
 /** “Quality Standards & Certifications” block. */
 export const foodPhilosophyCertificationsTitleClass = foodPhilosophySectionTitleClass;
@@ -65,8 +69,11 @@ export const foodPhilosophyCertificationsTitleClass = foodPhilosophySectionTitle
 export const foodPhilosophyCertificationsSubtitleClass =
   "text-brand-500 font-handsome mt-1 hidden text-[1.875rem] leading-[1.625rem] font-bold tracking-normal md:block";
 
+export const foodPhilosophyCertificationsParagraphsClass =
+  "mt-4 flex flex-col gap-4 md:mt-5 md:gap-5";
+
 export const foodPhilosophyCertificationsBodyClass =
-  "text-text-primary mt-4 font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:mt-5 md:text-[20px] md:leading-none";
+  foodPhilosophySectionParagraphBodyClass;
 
 export const FOOD_PHILOSOPHY_CERTIFICATION_ICON_LABEL_GAP_WEB = 4;
 
@@ -92,11 +99,11 @@ export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_MWEB_HEIGHT = 441;
 export const FOOD_PHILOSOPHY_PARTNERSHIP_CARD_GAP_WEB = 40;
 
 export const foodPhilosophyPartnershipsStackClass =
-  "mt-6 flex flex-col items-center [--stack-peek:1.25rem] [--stack-top:4.5rem] md:gap-[40px] md:[--stack-peek:40px] md:[--stack-top:6rem]";
+  "mt-6 flex flex-col items-center [--stack-peek:1.25rem] [--stack-top:4.5rem] md:gap-[40px] md:[--stack-peek:0px] md:[--stack-top:0px]";
 
-/** Sticky stack shell — shared mWeb + web. */
+/** Sticky stack on mWeb; normal flow on web to avoid trailing scroll height. */
 export const foodPhilosophyPartnershipCardShellClass =
-  "sticky mb-4 w-full max-w-[360px] min-w-0 overflow-hidden rounded-[10px] shadow-[0_-2px_24px_rgba(16,24,40,0.06)] md:mb-0 md:max-w-none";
+  "sticky mb-4 w-full max-w-[360px] min-w-0 overflow-hidden rounded-[10px] shadow-[0_-2px_24px_rgba(16,24,40,0.06)] md:static md:mb-0 md:max-w-none md:shadow-none";
 
 /**
  * CMS farmer banners are full composite cards (photo + quote + name baked in).

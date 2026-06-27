@@ -11,7 +11,7 @@ export const homeHeroHeaderSectionClass = "bg-white pb-0 lg:pb-10";
 
 /** Gradient confined to header chrome — green at top, white above banner. */
 export const homeHeroHeaderShellClass =
-  "relative bg-[linear-gradient(180deg,#ECFCEC_0%,#FFFFFF_100%)] pt-0 lg:pt-8 lg:pb-4";
+  "relative bg-[linear-gradient(180deg,#ECFCEC_0%,#FFFFFF_100%)] pt-0 lg:pt-6 lg:pb-3";
 
 export const homeHeroHeaderFadeClass =
   "pointer-events-none absolute inset-x-0 bottom-0 z-0 h-12 bg-linear-to-b from-transparent to-white lg:h-16";

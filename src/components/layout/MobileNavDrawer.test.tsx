@@ -71,9 +71,11 @@ describe("MobileNavDrawer", () => {
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText(/explore catalog/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: /primary/i })).toHaveTextContent(
+      /explore products/i,
+    );
     expect(
-      screen.queryByRole("link", { name: /explore catalog/i }),
+      screen.queryByRole("link", { name: /explore products/i }),
     ).not.toBeInTheDocument();
   });
 

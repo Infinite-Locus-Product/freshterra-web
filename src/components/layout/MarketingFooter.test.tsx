@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type { FooterContent } from "@/features/cms-content/footer-content-types";
 
+import { FOOTER_COPYRIGHT_LINE } from "./footer-legal-links";
 import { MarketingFooterView } from "./MarketingFooterView";
 
 const sampleFooter: FooterContent = {
@@ -22,12 +23,7 @@ const sampleFooter: FooterContent = {
   social: [
     { platform: "instagram", url: "https://instagram.com/elixiirfoods" },
   ],
-  legal: [
-    { label: "Privacy Policy", url: "/privacy-policy" },
-    { label: "Terms & Conditions", url: "/terms" },
-  ],
-  copyrightLine:
-    "© 2026 FreshTerra Foods Pvt. Ltd. All rights reserved. CIN: U12345MH2026PTC00000.",
+  legal: [],
 };
 
 describe("MarketingFooterView", () => {
@@ -36,32 +32,48 @@ describe("MarketingFooterView", () => {
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
   });
 
-  it("renders the copyright line from CMS content", () => {
+  it("renders the hardcoded copyright line", () => {
     render(<MarketingFooterView content={sampleFooter} />);
-    expect(
-      screen.getByText(/© 2026 FreshTerra Foods Pvt\. Ltd\./i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(FOOTER_COPYRIGHT_LINE)).toBeInTheDocument();
   });
 
-  it("omits copyright when CMS does not provide legalLine", () => {
+  it("renders label-only footer items when deeplink is missing", () => {
     render(
       <MarketingFooterView
-        content={{ ...sampleFooter, copyrightLine: undefined }}
+        content={{
+          groups: [
+            {
+              title: "About FreshTerra",
+              links: [{ label: "About Us" }, { label: "FAQs", url: "/faq" }],
+            },
+          ],
+          social: [],
+          legal: [],
+        }}
       />,
     );
-    expect(
-      screen.queryByText(/© 2026 FreshTerra Foods/i),
-    ).not.toBeInTheDocument();
+
+    expect(screen.getByText("About Us").tagName).toBe("SPAN");
+    expect(screen.getByRole("link", { name: /faqs/i })).toHaveAttribute(
+      "href",
+      "/faq",
+    );
   });
 
-  it("renders Privacy Policy and Terms links pointing to canonical URLs", () => {
+  it("renders hardcoded Privacy Policy, Terms, and Refund & Return links", () => {
     render(<MarketingFooterView content={sampleFooter} />);
-    expect(
-      screen.getByRole("link", { name: /privacy policy/i }),
-    ).toHaveAttribute("href", "/privacy-policy");
-    expect(
-      screen.getByRole("link", { name: /terms & conditions/i }),
-    ).toHaveAttribute("href", "/terms");
+    expect(screen.getAllByRole("link", { name: /privacy policy/i })[0]).toHaveAttribute(
+      "href",
+      "/privacy-policy",
+    );
+    expect(screen.getAllByRole("link", { name: /terms & conditions/i })[0]).toHaveAttribute(
+      "href",
+      "/terms",
+    );
+    expect(screen.getAllByRole("link", { name: /refund & return/i })[0]).toHaveAttribute(
+      "href",
+      "/refund-return",
+    );
   });
 
   it("renders Strapi column headings as link groups", () => {
@@ -83,6 +95,19 @@ describe("MarketingFooterView", () => {
     expect(screen.getByRole("link", { name: /beverages/i })).toHaveAttribute(
       "href",
       "/categories/beverages",
+    );
+  });
+
+  it("renders hardcoded Follow Us social links", () => {
+    render(<MarketingFooterView content={sampleFooter} />);
+    expect(
+      screen.getByRole("link", { name: /freshterra on instagram/i }),
+    ).toHaveAttribute("href", "https://www.instagram.com/freshterra_in/");
+    expect(
+      screen.getByRole("link", { name: /freshterra on linkedin/i }),
+    ).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/company/freshterra/about",
     );
   });
 

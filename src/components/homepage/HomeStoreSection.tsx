@@ -4,7 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 
 import {
-  homeStoreAddressClass,
+  homeStoreAddressRichTextClass,
   homeStoreCtaPillClass,
   homeStoreCtaRowClass,
   homeStoreDetailsClass,
@@ -31,8 +31,7 @@ export function HomeStoreSection({ content, title }: HomeStoreSectionProps) {
   const hasContent =
     title.trim() ||
     content.name.trim() ||
-    content.addressLine1.trim() ||
-    content.addressLine2.trim() ||
+    content.addressHtml?.trim() ||
     content.primaryCtaLabel.trim() ||
     content.secondaryCtaLabel.trim() ||
     content.mediaImage;
@@ -76,14 +75,13 @@ export function HomeStoreSection({ content, title }: HomeStoreSectionProps) {
 
         <div className={homeStoreDetailsClass}>
           <div className={homeStoreNameAddressGroupClass}>
-            {content.name.trim() ? (
+            {content.addressHtml?.trim() ? (
+              <div
+                className={homeStoreAddressRichTextClass}
+                dangerouslySetInnerHTML={{ __html: content.addressHtml }}
+              />
+            ) : content.name.trim() ? (
               <h3 className={homeStoreNameClass}>{content.name}</h3>
-            ) : null}
-            {content.addressLine1.trim() || content.addressLine2.trim() ? (
-              <div className={homeStoreAddressClass}>
-                {content.addressLine1.trim() ? <p>{content.addressLine1}</p> : null}
-                {content.addressLine2.trim() ? <p>{content.addressLine2}</p> : null}
-              </div>
             ) : null}
           </div>
           <div className={homeStoreCtaRowClass}>

@@ -12,28 +12,23 @@ import {
   categoryPlpTitleClass,
   categoryPlpToolbarButtonClass,
   categoryPlpToolbarClass,
-  categoryPlpToolbarDividerClass,
   categoryPlpToolbarLabelClass,
 } from "@/components/category/category-plp-page";
 import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
+
 import {
   PlpFilters,
   type FilterSelections,
   type PlpFilterGroup,
 } from "@/features/catalog/components/PlpFilters";
-import { PlpSortMenu } from "@/features/catalog/components/PlpSortMenu";
-import {
-  SEARCH_FILTER_GROUPS,
-  SEARCH_SORT_OPTIONS,
-} from "../search-plp-config";
+
 import { addRecentSearch } from "../recent-searches";
+import { SEARCH_FILTER_GROUPS } from "../search-plp-config";
 import { useSearchResults } from "../useSearchResults";
 
 import { SearchProductCard } from "./SearchProductCard";
 import { SearchError, SearchNoResults, SearchPrompt } from "./SearchStatus";
-
-import type { SearchSort } from "../types";
 
 const PAGE_SIZE = 20;
 
@@ -71,7 +66,6 @@ export function SearchResultsView({ query }: { query: string }) {
     if (trimmed) addRecentSearch(trimmed);
   }, [trimmed]);
 
-  const [sort, setSort] = useState<SearchSort>("relevance");
   const [selections, setSelections] = useState<FilterSelections>({});
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -91,7 +85,7 @@ export function SearchResultsView({ query }: { query: string }) {
     hasMore,
     loadMore,
     reload,
-  } = useSearchResults({ query: trimmed, sort, filters, pageSize: PAGE_SIZE });
+  } = useSearchResults({ query: trimmed, filters, pageSize: PAGE_SIZE });
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -179,14 +173,6 @@ export function SearchResultsView({ query }: { query: string }) {
                 <FiltersIcon />
                 <span>Filters</span>
               </button>
-              <div className={categoryPlpToolbarDividerClass}>
-                <PlpSortMenu
-                  variant="plp-toolbar"
-                  value={sort}
-                  options={SEARCH_SORT_OPTIONS}
-                  onChange={setSort}
-                />
-              </div>
             </div>
           ) : null}
 
@@ -196,17 +182,12 @@ export function SearchResultsView({ query }: { query: string }) {
               : `Showing ${total} ${total === 1 ? "product" : "products"}`}
           </p>
 
-          <div className="mb-6 hidden flex-wrap items-center justify-between gap-4 lg:flex">
+          <div className="mb-6 hidden lg:block">
             <p className="text-text-secondary text-sm">
               {isInitialLoad
                 ? "Searching…"
                 : `Showing ${total} ${total === 1 ? "product" : "products"}`}
             </p>
-            <PlpSortMenu
-              value={sort}
-              options={SEARCH_SORT_OPTIONS}
-              onChange={setSort}
-            />
           </div>
 
           {hasFilters && mobileFiltersOpen ? (

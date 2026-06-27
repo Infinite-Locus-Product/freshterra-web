@@ -24,8 +24,8 @@ export function HomepageLayout({ content }: Readonly<HomepageLayoutProps>) {
       <HeroHeaderSection content={content} />
       <HomeCategoriesSection categories={content.categories} />
       <HomeSourcingSection content={content.sourcing} />
-      <HomeTestimonialsSection content={content.testimonials} />
       <HomeStoreSection content={content.store} title={content.store.title} />
+      <HomeTestimonialsSection content={content.testimonials} />
       <MarketingFooter />
     </main>
   );
@@ -34,7 +34,6 @@ export function HomepageLayout({ content }: Readonly<HomepageLayoutProps>) {
 function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
   const hasCmsHero = content.heroSlides.length > 0;
   const tagline = content.hero.eyebrow.trim() || undefined;
-  const downloadLabel = content.hero.ctaLabel.trim() || undefined;
   const locationLabel = content.nav.locationLabel.trim() || undefined;
   const navLinks =
     content.nav.links.length > 0 ? content.nav.links : undefined;
@@ -50,7 +49,6 @@ function HeroHeaderSection({ content }: Readonly<HomepageLayoutProps>) {
           taglineAs="h1"
           locationLabel={locationLabel}
           navLinks={navLinks}
-          downloadLabel={downloadLabel}
         />
         <div aria-hidden className={homeHeroHeaderFadeClass} />
       </div>

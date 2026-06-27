@@ -70,7 +70,80 @@ describe("mapWebHomepageContent", () => {
     expect(content.testimonials.items[0]?.name).toBe("Mankirat Singh");
     expect(content.testimonials.title).toBe("Stories from Our Valued Customers");
     expect(content.store.name).toBe("FreshTerra Gurugram");
+    expect(content.store.addressHtml).toBe(
+      "<p>Golf Course Road, Sector 5</p><p>Gurgaon, Haryana  - 122011</p>",
+    );
     expect(content.store.mediaImage).toContain("store.png");
+  });
+
+  it("maps store_address markdown with store name heading", () => {
+    const content = mapWebHomepageContent({
+      our_store: [
+        {
+          store_address:
+            "### **FreshTerra Gurugram**\nGolf Course Road, Sector 5\nGurgaon, Haryana - 122011",
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.store.addressHtml).toBe(
+      "<h3><strong>FreshTerra Gurugram</strong></h3><p>Golf Course Road, Sector 5</p><p>Gurgaon, Haryana - 122011</p>",
+    );
+  });
+
+  it("maps store_address Strapi blocks to rich text HTML", () => {
+    const content = mapWebHomepageContent({
+      our_store: [
+        {
+          store_name: "FreshTerra Gurugram",
+          store_address: [
+            {
+              type: "paragraph",
+              children: [{ type: "text", text: "Golf Course Road, Sector 5" }],
+            },
+            {
+              type: "paragraph",
+              children: [{ type: "text", text: "Gurgaon, Haryana - 122011" }],
+            },
+          ],
+          position: 1,
+        },
+      ],
+    });
+
+    expect(content.store.addressHtml).toBe(
+      "<p>Golf Course Road, Sector 5</p><p>Gurgaon, Haryana - 122011</p>",
+    );
+  });
+
+  it("maps l2_category view_all_cta and view_all_cta_deeplink", () => {
+    const content = mapWebHomepageContent({
+      l2_category: {
+        title: "Categories",
+        tagline: "Explore our entire selection",
+        view_all_cta: "View all",
+        view_all_cta_deeplink: "/c/explore-catalog",
+        is_active: true,
+      },
+    });
+
+    expect(content.categories.ctaLabel).toBe("View all");
+    expect(content.categories.viewAllHref).toBe("/c/explore-catalog");
+  });
+
+  it("prefers view_all_cta_deeplink over legacy slug for categories CTA", () => {
+    const content = mapWebHomepageContent({
+      l2_category: {
+        title: "Categories",
+        view_all_cta: "View all",
+        view_all_cta_deeplink: "/c/explore-catalog",
+        slug: "/categories",
+        is_active: true,
+      },
+    });
+
+    expect(content.categories.viewAllHref).toBe("/c/explore-catalog");
   });
 
   it("maps hero deeplink to a clickable banner href", () => {

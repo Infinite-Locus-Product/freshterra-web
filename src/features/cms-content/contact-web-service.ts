@@ -1,6 +1,6 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
-import { mapContactWebGetInTouch } from "./contact-web-mapper";
+import { mapContactWebGetInTouch, mapContactWebInquiryOptions } from "./contact-web-mapper";
 import { getSingleContent } from "./single-content-service";
 
 import {
@@ -12,6 +12,11 @@ import {
 import type { ContentEntryParams } from "./content-entry-service";
 
 export const CONTACT_WEB_CONTENT_TYPE = "contact-web";
+
+export type ContactWebPageData = {
+  getInTouchItems: ContactGetInTouchItem[];
+  inquiryOptions: string[];
+};
 
 /**
  * Fetches the contact-web single type from
@@ -33,17 +38,30 @@ export async function getContactWebContent(
 export async function fetchContactGetInTouchSafe(
   params: ContentEntryParams = {},
 ): Promise<ContactGetInTouchItem[]> {
+  const data = await fetchContactWebPageDataSafe(params);
+  return data.getInTouchItems;
+}
+
+/**
+ * Server-side fetch — Get In Touch rows and inquiry type options.
+ */
+export async function fetchContactWebPageDataSafe(
+  params: ContentEntryParams = {},
+): Promise<ContactWebPageData> {
   try {
     const entry = await getContactWebContent(params);
-    return mapContactWebGetInTouch(entry);
+    return {
+      getInTouchItems: mapContactWebGetInTouch(entry),
+      inquiryOptions: mapContactWebInquiryOptions(entry),
+    };
   } catch (error) {
     if (error instanceof FreshTerraApiError && error.code === "NOT_FOUND") {
-      return [];
+      return { getInTouchItems: [], inquiryOptions: [] };
     }
     console.warn(
       "[contact-web] fetch failed:",
       error instanceof Error ? error.message : error,
     );
-    return [];
+    return { getInTouchItems: [], inquiryOptions: [] };
   }
 }

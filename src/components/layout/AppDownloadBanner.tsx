@@ -36,7 +36,7 @@ type AppDownloadBannerProps = Readonly<{
 export function AppDownloadBanner({
   messageLine1 = DEFAULT_MESSAGE_LINE_1,
   messageLine2 = DEFAULT_MESSAGE_LINE_2,
-  openAppHref = "/open",
+  openAppHref = "/notify",
   openAppLabel = "Open App",
   fullBleed = false,
   className,

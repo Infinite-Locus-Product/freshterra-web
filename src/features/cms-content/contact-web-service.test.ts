@@ -5,6 +5,7 @@ import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import {
   CONTACT_WEB_CONTENT_TYPE,
   fetchContactGetInTouchSafe,
+  fetchContactWebPageDataSafe,
   getContactWebContent,
 } from "./contact-web-service";
 import { getSingleContent } from "./single-content-service";
@@ -23,6 +24,10 @@ const apiEntry = {
       description: "Golf Course Road, Sector 5",
       sort_order: 1,
     },
+  ],
+  inquiry: [
+    { id: 8, label: "Order Issue" },
+    { id: 9, label: "Payments & Refunds" },
   ],
 };
 
@@ -67,6 +72,37 @@ describe("fetchContactGetInTouchSafe", () => {
     );
 
     expect(await fetchContactGetInTouchSafe()).toEqual([]);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+});
+
+describe("fetchContactWebPageDataSafe", () => {
+  beforeEach(() => {
+    vi.spyOn(console, "warn").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns mapped Get In Touch rows and inquiry options on success", async () => {
+    mockGetSingleContent.mockResolvedValue(apiEntry);
+
+    const data = await fetchContactWebPageDataSafe();
+    expect(data.getInTouchItems).toHaveLength(1);
+    expect(data.getInTouchItems[0]?.label).toBe("Address");
+    expect(data.inquiryOptions).toEqual(["Order Issue", "Payments & Refunds"]);
+  });
+
+  it("returns empty lists on NOT_FOUND", async () => {
+    mockGetSingleContent.mockRejectedValue(
+      new FreshTerraApiError("missing", "NOT_FOUND", 404),
+    );
+
+    expect(await fetchContactWebPageDataSafe()).toEqual({
+      getInTouchItems: [],
+      inquiryOptions: [],
+    });
     expect(console.warn).not.toHaveBeenCalled();
   });
 });

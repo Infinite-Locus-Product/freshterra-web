@@ -84,9 +84,7 @@ describe("SearchResultsView", () => {
     expect(
       screen.getByRole("button", { name: /^filters$/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.getAllByRole("button", { name: /sort by/i }).length,
-    ).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByRole("button", { name: /sort by/i })).not.toBeInTheDocument();
   });
 
   it("renders the no-results state with the query", () => {

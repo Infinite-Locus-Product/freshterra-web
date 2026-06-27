@@ -13,7 +13,7 @@ import { normalizeFooterBffPayload } from "./footer-bff-normalizer";
  */
 export const footerLinkSchema = z.object({
   label: z.string(),
-  url: z.string(),
+  url: z.string().optional(),
 });
 export type FooterLink = z.infer<typeof footerLinkSchema>;
 

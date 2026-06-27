@@ -12,8 +12,11 @@ export const HOME_STORE_CTA_MWEB_HEIGHT = 48;
 export const HOME_STORE_CTA_FONT_SIZE = 20;
 export const HOME_STORE_FOOTER_GAP_MWEB = 25;
 
+/** Web gap from “How We Source” section bottom to store title. */
+export const HOME_STORE_SECTION_TOP_GAP_WEB = 72;
+
 export const homeStoreSectionClass =
-  "bg-white pt-[60px] pb-[25px] md:pt-19 md:pb-[49.16px]";
+  "bg-white pt-[60px] pb-[25px] md:pt-[72px] md:pb-[49.16px]";
 
 /** mWeb: Figma 16px horizontal inset (361px media in 393px frame). */
 export const homeStoreSectionShellClass = "px-4 md:px-page";
@@ -45,6 +48,10 @@ export const homeStoreNameClass =
 
 export const homeStoreAddressClass =
   "text-text-secondary text-sm leading-5 md:text-base md:leading-6";
+
+/** Rich-text address from Strapi (`store_address`). */
+export const homeStoreAddressRichTextClass =
+  `${homeStoreAddressClass} [&_h3]:text-text-primary [&_h3]:m-0 [&_h3]:font-sans [&_h3]:text-base [&_h3]:font-bold [&_h3]:md:text-xl [&_h3+p]:mt-0.5 [&_p]:m-0 [&_p+p]:mt-0.5 [&_a]:text-brand-500 [&_a]:underline [&_strong]:font-semibold`;
 
 export const homeStoreCtaRowClass =
   "mt-3.5 flex flex-nowrap items-center gap-3 md:flex-wrap";

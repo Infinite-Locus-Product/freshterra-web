@@ -97,6 +97,8 @@ export interface ApiFetchOptions<T> {
    * requests go through the `/bff` proxy.
    */
   next?: ApiFetchNextOptions;
+  /** When true, a successful envelope with `data: null` resolves instead of throwing. */
+  allowNullData?: boolean;
 }
 
 function buildUrl(
@@ -180,7 +182,8 @@ export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions<T> = {},
 ): Promise<T> {
-  const { method = "GET", searchParams, body, signal, schema, next } = options;
+  const { method = "GET", searchParams, body, signal, schema, next, allowNullData } =
+    options;
   const token = options.token === undefined ? getAuthToken() : options.token;
 
   const url = buildUrl(path, searchParams);
@@ -253,7 +256,7 @@ export async function apiFetch<T>(
   }
 
   const payload = envelope.data;
-  if (!payload.success || payload.data == null) {
+  if (!payload.success || (payload.data == null && !allowNullData)) {
     const apiError = new FreshTerraApiError(
       payload.error?.message ?? "API returned an unsuccessful response",
       resolveCode(payload.error?.code, res.status),
@@ -278,6 +281,10 @@ export async function apiFetch<T>(
       throw apiError;
     }
     return parsed.data;
+  }
+
+  if (payload.data == null) {
+    return undefined as T;
   }
 
   return payload.data as T;

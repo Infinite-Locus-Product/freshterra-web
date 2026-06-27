@@ -12,13 +12,10 @@ export const HOME_TESTIMONIALS_CARD_MWEB_PADDING = 16;
 export const HOME_TESTIMONIALS_CARD_WIDTH = 730;
 export const HOME_TESTIMONIALS_CARD_HEIGHT = 551;
 
-export const HOME_TESTIMONIALS_FOOTER_GAP_MWEB = 73.14;
-
 export const homeTestimonialsSectionClass = "bg-white pt-8 pb-0 md:pt-14";
 
 /** About page — stories carousel is the last block before the footer on mWeb. */
-export const homeTestimonialsStoriesSectionClass =
-  "mt-18 pb-[73.14px] md:pb-0";
+export const homeTestimonialsStoriesSectionClass = "mt-18";
 
 /** mWeb: Figma 16px horizontal inset for section header copy. */
 export const homeTestimonialsSectionShellClass =
