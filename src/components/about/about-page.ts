@@ -4,6 +4,11 @@ export const ABOUT_PAGE_BREADCRUMB_MWEB_FONT_SIZE = 12;
 export const aboutPageBreadcrumbClass =
   "text-text-secondary mb-4 flex items-center gap-2 text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
 
+export const ABOUT_PAGE_CONTENT_TO_FOOTER_GAP_MWEB = 32;
+
+export const aboutPageSectionClass =
+  "text-text-primary bg-white pt-8 pb-8 md:pt-10 md:pb-0";
+
 export const ABOUT_PAGE_TITLE_MWEB_FONT_SIZE = 28;
 export const ABOUT_PAGE_TITLE_TO_BANNER_GAP_MWEB = 36;
 export const ABOUT_HERO_BANNER_MWEB_WIDTH = 393;
@@ -33,15 +38,19 @@ export const aboutStoryTitleClass =
 export const aboutStorySubtitleClass =
   "text-brand-500 font-handsome mt-1 text-[20px] leading-[20px] font-bold tracking-[0] md:text-[1.875rem] md:leading-[1.625rem] md:tracking-normal";
 
+/** About page body copy — mWeb: 14px / 150% lh; web: 20px / 130% lh. */
+export const aboutPageBodyTextClass =
+  "font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-[1.3]";
+
 export const aboutStoryBodyClass =
-  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[1.125rem] md:leading-7 md:tracking-normal";
+  `text-text-primary ${aboutPageBodyTextClass}`;
 
 export const ABOUT_STORY_SUBTITLE_TO_BODY_GAP_MWEB = 16.68;
 export const ABOUT_STORY_SUBTITLE_TO_BODY_GAP_WEB = 24;
 export const ABOUT_STORY_PARAGRAPH_GAP_MWEB = 12.64;
 
 export const aboutStoryParagraphsClass =
-  "mt-[16.68px] space-y-[12.64px] md:mt-[24px] md:space-y-4";
+  "mt-[16.68px] flex flex-col gap-4 md:mt-[24px] md:gap-5";
 
 export const ABOUT_MISSION_MWEB_HORIZONTAL_INSET = 25;
 export const ABOUT_MISSION_CARD_MWEB_WIDTH = 343;
@@ -75,7 +84,7 @@ export const aboutMissionTitleClass =
   "text-brand-500 font-display text-center text-[20px] font-semibold leading-[1.3] tracking-[0] md:text-[36px] md:leading-[1.3]";
 
 export const aboutMissionBodyClass =
-  "text-brand-500 max-w-3xl text-center font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-[1.5]";
+  `text-brand-500 max-w-3xl text-center ${aboutPageBodyTextClass}`;
 
 /** “Our Core Values” block — mWeb typography. */
 export const ABOUT_MISSION_TO_CORE_VALUES_GAP_MWEB = 43;
@@ -110,3 +119,11 @@ export const aboutCoreValuesCardLabelWrapClass =
 /** mWeb value label (e.g. Fresh) — Manrope 16px bold, 20px line-height. */
 export const aboutCoreValuesCardLabelClass =
   "font-sans align-bottom text-base leading-5 font-bold tracking-[0] md:text-2xl md:leading-tight md:font-semibold";
+
+/** Value card subtext — Manrope 20px regular, 100% line-height. */
+export const aboutCoreValuesCardDescriptionClass =
+  `align-bottom ${aboutPageBodyTextClass}`;
+
+/** Value card subtext shell — hidden until card hover/focus. */
+export const aboutCoreValuesCardDescriptionRevealClass =
+  `text-beige-100/90 mt-0 max-h-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:mt-3 group-hover:max-h-48 group-hover:opacity-100 group-focus-visible:mt-3 group-focus-visible:max-h-48 group-focus-visible:opacity-100 ${aboutCoreValuesCardDescriptionClass}`;

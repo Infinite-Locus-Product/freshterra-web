@@ -207,4 +207,17 @@ describe("apiFetch", () => {
       expect.objectContaining({ code: "RATE_LIMITED", status: 429 }),
     );
   });
+
+  it("resolves when allowNullData is true and the envelope data is null", async () => {
+    globalThis.fetch = vi.fn(async () =>
+      jsonResponse(successEnvelope(null)),
+    ) as unknown as typeof fetch;
+
+    await expect(
+      apiFetch<void>("/api/v1/forms/contact-us", {
+        method: "POST",
+        allowNullData: true,
+      }),
+    ).resolves.toBeUndefined();
+  });
 });

@@ -1,4 +1,6 @@
+import { richTextToHtml, richTextToPlainText } from "./cms-rich-text";
 import { isCmsActive } from "./cms-boolean";
+import { resolveL2CategoryViewAllHref } from "./homepage-l2-category-tiles";
 import {
   buildGoogleMapsSearchUrl,
   normalizeCmsDeeplink,
@@ -37,8 +39,6 @@ const EMPTY_SOURCING: HomePageContent["sourcing"] = {
 const EMPTY_STORE: HomePageContent["store"] = {
   title: "",
   name: "",
-  addressLine1: "",
-  addressLine2: "",
   primaryCtaLabel: "",
   secondaryCtaLabel: "",
 };
@@ -204,8 +204,9 @@ function mapStore(
   sectionTitle: string,
 ): HomePageContent["store"] {
   const record = raw as UnknownRecord;
-  const address = readString(record, "store_address");
-  const addressLines = address ? splitParagraphs(address.replace(/\n/g, "\n")) : [];
+  const addressRaw = record.store_address;
+  const addressHtml = richTextToHtml(addressRaw);
+  const addressPlain = richTextToPlainText(addressRaw) ?? "";
   const primaryCtaLabel = readString(record, "view_store_cta");
   const secondaryCtaLabel = readString(record, "locate_us_cta");
 
@@ -221,15 +222,14 @@ function mapStore(
   const primaryCtaHref = resolveViewStoreHref(record, Boolean(primaryCtaLabel));
   const secondaryCtaHref = resolveLocateUsHref(
     record,
-    address,
+    addressPlain,
     Boolean(secondaryCtaLabel),
   );
 
   return {
     title: sectionTitle,
     name: readString(record, "store_name"),
-    addressLine1: addressLines[0] ?? "",
-    addressLine2: addressLines[1] ?? "",
+    ...(addressHtml ? { addressHtml } : {}),
     primaryCtaLabel,
     secondaryCtaLabel,
     ...(primaryCtaHref ? { primaryCtaHref } : {}),
@@ -289,11 +289,12 @@ export function mapWebHomepageContent(input: WebHomepageContent): HomePageConten
 
   const l2 = input.l2_category;
   const l2SectionActive = Boolean(l2 && isCmsActive(l2.is_active));
-  const categoriesViewAllHref =
-    l2SectionActive && l2?.slug
-      ? normalizeHref(l2.slug) ??
-        (l2.slug.startsWith("/") ? l2.slug : undefined)
-      : undefined;
+  const categoriesViewAllHref = l2SectionActive
+    ? resolveL2CategoryViewAllHref(l2)
+    : undefined;
+  const categoriesCtaLabel = l2SectionActive
+    ? l2?.view_all_cta?.trim() ?? ""
+    : "";
 
   const storeSectionTitle = input.store_section_heading?.trim() ?? "";
 
@@ -309,7 +310,7 @@ export function mapWebHomepageContent(input: WebHomepageContent): HomePageConten
       ? {
           title: l2?.title?.trim() ?? "",
           subtitle: l2?.tagline?.trim() ?? "",
-          ctaLabel: "",
+          ctaLabel: categoriesCtaLabel,
           items: [],
           ...(categoriesViewAllHref ? { viewAllHref: categoriesViewAllHref } : {}),
         }

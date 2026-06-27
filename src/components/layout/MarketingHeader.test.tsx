@@ -17,7 +17,7 @@ describe("AppDownloadBanner", () => {
     expect(screen.getByText("experience")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /open app/i })).toHaveAttribute(
       "href",
-      "/open",
+      "/notify",
     );
   });
 
@@ -59,6 +59,20 @@ describe("MarketingHeader", () => {
     const nav = screen.getByRole("navigation", { name: /primary/i });
     expect(nav.className).toContain("flex-wrap");
     expect(nav.className).not.toContain("overflow-x-auto");
+  });
+
+  it("renders the desktop download CTA linking to /notify", () => {
+    render(<MarketingHeader />);
+    expect(
+      screen.getByRole("link", { name: /download the app/i }),
+    ).toHaveAttribute("href", "/notify");
+  });
+
+  it("links the location badge to the stores page", () => {
+    render(<MarketingHeader />);
+    expect(
+      screen.getAllByRole("link", { name: /freshterra gurugram/i })[0],
+    ).toHaveAttribute("href", "/stores");
   });
 
   it("exposes a mobile hamburger menu trigger wired to the drawer", () => {

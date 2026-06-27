@@ -24,11 +24,13 @@ import type { ContactGetInTouchItem } from "@/features/cms-content/contact-web-t
 type ContactPageLayoutProps = {
   content: ContactPageStaticContent;
   getInTouchItems: ContactGetInTouchItem[];
+  inquiryOptions: readonly string[];
 };
 
 export function ContactPageLayout({
   content,
   getInTouchItems,
+  inquiryOptions,
 }: Readonly<ContactPageLayoutProps>) {
   return (
     <section className={contactPageSectionClass}>
@@ -57,12 +59,7 @@ export function ContactPageLayout({
             <div className={contactFormCardClass}>
               <ContactForm
                 fields={content.form.fields}
-                inquiryOptions={[
-                  "General Query",
-                  "Support",
-                  "Partnership",
-                  "Store Feedback",
-                ]}
+                inquiryOptions={inquiryOptions}
                 ctaLabel={content.form.ctaLabel}
               />
             </div>

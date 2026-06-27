@@ -29,9 +29,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = readQuery((await searchParams).q);
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white">
       <MarketingHeader />
-      <main className="text-text-primary flex-1">
+      <main className="text-text-primary w-full min-w-0 flex-1 overflow-x-clip">
         <SearchResultsView query={query} />
       </main>
       <MarketingFooter />

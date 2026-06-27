@@ -1,8 +1,16 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { submitContactUsForm } from "@/features/contact/contact-form-service";
 
 import { ContactForm } from "./ContactForm";
+
+vi.mock("@/features/contact/contact-form-service", () => ({
+  submitContactUsForm: vi.fn(),
+}));
+
+const mockSubmitContactUsForm = vi.mocked(submitContactUsForm);
 
 const defaultProps = {
   fields: {
@@ -17,6 +25,11 @@ const defaultProps = {
 };
 
 describe("ContactForm", () => {
+  beforeEach(() => {
+    mockSubmitContactUsForm.mockReset();
+    mockSubmitContactUsForm.mockResolvedValue(undefined);
+  });
+
   it("shows validation errors for invalid name, email, and phone on submit", async () => {
     const user = userEvent.setup();
     render(<ContactForm {...defaultProps} />);
@@ -50,6 +63,13 @@ describe("ContactForm", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("status")).toHaveTextContent(/received your message/i);
+    });
+    expect(mockSubmitContactUsForm).toHaveBeenCalledWith({
+      inquiryType: "General Query",
+      name: "Rahul Sharma",
+      email: "rahul.sharma@email.com",
+      phone: "+91 9876543210",
+      message: "",
     });
   });
 });

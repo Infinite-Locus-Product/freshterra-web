@@ -10,3 +10,6 @@ export const MARKETING_HEADER_NAV_GAP_WEB = 32;
 
 export const marketingHeaderNavClass =
   "flex flex-wrap items-center gap-x-8 gap-y-2";
+
+export const marketingHeaderNavLinkLabelClass =
+  "text-text-primary text-sm leading-4 tracking-[0] uppercase";

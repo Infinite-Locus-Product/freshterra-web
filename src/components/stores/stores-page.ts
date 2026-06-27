@@ -1,4 +1,6 @@
 /** Figma Stores page — mWeb tokens. */
+import { cn } from "@/lib/utils/cn";
+
 export const STORES_CONTENT_TO_FOOTER_GAP_MWEB = 29;
 
 export const storesPageSectionClass = "pt-8 pb-[29px] md:py-10";
@@ -8,6 +10,22 @@ export const STORES_HERO_IMAGE_MWEB_INSET = 16;
 export const STORES_HERO_IMAGE_MWEB_WIDTH = 361;
 export const STORES_HERO_IMAGE_MWEB_HEIGHT = 234;
 
+/** Design reference — used for aspect ratio and image `sizes` hints. */
+export const STORES_IMAGE_WEB_WIDTH = 656;
+export const STORES_IMAGE_WEB_HEIGHT = 484;
+
+/** Shared responsive image frame — scales with container width, caps at design max. */
+export const storesImageFrameClass =
+  "relative w-full max-w-[656px] overflow-hidden";
+
+/** Primary / secondary hero — mWeb 361×234; desktop 656×484. */
+export const storesHeroImageAspectClass =
+  "aspect-[361/234] lg:aspect-[656/484]";
+
+/** Directions map — mWeb 361×264; desktop 656×484. */
+export const storesMapImageAspectClass =
+  "aspect-[361/264] lg:aspect-[656/484]";
+
 /** Store title — mWeb: Playfair 28px semibold, 100% line-height. */
 export const storesPageTitleClass =
   "font-display text-text-primary mb-6 text-[28px] font-semibold leading-none tracking-[0] md:text-[2.25rem] md:leading-[150%]";
@@ -15,13 +33,16 @@ export const storesPageTitleClass =
 /** mWeb: exactly 16px horizontal inset; desktop uses standard page padding. */
 export const storesPageShellClass = "px-4 lg:px-page";
 
-/** Hero image shell — rounded corners. */
+/** Hero image shell — full width within grid column. */
 export const storesHeroImageShellClass =
-  "mx-auto w-full max-w-[361px] overflow-hidden rounded-[10px] lg:mx-0 lg:max-w-none";
+  "w-full min-w-0 overflow-hidden rounded-[10px]";
 
-/** Hero image — mWeb: 361 × 234, rounded corners. */
-export const storesHeroImageClass =
-  "relative h-[234px] w-full overflow-hidden rounded-[10px] lg:min-h-[460px] lg:h-auto";
+/** Hero image container. */
+export const storesHeroImageClass = cn(
+  storesImageFrameClass,
+  storesHeroImageAspectClass,
+  "rounded-[10px]",
+);
 
 /** mWeb: no card chrome; desktop: bordered info box. */
 export const storesInfoCardClass =
@@ -48,23 +69,35 @@ export const STORES_DIRECTIONS_BUTTON_MWEB_HEIGHT = 48;
 export const STORES_MAP_BANNER_MWEB_WIDTH = 361;
 export const STORES_MAP_BANNER_MWEB_HEIGHT = 264;
 
-/** Get Directions — mWeb: 361 × 48, spans 16px-inset content width. */
-export const storesDirectionsButtonShellClass = "mt-6 w-full";
+/** Directions CTA — mWeb full width; desktop pill aligned to card start. */
+export const storesDirectionsButtonShellClass = "mt-6 w-full lg:w-auto";
 
 export const storesDirectionsButtonClass =
-  "box-border h-[48px] w-full normal-case tracking-normal lg:h-auto";
+  "box-border h-[48px] w-full normal-case tracking-normal lg:h-auto lg:w-auto lg:min-w-[172px]";
 
-/** Map banner shell — mWeb: 361 × 264 within 16px-inset content width. */
-export const storesMapBannerShellClass =
-  "mx-auto w-full max-w-[361px] lg:mx-0 lg:max-w-none";
+/** Map banner shell — fluid within grid column. */
+export const storesMapBannerShellClass = "w-full min-w-0";
 
-export const storesMapBannerClass =
-  "focus-visible:ring-brand-500 relative block h-[264px] w-full overflow-hidden rounded-[var(--radius-sm)] focus:outline-none focus-visible:ring-2 lg:min-h-[340px] lg:h-auto lg:rounded-[10px]";
+export const storesMapBannerClass = cn(
+  storesImageFrameClass,
+  storesMapImageAspectClass,
+  "focus-visible:ring-brand-500 block rounded-[var(--radius-sm)] focus:outline-none focus-visible:ring-2 lg:rounded-[10px]",
+);
 
-export const storesMapSectionClass = "mb-8 grid gap-4 lg:grid-cols-[1fr_1fr]";
+export const storesMapSectionClass = "mb-8 grid gap-4 lg:grid-cols-2";
 
-export const storesSecondaryImageClass =
-  "relative hidden min-h-[220px] overflow-hidden rounded-[10px] md:min-h-[340px] lg:block";
+export const storesSecondaryImageClass = cn(
+  storesImageFrameClass,
+  storesHeroImageAspectClass,
+  "hidden rounded-[10px] lg:block",
+);
+
+/** Next/Image `sizes` for hero + map imagery in a two-column desktop layout. */
+export const storesPageHeroImageSizes =
+  "(max-width: 1023px) 100vw, min(656px, 50vw)";
+
+export const storesPageMapImageSizes =
+  "(max-width: 1023px) 100vw, min(656px, 50vw)";
 
 /** In-Store Categories — mWeb: Playfair 20px semibold, 130% line-height. */
 export const storesInStoreCategoriesTitleClass =
@@ -78,9 +111,9 @@ export const STORES_CATEGORY_CARD_GAP_MWEB = 9;
 export const storesInStoreCategoriesGridClass =
   "grid grid-cols-2 gap-[9px] sm:grid-cols-2 lg:grid-cols-3 lg:gap-3 xl:grid-cols-6";
 
-/** Category card — mWeb: 176 × 153, 10px radius, 1.73px border, -180deg gradient. */
+/** Category card — fluid width with fixed aspect ratio. */
 export const storesCategoryCardClass =
-  "from-text-primary/45 to-text-primary/70 text-beige-100 box-border flex h-[153px] w-[176px] max-w-full items-end overflow-hidden rounded-[10px] border-[1.73px] border-gray-200 bg-linear-to-b p-3 lg:min-h-[120px] lg:h-auto lg:w-auto lg:border-0 lg:bg-linear-to-t";
+  "text-beige-100 relative isolate box-border flex aspect-[176/153] w-full max-w-full items-end overflow-hidden rounded-[10px] border-[1.73px] border-gray-200 p-3 lg:border-0";
 
 /** Category card label — mWeb: Manrope 14px bold, 16px line-height. */
 export const storesCategoryCardLabelClass =

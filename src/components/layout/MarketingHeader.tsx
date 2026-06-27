@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
-import Link from "next/link";
-
 import { cn } from "@/lib/utils/cn";
 
 import {
   HEADER_EDGE_PADDING_CLASS,
   marketingHeaderNavClass,
+  marketingHeaderNavLinkLabelClass,
 } from "@/components/layout/header-chrome";
 import { PAGE_SHELL_INNER_CLASS } from "@/components/layout/layout-classes";
+import { MarketingNavLinkLabel } from "@/components/layout/MarketingNavLinkLabel";
 import { MobileMarketingHeader } from "@/components/layout/MobileMarketingHeader";
 import { BrandTagline } from "@/components/ui/BrandTagline";
 import { HeaderDownloadAppButton } from "@/components/ui/HeaderDownloadAppButton";
@@ -22,23 +22,23 @@ export type MarketingNavLink = Readonly<{
   href: string;
 }>;
 
-const NAV_LINK_CLASS =
-  "text-text-primary text-sm leading-4 font-medium tracking-wide uppercase";
+const NAV_LINK_CLASS = marketingHeaderNavLinkLabelClass;
 
 /** Navbar explore-catalog redirect disabled until the page is ready. */
 export function isExploreCatalogNavLink(link: MarketingNavLink): boolean {
   return (
     link.href === "/c/explore-catalog" ||
-    link.label.trim().toLowerCase() === "explore catalog"
+    link.label.trim().toLowerCase() === "explore catalog" ||
+    link.label.trim().toLowerCase() === "explore products"
   );
 }
 
 export const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
-  { label: "Explore Catalog", href: "/c/explore-catalog" },
+  { label: "Explore Products", href: "/c/explore-catalog" },
   { label: "Our Philosophy", href: "/food-philosophy" },
   { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
-  { label: "Our Stores", href: "/stores" },
+  { label: "Stores Coming Soon", href: "/stores" },
   { label: "Contact Us", href: "/contact" },
   { label: "FAQ", href: "/faq" },
 ] as const;
@@ -62,7 +62,7 @@ export type MarketingHeaderProps = Readonly<{
 export function MarketingHeader({
   tagline,
   taglineAs = "p",
-  locationLabel = "Fresh Market Gurugram",
+  locationLabel = "FreshTerra Gurugram",
   navLinks = DEFAULT_NAV_LINKS,
   downloadHref = "/notify",
   downloadLabel = "Download the App",
@@ -92,17 +92,18 @@ export function MarketingHeader({
         <nav aria-label="Primary" className={marketingHeaderNavClass}>
           {navLinks.map((link) =>
             isExploreCatalogNavLink(link) ? (
-              <span key={link.label} className={NAV_LINK_CLASS}>
-                {link.label}
-              </span>
-            ) : (
-              <Link
+              <MarketingNavLinkLabel
                 key={link.label}
+                label={link.label}
+                labelClassName={NAV_LINK_CLASS}
+              />
+            ) : (
+              <MarketingNavLinkLabel
+                key={link.label}
+                label={link.label}
                 href={link.href}
-                className={`${NAV_LINK_CLASS} hover:underline`}
-              >
-                {link.label}
-              </Link>
+                labelClassName={NAV_LINK_CLASS}
+              />
             ),
           )}
         </nav>

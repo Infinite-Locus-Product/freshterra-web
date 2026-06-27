@@ -10,9 +10,9 @@ export const categoryPageDraftContent = {
     ctaLabel: "Download the App",
   },
   nav: {
-    locationLabel: "Fresh Market Gurugram",
+    locationLabel: "FreshTerra Gurugram",
     links: [
-      { label: "Explore Catalog", href: "/c/explore-catalog" },
+      { label: "Explore Products", href: "/c/explore-catalog" },
       { label: "Our Philosophy", href: "/food-philosophy" },
       { label: "About Us", href: "/about" },
       { label: "Careers", href: "/careers" },

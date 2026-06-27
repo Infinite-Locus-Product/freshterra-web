@@ -7,6 +7,7 @@ import {
   aboutHeroBannerOuterClass,
   aboutHeroBannerShellClass,
   aboutPageBreadcrumbClass,
+  aboutPageSectionClass,
   aboutPageTitleClass,
   aboutStoryBodyClass,
   aboutStoryParagraphsClass,
@@ -18,6 +19,7 @@ import {
   aboutMissionSectionClass,
   aboutMissionSectionInsetClass,
   aboutCoreValuesCardClass,
+  aboutCoreValuesCardDescriptionRevealClass,
   aboutCoreValuesCardImageClass,
   aboutCoreValuesCardLabelClass,
   aboutCoreValuesCardLabelWrapClass,
@@ -60,7 +62,7 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
   const showCustomerStories = (content.customerStories?.items.length ?? 0) > 0;
 
   return (
-    <section className="text-text-primary bg-white pt-8 pb-0 md:pt-10">
+    <section className={aboutPageSectionClass}>
       <PageShell>
         <nav aria-label="Breadcrumb" className={aboutPageBreadcrumbClass}>
           <Link href="/" className="hover:underline">
@@ -212,7 +214,7 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
                       <p className={aboutCoreValuesCardLabelClass}>{item.label}</p>
                     ) : null}
                     {item.description ? (
-                      <p className="text-beige-100/90 mt-0 max-h-0 overflow-hidden text-sm leading-6 opacity-0 transition-all duration-300 group-hover:mt-3 group-hover:max-h-48 group-hover:opacity-100 group-focus-visible:mt-3 group-focus-visible:max-h-48 group-focus-visible:opacity-100">
+                      <p className={aboutCoreValuesCardDescriptionRevealClass}>
                         {item.description}
                       </p>
                     ) : null}

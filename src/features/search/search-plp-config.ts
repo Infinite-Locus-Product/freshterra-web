@@ -1,13 +1,4 @@
 import type { PlpFilterGroup } from "@/features/catalog/components/PlpFilters";
-import type { SortOption } from "@/features/catalog/components/PlpSortMenu";
-
-import type { SearchSort } from "./types";
-
-export const SEARCH_SORT_OPTIONS: SortOption<SearchSort>[] = [
-  { value: "relevance", label: "Relevance" },
-  { value: "price_asc", label: "Price: Low to High" },
-  { value: "price_desc", label: "Price: High to Low" },
-];
 
 /**
  * Placeholder facet groups until the SRP API drives filters from `data.facets`.

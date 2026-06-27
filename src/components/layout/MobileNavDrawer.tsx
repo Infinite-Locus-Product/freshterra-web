@@ -2,14 +2,13 @@
 
 import { useEffect, useId, useRef } from "react";
 
-import Link from "next/link";
-
 import { createPortal } from "react-dom";
 
 import {
   isExploreCatalogNavLink,
   type MarketingNavLink,
 } from "@/components/layout/MarketingHeader";
+import { MarketingNavLinkLabel } from "@/components/layout/MarketingNavLinkLabel";
 import {
   mobileNavDrawerCloseButtonClass,
   mobileNavDrawerHeaderClass,
@@ -130,18 +129,19 @@ export function MobileNavDrawer({
         >
           {navLinks.map((link) =>
             isExploreCatalogNavLink(link) ? (
-              <span key={link.label} className={mobileNavDrawerLinkClass}>
-                {link.label}
-              </span>
-            ) : (
-              <Link
+              <MarketingNavLinkLabel
                 key={link.label}
+                label={link.label}
+                labelClassName={mobileNavDrawerLinkClass}
+              />
+            ) : (
+              <MarketingNavLinkLabel
+                key={link.label}
+                label={link.label}
                 href={link.href}
                 onClick={onClose}
-                className={mobileNavDrawerLinkClass}
-              >
-                {link.label}
-              </Link>
+                labelClassName={mobileNavDrawerLinkClass}
+              />
             ),
           )}
           {/* TODO: restore explore-catalog redirect when page is ready.

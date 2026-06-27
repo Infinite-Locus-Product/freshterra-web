@@ -1,12 +1,7 @@
-import { getContentEntry } from "./content-entry-service";
-import {
-  footerContentBffSchema,
-  type FooterContent,
-} from "./footer-content-types";
+import { getWebFooterContent } from "./web-footer-service";
+import { mapWebFooterContent } from "./web-footer-mapper";
 
-/** The footer is a CMS page entry: GET /api/v1/content/pages/footer. */
-const FOOTER_CONTENT_TYPE = "pages";
-const FOOTER_SLUG = "footer";
+import type { FooterContent } from "./footer-content-types";
 
 export const DEFAULT_FOOTER_LOCALE = "en-IN";
 
@@ -23,24 +18,16 @@ export interface FooterContentRequestOptions {
 }
 
 /**
- * Fetches footer content from the generic CMS content endpoint
- * (`GET /api/v1/content/pages/footer`) via {@link getContentEntry}. The
- * footer's payload is footer-shaped (groups/social/legal), so it's validated +
- * normalized with `footerContentBffSchema` rather than the standard page
- * schema. There is no longer a dedicated `/content/footer` route.
+ * Fetches footer content from
+ * `GET /api/v1/content/single/web-footer?locale=`.
  */
 export async function getFooter(
   params: FooterContentParams = {},
   options: FooterContentRequestOptions = {},
 ): Promise<FooterContent> {
-  return getContentEntry<FooterContent>(
-    FOOTER_CONTENT_TYPE,
-    FOOTER_SLUG,
+  const entry = await getWebFooterContent(
     { locale: params.locale },
-    {
-      signal: options.signal,
-      token: options.token,
-      schema: footerContentBffSchema,
-    },
+    { signal: options.signal, token: options.token },
   );
+  return mapWebFooterContent(entry);
 }

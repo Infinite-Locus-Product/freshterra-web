@@ -64,7 +64,7 @@ export const webHomepageStoreSchema = z
     store_name: cmsString,
     store_image: cmsString,
     store_image_mweb: cmsString,
-    store_address: cmsString,
+    store_address: z.union([cmsString, z.array(z.unknown()), z.record(z.string(), z.unknown())]).nullable().optional(),
     view_store_cta: cmsString,
     view_store_slug: cmsString,
     locate_us_cta: cmsString,
@@ -95,6 +95,8 @@ export const webHomepageL2CategorySchema = z
     title: cmsString,
     tagline: cmsString,
     slug: cmsString,
+    view_all_cta: cmsString,
+    view_all_cta_deeplink: cmsString,
     limit: z.number().nullable().optional(),
     is_active: cmsBoolSchema,
     l2_category_tile: z.array(webHomepageL2CategoryTileSchema).optional(),
@@ -169,8 +171,7 @@ export type HomePageContent = Readonly<{
   store: {
     title: string;
     name: string;
-    addressLine1: string;
-    addressLine2: string;
+    addressHtml?: string;
     primaryCtaLabel: string;
     secondaryCtaLabel: string;
     primaryCtaHref?: string;
@@ -190,5 +191,5 @@ export type HomeCategoryTileItem = Readonly<{
   key: string;
   name: string;
   imageSrc?: string;
-  href: string;
+  href?: string;
 }>;

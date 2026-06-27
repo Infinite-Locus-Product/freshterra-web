@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { mapContactWebGetInTouch } from "./contact-web-mapper";
+import { mapContactWebGetInTouch, mapContactWebInquiryOptions } from "./contact-web-mapper";
 import { contactWebContentSchema } from "./contact-web-types";
 
 const stagingPayload = {
@@ -37,6 +37,15 @@ const stagingPayload = {
       info_heading: "Email",
     },
   ],
+  inquiry: [
+    { id: 8, label: "Order Issue" },
+    { id: 9, label: "Payments & Refunds" },
+    { id: 10, label: "Product Query" },
+    { id: 11, label: "Account & App" },
+    { id: 12, label: "Returns & Cancellations" },
+    { id: 13, label: "Others" },
+    { id: 14, label: "Feedback" },
+  ],
 };
 
 describe("mapContactWebGetInTouch", () => {
@@ -72,5 +81,55 @@ describe("mapContactWebGetInTouch", () => {
     });
 
     expect(items).toHaveLength(0);
+  });
+
+  it("splits a single-line Address into two lines", () => {
+    const items = mapContactWebGetInTouch({
+      get_in_touch: [
+        {
+          info_heading: "Address",
+          icon: "https://cms-stg.freshterra.in/uploads/Shape_0c6d1355a8.png",
+          description:
+            "6th Floor, Tower B, Paras Twin Towers, Golf Course Road, Gurugram, Haryana, 122011",
+        },
+      ],
+    });
+
+    expect(items[0]?.lines).toEqual([
+      "6th Floor, Tower B, Paras Twin Towers, Golf Course Road",
+      "Gurugram, Haryana, 122011",
+    ]);
+  });
+});
+
+describe("mapContactWebInquiryOptions", () => {
+  it("maps inquiry labels from the live contact-web payload", () => {
+    const parsed = contactWebContentSchema.safeParse(stagingPayload);
+    expect(parsed.success).toBe(true);
+
+    const options = mapContactWebInquiryOptions(
+      parsed.success ? parsed.data : stagingPayload,
+    );
+
+    expect(options).toEqual([
+      "Order Issue",
+      "Payments & Refunds",
+      "Product Query",
+      "Account & App",
+      "Returns & Cancellations",
+      "Others",
+      "Feedback",
+    ]);
+  });
+
+  it("omits inactive inquiry rows", () => {
+    const options = mapContactWebInquiryOptions({
+      inquiry: [
+        { id: 1, label: "Visible", is_active: true },
+        { id: 2, label: "Hidden", is_active: false },
+      ],
+    });
+
+    expect(options).toEqual(["Visible"]);
   });
 });

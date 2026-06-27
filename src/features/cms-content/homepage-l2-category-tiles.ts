@@ -81,15 +81,26 @@ function normalizeViewAllHref(slug: string | null | undefined): string | undefin
   return normalizeCmsSlugHref(slug) ?? normalizeCmsDeeplink(slug) ?? undefined;
 }
 
+/** Resolves the l2_category "View all" link from CMS deeplink or legacy slug. */
+export function resolveL2CategoryViewAllHref(
+  l2: WebHomepageContent["l2_category"],
+): string | undefined {
+  if (!l2) return undefined;
+
+  const deeplink = normalizeCmsDeeplink(l2.view_all_cta_deeplink);
+  if (deeplink) return deeplink;
+
+  return normalizeViewAllHref(l2.slug);
+}
+
 function resolveTileHref(
   tile: WebHomepageL2CategoryTile,
   categorySlug: string | undefined,
-  viewAllHref: string,
-): string {
+): string | undefined {
   const deeplink = normalizeCmsDeeplink(tile.deeplink);
   if (deeplink) return deeplink;
   if (categorySlug) return `/c/${categorySlug}`;
-  return viewAllHref;
+  return undefined;
 }
 
 /**
@@ -107,7 +118,6 @@ export async function buildHomepageL2CategoryTileItems(
 
   const limit =
     l2?.limit && l2.limit > 0 ? l2.limit : rawTiles.length;
-  const viewAllHref = normalizeViewAllHref(l2?.slug) ?? "";
 
   const sorted = [...rawTiles]
     .filter((tile) => isCmsActive(tile.is_active))
@@ -128,15 +138,14 @@ export async function buildHomepageL2CategoryTileItems(
     const displayName = tileLabel(tile) ?? category?.name;
     if (!displayName) return [];
 
-    const href = resolveTileHref(tile, category?.slug, viewAllHref);
-    if (!href) return [];
+    const href = resolveTileHref(tile, category?.slug);
 
     return [
       {
         key: tileKey(tile, index),
         name: displayName,
         imageSrc,
-        href,
+        ...(href ? { href } : {}),
       },
     ];
   });

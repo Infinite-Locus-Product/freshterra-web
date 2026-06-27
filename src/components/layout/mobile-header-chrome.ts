@@ -90,4 +90,4 @@ export const mobileNavDrawerLinksClass =
   "flex flex-col gap-[15.5px] px-6 pb-[15.5px]";
 
 export const mobileNavDrawerLinkClass =
-  "text-text-primary font-sans text-base leading-5 font-medium hover:underline";
+  "text-text-primary font-sans text-base leading-5 tracking-[0]";

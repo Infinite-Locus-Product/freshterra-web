@@ -44,9 +44,9 @@ export default async function ProductPage({
   const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white">
       <MarketingHeader />
-      <main className="text-text-primary flex-1">
+      <main className="text-text-primary w-full min-w-0 flex-1 overflow-x-clip">
         <ProductDetailView idOrSlug={slug} polygonId={polygonId} />
       </main>
       <MarketingFooter />

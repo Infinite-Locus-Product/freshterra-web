@@ -122,6 +122,27 @@ describe("resolveHomepageCategoryItems", () => {
     expect(items[0]?.href).toBe("/c/snacks");
   });
 
+  it("omits tile href when category slug and deeplink are missing", async () => {
+    const items = await buildHomepageL2CategoryTileItems({
+      l2_category: {
+        is_active: true,
+        view_all_cta_deeplink: "/c/explore-catalog",
+        l2_category_tile: [
+          {
+            image_web: "https://cms-stg.freshterra.in/uploads/tile.png",
+            label: "Custom tile",
+            saleor_category_id: null,
+            saleor_category_slug: null,
+            is_active: true,
+          },
+        ],
+      },
+    });
+
+    expect(items).toHaveLength(1);
+    expect(items[0]?.href).toBeUndefined();
+  });
+
   it("uses tile deeplink when provided by CMS", async () => {
     mockBuildCategoryLookup.mockResolvedValue({});
 

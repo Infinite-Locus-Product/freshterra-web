@@ -94,12 +94,15 @@ describe("PdpView", () => {
     expect(screen.queryByText(/₹/)).not.toBeInTheDocument();
   });
 
-  it("renders the tabs and switches to Nutritional Information", async () => {
+  it("renders nutritional information inside Product Details", async () => {
     const user = userEvent.setup();
     render(<PdpView product={product} related={related} relatedLoading={false} />);
 
-    await user.click(screen.getByRole("tab", { name: /nutritional information/i }));
+    await user.click(screen.getByRole("tab", { name: /product details/i }));
     const panel = screen.getByRole("tabpanel");
+    expect(
+      screen.queryByRole("tab", { name: /nutritional information/i }),
+    ).not.toBeInTheDocument();
     expect(within(panel).getByText("18 kcal")).toBeInTheDocument();
   });
 

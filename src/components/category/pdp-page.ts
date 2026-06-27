@@ -1,7 +1,7 @@
 /** Figma PDP — mWeb tokens. */
 export const PDP_MWEB_CONTENT_INSET = 16;
 
-export const pdpPageShellClass = "overflow-x-hidden py-0 lg:px-page lg:py-8";
+export const pdpPageShellClass = "w-full min-w-0 overflow-x-clip py-0 lg:px-page lg:py-8";
 
 /** Padded copy block below full-bleed gallery on mWeb. */
 export const pdpContentShellClass = "min-w-0 px-4 lg:px-0";
@@ -105,15 +105,20 @@ export const pdpStoreButtonTopLineClass =
 export const pdpStoreButtonBrandLineClass =
   "text-text-primary block font-sans text-[13.69px] font-semibold leading-[19.55px] tracking-[-0.15px] lg:text-sm lg:leading-tight lg:tracking-normal";
 
-/** Tab row — mWeb: horizontal scroll contained in parent. Web: full-bleed grey-50 strip. */
-export const pdpTabsRowClass =
-  "flex min-w-0 max-w-full gap-2 overflow-x-auto py-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:relative lg:left-1/2 lg:flex-wrap lg:w-screen lg:max-w-none lg:-translate-x-1/2 lg:overflow-visible lg:bg-gray-50 lg:px-page [&::-webkit-scrollbar]:hidden";
+/** Tab bar — grey band on web only (mWeb pills scroll on the page background). */
+export const pdpTabsBarShellClass = "w-full min-w-0 lg:bg-gray-50";
 
-export const pdpTabActiveClass =
-  "bg-brand-500 text-beige-100 shrink-0 rounded-full px-4 py-2 text-sm font-medium";
+/** mWeb: horizontal scroll with fixed-size pills and 16px side inset. Web: wrapped row in grey band. */
+export const pdpTabsRowClass =
+  "flex w-full min-w-0 gap-2 overflow-x-auto px-4 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-wrap lg:items-center lg:gap-3 lg:overflow-visible lg:px-0 lg:py-4";
+
+const pdpTabPillBaseClass =
+  "inline-flex shrink-0 items-center justify-center rounded-full px-4 py-2 font-sans text-sm font-medium leading-normal tracking-[0]";
+
+export const pdpTabActiveClass = `bg-brand-500 text-beige-100 ${pdpTabPillBaseClass}`;
 
 export const pdpTabInactiveClass =
-  "text-text-secondary shrink-0 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium";
+  `text-text-secondary border border-gray-200 bg-white ${pdpTabPillBaseClass}`;
 
 export const pdpTabsSectionClass = "min-w-0";
 

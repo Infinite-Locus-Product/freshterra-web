@@ -33,16 +33,15 @@ export const careersHeroSubtitleClass =
 
 export const CAREERS_PARAGRAPH_GAP_WEB = 24;
 
-export const careersHeroParagraphsClass =
-  "flex flex-col gap-[12.64px] md:gap-6";
+export const careersHeroParagraphsClass = "flex flex-col gap-4 md:gap-5";
 
-/** mWeb: Manrope 14px regular, 150% lh. Web: 20px, 100% lh. */
+/** mWeb: Manrope 14px regular, 150% line-height. Web: 20px, 130% line-height. */
 export const careersHeroBodyClass =
-  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-none";
+  "text-text-primary font-sans text-[14px] font-normal leading-[1.5] tracking-[0] md:text-[20px] md:leading-[1.3]";
 
-/** mWeb image placeholder — 361 × 247, 16px radius. */
+/** Hero image — 10px corner radius on mWeb and web. */
 export const careersHeroImageClass =
-  "relative mx-auto h-[247px] w-full max-w-[361px] overflow-hidden rounded-2xl lg:mx-0 lg:aspect-[667.923/457] lg:h-auto lg:min-h-75 lg:max-h-[28.5625rem] lg:max-w-[41.74rem] lg:rounded-sm";
+  "relative mx-auto h-[247px] w-full max-w-[361px] overflow-hidden rounded-[10px] lg:mx-0 lg:aspect-[667.923/457] lg:h-auto lg:min-h-75 lg:max-h-[28.5625rem] lg:max-w-[41.74rem]";
 
 export const careersHeroImageMediaClass = "object-cover object-center";
 
