@@ -30,10 +30,35 @@ const product: ProductDetail = {
 };
 
 describe("ProductTabs", () => {
-  it("renders ingredients from Saleor metafields", () => {
+  it("uses horizontal scroll tabs on mWeb and a wrapped row on web", () => {
     render(<ProductTabs product={product} />);
+    const tablist = screen.getByRole("tablist", { name: /product information/i });
+    expect(tablist.className).toContain("overflow-x-auto");
+    expect(tablist.className).toContain("px-4");
+    expect(tablist.className).toContain("lg:flex-wrap");
+    expect(tablist.className).not.toContain("w-screen");
+    expect(tablist.closest('[class*="lg:bg-gray-50"]')).toBeTruthy();
+    const detailsTab = screen.getByRole("tab", { name: /product details/i });
+    expect(detailsTab.className).toContain("shrink-0");
+    expect(detailsTab.className).toContain("text-sm");
+    expect(detailsTab.className).not.toContain("flex-[1_1_11rem]");
+  });
+
+  it("renders ingredients and nutrition macros in Product Details", () => {
+    render(
+      <ProductTabs
+        product={{
+          ...product,
+          nutrition: { kcal: 540, protein: 7.5, carbs: 58 },
+        }}
+      />,
+    );
     expect(screen.getByText("Cocoa, milk solids, sugar")).toBeInTheDocument();
     expect(screen.getByText("Contains milk.")).toBeInTheDocument();
+    expect(screen.getByText("540 kcal")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: /nutritional information/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders storage and usage in the instructions tab", async () => {

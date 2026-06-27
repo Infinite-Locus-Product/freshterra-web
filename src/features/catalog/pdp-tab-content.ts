@@ -4,7 +4,7 @@ import type {
   ProductMetafields,
 } from "./types";
 
-export type PdpTabKey = "details" | "nutrition" | "instructions" | "regulatory";
+export type PdpTabKey = "details" | "instructions" | "regulatory";
 
 function productDetailsFromInformations(
   info: ProductInformations | undefined,
@@ -36,7 +36,8 @@ export function pdpDetailsHasContent(
         cms.category ||
         cms.keyFeatures?.items.length ||
         cms.ingredients?.contains?.value ||
-        cms.ingredients?.allergenInfo,
+        cms.ingredients?.allergenInfo ||
+        pdpNutritionHasContent(product, meta),
     );
   }
 
@@ -50,7 +51,8 @@ export function pdpDetailsHasContent(
       meta?.allergenInfo ||
       (meta?.healthBenefits?.length ?? 0) > 0 ||
       product.tags.length > 0 ||
-      product.regulatory?.organic,
+      product.regulatory?.organic ||
+      pdpNutritionHasContent(product, meta),
   );
 }
 
@@ -129,7 +131,6 @@ export function visiblePdpTabs(product: ProductDetail): PdpTabKey[] {
   const meta = product.metafields;
   const tabs: PdpTabKey[] = [];
   if (pdpDetailsHasContent(product, meta)) tabs.push("details");
-  if (pdpNutritionHasContent(product, meta)) tabs.push("nutrition");
   if (pdpInstructionsHasContent(product, meta)) tabs.push("instructions");
   if (pdpRegulatoryHasContent(product, meta)) tabs.push("regulatory");
   return tabs;

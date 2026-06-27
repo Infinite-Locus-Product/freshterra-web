@@ -104,7 +104,7 @@ export type FoodPhilosophyPageContent = {
   certifications?: {
     title?: string;
     subtitle?: string;
-    description?: string;
+    paragraphs: string[];
     items: FoodPhilosophyCertificationItem[];
   };
   partnerships?: {

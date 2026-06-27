@@ -3,9 +3,14 @@ import Link from "next/link";
 
 import type { ReactNode } from "react";
 
+import { cn } from "@/lib/utils/cn";
+
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
+import { PageShell } from "@/components/layout/PageShell";
 import {
+  storesCategoryCardClass,
+  storesCategoryCardLabelClass,
   storesDirectionsButtonClass,
   storesDirectionsButtonShellClass,
   storesHeroImageClass,
@@ -15,9 +20,6 @@ import {
   storesInfoFieldValueClass,
   storesInfoRowClass,
   storesInfoRowIconClass,
-  storesInfoTitleClass,
-  storesCategoryCardClass,
-  storesCategoryCardLabelClass,
   storesInStoreCategoriesGridClass,
   storesInStoreCategoriesTitleClass,
   storesMapBannerClass,
@@ -27,22 +29,24 @@ import {
   storesPageShellClass,
   storesPageTitleClass,
   storesSecondaryImageClass,
+  storesPageHeroImageSizes,
+  storesPageMapImageSizes,
 } from "@/components/stores/stores-page";
 import { Button } from "@/components/ui/Button";
-import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
-import type { StoresPageDraftContent } from "@/features/cms-content/stores";
+import type {
+  StorePageCategoryTile,
+  StorePageInformationRow,
+  StorePageResponsiveImage,
+  StoresPageContent,
+} from "@/features/cms-content/store-page-web-types";
 
 type StoresPageLayoutProps = {
-  content: StoresPageDraftContent;
+  content: StoresPageContent;
 };
 
 export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
-  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-    `${content.store.title}, ${content.store.addressLine1}, ${content.store.addressLine2}`,
-  )}`;
-
   return (
     <main className="bg-white text-text-primary">
       <MarketingHeader />
@@ -54,73 +58,54 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
               Home
             </Link>
             <span aria-hidden>›</span>
-            <span className="text-text-primary">{content.breadcrumbLabel}</span>
+            <span className="text-text-primary">{content.title}</span>
           </div>
 
           <Heading level={1} variant="h2" className={storesPageTitleClass}>
-            {content.store.title}
+            {content.title}
           </Heading>
 
-          <div className="mb-4 grid gap-4 lg:grid-cols-[1fr_1fr]">
+          <div className="mb-4 grid gap-4 lg:grid-cols-2">
             <div className={storesHeroImageShellClass}>
               <div className={storesHeroImageClass}>
-                <Image
-                  src="/store.png"
-                  alt={`${content.store.title} store interior`}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
+                <StoresResponsiveImage
+                  image={content.primaryHeroImage}
+                  sizes={storesPageHeroImageSizes}
                   className="object-cover"
+                  priority
                 />
-                <div className="absolute right-4 bottom-4 flex gap-1.5" aria-hidden>
-                  <span className="bg-white h-1.5 w-1.5 rounded-full" />
-                  <span className="bg-white/60 h-1.5 w-1.5 rounded-full" />
-                  <span className="bg-white/60 h-1.5 w-1.5 rounded-full" />
-                </div>
               </div>
             </div>
-            <StoreInfoCard content={content} mapsUrl={mapsUrl} />
+            <StoreInfoCard content={content} />
           </div>
 
           <div className={storesMapSectionClass}>
             <div className={storesMapBannerShellClass}>
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Open ${content.store.title} in Google Maps`}
-                className={storesMapBannerClass}
-              >
-                <Image
-                  src="/map-store.png"
-                  alt={`Map showing ${content.store.title}`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                />
-              </a>
+              <DirectionsMapBanner content={content} />
             </div>
             <div className={storesSecondaryImageClass}>
-              <Image
-                src="/store.png"
-                alt={`${content.store.title} store interior`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
+              <StoresResponsiveImage
+                image={content.secondaryHeroImage}
+                sizes={storesPageMapImageSizes}
                 className="object-cover"
               />
             </div>
           </div>
 
-          <section>
-            <h2 className={storesInStoreCategoriesTitleClass}>In-Store Categories</h2>
-            <div className={storesInStoreCategoriesGridClass}>
-              {content.inStoreCategories.map((category) => (
-                <article key={category} className={storesCategoryCardClass}>
-                  <p className={storesCategoryCardLabelClass}>{category}</p>
-                </article>
-              ))}
-            </div>
-          </section>
+          {content.categories.length > 0 ? (
+            <section>
+              {content.categorySectionTitle ? (
+                <h2 className={storesInStoreCategoriesTitleClass}>
+                  {content.categorySectionTitle}
+                </h2>
+              ) : null}
+              <div className={storesInStoreCategoriesGridClass}>
+                {content.categories.map((category) => (
+                  <StoreCategoryTile key={category.label} category={category} />
+                ))}
+              </div>
+            </section>
+          ) : null}
         </PageShell>
       </section>
 
@@ -129,60 +114,117 @@ export function StoresPageLayout({ content }: Readonly<StoresPageLayoutProps>) {
   );
 }
 
-function StoreInfoCard({
-  content,
-  mapsUrl,
-}: Readonly<StoresPageLayoutProps & { mapsUrl: string }>) {
+function StoreInfoCard({ content }: Readonly<{ content: StoresPageContent }>) {
   return (
     <article className={storesInfoCardClass}>
-      <h2 className={storesInfoTitleClass}>Store information</h2>
+      {content.information.length > 0 ? (
+        <div className="space-y-5">
+          {content.information.map((row) => (
+            <StoreInfoRow key={row.heading} row={row} />
+          ))}
+        </div>
+      ) : null}
 
-      <div className="space-y-5">
-        <StoreInfoRow
-          icon={<LocationIcon />}
-          title="Address"
-          lines={[content.store.addressLine1, content.store.addressLine2]}
-        />
-        <StoreInfoRow
-          icon={<ClockIcon />}
-          title="Opening Hours"
-          lines={[content.store.openingHoursWeekdays, content.store.openingHoursWeekends]}
-        />
-        <StoreInfoRow
-          icon={<PhoneIcon />}
-          title="Phone"
-          lines={[content.store.phone]}
-        />
-        <StoreInfoRow icon={<MailIcon />} title="Email" lines={[content.store.email]} />
-      </div>
-
-      <div className={storesDirectionsButtonShellClass}>
-        <Button asChild fullWidth className={storesDirectionsButtonClass}>
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-            {content.store.ctaLabel}
-          </a>
-        </Button>
-      </div>
+      {content.directionsLabel && content.directionsUrl ? (
+        <div className={storesDirectionsButtonShellClass}>
+          <Button
+            asChild
+            caps={false}
+            size="md"
+            className={storesDirectionsButtonClass}
+          >
+            <DirectionsLink
+              href={content.directionsUrl}
+              className="inline-flex h-full w-full items-center justify-center lg:w-auto"
+            >
+              {content.directionsLabel}
+            </DirectionsLink>
+          </Button>
+        </div>
+      ) : null}
     </article>
   );
 }
 
-function StoreInfoRow({
-  icon,
-  title,
-  lines,
+function DirectionsMapBanner({
+  content,
+}: Readonly<{ content: StoresPageContent }>) {
+  const image = (
+    <Image
+      src="/map-store.png"
+      alt={`Map showing ${content.title}`}
+      fill
+      sizes={storesPageMapImageSizes}
+      className="object-cover"
+    />
+  );
+
+  return (
+    <DirectionsLink
+      href={content.directionsUrl}
+      aria-label={`Open directions to ${content.title}`}
+      className={storesMapBannerClass}
+    >
+      {image}
+    </DirectionsLink>
+  );
+}
+
+function isExternalHref(href: string): boolean {
+  return /^https?:\/\//i.test(href);
+}
+
+function DirectionsLink({
+  href,
+  children,
+  className,
+  "aria-label": ariaLabel,
 }: Readonly<{
-  icon: ReactNode;
-  title: string;
-  lines: readonly string[];
+  href: string;
+  children: ReactNode;
+  className?: string;
+  "aria-label"?: string;
 }>) {
+  if (isExternalHref(href)) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        aria-label={ariaLabel}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className} aria-label={ariaLabel}>
+      {children}
+    </Link>
+  );
+}
+
+function StoreInfoRow({ row }: Readonly<{ row: StorePageInformationRow }>) {
   return (
     <div className={storesInfoRowClass}>
-      <div className={storesInfoRowIconClass}>{icon}</div>
+      <div className={storesInfoRowIconClass}>
+        {row.iconSrc ? (
+          <Image
+            src={row.iconSrc}
+            alt=""
+            width={20}
+            height={20}
+            className="size-5 object-contain"
+            aria-hidden
+          />
+        ) : null}
+      </div>
       <div className="min-w-0">
-        <h3 className={storesInfoFieldLabelClass}>{title}</h3>
+        <h3 className={storesInfoFieldLabelClass}>{row.heading}</h3>
         <div className="mt-1 space-y-0.5">
-          {lines.map((line) => (
+          {row.lines.map((line) => (
             <p key={line} className={storesInfoFieldValueClass}>
               {line}
             </p>
@@ -193,70 +235,66 @@ function StoreInfoRow({
   );
 }
 
-function LocationIcon() {
+function StoreCategoryTile({
+  category,
+}: Readonly<{ category: StorePageCategoryTile }>) {
+  const card = (
+    <article className={storesCategoryCardClass}>
+      <div className="absolute inset-0 -z-10">
+        <StoresResponsiveImage
+          image={{
+            imageWeb: category.imageWeb,
+            imageMobile: category.imageMobile,
+            imageAlt: "",
+          }}
+          sizes="(max-width: 1023px) 50vw, 16vw"
+          className="object-cover"
+        />
+      </div>
+      <p className={storesCategoryCardLabelClass}>
+        {category.label}
+      </p>
+    </article>
+  );
+
+  if (!category.href) return card;
+
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M12 13.5a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 22s7-6.05 7-12a7 7 0 1 0-14 0c0 5.95 7 12 7 12Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-    </svg>
+    <Link href={category.href} className="block w-full">
+      {card}
+    </Link>
   );
 }
 
-function MailIcon() {
+function StoresResponsiveImage({
+  image,
+  sizes,
+  className,
+  priority,
+}: Readonly<{
+  image: StorePageResponsiveImage;
+  sizes: string;
+  className?: string;
+  priority?: boolean;
+}>) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M4.5 7.5h15v9h-15v-9Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
+    <>
+      <Image
+        src={image.imageMobile}
+        alt={image.imageAlt}
+        fill
+        priority={priority}
+        sizes={sizes}
+        className={cn(className, "lg:hidden")}
       />
-      <path
-        d="m5.25 8.25 6.4 5.12a.75.75 0 0 0 .9 0l6.2-5.12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
+      <Image
+        src={image.imageWeb}
+        alt={image.imageAlt}
+        fill
+        priority={priority}
+        sizes={sizes}
+        className={cn(className, "hidden lg:block")}
       />
-    </svg>
-  );
-}
-
-function PhoneIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M7 3.75h3l1 4-2 1c1 2.5 3 4.5 5.25 5.25l1-2 4 1v3c0 1.1-.9 2-2 2C10.6 19 5 13.4 5 6.75c0-1.1.9-2 2-2Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-5">
-      <path
-        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 7v5l3 2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    </>
   );
 }

@@ -18,8 +18,10 @@ import {
   pdpProductDetailsHeadingClass,
   pdpTabActiveClass,
   pdpTabInactiveClass,
+  pdpTabsBarShellClass,
   pdpTabsRowClass,
   pdpTabsSectionClass,
+  pdpContentShellClass,
 } from "@/components/category/pdp-page";
 import { cn } from "@/lib/utils/cn";
 
@@ -33,7 +35,6 @@ import type { ProductDetail, ProductMetafields } from "../types";
 
 const TAB_LABELS: Record<PdpTabKey, string> = {
   details: "Product Details",
-  nutrition: "Nutritional Information",
   instructions: "Instructions",
   regulatory: "Regulatory Information",
 };
@@ -58,41 +59,40 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
 
   return (
     <section className={pdpTabsSectionClass}>
-      <div
-        role="tablist"
-        aria-label="Product information"
-        className={pdpTabsRowClass}
-      >
-        {visibleTabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            role="tab"
-            aria-selected={active === tab}
-            id={`tab-${tab}`}
-            aria-controls={`panel-${tab}`}
-            onClick={() => setActive(tab)}
-            className={cn(
-              "transition-colors",
-              active === tab ? pdpTabActiveClass : pdpTabInactiveClass,
-            )}
-          >
-            {TAB_LABELS[tab]}
-          </button>
-        ))}
+      <div className={pdpTabsBarShellClass}>
+        <div
+          role="tablist"
+          aria-label="Product information"
+          className={pdpTabsRowClass}
+        >
+          {visibleTabs.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              aria-selected={active === tab}
+              id={`tab-${tab}`}
+              aria-controls={`panel-${tab}`}
+              onClick={() => setActive(tab)}
+              className={cn(
+                "transition-colors",
+                active === tab ? pdpTabActiveClass : pdpTabInactiveClass,
+              )}
+            >
+              {TAB_LABELS[tab]}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div
         role="tabpanel"
         id={`panel-${active}`}
         aria-labelledby={`tab-${active}`}
-        className="py-4"
+        className={cn(pdpContentShellClass, "py-4")}
       >
         {active === "details" ? (
           <DetailsPanel product={product} meta={meta} info={info} />
-        ) : null}
-        {active === "nutrition" ? (
-          <NutritionPanel product={product} meta={meta} info={info} />
         ) : null}
         {active === "instructions" ? (
           <InstructionsPanel meta={meta} info={info} />
@@ -180,6 +180,13 @@ function DetailsPanel({
             <p className={pdpDetailsBodyTextClass}>{ingredients.allergenInfo}</p>
           </div>
         ) : null}
+
+        <NutritionDetailsSection
+          product={product}
+          meta={meta}
+          info={info}
+          showHealthBenefits
+        />
       </div>
     );
   }
@@ -259,18 +266,22 @@ function DetailsPanel({
           <p className={pdpDetailsBodyTextClass}>{allergenInfo}</p>
         </div>
       ) : null}
+
+      <NutritionDetailsSection product={product} meta={meta} info={info} />
     </div>
   );
 }
 
-function NutritionPanel({
+function NutritionDetailsSection({
   product,
   meta,
   info,
+  showHealthBenefits = false,
 }: {
   product: ProductDetail;
   meta?: ProductMetafields;
   info?: ProductDetail["productInformations"];
+  showHealthBenefits?: boolean;
 }) {
   const cms = info?.nutritionalInformation;
   const cmsBenefits = cms?.healthBenefits?.items ?? [];
@@ -278,7 +289,17 @@ function NutritionPanel({
   const hasMacros =
     n != null &&
     (n.kcal != null || n.protein != null || n.carbs != null);
-  const healthBenefits = meta?.healthBenefits ?? [];
+  const metaBenefits = meta?.healthBenefits ?? [];
+  const benefits =
+    cmsBenefits.length > 0
+      ? cmsBenefits
+      : showHealthBenefits
+        ? metaBenefits
+        : [];
+
+  if (!hasMacros && benefits.length === 0) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -300,17 +321,15 @@ function NutritionPanel({
           </dl>
         </div>
       ) : null}
-      {(cmsBenefits.length > 0 ? cmsBenefits : healthBenefits).length > 0 ? (
+      {benefits.length > 0 ? (
         <div>
           <h3 className={pdpProductDetailsHeadingClass}>
             {cms?.healthBenefits?.heading ?? "Health Benefits"}
           </h3>
           <ul className={cn(pdpDetailsBodyTextClass, "list-disc space-y-1 pl-5")}>
-            {(cmsBenefits.length > 0 ? cmsBenefits : healthBenefits).map(
-              (benefit) => (
-                <li key={benefit}>{benefit}</li>
-              ),
-            )}
+            {benefits.map((benefit) => (
+              <li key={benefit}>{benefit}</li>
+            ))}
           </ul>
         </div>
       ) : null}

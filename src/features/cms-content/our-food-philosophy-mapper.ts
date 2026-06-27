@@ -220,9 +220,7 @@ export function mapOurFoodPhilosophyContent(
       ...(certificationCopy?.subtitle
         ? { subtitle: certificationCopy.subtitle }
         : {}),
-      ...(certificationCopy?.paragraphs.length
-        ? { description: certificationCopy.paragraphs.join(" ") }
-        : {}),
+      paragraphs: certificationCopy?.paragraphs ?? [],
       items: trustItems,
     };
   }
@@ -271,7 +269,7 @@ export function hasFoodPhilosophyContent(
       content.sourcing ||
       (content.certifications &&
         (content.certifications.title ||
-          content.certifications.description ||
+          content.certifications.paragraphs.length > 0 ||
           content.certifications.items.length > 0)) ||
       (content.partnerships && content.partnerships.items.length > 0) ||
       (content.sustainability && content.sustainability.items.length > 0),

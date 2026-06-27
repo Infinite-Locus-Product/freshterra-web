@@ -39,3 +39,11 @@ export function buildGoogleMapsSearchUrl(
   if (!trimmed) return undefined;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trimmed)}`;
 }
+
+export function buildGoogleMapsDirectionsUrl(
+  destination: string | null | undefined,
+): string | undefined {
+  const trimmed = destination?.trim();
+  if (!trimmed) return undefined;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(trimmed)}`;
+}

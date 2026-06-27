@@ -38,9 +38,9 @@ type MobileMarketingHeaderProps = Readonly<{
 }>;
 
 export function MobileMarketingHeader({
-  locationLabel = "Fresh Market Gurugram",
+  locationLabel = "FreshTerra Gurugram",
   navLinks = DEFAULT_NAV_LINKS,
-  downloadHref = "/open",
+  downloadHref = "/notify",
   bannerFullBleed = false,
   flushBelowSearch = false,
   className,

@@ -7,7 +7,7 @@ export const BRAND_TAGLINE_WIDTH = 371;
 export const BRAND_TAGLINE_HEIGHT = 28;
 
 const brandTaglineClass =
-  "font-display text-black box-border min-h-[1.75rem] w-full max-w-brand-tagline shrink-0 align-middle text-[1.75rem] font-semibold leading-none tracking-[0]";
+  "font-display text-black box-border w-max max-w-full shrink-0 align-middle font-semibold tracking-[0] whitespace-nowrap text-[clamp(0.875rem,1.5vw+0.25rem,1.75rem)]/none";
 
 type BrandTaglineProps = Readonly<{
   children?: ReactNode;

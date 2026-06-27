@@ -17,15 +17,14 @@ import {
   categoryPlpCountClass,
   categoryPlpListingGridClass,
   categoryPlpMobileFiltersClass,
-  categoryPlpPageShellClass,
+  categoryPlpPageHeaderShellClass,
+  categoryPlpPageListingShellClass,
   categoryPlpProductGridClass,
   categoryPlpTabActiveClass,
   categoryPlpTabInactiveClass,
   categoryPlpTabsRowClass,
   categoryPlpTitleClass,
   categoryPlpToolbarButtonClass,
-  categoryPlpToolbarClass,
-  categoryPlpToolbarDividerClass,
   categoryPlpToolbarLabelClass,
 } from "@/components/category/category-plp-page";
 import { PageShell } from "@/components/layout/PageShell";
@@ -37,7 +36,6 @@ import {
   type FilterSelections,
   type PlpFilterGroup,
 } from "./PlpFilters";
-import { PlpSortMenu, type SortOption } from "./PlpSortMenu";
 import { ProductCard } from "./ProductCard";
 
 import type { PlpProduct } from "../types";
@@ -50,7 +48,7 @@ export type PlpTab = { label: string; value: string };
 /** Hero banner above the listing (CMS-driven content). */
 export type PlpBanner = { title?: string; subtitle?: string; imageSrc: string };
 
-export type PlpViewProps<TSort extends string> = {
+export type PlpViewProps = {
   /** Listing title from the API (category/collection name). */
   title: string;
   /** Show a skeleton while the title is loading from the API. */
@@ -71,10 +69,6 @@ export type PlpViewProps<TSort extends string> = {
   hasMore: boolean;
   /** True when the category/collection itself was not found (404). */
   notFound?: boolean;
-
-  sort: TSort;
-  sortOptions: SortOption<TSort>[];
-  onSortChange: (next: TSort) => void;
 
   filterGroups?: PlpFilterGroup[];
   selections: FilterSelections;
@@ -113,7 +107,7 @@ function toActiveChips(
   return chips;
 }
 
-export function PlpView<TSort extends string>({
+export function PlpView({
   title,
   titleLoading = false,
   breadcrumbs,
@@ -128,15 +122,12 @@ export function PlpView<TSort extends string>({
   error,
   hasMore,
   notFound,
-  sort,
-  sortOptions,
-  onSortChange,
   filterGroups,
   selections,
   onFiltersChange,
   onLoadMore,
   onRetry,
-}: PlpViewProps<TSort>) {
+}: PlpViewProps) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const listingRef = useRef<HTMLDivElement>(null);
@@ -206,68 +197,70 @@ export function PlpView<TSort extends string>({
   const hasFilters = Boolean(filterGroups && filterGroups.length > 0);
 
   return (
-    <PageShell pad={false} className={categoryPlpPageShellClass}>
-      {breadcrumbs && breadcrumbs.length > 0 ? (
-        <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
-          {breadcrumbs.map((crumb, i) => (
-            <span key={`${crumb.label}-${i}`} className="flex items-center gap-2">
-              {crumb.href ? (
-                <Link href={crumb.href} className="hover:underline">
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span
+    <div className="w-full min-w-0">
+      <PageShell pad={false} className={categoryPlpPageHeaderShellClass}>
+        {breadcrumbs && breadcrumbs.length > 0 ? (
+          <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
+            {breadcrumbs.map((crumb, i) => (
+              <span key={`${crumb.label}-${i}`} className="flex items-center gap-2">
+                {crumb.href ? (
+                  <Link href={crumb.href} className="hover:underline">
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span
+                    className={
+                      i === breadcrumbs.length - 1
+                        ? categoryPlpBreadcrumbCurrentClass
+                        : undefined
+                    }
+                  >
+                    {crumb.label}
+                  </span>
+                )}
+                {i < breadcrumbs.length - 1 ? <span aria-hidden>›</span> : null}
+              </span>
+            ))}
+          </nav>
+        ) : null}
+
+        {titleLoading ? (
+          <div
+            className="mb-4 h-9 w-48 max-w-full animate-pulse rounded bg-gray-100 lg:mb-5"
+            aria-hidden
+          />
+        ) : title ? (
+          <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
+            {title}
+          </Heading>
+        ) : null}
+
+        {tabs && tabs.length > 0 ? (
+          <div
+            role="tablist"
+            aria-label="Quick filters"
+            className={categoryPlpTabsRowClass}
+          >
+            {tabs.map((tab) => {
+              const selected = (activeTab ?? tabs[0]?.value) === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => onTabChange?.(tab.value)}
                   className={
-                    i === breadcrumbs.length - 1
-                      ? categoryPlpBreadcrumbCurrentClass
-                      : undefined
+                    selected ? categoryPlpTabActiveClass : categoryPlpTabInactiveClass
                   }
                 >
-                  {crumb.label}
-                </span>
-              )}
-              {i < breadcrumbs.length - 1 ? <span aria-hidden>›</span> : null}
-            </span>
-          ))}
-        </nav>
-      ) : null}
-
-      {titleLoading ? (
-        <div
-          className="mb-4 h-9 w-48 max-w-full animate-pulse rounded bg-gray-100 lg:mb-5"
-          aria-hidden
-        />
-      ) : title ? (
-        <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
-          {title}
-        </Heading>
-      ) : null}
-
-      {tabs && tabs.length > 0 ? (
-        <div
-          role="tablist"
-          aria-label="Quick filters"
-          className={categoryPlpTabsRowClass}
-        >
-          {tabs.map((tab) => {
-            const selected = (activeTab ?? tabs[0]?.value) === tab.value;
-            return (
-              <button
-                key={tab.value}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                onClick={() => onTabChange?.(tab.value)}
-                className={
-                  selected ? categoryPlpTabActiveClass : categoryPlpTabInactiveClass
-                }
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </PageShell>
 
       {banner ? (
         <div className={categoryPlpBannerBleedClass}>
@@ -278,13 +271,14 @@ export function PlpView<TSort extends string>({
               aria-hidden
               fill
               priority
-              sizes="(max-width: 1024px) 100vw, 1440px"
+              sizes="100vw"
               className={categoryPlpBannerImageClass}
             />
           </div>
         </div>
       ) : null}
 
+      <PageShell pad={false} className={categoryPlpPageListingShellClass}>
       <div
         ref={listingRef}
         className={
@@ -325,45 +319,24 @@ export function PlpView<TSort extends string>({
           ) : null}
 
           {hasFilters ? (
-            <div className={categoryPlpToolbarClass}>
+            <div className="border-gray-divider mb-4 border-y lg:hidden">
               <button
                 type="button"
-                className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass}`}
+                className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass} w-full`}
                 aria-expanded={mobileFiltersOpen}
                 onClick={() => setMobileFiltersOpen((open) => !open)}
               >
                 <FiltersIcon />
                 <span>Filters</span>
               </button>
-              <div className={categoryPlpToolbarDividerClass}>
-                <PlpSortMenu
-                  variant="plp-toolbar"
-                  value={sort}
-                  options={sortOptions}
-                  onChange={onSortChange}
-                />
-              </div>
             </div>
           ) : null}
 
-          <p className={`${categoryPlpCountClass} lg:hidden`}>
+          <p className={categoryPlpCountClass}>
             {isInitialLoad
               ? "Loading…"
               : `Showing ${total} ${total === 1 ? "product" : "products"}`}
           </p>
-
-          <div className="mb-6 hidden flex-wrap items-center justify-between gap-4 lg:flex">
-            <p className="text-text-secondary text-sm">
-              {isInitialLoad
-                ? "Loading…"
-                : `Showing ${total} ${total === 1 ? "product" : "products"}`}
-            </p>
-            <PlpSortMenu
-              value={sort}
-              options={sortOptions}
-              onChange={onSortChange}
-            />
-          </div>
 
           {hasFilters && mobileFiltersOpen ? (
             <div className={categoryPlpMobileFiltersClass}>
@@ -422,7 +395,8 @@ export function PlpView<TSort extends string>({
           </div>
         </div>
       </div>
-    </PageShell>
+      </PageShell>
+    </div>
   );
 }
 

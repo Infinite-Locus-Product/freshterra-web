@@ -92,7 +92,7 @@ export function PdpView({
         </div>
       </div>
 
-      <div className={cn(pdpContentShellClass, "mt-8 lg:mt-10")}>
+      <div className="mt-8 min-w-0 lg:mt-10">
         <ProductTabs product={product} />
       </div>
 

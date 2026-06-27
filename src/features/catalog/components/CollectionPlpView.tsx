@@ -10,15 +10,10 @@ import { useCollectionProducts } from "../useCollectionProducts";
 
 import { PlpView, type Crumb } from "./PlpView";
 
-import type { Facets, PlpSort } from "../types";
+import type { Facets } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
-import type { SortOption } from "./PlpSortMenu";
 
-const SORT_OPTIONS: SortOption<PlpSort>[] = [
-  { value: "relevance", label: "Relevance" },
-  { value: "price_asc", label: "Price: Low to High" },
-  { value: "price_desc", label: "Price: High to Low" },
-];
+const DEFAULT_COLLECTION_SORT = "relevance" as const;
 
 function prettyLabel(slug: string): string {
   return slug
@@ -53,7 +48,6 @@ type CollectionPlpViewProps = {
  */
 export function CollectionPlpView({ slug, polygonId }: CollectionPlpViewProps) {
   const router = useRouter();
-  const [sort, setSort] = useState<PlpSort>("relevance");
   const [selections, setSelections] = useState<FilterSelections>({});
 
   const filters = useMemo(() => {
@@ -63,7 +57,12 @@ export function CollectionPlpView({ slug, polygonId }: CollectionPlpViewProps) {
     return entries.length > 0 ? Object.fromEntries(entries) : undefined;
   }, [selections]);
 
-  const ctrl = useCollectionProducts({ slug, polygonId, sort, filters });
+  const ctrl = useCollectionProducts({
+    slug,
+    polygonId,
+    sort: DEFAULT_COLLECTION_SORT,
+    filters,
+  });
 
   useEffect(() => {
     if (ctrl.expired && ctrl.redirectUrl) {
@@ -97,9 +96,6 @@ export function CollectionPlpView({ slug, polygonId }: CollectionPlpViewProps) {
       error={ctrl.error}
       hasMore={ctrl.hasMore}
       notFound={ctrl.error?.code === "NOT_FOUND"}
-      sort={sort}
-      sortOptions={SORT_OPTIONS}
-      onSortChange={setSort}
       filterGroups={filterGroups}
       selections={selections}
       onFiltersChange={setSelections}

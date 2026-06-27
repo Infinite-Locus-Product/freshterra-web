@@ -66,7 +66,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${playfair.variable}`}>
+    <html
+      lang="en"
+      className={`${manrope.variable} ${playfair.variable}`}
+      style={{ backgroundColor: "#fffef8" }}
+    >
       <body
         className="min-h-screen antialiased"
         style={{ backgroundColor: "#fffef8" }}

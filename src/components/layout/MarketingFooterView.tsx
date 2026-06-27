@@ -22,6 +22,11 @@ import {
   marketingFooterStoreButtonStackClass,
 } from "@/components/layout/marketing-footer-layout";
 import { APP_STORE_BADGES } from "@/components/layout/app-store-badges";
+import {
+  FOOTER_COPYRIGHT_LINE,
+  FOOTER_LEGAL_LINKS,
+} from "@/components/layout/footer-legal-links";
+import { FOOTER_FOLLOW_US_SOCIAL } from "@/components/layout/footer-social-links";
 import { MarketingFooterArt } from "@/components/layout/MarketingFooterArt";
 
 import type { FooterContent, FooterLink, FooterSocial } from "@/features/cms-content/footer-content-types";
@@ -32,7 +37,6 @@ type MarketingFooterViewProps = Readonly<{
 }>;
 
 export function MarketingFooterView({ content }: MarketingFooterViewProps) {
-  const copyright = content.copyrightLine?.trim();
   const appStore = env.NEXT_PUBLIC_APP_STORE_URL ?? "/notify";
   const playStore = env.NEXT_PUBLIC_PLAY_STORE_URL ?? "/notify";
   const badgeHref = { appStore, playStore };
@@ -104,18 +108,16 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
                 ))}
               </div>
 
-              {content.social.length > 0 ? (
-                <div className="mt-4">
-                  <h4 className="mb-2 font-sans text-[1.125rem] leading-6 font-bold tracking-normal">
-                    Follow Us
-                  </h4>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {content.social.map((social) => (
-                      <SocialLink key={social.platform} social={social} />
-                    ))}
-                  </div>
+              <div className="mt-4">
+                <h4 className="mb-2 font-sans text-[1.125rem] leading-6 font-bold tracking-normal">
+                  Follow Us
+                </h4>
+                <div className="flex flex-wrap items-center gap-2">
+                  {FOOTER_FOLLOW_US_SOCIAL.map((social) => (
+                    <SocialLink key={social.platform} social={social} />
+                  ))}
                 </div>
-              ) : null}
+              </div>
           </div>
           </div>
         </div>
@@ -124,34 +126,30 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
       <div className="border-brand-100/70 bg-brand-600 relative border-t">
         <div className={marketingFooterBottomShellClass}>
           <div className={marketingFooterBottomInnerClass}>
-            {copyright ? (
-              <p className={marketingFooterCopyrightClass}>{copyright}</p>
-            ) : null}
-            {content.legal.length > 0 ? (
-              <nav aria-label="Legal" className={marketingFooterLegalNavClass}>
-                <div className={marketingFooterLegalMwebStackClass}>
-                  {content.legal.length >= 2 ? (
-                    <div className={marketingFooterLegalPairRowClass}>
-                      {content.legal.slice(0, 2).map((link) => (
-                        <FooterLegalLink key={link.url} link={link} />
-                      ))}
-                    </div>
-                  ) : null}
-                  {content.legal.length === 1 ? (
-                    <FooterLegalLink link={content.legal[0]!} />
-                  ) : (
-                    content.legal.slice(2).map((link) => (
-                      <FooterLegalLink key={link.url} link={link} />
-                    ))
-                  )}
-                </div>
-                <div className={marketingFooterLegalDesktopRowClass}>
-                  {content.legal.map((link) => (
-                    <FooterLegalLink key={link.url} link={link} />
-                  ))}
-                </div>
-              </nav>
-            ) : null}
+            <p className={marketingFooterCopyrightClass}>{FOOTER_COPYRIGHT_LINE}</p>
+            <nav aria-label="Legal" className={marketingFooterLegalNavClass}>
+              <div className={marketingFooterLegalMwebStackClass}>
+                {FOOTER_LEGAL_LINKS.length >= 2 ? (
+                  <div className={marketingFooterLegalPairRowClass}>
+                    {FOOTER_LEGAL_LINKS.slice(0, 2).map((link) => (
+                      <FooterLegalLink key={footerLinkKey(link)} link={link} />
+                    ))}
+                  </div>
+                ) : null}
+                {FOOTER_LEGAL_LINKS.length === 1 ? (
+                  <FooterLegalLink link={FOOTER_LEGAL_LINKS[0]!} />
+                ) : (
+                  FOOTER_LEGAL_LINKS.slice(2).map((link) => (
+                    <FooterLegalLink key={footerLinkKey(link)} link={link} />
+                  ))
+                )}
+              </div>
+              <div className={marketingFooterLegalDesktopRowClass}>
+                {FOOTER_LEGAL_LINKS.map((link) => (
+                  <FooterLegalLink key={footerLinkKey(link)} link={link} />
+                ))}
+              </div>
+            </nav>
           </div>
         </div>
       </div>
@@ -159,10 +157,17 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
   );
 }
 
+function footerLinkKey(link: FooterLink): string {
+  return link.url ? `${link.label}-${link.url}` : link.label;
+}
+
 function FooterColumn({
   title,
   items,
-}: Readonly<{ title: string; items: readonly { label: string; href: string }[] }>) {
+}: Readonly<{
+  title: string;
+  items: readonly { label: string; href?: string }[];
+}>) {
   return (
     <div>
       <h3 className="mb-4 font-sans text-[1.125rem] leading-6 font-bold tracking-normal">
@@ -170,10 +175,14 @@ function FooterColumn({
       </h3>
       <ul className="space-y-2 text-sm">
         {items.map((item) => (
-          <li key={`${item.label}-${item.href}`}>
-            <Link href={item.href} className="text-white-soft/80 hover:underline">
-              {item.label}
-            </Link>
+          <li key={item.href ? `${item.label}-${item.href}` : item.label}>
+            {item.href ? (
+              <Link href={item.href} className="text-white-soft/80 hover:underline">
+                {item.label}
+              </Link>
+            ) : (
+              <span className="text-white-soft/80">{item.label}</span>
+            )}
           </li>
         ))}
       </ul>
@@ -199,17 +208,13 @@ function FooterOfficeColumn({
   );
 }
 
-/** Brand-logo SVGs (in /public) keyed by platform / iconKey. */
+/** Brand-logo SVGs (in /public) for Follow Us. */
 const SOCIAL_ICONS: Record<
   string,
   { src: string; width: number; height: number }
 > = {
   instagram: { src: "/Group-2.svg", width: 24, height: 24 },
-  youtube: { src: "/logos_youtube-icon.svg", width: 24, height: 17 },
-  x: { src: "/fa7-brands_x-twitter.svg", width: 28, height: 28 },
-  twitter: { src: "/fa7-brands_x-twitter.svg", width: 28, height: 28 },
   linkedin: { src: "/devicon_linkedin.svg", width: 28, height: 28 },
-  facebook: { src: "/logos_facebook.svg", width: 28, height: 28 },
 };
 
 function SocialLink({ social }: Readonly<{ social: FooterSocial }>) {
@@ -241,6 +246,12 @@ function SocialLink({ social }: Readonly<{ social: FooterSocial }>) {
 }
 
 function FooterLegalLink({ link }: Readonly<{ link: FooterLink }>) {
+  if (!link.url) {
+    return (
+      <span className={marketingFooterLegalLinkClass}>{link.label}</span>
+    );
+  }
+
   const external = /^https?:\/\//i.test(link.url);
   return (
     <Link

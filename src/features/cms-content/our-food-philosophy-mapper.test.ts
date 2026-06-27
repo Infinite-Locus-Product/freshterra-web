@@ -142,6 +142,7 @@ describe("mapOurFoodPhilosophyContent", () => {
     expect(content.certifications?.title).toBe(
       "Quality Standards & Certifications",
     );
+    expect(content.certifications?.paragraphs).toHaveLength(1);
     expect(content.certifications?.items).toHaveLength(4);
     expect(content.partnerships?.title).toBe("Farmer & Producer Partnerships");
     expect(content.partnerships?.items).toHaveLength(3);

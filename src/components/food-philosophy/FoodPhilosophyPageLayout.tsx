@@ -11,8 +11,10 @@ import {
   foodPhilosophyCertificationItemClass,
   foodPhilosophyCertificationItemLabelClass,
   foodPhilosophyCertificationsBodyClass,
+  foodPhilosophyCertificationsParagraphsClass,
   foodPhilosophyCertificationsSubtitleClass,
   foodPhilosophyCertificationsTitleClass,
+  foodPhilosophyContentSectionsClass,
   foodPhilosophyPartnershipCardCompositeImageClass,
   foodPhilosophyPartnershipCardCompositeImageMobileClass,
   foodPhilosophyPartnershipCardCompositeImageWebClass,
@@ -63,7 +65,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
   const showCertifications = Boolean(
     content.certifications?.title ||
       content.certifications?.subtitle ||
-      content.certifications?.description ||
+      (content.certifications?.paragraphs.length ?? 0) > 0 ||
       (content.certifications?.items.length ?? 0) > 0,
   );
   const showPartnerships = Boolean(
@@ -111,10 +113,12 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
       ) : null}
 
       <PageShell>
-        {showSourcing || showCertifications ? (
-          <div className="mb-12 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,41rem)_minmax(0,40rem)] lg:justify-between">
-            {showSourcing ? (
-              <article className={foodPhilosophySourcingArticleClass}>
+        {(showSourcing || showCertifications || showPartnerships || showSustainability) ? (
+          <div className={foodPhilosophyContentSectionsClass}>
+            {showSourcing || showCertifications ? (
+              <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,41rem)_minmax(0,40rem)] lg:justify-between">
+                {showSourcing ? (
+                  <article className={foodPhilosophySourcingArticleClass}>
                 <div>
                   {content.sourcing?.title ? (
                     <h2 className={foodPhilosophySourcingTitleClass}>
@@ -140,7 +144,13 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
             ) : null}
 
             {showCertifications ? (
-              <article className="flex min-w-0 flex-col lg:justify-between">
+              <article
+                className={
+                  showSourcing
+                    ? "flex min-w-0 flex-col lg:justify-between"
+                    : "flex min-w-0 flex-col"
+                }
+              >
                 <div>
                   {content.certifications?.title ? (
                     <h2 className={foodPhilosophyCertificationsTitleClass}>
@@ -152,10 +162,17 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                       {content.certifications.subtitle}
                     </p>
                   ) : null}
-                  {content.certifications?.description ? (
-                    <p className={foodPhilosophyCertificationsBodyClass}>
-                      {content.certifications.description}
-                    </p>
+                  {content.certifications?.paragraphs.length ? (
+                    <div className={foodPhilosophyCertificationsParagraphsClass}>
+                      {content.certifications.paragraphs.map((paragraph) => (
+                        <p
+                          key={paragraph}
+                          className={foodPhilosophyCertificationsBodyClass}
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
                   ) : null}
                 </div>
                 {content.certifications?.items.length ? (
@@ -183,11 +200,11 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                 ) : null}
               </article>
             ) : null}
-          </div>
-        ) : null}
+              </div>
+            ) : null}
 
-        {showPartnerships ? (
-          <section className="mb-12">
+            {showPartnerships ? (
+              <section>
             {content.partnerships?.title ? (
               <h2 className={foodPhilosophyPartnershipsTitleClass}>
                 {content.partnerships.title}
@@ -253,10 +270,10 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
               })}
             </div>
           </section>
-        ) : null}
+            ) : null}
 
-        {showSustainability ? (
-          <section>
+            {showSustainability ? (
+              <section>
             {content.sustainability?.title ? (
               <h2 className={foodPhilosophySustainabilityTitleClass}>
                 {content.sustainability.title}
@@ -322,6 +339,8 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
               })}
             </div>
           </section>
+            ) : null}
+          </div>
         ) : null}
       </PageShell>
     </section>

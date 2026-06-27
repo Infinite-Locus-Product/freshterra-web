@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { cmsBoolSchema } from "./cms-boolean";
+
 export const contactGetInTouchItemSchema = z
   .object({
     id: z.number().optional(),
@@ -11,12 +13,22 @@ export const contactGetInTouchItemSchema = z
   })
   .catchall(z.unknown());
 
+export const contactInquiryItemSchema = z
+  .object({
+    id: z.number().optional(),
+    label: z.string().optional(),
+    sort_order: z.number().optional(),
+    is_active: cmsBoolSchema,
+  })
+  .catchall(z.unknown());
+
 /**
  * CMS single type — `GET /api/v1/content/single/contact-web`.
  */
 export const contactWebContentSchema = z
   .object({
     get_in_touch: z.array(contactGetInTouchItemSchema).optional(),
+    inquiry: z.array(contactInquiryItemSchema).optional(),
   })
   .catchall(z.unknown());
 

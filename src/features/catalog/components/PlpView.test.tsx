@@ -7,12 +7,6 @@ import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import { PlpView } from "./PlpView";
 
 import type { PlpProduct } from "../types";
-import type { SortOption } from "./PlpSortMenu";
-
-const SORT_OPTIONS: SortOption<"relevance" | "price_asc">[] = [
-  { value: "relevance", label: "Relevance" },
-  { value: "price_asc", label: "Price: Low to High" },
-];
 
 function product(id: string): PlpProduct {
   return {
@@ -35,9 +29,6 @@ const baseProps = {
   loadingMore: false,
   error: null as FreshTerraApiError | null,
   hasMore: false,
-  sort: "relevance" as const,
-  sortOptions: SORT_OPTIONS,
-  onSortChange: vi.fn(),
   selections: {},
   onFiltersChange: vi.fn(),
   onLoadMore: vi.fn(),
@@ -47,7 +38,7 @@ const baseProps = {
 describe("PlpView", () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it("renders the grid, title, count and sort", () => {
+  it("renders the grid, title and count", () => {
     render(
       <PlpView
         {...baseProps}
@@ -61,7 +52,6 @@ describe("PlpView", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Showing 12 products")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /product/i })).toHaveLength(2);
-    expect(screen.getByRole("button", { name: /sort:/i })).toBeInTheDocument();
   });
 
   it("renders the empty state when there are no products", () => {

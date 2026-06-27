@@ -11,6 +11,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
+import { cn } from "@/lib/utils/cn";
+
 import {
   contactFormClass,
   contactFormMessageLabelClass,
@@ -19,9 +22,9 @@ import {
   contactFormNameInputClass,
   contactFormSubmitButtonClass,
 } from "@/components/contact/contact-page";
-import { cn } from "@/lib/utils/cn";
-
 import { Button } from "@/components/ui/Button";
+
+import { submitContactUsForm } from "@/features/contact/contact-form-service";
 
 import {
   clampPhoneCursor,
@@ -45,6 +48,7 @@ type ContactFormProps = Readonly<{
 
 export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormProps) {
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -67,9 +71,18 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
 
   const phoneRegister = register("phone");
 
-  const onSubmit = (_values: ContactFormValues) => {
-    // Phase 1: validate client-side only; wire to BFF/CRM when available.
-    setSubmitted(true);
+  const onSubmit = async (values: ContactFormValues) => {
+    setSubmitError(null);
+    try {
+      await submitContactUsForm(values);
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FreshTerraApiError
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    }
   };
 
   if (submitted) {
@@ -156,9 +169,15 @@ export function ContactForm({ fields, inquiryOptions, ctaLabel }: ContactFormPro
           disabled={isSubmitting}
           className={contactFormSubmitButtonClass}
         >
-          {ctaLabel}
+          {isSubmitting ? "Sending…" : ctaLabel}
         </Button>
       </div>
+
+      {submitError ? (
+        <p role="alert" className="truncate px-2 text-xs leading-tight text-red-600">
+          {submitError}
+        </p>
+      ) : null}
     </form>
   );
 }

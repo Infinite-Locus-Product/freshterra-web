@@ -8,6 +8,12 @@ export const CATEGORY_PLP_BANNER_WEB_HEIGHT = 1200;
 
 export const categoryPlpPageShellClass = "px-4 py-6 lg:px-page lg:py-8";
 
+/** Breadcrumb + title + tabs — horizontal inset, top padding only. */
+export const categoryPlpPageHeaderShellClass = "px-4 pt-6 lg:px-page lg:pt-8";
+
+/** Filters + product grid — horizontal inset, bottom padding only. */
+export const categoryPlpPageListingShellClass = "px-4 pb-6 lg:px-page lg:pb-8";
+
 /** Breadcrumbs — mWeb: Manrope 12px regular, grey. */
 export const categoryPlpBreadcrumbClass =
   "text-text-secondary mb-4 flex items-center gap-2 text-xs leading-[1.4] tracking-[0] lg:text-sm";

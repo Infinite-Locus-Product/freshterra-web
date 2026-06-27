@@ -13,9 +13,9 @@ export const homePageDraftContent = {
     ctaLabel: "Download the App",
   },
   nav: {
-    locationLabel: "Fresh Market Gurugram",
+    locationLabel: "FreshTerra Gurugram",
     links: [
-      { label: "Explore Catalog", href: "/c/explore-catalog" },
+      { label: "Explore Products", href: "/c/explore-catalog" },
       { label: "Our Philosophy", href: "/food-philosophy" },
       { label: "About Us", href: "/about" },
       { label: "Careers", href: "/careers" },
@@ -71,8 +71,8 @@ export const homePageDraftContent = {
   store: {
     title: "Visit Our First Store",
     name: "FreshTerra Gurugram",
-    addressLine1: "Golf Course Road, Sector 5",
-    addressLine2: "Gurgaon, Haryana - 122011",
+    addressHtml:
+      "<p>Golf Course Road, Sector 5</p><p>Gurgaon, Haryana - 122011</p>",
     primaryCtaLabel: "View Store",
     secondaryCtaLabel: "Locate Us",
   },

@@ -62,6 +62,9 @@ describe("mapAboutFreshterraContent", () => {
 
     expect(content.coreValues?.items).toHaveLength(1);
     expect(content.coreValues?.items[0]?.label).toBe("Fresh");
+    expect(content.coreValues?.items[0]?.description).toBe(
+      "Farm-to-table freshness guaranteed",
+    );
     expect(content.customerStories?.items).toHaveLength(1);
     expect(content.customerStories?.items[0]?.name).toBe("Anita Sharma");
   });

@@ -146,10 +146,7 @@ export function ProductGallery({
                 aria-label={`View image ${i + 1}`}
                 aria-current={i === active}
                 onClick={() => goToRelative(i - active)}
-                className={cn(
-                  "h-2 rounded-full transition-all",
-                  i === active ? "bg-brand-500 w-5" : "w-2 bg-white/70",
-                )}
+                className={galleryDotIndicatorClass(i === active)}
               />
             ))}
           </div>
@@ -174,10 +171,7 @@ export function ProductGallery({
               aria-label={`View image ${i + 1}`}
               aria-current={i === active}
               onClick={() => scrollToIndex(i)}
-              className={cn(
-                "h-2 rounded-full transition-all",
-                i === active ? "bg-brand-500 w-5" : "w-2 bg-white/70",
-              )}
+              className={galleryDotIndicatorClass(i === active)}
             />
           ))}
         </div>
@@ -195,6 +189,13 @@ export function ProductGallery({
         }}
       />
     </div>
+  );
+}
+
+function galleryDotIndicatorClass(isActive: boolean): string {
+  return cn(
+    "h-2 rounded-full transition-all",
+    isActive ? "bg-icon-black w-5" : "w-2 bg-icon-black/40",
   );
 }
 

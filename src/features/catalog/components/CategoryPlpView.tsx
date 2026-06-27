@@ -19,16 +19,10 @@ import { useCategoryProducts } from "../useCategoryProducts";
 
 import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 
-import type { CategoryFacets, CategorySort } from "../types";
+import type { CategoryFacets } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
-import type { SortOption } from "./PlpSortMenu";
 
-const SORT_OPTIONS: SortOption<CategorySort>[] = [
-  { value: "relevance", label: "Relevance" },
-  { value: "price_asc", label: "Price: Low to High" },
-  { value: "price_desc", label: "Price: High to Low" },
-  { value: "newest", label: "Newest" },
-];
+const DEFAULT_CATEGORY_SORT = "price_asc" as const;
 
 function prettyLabel(value: string): string {
   return value
@@ -83,7 +77,6 @@ export function CategoryPlpView({
   const router = useRouter();
   const searchParams = useSearchParams();
   const parentFromQuery = searchParams.get("parent")?.trim() ?? "";
-  const [sort, setSort] = useState<CategorySort>("price_asc");
   const [selections, setSelections] = useState<FilterSelections>({});
   const [activeTab, setActiveTab] = useState<string>("all");
   const [pendingL4Tab, setPendingL4Tab] = useState<string | null>(null);
@@ -130,7 +123,7 @@ export function CategoryPlpView({
   const baseCtrl = useCategoryProducts({
     slug: productSlug,
     polygonId,
-    sort,
+    sort: DEFAULT_CATEGORY_SORT,
     filters: undefined,
   });
 
@@ -224,7 +217,12 @@ export function CategoryPlpView({
     return Object.keys(base).length > 0 ? base : undefined;
   }, [selections, resolvedActiveTag]);
 
-  const ctrl = useCategoryProducts({ slug: productSlug, polygonId, sort, filters });
+  const ctrl = useCategoryProducts({
+    slug: productSlug,
+    polygonId,
+    sort: DEFAULT_CATEGORY_SORT,
+    filters,
+  });
 
   const filterGroups = useMemo(
     () => facetsToGroups(ctrl.facets),
@@ -304,9 +302,6 @@ export function CategoryPlpView({
         !ctrl.loading &&
         ctrl.items.length === 0
       }
-      sort={sort}
-      sortOptions={SORT_OPTIONS}
-      onSortChange={setSort}
       filterGroups={filterGroups}
       selections={selections}
       onFiltersChange={setSelections}
