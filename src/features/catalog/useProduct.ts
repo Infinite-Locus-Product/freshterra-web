@@ -14,6 +14,8 @@ export interface UseProductArgs {
   polygonId?: string;
   /** Skip fetching while false. */
   enabled?: boolean;
+  /** Server-fetched product to render before the client (re)fetches. */
+  initialData?: ProductDetail | null;
 }
 
 export interface UseProductResult {
@@ -33,13 +35,15 @@ export interface UseProductResult {
  * stock; server pages may call `getProduct` directly.
  */
 export function useProduct(args: UseProductArgs = {}): UseProductResult {
-  const { id, polygonId, enabled = true } = args;
+  const { id, polygonId, enabled = true, initialData = null } = args;
 
-  const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [product, setProduct] = useState<ProductDetail | null>(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<FreshTerraApiError | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
+  // Track whether initial data is seeded so we skip the loading flash on first fetch.
+  const hasInitialDataRef = useRef<boolean>(initialData != null);
 
   const fetchProduct = useCallback(async () => {
     if (!id) return;
@@ -47,7 +51,11 @@ export function useProduct(args: UseProductArgs = {}): UseProductResult {
     const controller = new AbortController();
     abortRef.current = controller;
 
-    setLoading(true);
+    const suppressLoadingFlash = hasInitialDataRef.current;
+    hasInitialDataRef.current = false;
+    if (!suppressLoadingFlash) {
+      setLoading(true);
+    }
     try {
       const data = await getProduct(
         id,
