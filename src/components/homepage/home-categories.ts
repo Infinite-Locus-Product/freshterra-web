@@ -45,6 +45,6 @@ export const homeCategoriesTileClass =
 
 /** Tile label — Manrope 14 / 120% / 0.2px, centered, #000000. */
 export const homeCategoriesTileLabelClass =
-  "w-full text-center font-normal text-sm leading-[1.2] tracking-[0.2px] text-[#000000] md:text-[20px] md:font-medium md:leading-normal md:tracking-normal";
+  "w-full text-center font-normal text-sm leading-[1.2] tracking-[0.2px] text-[#000000] md:mx-auto md:max-w-[120px] md:text-[20px] md:font-medium md:leading-normal md:tracking-normal";
 
 export const homeCategoriesImageClass = "object-cover object-center";

@@ -12,8 +12,7 @@ const strapiV4Payload = {
       id: 1,
       attributes: {
         slug: "footer-en",
-        legalLine:
-          "© 2026 FreshTerra Foods Pvt. Ltd. All rights reserved. CIN: U12345MH2026PTC00000.",
+        legalLine: "© 2026 FreshTerra Foods Pvt. Ltd. All rights reserved.",
         socialLinks: [
           {
             platform: "instagram",
