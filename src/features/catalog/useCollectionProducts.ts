@@ -6,7 +6,13 @@ import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
 import { getCollectionProducts } from "./collection-service";
 
-import type { CollectionSummary, Facets, PlpProduct, PlpSort } from "./types";
+import type {
+  CollectionProductsData,
+  CollectionSummary,
+  Facets,
+  PlpProduct,
+  PlpSort,
+} from "./types";
 
 export interface UseCollectionProductsArgs {
   /** Saleor collection slug. Empty values skip the fetch. */
@@ -18,6 +24,10 @@ export interface UseCollectionProductsArgs {
   pageSize?: number;
   /** Skip fetching while false. */
   enabled?: boolean;
+  /** Server-fetched first batch to seed before client fetches. */
+  initialData?: CollectionProductsData | null;
+  /** Slug the initialData was fetched for; seed only applies when it matches. */
+  initialKey?: string;
 }
 
 export interface UseCollectionProductsResult {
@@ -59,13 +69,25 @@ export function useCollectionProducts(
   args: UseCollectionProductsArgs = {},
   now?: string,
 ): UseCollectionProductsResult {
-  const { slug, polygonId, sort, pageSize, enabled = true } = args;
+  const {
+    slug,
+    polygonId,
+    sort,
+    pageSize,
+    enabled = true,
+    initialData = null,
+    initialKey,
+  } = args;
 
-  const [items, setItems] = useState<PlpProduct[]>([]);
-  const [collection, setCollection] = useState<CollectionSummary | null>(null);
-  const [facets, setFacets] = useState<Facets>(EMPTY_FACETS);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const seedMatches = Boolean(initialData && initialKey && initialKey === slug);
+
+  const [items, setItems] = useState<PlpProduct[]>(seedMatches ? initialData!.items : []);
+  const [collection, setCollection] = useState<CollectionSummary | null>(
+    seedMatches ? (initialData!.collection ?? null) : null,
+  );
+  const [facets, setFacets] = useState<Facets>(seedMatches ? initialData!.facets : EMPTY_FACETS);
+  const [total, setTotal] = useState(seedMatches ? initialData!.total : 0);
+  const [page, setPage] = useState(seedMatches ? initialData!.page : 1);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<FreshTerraApiError | null>(null);
@@ -76,7 +98,8 @@ export function useCollectionProducts(
   argsRef.current = args;
 
   const abortRef = useRef<AbortController | null>(null);
-  const pageRef = useRef(1);
+  const pageRef = useRef(seedMatches ? initialData!.page : 1);
+  const skipNextFetchRef = useRef(seedMatches);
 
   const resetState = useCallback(() => {
     setItems([]);
@@ -159,6 +182,10 @@ export function useCollectionProducts(
     if (!active) {
       abortRef.current?.abort();
       resetState();
+      return;
+    }
+    if (skipNextFetchRef.current) {
+      skipNextFetchRef.current = false;
       return;
     }
     void fetchPage(1, false);
