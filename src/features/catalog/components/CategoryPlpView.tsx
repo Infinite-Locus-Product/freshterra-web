@@ -19,7 +19,7 @@ import { useCategoryProducts } from "../useCategoryProducts";
 
 import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 
-import type { CategoryFacets } from "../types";
+import type { CategoryFacets, CategoryProductsData } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
 
 const DEFAULT_CATEGORY_SORT = "price_asc" as const;
@@ -68,11 +68,13 @@ function facetsToTabs(facets: CategoryFacets): PlpTab[] | undefined {
 type CategoryPlpViewProps = {
   slug: string;
   polygonId?: string;
+  initialProducts?: CategoryProductsData | null;
 };
 
 export function CategoryPlpView({
   slug,
   polygonId,
+  initialProducts = null,
 }: Readonly<CategoryPlpViewProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -125,6 +127,8 @@ export function CategoryPlpView({
     polygonId,
     sort: DEFAULT_CATEGORY_SORT,
     filters: undefined,
+    initialData: initialProducts,
+    initialKey: slug,
   });
 
   const tabs = useMemo(() => {

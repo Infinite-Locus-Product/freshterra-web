@@ -29,6 +29,7 @@ import { PageShell } from "@/components/layout/PageShell";
 
 import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
 import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
+import { getCategoryProducts } from "@/features/catalog/category-service";
 import { getWebCategoryContent } from "@/features/cms-content/web-category-content-service";
 
 type Params = Promise<{ slug: string }>;
@@ -85,13 +86,29 @@ export default async function CategoryHubPage({
     }
   }
 
+  let initialProducts = null;
+  if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {
+    try {
+      initialProducts = await getCategoryProducts(slug, { polygonId });
+    } catch {
+      // Best-effort; staging BFF may 404 (CATEGORY_NOT_FOUND). The client
+      // hook falls back to the Saleor PLP route as today.
+    }
+  }
+
   let contentNode: ReactNode;
   if (slug === EXPLORE_CATALOG_SLUG) {
     contentNode = <ExploreCatalogView />;
   } else if (webCategory) {
     contentNode = <WebCategoryLandingView content={webCategory} />;
   } else {
-    contentNode = <CategoryPlpView slug={slug} polygonId={polygonId} />;
+    contentNode = (
+      <CategoryPlpView
+        slug={slug}
+        polygonId={polygonId}
+        initialProducts={initialProducts}
+      />
+    );
   }
 
   return (
