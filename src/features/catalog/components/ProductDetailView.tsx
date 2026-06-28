@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import Link from "next/link";
 
 import { PageShell } from "@/components/layout/PageShell";
@@ -10,21 +12,39 @@ import { useProduct } from "../useProduct";
 
 import { PdpView } from "./PdpView";
 
+import type { ProductDetail } from "../types";
 import type { Crumb } from "./PlpView";
 
 type ProductDetailViewProps = {
   /** Product ULID or slug (from the /product/[slug] route). */
   idOrSlug: string;
-  polygonId?: string;
+  /** Store-neutral product fetched on the server (ISR shell). */
+  initialProduct?: ProductDetail | null;
 };
+
+const STORE_COOKIE = "ft_store_id";
+
+function readStoreCookie(): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${STORE_COOKIE}=`));
+  return match ? decodeURIComponent(match.slice(STORE_COOKIE.length + 1)) : undefined;
+}
 
 export function ProductDetailView({
   idOrSlug,
-  polygonId,
+  initialProduct = null,
 }: ProductDetailViewProps) {
+  const [polygonId, setPolygonId] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    setPolygonId(readStoreCookie());
+  }, []);
+
   const { product, loading, error, notFound, reload } = useProduct({
     id: idOrSlug,
     polygonId,
+    initialData: initialProduct,
   });
 
   if (notFound) {
