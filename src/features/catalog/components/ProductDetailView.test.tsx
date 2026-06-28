@@ -86,10 +86,7 @@ describe("ProductDetailView", () => {
       reload: vi.fn(),
     });
     render(
-      <ProductDetailView
-        idOrSlug="missing-product"
-        initialProduct={null}
-      />,
+      <ProductDetailView idOrSlug="missing-product" initialProduct={null} />,
     );
     expect(screen.getByText("Product not found")).toBeInTheDocument();
   });

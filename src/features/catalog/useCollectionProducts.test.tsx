@@ -115,7 +115,14 @@ describe("useCollectionProducts", () => {
 
   it("seeds from initialData and skips the first fetch when the key matches", async () => {
     const seed = {
-      items: [{ id: "p1", name: "Apple", slug: "apple", price: { list: 100, mrp: 100, currency: "INR", source: "polygon" } }],
+      items: [
+        {
+          id: "p1",
+          name: "Apple",
+          slug: "apple",
+          price: { list: 100, mrp: 100, currency: "INR", source: "polygon" },
+        },
+      ],
       page: 1,
       pageSize: 20,
       total: 1,
@@ -139,9 +146,7 @@ describe("useCollectionProducts", () => {
   });
 
   it("surfaces a typed error on failure", async () => {
-    const { FreshTerraApiError } = await import(
-      "@/lib/clients/freshterra-api"
-    );
+    const { FreshTerraApiError } = await import("@/lib/clients/freshterra-api");
     mockGet.mockRejectedValue(
       new FreshTerraApiError("circuit open", "UPSTREAM_UNAVAILABLE", 502),
     );

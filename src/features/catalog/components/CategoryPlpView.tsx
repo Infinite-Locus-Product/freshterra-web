@@ -33,7 +33,10 @@ function prettyLabel(value: string): string {
 }
 
 function normalizeToken(value: string): string {
-  return value.trim().toLowerCase().replace(/[-_\s]+/g, " ");
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[-_\s]+/g, " ");
 }
 
 function singularToken(value: string): string {
@@ -185,7 +188,11 @@ export function CategoryPlpView({
     if (!tabs?.length) return undefined;
 
     const selectedTab = tabs.find((tab) => tab.value === activeTab);
-    const candidates = [activeTab, selectedTab?.label ?? "", selectedTab?.value ?? ""]
+    const candidates = [
+      activeTab,
+      selectedTab?.label ?? "",
+      selectedTab?.value ?? "",
+    ]
       .map((value) => value.trim())
       .filter((value) => value.length > 0);
     const tags = baseCtrl.facets.tags ?? [];

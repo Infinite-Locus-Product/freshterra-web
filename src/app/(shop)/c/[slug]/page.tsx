@@ -76,7 +76,8 @@ export default async function CategoryHubPage({
 }: Readonly<{ params: Params }>) {
   const { slug } = await params;
   const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
-  let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null = null;
+  let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null =
+    null;
 
   if (slug !== EXPLORE_CATALOG_SLUG) {
     try {
@@ -124,7 +125,8 @@ function WebCategoryLandingView({
   content,
 }: Readonly<{ content: Awaited<ReturnType<typeof getWebCategoryContent>> }>) {
   const title = content.label?.trim() || "Category";
-  const parentSlug = content.slug?.trim() || title.toLowerCase().replace(/\s+/g, "-");
+  const parentSlug =
+    content.slug?.trim() || title.toLowerCase().replace(/\s+/g, "-");
   const hero = content.category_hero_section;
   const heroImage = hero?.image_web || hero?.image_mweb;
   const tiles = [...(content.l2_category[0]?.l3_tiles ?? [])]
@@ -152,7 +154,9 @@ function WebCategoryLandingView({
                 {hero?.title?.trim() || title}
               </h1>
               {hero?.subtitle?.trim() ? (
-                <p className="mt-1 text-sm md:text-xl">{hero?.subtitle?.trim()}</p>
+                <p className="mt-1 text-sm md:text-xl">
+                  {hero?.subtitle?.trim()}
+                </p>
               ) : null}
             </div>
           </div>
@@ -169,7 +173,10 @@ function WebCategoryLandingView({
               </p>
             ) : null}
           </div>
-          <Link href="/c/explore-catalog" className={categorySectionCtaLinkClass}>
+          <Link
+            href="/c/explore-catalog"
+            className={categorySectionCtaLinkClass}
+          >
             <span className={categorySectionCtaLabelClass}>View All</span>
             <Image
               src="/Shape.svg"
@@ -186,7 +193,8 @@ function WebCategoryLandingView({
           {tiles.map((tile) => {
             const href = l3TileHref(tile, parentSlug);
             if (!href) return null;
-            const imageSrc = tile.image_url_web?.trim() || tile.image_url_mweb?.trim();
+            const imageSrc =
+              tile.image_url_web?.trim() || tile.image_url_mweb?.trim();
             if (!imageSrc) return null;
             const name =
               tile.saleor_l3_category_id?.trim() ||

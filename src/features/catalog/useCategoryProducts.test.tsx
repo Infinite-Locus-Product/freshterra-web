@@ -8,7 +8,6 @@ import { useCategoryProducts } from "./useCategoryProducts";
 
 import type { CategoryProductsData, PlpProduct } from "./types";
 
-
 // `vi.mock` is hoisted above the imports, so the service is mocked before use.
 vi.mock("./category-service", () => ({
   getCategoryProducts: vi.fn(),
@@ -120,7 +119,14 @@ describe("useCategoryProducts", () => {
 
   it("seeds from initialData and skips the first fetch when the key matches", async () => {
     const seed = {
-      items: [{ id: "p1", name: "Apple", slug: "apple", price: { list: 100, mrp: 100, currency: "INR", source: "polygon" } }],
+      items: [
+        {
+          id: "p1",
+          name: "Apple",
+          slug: "apple",
+          price: { list: 100, mrp: 100, currency: "INR", source: "polygon" },
+        },
+      ],
       page: 1,
       pageSize: 20,
       total: 1,
