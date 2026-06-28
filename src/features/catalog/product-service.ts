@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-import { apiFetch } from "@/lib/clients/freshterra-api";
+import {
+  apiFetch,
+  type ApiFetchNextOptions,
+} from "@/lib/clients/freshterra-api";
 
 import {
   productDetailSchema,
@@ -58,6 +61,8 @@ export interface GetProductRequestOptions {
   signal?: AbortSignal;
   /** Bearer token override (see `apiFetch`). Auto-read when omitted. */
   token?: string | null;
+  /** Next.js cache options — applied server-side only (ISR tags/revalidate). */
+  next?: ApiFetchNextOptions;
 }
 
 /**
@@ -84,6 +89,7 @@ export async function getProduct(
     searchParams: { polygonId: params.polygonId },
     signal: options.signal,
     token: options.token,
+    next: options.next,
     schema: productDetailSchema,
   });
 }

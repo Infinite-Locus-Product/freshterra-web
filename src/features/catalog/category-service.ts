@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { FreshTerraApiError, apiFetch } from "@/lib/clients/freshterra-api";
+import {
+  FreshTerraApiError,
+  apiFetch,
+  type ApiFetchNextOptions,
+} from "@/lib/clients/freshterra-api";
 
 import {
   categoryProductsDataSchema,
@@ -38,6 +42,8 @@ export interface CategoryProductsRequestOptions {
   signal?: AbortSignal;
   /** Bearer token override (see `apiFetch`). Auto-read when omitted. */
   token?: string | null;
+  /** Next.js cache options — applied server-side only (ISR tags/revalidate). */
+  next?: ApiFetchNextOptions;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -80,6 +86,7 @@ export async function getCategoryProducts(
         },
         signal: options.signal,
         token: options.token,
+        next: options.next,
         schema: categoryProductsDataSchema,
       },
     );
