@@ -77,7 +77,13 @@ describe("useProduct", () => {
 
   it("flags notFound on a 404", async () => {
     mockGet.mockRejectedValue(
-      new FreshTerraApiError("missing", "NOT_FOUND", 404, undefined, "PRODUCT_NOT_FOUND"),
+      new FreshTerraApiError(
+        "missing",
+        "NOT_FOUND",
+        404,
+        undefined,
+        "PRODUCT_NOT_FOUND",
+      ),
     );
     const { result } = renderHook(() => useProduct({ id: "missing" }));
 
@@ -93,5 +99,37 @@ describe("useProduct", () => {
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
     act(() => result.current.reload());
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
+  });
+
+  it("renders initialData immediately without a loading state", async () => {
+    mockGet.mockResolvedValue(PRODUCT);
+    const { result } = renderHook(() =>
+      useProduct({ id: "prd_01HX9", initialData: PRODUCT }),
+    );
+    // Synchronously seeded — no skeleton.
+    expect(result.current.product).toEqual(PRODUCT);
+    expect(result.current.loading).toBe(false);
+  });
+
+  it("overlays store data by re-fetching when a polygonId is given", async () => {
+    const storeProduct: ProductDetail = {
+      ...PRODUCT,
+      price: { list: 7900, mrp: 9900, currency: "INR", source: "polygon" },
+    };
+    mockGet.mockResolvedValue(storeProduct);
+    const { result } = renderHook(() =>
+      useProduct({
+        id: "prd_01HX9",
+        polygonId: "poly_1",
+        initialData: PRODUCT,
+      }),
+    );
+    expect(result.current.product).toEqual(PRODUCT); // seeded first
+    await waitFor(() => expect(result.current.product?.price.list).toBe(7900));
+    expect(mockGet).toHaveBeenCalledWith(
+      "prd_01HX9",
+      { polygonId: "poly_1" },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
   });
 });
