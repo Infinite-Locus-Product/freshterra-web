@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 
 import { cache } from "react";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 
 import { ProductDetailView } from "@/features/catalog/components/ProductDetailView";
 import { getProduct } from "@/features/catalog/product-service";
+import { env } from "@/lib/config/env";
+import { breadcrumbListJsonLd, productJsonLd } from "@/lib/seo/jsonLd";
 
 type Params = Promise<{ slug: string }>;
 
@@ -65,8 +68,34 @@ export default async function ProductPage({
     // Fall through — the client island will fetch and surface not-found/error.
   }
 
+  const baseUrl = env.NEXT_PUBLIC_APP_URL;
+  const structuredData =
+    initialProduct == null
+      ? null
+      : [
+          productJsonLd({ baseUrl, product: initialProduct }),
+          breadcrumbListJsonLd({
+            baseUrl,
+            items: [
+              { name: "Home", path: "/" },
+              ...(initialProduct.category
+                ? [
+                    {
+                      name: initialProduct.category.name,
+                      path: `/category/${initialProduct.category.slug}`,
+                    },
+                  ]
+                : []),
+              { name: initialProduct.name, path: `/product/${slug}` },
+            ],
+          }),
+        ];
+
   return (
     <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white">
+      {structuredData?.map((data, i) => (
+        <JsonLd key={i} data={data} />
+      ))}
       <MarketingHeader />
       <main className="text-text-primary w-full min-w-0 flex-1 overflow-x-clip">
         <ProductDetailView idOrSlug={slug} initialProduct={initialProduct} />
