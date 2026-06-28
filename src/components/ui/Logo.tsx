@@ -10,8 +10,8 @@ type LogoTone = "light" | "dark";
 type LogoVariant = "default" | "header";
 
 /** Figma header wordmark — use `variant="header"` on site chrome. */
-export const HEADER_LOGO_WIDTH = 93;
-export const HEADER_LOGO_HEIGHT = 32;
+export const HEADER_LOGO_WIDTH = 116;
+export const HEADER_LOGO_HEIGHT = 40;
 
 type LogoProps = {
   /** "light" = on light surfaces (uses dark wordmark). "dark" = on dark/image surfaces (uses light wordmark). */
@@ -49,7 +49,7 @@ export function Logo({
       priority={priority}
       className={cn(
         variant === "header"
-          ? "h-8 w-[93px] shrink-0 object-contain"
+          ? "h-10 w-[116px] shrink-0 object-contain"
           : "h-auto w-auto object-contain",
         className,
       )}
