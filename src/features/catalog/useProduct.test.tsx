@@ -132,4 +132,26 @@ describe("useProduct", () => {
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
   });
+
+  it("does NOT fetch on mount when seeded and no polygonId is set", async () => {
+    mockGet.mockResolvedValue(PRODUCT);
+    renderHook(() => useProduct({ id: "prd_01HX9", initialData: PRODUCT }));
+    // Give effects a tick to flush.
+    await act(async () => { await Promise.resolve(); });
+    expect(mockGet).not.toHaveBeenCalled();
+  });
+
+  it("fetches on mount when seeded AND a polygonId is set (store overlay)", async () => {
+    mockGet.mockResolvedValue(PRODUCT);
+    renderHook(() =>
+      useProduct({ id: "prd_01HX9", polygonId: "poly_1", initialData: PRODUCT }),
+    );
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
+  });
+
+  it("still fetches on mount when NOT seeded (no initialData)", async () => {
+    mockGet.mockResolvedValue(PRODUCT);
+    renderHook(() => useProduct({ id: "prd_01HX9" }));
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
+  });
 });
