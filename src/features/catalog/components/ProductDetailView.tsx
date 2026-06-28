@@ -29,7 +29,9 @@ function readStoreCookie(): string | undefined {
   const match = document.cookie
     .split("; ")
     .find((row) => row.startsWith(`${STORE_COOKIE}=`));
-  return match ? decodeURIComponent(match.slice(STORE_COOKIE.length + 1)) : undefined;
+  return match
+    ? decodeURIComponent(match.slice(STORE_COOKIE.length + 1))
+    : undefined;
 }
 
 export function ProductDetailView({

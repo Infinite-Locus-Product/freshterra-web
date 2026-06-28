@@ -11,7 +11,12 @@ const PRODUCT: ProductDetail = {
   slug: "heirloom-tomatoes-500g",
   images: [{ url: "https://cdn/tom.jpg", alt: "tomato" }],
   variants: [],
-  price: { list: 8900, mrp: 9900, currency: "INR", source: "sku_price_default" },
+  price: {
+    list: 8900,
+    mrp: 9900,
+    currency: "INR",
+    source: "sku_price_default",
+  },
   category: { id: "cat_1", slug: "vegetables", name: "Vegetables" },
   metafields: { brand: "FreshTerra Farms", healthBenefits: [] },
   tags: [],
@@ -22,7 +27,10 @@ const PRODUCT: ProductDetail = {
 
 describe("productJsonLd", () => {
   it("builds a Product schema with offer in major currency units", () => {
-    const ld = productJsonLd({ baseUrl: "https://freshterra.in", product: PRODUCT });
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in",
+      product: PRODUCT,
+    });
     expect(ld["@type"]).toBe("Product");
     expect(ld.name).toBe("Heirloom Tomatoes 500g");
     expect(ld.sku).toBe("FT-TOMATO-500G");
@@ -32,7 +40,9 @@ describe("productJsonLd", () => {
     expect(offers.price).toBe("89.00");
     expect(offers.priceCurrency).toBe("INR");
     expect(offers.availability).toBe("https://schema.org/InStock");
-    expect(offers.url).toBe("https://freshterra.in/product/heirloom-tomatoes-500g");
+    expect(offers.url).toBe(
+      "https://freshterra.in/product/heirloom-tomatoes-500g",
+    );
   });
 
   it("marks out-of-stock products", () => {
@@ -52,7 +62,10 @@ describe("breadcrumbListJsonLd", () => {
       items: [
         { name: "Home", path: "/" },
         { name: "Vegetables", path: "/category/vegetables" },
-        { name: "Heirloom Tomatoes 500g", path: "/product/heirloom-tomatoes-500g" },
+        {
+          name: "Heirloom Tomatoes 500g",
+          path: "/product/heirloom-tomatoes-500g",
+        },
       ],
     });
     expect(ld["@type"]).toBe("BreadcrumbList");
@@ -65,6 +78,8 @@ describe("breadcrumbListJsonLd", () => {
       item: "https://freshterra.in/",
     });
     expect(el[2].position).toBe(3);
-    expect(el[2].item).toBe("https://freshterra.in/product/heirloom-tomatoes-500g");
+    expect(el[2].item).toBe(
+      "https://freshterra.in/product/heirloom-tomatoes-500g",
+    );
   });
 });

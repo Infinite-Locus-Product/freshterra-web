@@ -55,11 +55,22 @@ const EMPTY_FACETS: CategoryFacets = {};
 export function useCategoryProducts(
   args: UseCategoryProductsArgs = {},
 ): UseCategoryProductsResult {
-  const { slug, polygonId, sort, pageSize, locale, enabled = true, initialData = null, initialKey } = args;
+  const {
+    slug,
+    polygonId,
+    sort,
+    pageSize,
+    locale,
+    enabled = true,
+    initialData = null,
+    initialKey,
+  } = args;
 
   const seedMatches = Boolean(initialData && initialKey && initialKey === slug);
 
-  const [items, setItems] = useState<PlpProduct[]>(seedMatches ? initialData!.items : []);
+  const [items, setItems] = useState<PlpProduct[]>(
+    seedMatches ? initialData!.items : [],
+  );
   const [category, setCategory] = useState<ProductCategory | null>(
     seedMatches ? (initialData!.category ?? null) : null,
   );
@@ -168,7 +179,17 @@ export function useCategoryProducts(
       return;
     }
     void fetchPage(1, false);
-  }, [active, slug, polygonId, sort, pageSize, locale, filtersKey, fetchPage, resetState]);
+  }, [
+    active,
+    slug,
+    polygonId,
+    sort,
+    pageSize,
+    locale,
+    filtersKey,
+    fetchPage,
+    resetState,
+  ]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();

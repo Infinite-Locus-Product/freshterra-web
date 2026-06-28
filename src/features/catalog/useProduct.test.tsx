@@ -137,14 +137,20 @@ describe("useProduct", () => {
     mockGet.mockResolvedValue(PRODUCT);
     renderHook(() => useProduct({ id: "prd_01HX9", initialData: PRODUCT }));
     // Give effects a tick to flush.
-    await act(async () => { await Promise.resolve(); });
+    await act(async () => {
+      await Promise.resolve();
+    });
     expect(mockGet).not.toHaveBeenCalled();
   });
 
   it("fetches on mount when seeded AND a polygonId is set (store overlay)", async () => {
     mockGet.mockResolvedValue(PRODUCT);
     renderHook(() =>
-      useProduct({ id: "prd_01HX9", polygonId: "poly_1", initialData: PRODUCT }),
+      useProduct({
+        id: "prd_01HX9",
+        polygonId: "poly_1",
+        initialData: PRODUCT,
+      }),
     );
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
   });

@@ -81,11 +81,15 @@ export function useCollectionProducts(
 
   const seedMatches = Boolean(initialData && initialKey && initialKey === slug);
 
-  const [items, setItems] = useState<PlpProduct[]>(seedMatches ? initialData!.items : []);
+  const [items, setItems] = useState<PlpProduct[]>(
+    seedMatches ? initialData!.items : [],
+  );
   const [collection, setCollection] = useState<CollectionSummary | null>(
     seedMatches ? (initialData!.collection ?? null) : null,
   );
-  const [facets, setFacets] = useState<Facets>(seedMatches ? initialData!.facets : EMPTY_FACETS);
+  const [facets, setFacets] = useState<Facets>(
+    seedMatches ? initialData!.facets : EMPTY_FACETS,
+  );
   const [total, setTotal] = useState(seedMatches ? initialData!.total : 0);
   const [page, setPage] = useState(seedMatches ? initialData!.page : 1);
   const [loading, setLoading] = useState(false);
@@ -189,7 +193,16 @@ export function useCollectionProducts(
       return;
     }
     void fetchPage(1, false);
-  }, [active, slug, polygonId, sort, pageSize, filtersKey, fetchPage, resetState]);
+  }, [
+    active,
+    slug,
+    polygonId,
+    sort,
+    pageSize,
+    filtersKey,
+    fetchPage,
+    resetState,
+  ]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();

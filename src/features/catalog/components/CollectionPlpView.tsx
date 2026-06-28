@@ -85,10 +85,7 @@ export function CollectionPlpView({
 
   const title = ctrl.collection?.name?.trim() ?? "";
   const breadcrumbs = useMemo<Crumb[]>(
-    () => [
-      { label: "Home", href: "/" },
-      ...(title ? [{ label: title }] : []),
-    ],
+    () => [{ label: "Home", href: "/" }, ...(title ? [{ label: title }] : [])],
     [title],
   );
 
