@@ -82,7 +82,11 @@ export function useProduct(args: UseProductArgs = {}): UseProductResult {
     }
   }, [id, polygonId]);
 
-  const active = enabled && Boolean(id);
+  const hasSeed = initialData != null;
+  // With a seed and no store yet, the server-provided neutral product is
+  // authoritative — skip the redundant mount fetch. Fetch only to overlay a
+  // store (polygonId present) or when there is no seed to fall back on.
+  const active = enabled && Boolean(id) && (!hasSeed || Boolean(polygonId));
 
   useEffect(() => {
     if (!active) {
