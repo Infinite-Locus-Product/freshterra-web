@@ -49,11 +49,24 @@ export default async function CollectionProductsPage({
   const { slug } = await params;
   const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
 
+  let initialProducts = null;
+  if (polygonId) {
+    try {
+      initialProducts = await getCollectionProducts(slug, { polygonId });
+    } catch {
+      // Best-effort seed — client hook will fetch on mount if this fails.
+    }
+  }
+
   return (
     <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white">
       <MarketingHeader />
       <main className="text-text-primary w-full min-w-0 flex-1 overflow-x-clip">
-        <CollectionPlpView slug={slug} polygonId={polygonId} />
+        <CollectionPlpView
+          slug={slug}
+          polygonId={polygonId}
+          initialProducts={initialProducts}
+        />
       </main>
       <MarketingFooter />
     </div>
