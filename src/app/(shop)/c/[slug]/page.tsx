@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -35,7 +34,13 @@ import { getWebCategoryContent } from "@/features/cms-content/web-category-conte
 type Params = Promise<{ slug: string }>;
 
 const EXPLORE_CATALOG_SLUG = "explore-catalog";
-const STORE_COOKIE = "ft_store_id";
+
+/** Store-neutral catalog content → ISR-cacheable. */
+export const revalidate = 300;
+
+export function generateStaticParams() {
+  return [];
+}
 
 function l3TileHref(
   tile: {
@@ -75,7 +80,6 @@ export default async function CategoryHubPage({
   params,
 }: Readonly<{ params: Params }>) {
   const { slug } = await params;
-  const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
   let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null =
     null;
 
@@ -90,7 +94,7 @@ export default async function CategoryHubPage({
   let initialProducts = null;
   if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {
     try {
-      initialProducts = await getCategoryProducts(slug, { polygonId });
+      initialProducts = await getCategoryProducts(slug);
     } catch {
       // Best-effort; staging BFF may 404 (CATEGORY_NOT_FOUND). The client
       // hook falls back to the Saleor PLP route as today.
@@ -104,11 +108,7 @@ export default async function CategoryHubPage({
     contentNode = <WebCategoryLandingView content={webCategory} />;
   } else {
     contentNode = (
-      <CategoryPlpView
-        slug={slug}
-        polygonId={polygonId}
-        initialProducts={initialProducts}
-      />
+      <CategoryPlpView slug={slug} initialProducts={initialProducts} />
     );
   }
 
