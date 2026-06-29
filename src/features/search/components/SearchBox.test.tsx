@@ -149,6 +149,7 @@ describe("SearchBox", () => {
     const listbox = await screen.findByRole("listbox", {
       name: /search suggestions/i,
     });
+    expect(within(listbox).getByText("Suggestions")).toBeInTheDocument();
     const options = within(listbox).getAllByRole("option");
     expect(options).toHaveLength(2);
     expect(options[1]).toHaveAttribute("href", "/search?q=Heirloom%20Tomatoes");

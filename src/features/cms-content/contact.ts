@@ -14,7 +14,7 @@ export const contactPageStaticContent = {
       name: "Name*",
       email: "Email Address (optional)",
       phone: "Phone Number*",
-      message: "Message (Minimum 20 words)",
+      message: "Message (Minimum 30 words)",
     },
     ctaLabel: "Submit Application",
   },
