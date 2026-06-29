@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "strapi.tenxyou.com" },
       { protocol: "https", hostname: "cms-stg.freshterra.in" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      // Saleor product media (S3, ap-south-1) — staging + prod buckets,
+      // e.g. freshterra-saleor-media-staging.s3.ap-south-1.amazonaws.com
+      { protocol: "https", hostname: "**.s3.ap-south-1.amazonaws.com" },
     ],
   },
   typedRoutes: true,
