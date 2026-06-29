@@ -87,7 +87,7 @@ describe("mapStorePageWebContent", () => {
     expect(content?.directionsUrl).toContain("google.com/maps/dir");
     expect(content?.directionsUrl).toContain(
       encodeURIComponent(
-        "6th Floor, Tower B, Paras Twin Towers, Golf Course Road, Gurugram, Haryana, 122011",
+        "Hilton Gurugram Baani City Centre, Sector 63 Gurugram, 122101",
       ),
     );
     expect(content?.primaryHeroImage.imageWeb).toContain(
