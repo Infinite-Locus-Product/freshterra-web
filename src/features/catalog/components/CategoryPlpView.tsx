@@ -70,13 +70,11 @@ function facetsToTabs(facets: CategoryFacets): PlpTab[] | undefined {
 
 type CategoryPlpViewProps = {
   slug: string;
-  polygonId?: string;
   initialProducts?: CategoryProductsData | null;
 };
 
 export function CategoryPlpView({
   slug,
-  polygonId,
   initialProducts = null,
 }: Readonly<CategoryPlpViewProps>) {
   const router = useRouter();
@@ -127,7 +125,6 @@ export function CategoryPlpView({
 
   const baseCtrl = useCategoryProducts({
     slug: productSlug,
-    polygonId,
     sort: DEFAULT_CATEGORY_SORT,
     filters: undefined,
     initialData: initialProducts,
@@ -230,7 +227,6 @@ export function CategoryPlpView({
 
   const ctrl = useCategoryProducts({
     slug: productSlug,
-    polygonId,
     sort: DEFAULT_CATEGORY_SORT,
     filters,
   });
