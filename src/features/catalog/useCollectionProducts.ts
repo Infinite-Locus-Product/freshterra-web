@@ -192,15 +192,7 @@ export function useCollectionProducts(
       return;
     }
     void fetchPage(1, false);
-  }, [
-    active,
-    slug,
-    sort,
-    pageSize,
-    filtersKey,
-    fetchPage,
-    resetState,
-  ]);
+  }, [active, slug, sort, pageSize, filtersKey, fetchPage, resetState]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
