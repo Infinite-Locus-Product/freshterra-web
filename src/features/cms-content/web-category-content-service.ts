@@ -74,9 +74,15 @@ function pickTileImage(
 export async function getWebCategoryContent(
   slug: string,
 ): Promise<WebCategoryContent> {
-  return getContentEntry<WebCategoryContent>("webs", slug, {}, {
-    schema: webCategoryContentSchema,
-  });
+  return getContentEntry<WebCategoryContent>(
+    "webs",
+    slug,
+    {},
+    {
+      schema: webCategoryContentSchema,
+      expectedErrorCodes: ["NOT_FOUND"],
+    },
+  );
 }
 
 export function mapWebCategoryContentToHomeCategories(

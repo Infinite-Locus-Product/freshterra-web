@@ -3,6 +3,7 @@ import { z, type ZodType } from "zod";
 import {
   apiFetch,
   type ApiFetchNextOptions,
+  type ApiErrorCode,
 } from "@/lib/clients/freshterra-api";
 
 import {
@@ -34,6 +35,8 @@ export interface ContentEntryRequestOptions<T> {
   schema?: ZodType<T>;
   /** Next.js Data Cache options for server-side GET requests. */
   next?: ApiFetchNextOptions;
+  /** Error codes treated as control flow — skips console.error (see apiFetch). */
+  expectedErrorCodes?: ApiErrorCode[];
 }
 
 /**
@@ -80,6 +83,7 @@ export async function getContentEntry<T = ContentEntry>(
       token: options.token,
       schema,
       next: options.next,
+      expectedErrorCodes: options.expectedErrorCodes,
     },
   );
 }
