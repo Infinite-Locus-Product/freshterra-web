@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   FreshTerraApiError,
   apiFetch,
+  type ApiErrorCode,
   type ApiFetchNextOptions,
 } from "@/lib/clients/freshterra-api";
 
@@ -44,6 +45,8 @@ export interface CategoryProductsRequestOptions {
   token?: string | null;
   /** Next.js cache options — applied server-side only (ISR tags/revalidate). */
   next?: ApiFetchNextOptions;
+  /** Error codes treated as control flow — skips console.error (see apiFetch). */
+  expectedErrorCodes?: ApiErrorCode[];
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -87,6 +90,7 @@ export async function getCategoryProducts(
         signal: options.signal,
         token: options.token,
         next: options.next,
+        expectedErrorCodes: options.expectedErrorCodes,
         schema: categoryProductsDataSchema,
       },
     );

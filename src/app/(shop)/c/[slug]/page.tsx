@@ -94,7 +94,9 @@ export default async function CategoryHubPage({
   let initialProducts = null;
   if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {
     try {
-      initialProducts = await getCategoryProducts(slug);
+      initialProducts = await getCategoryProducts(slug, {}, {
+        expectedErrorCodes: ["NOT_FOUND"],
+      });
     } catch {
       // Best-effort; staging BFF may 404 (CATEGORY_NOT_FOUND). The client
       // hook falls back to the Saleor PLP route as today.
