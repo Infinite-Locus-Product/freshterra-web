@@ -245,8 +245,13 @@ export function CategoryPlpView({
       l4Tabs.length > 0 ? effectiveL4Tab : activeTab,
       parentSlug,
     );
-    // PlpView's single-image banner: imageSrcWeb already falls back to mweb.
-    return view ? { imageSrc: view.imageSrcWeb } : undefined;
+    // Pass both CMS assets — mWeb uses hero_image_mweb inside the 393×171 frame.
+    return view
+      ? {
+          imageSrcWeb: view.imageSrcWeb,
+          imageSrcMweb: view.imageSrcMweb,
+        }
+      : undefined;
   }, [activeTab, effectiveL4Tab, l4Tabs.length, parentSlug, plpCms]);
 
   const title = useMemo(

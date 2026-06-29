@@ -36,12 +36,12 @@ export const categoryPlpTabActiveClass =
 export const categoryPlpTabInactiveClass =
   "text-text-primary inline-flex shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white px-4 py-2 text-center font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[18px]";
 
-/** Full-bleed hero banner — edge-to-edge on mWeb and web. */
+/** Full-bleed hero banner — edge-to-edge on mWeb; contained on web. */
 export const categoryPlpBannerBleedClass =
-  "relative left-1/2 w-screen max-w-none -translate-x-1/2 lg:mb-6";
+  "relative left-1/2 w-screen max-w-none -translate-x-1/2 max-lg:px-0 lg:relative lg:left-auto lg:mb-6 lg:w-full lg:max-w-none lg:translate-x-0";
 
 export const categoryPlpBannerShellClass =
-  "relative box-border h-[171px] w-full overflow-hidden lg:aspect-[16/5] lg:h-auto";
+  "relative box-border h-[171px] w-full min-w-0 overflow-hidden lg:aspect-[16/5] lg:h-auto";
 
 export const categoryPlpBannerImageClass = "object-cover object-center";
 

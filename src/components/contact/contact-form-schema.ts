@@ -7,9 +7,14 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const NAME_MIN_LENGTH = 2;
 const NAME_MAX_LENGTH = 80;
+export const MESSAGE_MIN_WORDS = 30;
 
 /** Letters, spaces, apostrophes, hyphens, and periods (common in personal names). */
 const NAME_PATTERN = /^[\p{L}][\p{L}\s'.-]*$/u;
+
+export function countWords(value: string): number {
+  return value.trim().split(/\s+/).filter(Boolean).length;
+}
 
 export function sanitizeIndiaPhone(raw: string): string {
   if (raw.startsWith(PHONE_PREFIX)) {
@@ -62,7 +67,13 @@ export const contactFormSchema = z.object({
     .refine((value) => PHONE_REGEX.test(value.trim()), {
       message: "Enter a valid 10-digit phone number.",
     }),
-  message: z.string().trim().optional(),
+  message: z
+    .string()
+    .trim()
+    .min(1, { message: "Message is required." })
+    .refine((value) => countWords(value) >= MESSAGE_MIN_WORDS, {
+      message: `Message must be at least ${MESSAGE_MIN_WORDS} words.`,
+    }),
 });
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>;

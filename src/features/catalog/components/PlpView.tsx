@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { FreshTerraApiError } from "@/lib/clients/freshterra-api";
+import { cn } from "@/lib/utils/cn";
 
 import {
   categoryPlpActiveFiltersClass,
@@ -46,7 +47,12 @@ export type Crumb = { label: string; href?: string };
 export type PlpTab = { label: string; value: string };
 
 /** Hero banner above the listing (CMS-driven content). */
-export type PlpBanner = { title?: string; subtitle?: string; imageSrc: string };
+export type PlpBanner = {
+  title?: string;
+  subtitle?: string;
+  imageSrcWeb: string;
+  imageSrcMweb: string;
+};
 
 export type PlpViewProps = {
   /** Listing title from the API (category/collection name). */
@@ -197,7 +203,7 @@ export function PlpView({
   const hasFilters = Boolean(filterGroups && filterGroups.length > 0);
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 overflow-x-clip">
       <PageShell pad={false} className={categoryPlpPageHeaderShellClass}>
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
@@ -270,8 +276,11 @@ export function PlpView({
       {banner ? (
         <div className={categoryPlpBannerBleedClass}>
           <div className={categoryPlpBannerShellClass}>
-            {/* key by src so the shimmer resets when the banner changes on tab switch */}
-            <BannerImage key={banner.imageSrc} src={banner.imageSrc} />
+            <BannerImage
+              key={`${banner.imageSrcWeb}-${banner.imageSrcMweb}`}
+              imageSrcWeb={banner.imageSrcWeb}
+              imageSrcMweb={banner.imageSrcMweb}
+            />
           </div>
         </div>
       ) : null}
@@ -439,8 +448,17 @@ function ProductSkeleton() {
  * switch. `priority` makes next/image emit `loading="eager"` on the underlying
  * `<img>`. Mount this with `key={src}` so the shimmer resets per banner.
  */
-function BannerImage({ src }: { src: string }) {
+function BannerImage({
+  imageSrcWeb,
+  imageSrcMweb,
+}: {
+  imageSrcWeb: string;
+  imageSrcMweb: string;
+}) {
   const [loaded, setLoaded] = useState(false);
+  const mwebSrc = imageSrcMweb || imageSrcWeb;
+  const webSrc = imageSrcWeb || imageSrcMweb;
+
   return (
     <>
       {!loaded ? (
@@ -450,13 +468,24 @@ function BannerImage({ src }: { src: string }) {
         />
       ) : null}
       <Image
-        src={src}
+        src={mwebSrc}
         alt=""
         aria-hidden
         fill
         priority
         sizes="100vw"
-        className={categoryPlpBannerImageClass}
+        className={cn(categoryPlpBannerImageClass, "lg:hidden")}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
+      />
+      <Image
+        src={webSrc}
+        alt=""
+        aria-hidden
+        fill
+        priority
+        sizes="100vw"
+        className={cn(categoryPlpBannerImageClass, "hidden lg:block")}
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)}
       />
