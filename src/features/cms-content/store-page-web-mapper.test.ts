@@ -86,7 +86,9 @@ describe("mapStorePageWebContent", () => {
     expect(content?.categorySectionTitle).toBe("In-Store Categories");
     expect(content?.directionsUrl).toContain("google.com/maps/dir");
     expect(content?.directionsUrl).toContain(
-      encodeURIComponent("Hilton Gurugram Baani City Centre"),
+      encodeURIComponent(
+        "6th Floor, Tower B, Paras Twin Towers, Golf Course Road, Gurugram, Haryana, 122011",
+      ),
     );
     expect(content?.primaryHeroImage.imageWeb).toContain(
       "Chat_GPT_Image_Jun_25_2026",

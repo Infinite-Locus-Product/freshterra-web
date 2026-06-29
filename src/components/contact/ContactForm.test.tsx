@@ -18,11 +18,15 @@ const defaultProps = {
     name: "Name*",
     email: "Email Address (optional)",
     phone: "Phone Number*",
-    message: "Message (Minimum 20 words)",
+    message: "Message (Minimum 30 words)",
   },
   inquiryOptions: ["General Query", "Support"] as const,
   ctaLabel: "Submit Application",
 };
+
+const validMessage = Array.from({ length: 30 }, (_, i) => `word${i + 1}`).join(
+  " ",
+);
 
 describe("ContactForm", () => {
   beforeEach(() => {
@@ -58,6 +62,7 @@ describe("ContactForm", () => {
     await user.type(screen.getByLabelText(/email address/i), "rahul.sharma@email.com");
     await user.clear(screen.getByLabelText(/phone number/i));
     await user.type(screen.getByLabelText(/phone number/i), "9876543210");
+    await user.type(screen.getByLabelText(/message/i), validMessage);
 
     await user.click(screen.getByRole("button", { name: /submit application/i }));
 
@@ -69,7 +74,31 @@ describe("ContactForm", () => {
       name: "Rahul Sharma",
       email: "rahul.sharma@email.com",
       phone: "+91 9876543210",
-      message: "",
+      message: validMessage,
+    });
+  });
+
+  it("submits without email when the field is left empty", async () => {
+    const user = userEvent.setup();
+    render(<ContactForm {...defaultProps} />);
+
+    await user.selectOptions(screen.getByLabelText(/inquiry type/i), "General Query");
+    await user.type(screen.getByLabelText(/^name/i), "Rahul Sharma");
+    await user.clear(screen.getByLabelText(/phone number/i));
+    await user.type(screen.getByLabelText(/phone number/i), "9876543210");
+    await user.type(screen.getByLabelText(/message/i), validMessage);
+
+    await user.click(screen.getByRole("button", { name: /submit application/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toHaveTextContent(/received your message/i);
+    });
+    expect(mockSubmitContactUsForm).toHaveBeenCalledWith({
+      inquiryType: "General Query",
+      name: "Rahul Sharma",
+      email: "",
+      phone: "+91 9876543210",
+      message: validMessage,
     });
   });
 });

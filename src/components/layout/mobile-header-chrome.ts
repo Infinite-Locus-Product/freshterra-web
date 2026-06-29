@@ -53,11 +53,11 @@ export const MOBILE_HEADER_MENU_LOGO_GAP = 12;
 export const mobileHeaderTopRowClass =
   "flex w-full items-center justify-between";
 
-export const MOBILE_HEADER_LOGO_WIDTH = 58;
-export const MOBILE_HEADER_LOGO_HEIGHT = 20;
+export const MOBILE_HEADER_LOGO_WIDTH = 68;
+export const MOBILE_HEADER_LOGO_HEIGHT = 24;
 
-/** Wordmark beside hamburger — mWeb: 58 × 20. */
-export const mobileHeaderLogoClass = "h-5 w-[58px] shrink-0 object-contain";
+/** Wordmark beside hamburger — mWeb: 68 × 24. */
+export const mobileHeaderLogoClass = "h-6 w-[68px] shrink-0 object-contain";
 
 export const mobileHeaderMenuLogoGroupClass = "flex items-center gap-[12px]";
 

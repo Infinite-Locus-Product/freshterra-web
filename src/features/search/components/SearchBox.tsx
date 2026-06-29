@@ -248,7 +248,12 @@ export function SearchBox({
                     />
                   );
                 })
-              : options.map((opt, i) => (
+              : null}
+
+            {showSuggestions ? <SectionLabel>Suggestions</SectionLabel> : null}
+
+            {showSuggestions
+              ? options.map((opt, i) => (
                   <OptionRow
                     key={opt.id}
                     opt={opt}
@@ -261,7 +266,8 @@ export function SearchBox({
                       setOpen(false);
                     }}
                   />
-                ))}
+                ))
+              : null}
 
             <StatusRow
               showSuggestions={showSuggestions}

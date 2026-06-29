@@ -37,6 +37,23 @@ describe("mapContactFormToPayload", () => {
       message: "Wholesale partnership inquiry",
     });
   });
+
+  it("omits email from the payload when the field is empty", () => {
+    expect(
+      mapContactFormToPayload({
+        inquiryType: "Partnership",
+        name: "Rahul Sharma",
+        email: "",
+        phone: "+91 9876543210",
+        message: "Wholesale partnership inquiry",
+      }),
+    ).toEqual({
+      inquiry_type: "Partnership",
+      name: "Rahul Sharma",
+      phone: "+91 9876543210",
+      message: "Wholesale partnership inquiry",
+    });
+  });
 });
 
 describe("submitContactUsForm", () => {

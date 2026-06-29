@@ -17,8 +17,6 @@ import {
   categoryPlpBreadcrumbCurrentClass,
   categoryPlpCountClass,
   categoryPlpListingGridClass,
-  categoryPlpMobileFiltersToolbarClass,
-  categoryPlpMobileToolbarBleedClass,
   categoryPlpPageHeaderShellClass,
   categoryPlpPageListingShellClass,
   categoryPlpProductGridClass,
@@ -206,10 +204,9 @@ export function PlpView({
   }
 
   const hasFilters = Boolean(filterGroups && filterGroups.length > 0);
-  const showMobileToolbar = hasFilters;
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 overflow-x-clip">
       <PageShell pad={false} className={categoryPlpPageHeaderShellClass}>
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
@@ -289,8 +286,11 @@ export function PlpView({
       ) : banner ? (
         <div className={categoryPlpBannerBleedClass}>
           <div className={categoryPlpBannerShellClass}>
-            {/* key by src so the shimmer resets when the banner changes on tab switch */}
-            <BannerImage key={banner.imageSrc} src={banner.imageSrc} />
+            <BannerImage
+              key={`${banner.imageSrcWeb}-${banner.imageSrcMweb}`}
+              imageSrcWeb={banner.imageSrcWeb}
+              imageSrcMweb={banner.imageSrcMweb}
+            />
           </div>
         </div>
       ) : null}
@@ -354,16 +354,6 @@ export function PlpView({
                 ? "Loading…"
                 : `Showing ${total} ${total === 1 ? "product" : "products"}`}
             </p>
-
-            {hasFilters && mobileFiltersOpen ? (
-              <div className={categoryPlpMobileFiltersClass}>
-                <PlpFilters
-                  groups={filterGroups}
-                  selections={selections}
-                  onChange={onFiltersChange}
-                />
-              </div>
-            ) : null}
 
             {!loading && items.length === 0 ? (
               <CenteredState
@@ -502,8 +492,17 @@ function ProductSkeleton() {
  * switch. `priority` makes next/image emit `loading="eager"` on the underlying
  * `<img>`. Mount this with `key={src}` so the shimmer resets per banner.
  */
-function BannerImage({ src }: { src: string }) {
+function BannerImage({
+  imageSrcWeb,
+  imageSrcMweb,
+}: {
+  imageSrcWeb: string;
+  imageSrcMweb: string;
+}) {
   const [loaded, setLoaded] = useState(false);
+  const mwebSrc = imageSrcMweb || imageSrcWeb;
+  const webSrc = imageSrcWeb || imageSrcMweb;
+
   return (
     <>
       {!loaded ? (
@@ -513,13 +512,24 @@ function BannerImage({ src }: { src: string }) {
         />
       ) : null}
       <Image
-        src={src}
+        src={mwebSrc}
         alt=""
         aria-hidden
         fill
         priority
         sizes="100vw"
-        className={categoryPlpBannerImageClass}
+        className={cn(categoryPlpBannerImageClass, "lg:hidden")}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
+      />
+      <Image
+        src={webSrc}
+        alt=""
+        aria-hidden
+        fill
+        priority
+        sizes="100vw"
+        className={cn(categoryPlpBannerImageClass, "hidden lg:block")}
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)}
       />

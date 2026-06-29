@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils/cn";
+
+function isNavLinkActive(pathname: string | null, href: string): boolean {
+  if (!pathname) return false;
+  if (pathname === href) return true;
+  return href !== "/" && pathname.startsWith(`${href}/`);
+}
 
 type MarketingNavLinkLabelProps = Readonly<{
   label: string;
@@ -22,6 +31,9 @@ export function MarketingNavLinkLabel({
   onClick,
   className,
 }: MarketingNavLinkLabelProps) {
+  const pathname = usePathname();
+  const isActive = href ? isNavLinkActive(pathname, href) : false;
+
   const content = (
     <>
       <span
@@ -33,7 +45,8 @@ export function MarketingNavLinkLabel({
       <span
         className={cn(
           labelClassName,
-          "col-start-1 row-start-1 font-medium group-hover:font-bold",
+          "col-start-1 row-start-1",
+          isActive ? "font-bold" : "font-medium group-hover:font-bold",
         )}
       >
         {label}
@@ -45,7 +58,12 @@ export function MarketingNavLinkLabel({
 
   if (href) {
     return (
-      <Link href={href} onClick={onClick} className={shellClassName}>
+      <Link
+        href={href}
+        onClick={onClick}
+        className={shellClassName}
+        aria-current={isActive ? "page" : undefined}
+      >
         {content}
       </Link>
     );

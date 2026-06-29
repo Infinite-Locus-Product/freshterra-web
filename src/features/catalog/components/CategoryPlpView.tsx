@@ -141,9 +141,12 @@ export function CategoryPlpView({
   });
 
   const tabs = useMemo(() => {
-    if (cmsTabs?.length) return cmsTabs;
+    if (hasCmsL4Tabs) {
+      return cmsTabs?.length ? cmsTabs : undefined;
+    }
+    if (plpLoading) return undefined;
     return facetsToTabs(baseCtrl.facets);
-  }, [cmsTabs, baseCtrl.facets]);
+  }, [cmsTabs, baseCtrl.facets, hasCmsL4Tabs, plpLoading]);
 
   useEffect(() => {
     if (!plpCms || parentFromQuery || !resolvedParentSlug) return;
@@ -172,32 +175,6 @@ export function CategoryPlpView({
       setPendingL4Tab(null);
     }
   }, [pendingL4Tab, routeActiveTab]);
-
-  const filters = useMemo(() => {
-    const base: Record<string, unknown> = {};
-    for (const [key, values] of Object.entries(selections)) {
-      if (values.length > 0) base[key] = values;
-    }
-    if (l4Tabs.length === 0 && activeTab !== "all") {
-      base.tags = [activeTab];
-    }
-    return Object.keys(base).length > 0 ? base : undefined;
-  }, [activeTab, l4Tabs.length, selections]);
-
-  const ctrl = useCategoryProducts({
-    slug: productSlug,
-    polygonId,
-    sort: DEFAULT_CATEGORY_SORT,
-    filters,
-  });
-
-  const tabs = useMemo(() => {
-    if (hasCmsL4Tabs) {
-      return cmsTabs?.length ? cmsTabs : undefined;
-    }
-    if (plpLoading) return undefined;
-    return facetsToTabs(ctrl.facets);
-  }, [cmsTabs, ctrl.facets, hasCmsL4Tabs, plpLoading]);
 
   useEffect(() => {
     if (l4Tabs.length > 0) return;
@@ -275,16 +252,18 @@ export function CategoryPlpView({
 
   const banner = useMemo<PlpBanner | undefined>(() => {
     if (!plpCms?.l4_tab?.length) return undefined;
-    const resolved = resolvePlpBannerForTab(
+    const view = resolvePlpBannerForTab(
       plpCms,
       l4Tabs.length > 0 ? effectiveL4Tab : activeTab,
       parentSlug,
     );
-    if (!resolved) return undefined;
-    return {
-      imageSrcWeb: resolved.imageSrcWeb,
-      imageSrcMweb: resolved.imageSrcMweb,
-    };
+    // Pass both CMS assets — mWeb uses hero_image_mweb inside the 393×171 frame.
+    return view
+      ? {
+          imageSrcWeb: view.imageSrcWeb,
+          imageSrcMweb: view.imageSrcMweb,
+        }
+      : undefined;
   }, [activeTab, effectiveL4Tab, l4Tabs.length, parentSlug, plpCms]);
 
   const expectsBanner = Boolean(plpCms?.l4_tab?.length);

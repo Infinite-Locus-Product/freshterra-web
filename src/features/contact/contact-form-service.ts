@@ -7,7 +7,7 @@ const CONTACT_US_PATH = "/api/v1/forms/contact-us";
 export const contactUsPayloadSchema = z.object({
   inquiry_type: z.string().min(1),
   name: z.string().min(1),
-  email: z.string(),
+  email: z.string().min(1).optional(),
   phone: z.string().min(1),
   message: z.string(),
 });
@@ -25,10 +25,11 @@ export type ContactFormSubmission = {
 export function mapContactFormToPayload(
   values: ContactFormSubmission,
 ): ContactUsPayload {
+  const email = values.email.trim();
   return contactUsPayloadSchema.parse({
     inquiry_type: values.inquiryType,
     name: values.name.trim(),
-    email: values.email.trim(),
+    ...(email ? { email } : {}),
     phone: values.phone.trim(),
     message: values.message?.trim() ?? "",
   });

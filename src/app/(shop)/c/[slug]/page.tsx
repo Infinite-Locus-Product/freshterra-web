@@ -89,7 +89,6 @@ export default async function CategoryHubPage({
 }>) {
   const { slug } = await params;
   const { parent } = await searchParams;
-  const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
   let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null = null;
   let initialPlpContext: Awaited<
     ReturnType<typeof resolveWebCategoryPlpContext>
@@ -108,16 +107,6 @@ export default async function CategoryHubPage({
       } catch {
         // CMS PLP config is optional; client can retry if needed.
       }
-    }
-  }
-
-  let initialProducts = null;
-  if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {
-    try {
-      initialProducts = await getCategoryProducts(slug);
-    } catch {
-      // Best-effort; staging BFF may 404 (CATEGORY_NOT_FOUND). The client
-      // hook falls back to the Saleor PLP route as today.
     }
   }
 
@@ -144,7 +133,7 @@ export default async function CategoryHubPage({
     contentNode = (
       <CategoryPlpView
         slug={slug}
-        polygonId={polygonId}
+        initialProducts={initialProducts}
         initialPlpCms={initialPlpContext?.config ?? null}
         initialParentSlug={initialPlpContext?.parentSlug ?? null}
       />
