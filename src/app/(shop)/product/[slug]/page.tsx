@@ -30,7 +30,11 @@ export function generateStaticParams() {
  * Deduped via `cache()` so generateMetadata + the page body share one request.
  */
 const loadProduct = cache((slug: string) =>
-  getProduct(slug, {}, { next: { tags: [`product:${slug}`], revalidate } }),
+  getProduct(
+    slug,
+    {},
+    { next: { tags: [`product:${slug}`], revalidate }, expectedErrorCodes: ["NOT_FOUND"] },
+  ),
 );
 
 export async function generateMetadata({

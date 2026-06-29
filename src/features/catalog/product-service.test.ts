@@ -174,6 +174,19 @@ describe("getProduct", () => {
     });
   });
 
+  it("does not log a 404 when expectedErrorCodes includes NOT_FOUND", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(errorResponse(404, "PRODUCT_NOT_FOUND"));
+    vi.stubGlobal("fetch", fetchMock);
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      getProduct("prd_x", {}, { expectedErrorCodes: ["NOT_FOUND"] }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
   it("forwards next cache options to the underlying fetch (server-side)", async () => {
     const fetchMock = vi.fn().mockResolvedValue(productResponse());
     vi.stubGlobal("fetch", fetchMock);

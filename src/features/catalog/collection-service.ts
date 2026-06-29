@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   apiFetch,
+  type ApiErrorCode,
   type ApiFetchNextOptions,
 } from "@/lib/clients/freshterra-api";
 
@@ -41,6 +42,8 @@ export interface CollectionProductsRequestOptions {
   token?: string | null;
   /** Next.js cache options — applied server-side only (ISR tags/revalidate). */
   next?: ApiFetchNextOptions;
+  /** Error codes treated as control flow — skips console.error (see apiFetch). */
+  expectedErrorCodes?: ApiErrorCode[];
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -91,6 +94,7 @@ export async function getCollectionProducts(
       signal: options.signal,
       token: options.token,
       next: options.next,
+      expectedErrorCodes: options.expectedErrorCodes,
       schema: collectionProductsDataSchema,
     },
   );
