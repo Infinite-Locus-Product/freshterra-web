@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   categoryPlpProductCardBodyClass,
   categoryPlpProductCardClass,
@@ -20,12 +22,9 @@ import {
   pdpSimilarProductCardTagClass,
   pdpSimilarProductCardTagsRowClass,
 } from "@/components/category/pdp-page";
-import { cn } from "@/lib/utils/cn";
-
-import { formatPlpVariantMeta } from "../variant-meta";
-import { resolveProductDietaryType } from "../dietary-badge";
 
 import { productPageHref } from "../product-href";
+import { formatPlpVariantMeta } from "../variant-meta";
 
 import type { PlpProduct } from "../types";
 
@@ -36,12 +35,15 @@ export function ProductCard({
   product,
   showVariantMeta = true,
   layout = "plp",
+  priority = false,
 }: {
   product: PlpProduct;
   /** SRP shows product-only cards without weight / option count. */
   showVariantMeta?: boolean;
   /** PDP similar-products rail — mWeb card layout on all breakpoints. */
   layout?: "plp" | "pdp-rail";
+  /** Eager-load + high fetch priority for above-the-fold cards (first row). */
+  priority?: boolean;
 }) {
   const image = product.images[0];
   const meta = showVariantMeta ? formatPlpVariantMeta(product) : null;
@@ -71,6 +73,7 @@ export function ProductCard({
               src={image.url}
               alt={image.alt ?? product.name}
               fill
+              priority={priority}
               sizes={
                 isPdpRail
                   ? "210px"
