@@ -50,13 +50,14 @@ function clamp(value: number, min: number, max: number): number {
 /**
  * Fetches a page of products in a curated collection (P1-6 Template 2).
  *
- * - Validates `slug` and `polygonId` (both required) before calling out.
+ * - Validates `slug` before calling out; `polygonId` is optional — when
+ *   omitted the catalog is fetched store-neutrally (no scoping).
  * - Clamps `pageSize` to [1, 100] and `page` to ≥ 1.
  * - JSON-encodes structured `filters`; forwards `sort`.
  * - Attaches a JWT automatically when available (anon browse allowed).
  * - Returns the listing payload (incl. `expires_at` / `redirect_url`), or
- *   throws a `FreshTerraApiError` (`VALIDATION_FAILED` [serverCode
- *   `POLYGON_REQUIRED`] | `NOT_FOUND` [serverCode `COLLECTION_NOT_FOUND`] |
+ *   throws a `FreshTerraApiError` (`VALIDATION_FAILED` |
+ *   `NOT_FOUND` [serverCode `COLLECTION_NOT_FOUND`] |
  *   `RATE_LIMITED` | `UPSTREAM_UNAVAILABLE` | `NETWORK_ERROR` | `PARSE_ERROR` |
  *   `ABORTED`).
  */

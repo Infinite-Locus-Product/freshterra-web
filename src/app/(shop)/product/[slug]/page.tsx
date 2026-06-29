@@ -77,7 +77,7 @@ export default async function ProductPage({
       ? [
           {
             label: product.category.name,
-            href: `/category/${product.category.slug}`,
+            href: `/c/${product.category.slug}`,
           },
         ]
       : []),
@@ -94,7 +94,7 @@ export default async function ProductPage({
           ? [
               {
                 name: product.category.name,
-                path: `/category/${product.category.slug}`,
+                path: `/c/${product.category.slug}`,
               },
             ]
           : []),

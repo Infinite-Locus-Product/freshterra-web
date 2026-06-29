@@ -26,11 +26,6 @@ export function websiteJsonLd({ baseUrl }: WithBaseUrl): JsonLdObject {
   };
 }
 
-/** Minor units (8900) → major-unit string ("89.00") for schema.org price. */
-function toMajorUnits(minor: number): string {
-  return (minor / 100).toFixed(2);
-}
-
 export function productJsonLd({
   baseUrl,
   product,
@@ -53,15 +48,6 @@ export function productJsonLd({
     ...(product.metafields?.brand
       ? { brand: { "@type": "Brand", name: product.metafields.brand } }
       : {}),
-    offers: {
-      "@type": "Offer",
-      price: toMajorUnits(product.price.list),
-      priceCurrency: product.price.currency,
-      availability: product.inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      url: `${baseUrl}/product/${product.slug}`,
-    },
   };
 }
 
