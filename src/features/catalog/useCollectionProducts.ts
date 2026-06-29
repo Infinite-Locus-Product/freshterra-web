@@ -121,7 +121,7 @@ export function useCollectionProducts(
 
   const fetchPage = useCallback(async (target: number, append: boolean) => {
     const current = argsRef.current;
-    if (!current.slug || !current.polygonId) return;
+    if (!current.slug) return;
 
     abortRef.current?.abort();
     const controller = new AbortController();
@@ -134,7 +134,6 @@ export function useCollectionProducts(
       const data = await getCollectionProducts(
         current.slug,
         {
-          polygonId: current.polygonId,
           sort: current.sort,
           filters: current.filters,
           pageSize: current.pageSize,
@@ -180,7 +179,7 @@ export function useCollectionProducts(
   }, []);
 
   const filtersKey = args.filters ? JSON.stringify(args.filters) : "";
-  const active = enabled && Boolean(slug && polygonId);
+  const active = enabled && Boolean(slug);
 
   useEffect(() => {
     if (!active) {
@@ -196,7 +195,6 @@ export function useCollectionProducts(
   }, [
     active,
     slug,
-    polygonId,
     sort,
     pageSize,
     filtersKey,

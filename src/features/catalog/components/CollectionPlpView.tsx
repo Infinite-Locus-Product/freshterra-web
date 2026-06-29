@@ -38,8 +38,6 @@ function facetsToGroups(facets: Facets): PlpFilterGroup[] {
 
 type CollectionPlpViewProps = {
   slug: string;
-  /** Polygon scoping id (collection pricing/stock requires it). */
-  polygonId?: string;
   /** Server-fetched first batch to seed the hook and skip a client waterfall. */
   initialProducts?: CollectionProductsData | null;
 };
@@ -50,7 +48,6 @@ type CollectionPlpViewProps = {
  */
 export function CollectionPlpView({
   slug,
-  polygonId,
   initialProducts = null,
 }: CollectionPlpViewProps) {
   const router = useRouter();
@@ -65,7 +62,6 @@ export function CollectionPlpView({
 
   const ctrl = useCollectionProducts({
     slug,
-    polygonId,
     sort: DEFAULT_COLLECTION_SORT,
     filters,
     initialData: initialProducts,
