@@ -30,6 +30,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
 import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
 import { getWebCategoryContent } from "@/features/cms-content/web-category-content-service";
+import { resolveWebCategoryPlpContext } from "@/features/cms-content/web-category-plp-resolver";
 
 type Params = Promise<{ slug: string }>;
 
@@ -72,16 +73,32 @@ export async function generateMetadata({
 
 export default async function CategoryHubPage({
   params,
-}: Readonly<{ params: Params }>) {
+  searchParams,
+}: Readonly<{
+  params: Params;
+  searchParams: Promise<{ parent?: string }>;
+}>) {
   const { slug } = await params;
+  const { parent } = await searchParams;
   const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
   let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null = null;
+  let initialPlpContext: Awaited<
+    ReturnType<typeof resolveWebCategoryPlpContext>
+  > = null;
 
   if (slug !== EXPLORE_CATALOG_SLUG) {
     try {
       webCategory = await getWebCategoryContent(slug);
     } catch {
       // If slug is already an L3 route (or endpoint is unavailable), show PLP.
+    }
+
+    if (!webCategory) {
+      try {
+        initialPlpContext = await resolveWebCategoryPlpContext(slug, parent);
+      } catch {
+        // CMS PLP config is optional; client can retry if needed.
+      }
     }
   }
 
@@ -91,7 +108,14 @@ export default async function CategoryHubPage({
   } else if (webCategory) {
     contentNode = <WebCategoryLandingView content={webCategory} />;
   } else {
-    contentNode = <CategoryPlpView slug={slug} polygonId={polygonId} />;
+    contentNode = (
+      <CategoryPlpView
+        slug={slug}
+        polygonId={polygonId}
+        initialPlpCms={initialPlpContext?.config ?? null}
+        initialParentSlug={initialPlpContext?.parentSlug ?? null}
+      />
+    );
   }
 
   return (

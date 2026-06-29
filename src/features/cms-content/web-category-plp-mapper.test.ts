@@ -7,6 +7,7 @@ import {
   resolvePlpActiveTabValue,
   resolvePlpBannerForTab,
   resolvePlpProductSlug,
+  visiblePlpL4Tabs,
 } from "./web-category-plp-mapper";
 
 import type { WebCategoryPlpContent } from "./web-category-plp-service";
@@ -92,10 +93,58 @@ describe("web-category-plp-mapper", () => {
 
   it("selects hero banner per active tab", () => {
     expect(
-      resolvePlpBannerForTab(ricePlpConfig, "Basmati Rice", "rice-2")?.imageSrc,
+      resolvePlpBannerForTab(ricePlpConfig, "Basmati Rice", "rice-2")
+        ?.imageSrcWeb,
     ).toContain("basmati.png");
     expect(
-      resolvePlpBannerForTab(ricePlpConfig, "All", "rice-2")?.imageSrc,
+      resolvePlpBannerForTab(ricePlpConfig, "All", "rice-2")?.imageSrcWeb,
     ).toContain("all.png");
+  });
+
+  it("hides L4 pills when CMS only configures the All tab", () => {
+    const onlyAllConfig: WebCategoryPlpContent = {
+      slug: "premium-basmati-rice",
+      label: "Premium Basmati Rice",
+      l4_tab: [
+        {
+          l4_category_id: "All",
+          l4_category_slug: null,
+          position: 1,
+          is_active: true,
+        },
+      ],
+    };
+
+    const tabs = mapPlpL4Tabs(onlyAllConfig, "premium-basmati-rice");
+    expect(tabs).toHaveLength(1);
+    expect(tabs[0]?.isAll).toBe(true);
+    expect(visiblePlpL4Tabs(tabs)).toEqual([]);
+  });
+
+  it("treats All tab with parent slug as aggregate and hides lone pill", () => {
+    const onlyAllWithSlug: WebCategoryPlpContent = {
+      slug: "premium-basmati-rice",
+      label: "Premium Basmati Rice",
+      l4_tab: [
+        {
+          l4_category_id: "All",
+          l4_category_slug: "premium-basmati-rice",
+          position: 1,
+          is_active: true,
+        },
+      ],
+    };
+
+    const tabs = mapPlpL4Tabs(onlyAllWithSlug, "premium-basmati-rice");
+    expect(tabs[0]?.isAll).toBe(true);
+    expect(visiblePlpL4Tabs(tabs)).toEqual([]);
+  });
+
+  it("shows All with other L4 subcategory pills", () => {
+    const tabs = mapPlpL4Tabs(ricePlpConfig, "rice-2");
+    expect(visiblePlpL4Tabs(tabs)).toEqual([
+      { label: "All", value: "All" },
+      { label: "Basmati Rice", value: "Basmati Rice" },
+    ]);
   });
 });

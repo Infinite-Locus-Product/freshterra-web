@@ -353,6 +353,24 @@ describe("normalizeBffListingProduct", () => {
     expect(product.variants[0]?.name).toBe("250g");
     expect(product.variants[0]?.weightG).toBe(250);
     expect(product.variantCount).toBe(2);
+    expect(product.regulatory?.veg).toBe(true);
+  });
+
+  it("maps foodType Non-Veg metadata to regulatory.veg on PLP cards", () => {
+    const product = plpProductSchema.parse({
+      saleorProductId: "UHJvZHVjdDox",
+      name: "Chicken Breast",
+      slug: "chicken-breast",
+      mainImage: "https://saleor.stage.freshterra.in/media/chicken.jpg",
+      defaultVariantId: "v1",
+      price: 100,
+      mrp: 120,
+      currency: "INR",
+      inStock: true,
+      metadata: [{ key: "foodType", value: "Non-Veg" }],
+    });
+
+    expect(product.regulatory?.veg).toBe(false);
   });
 
   it("maps tags_json to tagPills on PLP cards", () => {
@@ -389,5 +407,41 @@ describe("normalizeBffListingProduct", () => {
     });
 
     expect(product.tagPills).toEqual(["Organic", "Fresh", "Heathy", "Original"]);
+  });
+
+  it("attaches per-product regulatory_information from API metadata", () => {
+    const normalized = normalizeProductDetailPayload({
+      id: "prd_1",
+      name: "Almond Butter",
+      slug: "almond-butter",
+      price: { list: 100, mrp: 100, currency: "INR" },
+      inStock: true,
+      metadata: [
+        {
+          key: "regulatory_information",
+          value: JSON.stringify({
+            heading: "Regulatory Information",
+            fssai: {
+              license_label: "FSSAI License",
+              license_number: "10012031000312",
+            },
+            manufacturer_details: {
+              heading: "Manufacturer Details",
+              name_label: "Name",
+              name: "Indian Products Pvt. Ltd.",
+            },
+          }),
+        },
+      ],
+    });
+
+    const product = productDetailSchema.parse(normalized);
+    expect(
+      product.productInformations?.regulatoryInformation?.fssai?.licenseNumber,
+    ).toBe("10012031000312");
+    expect(
+      product.productInformations?.regulatoryInformation?.manufacturerDetails
+        ?.name,
+    ).toBe("Indian Products Pvt. Ltd.");
   });
 });

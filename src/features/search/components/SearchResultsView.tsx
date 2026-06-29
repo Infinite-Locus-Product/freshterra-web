@@ -6,7 +6,6 @@ import {
   categoryPlpActiveFiltersClass,
   categoryPlpCountClass,
   categoryPlpListingGridClass,
-  categoryPlpMobileFiltersClass,
   categoryPlpPageShellClass,
   categoryPlpProductGridClass,
   categoryPlpTitleClass,
@@ -22,6 +21,7 @@ import {
   type FilterSelections,
   type PlpFilterGroup,
 } from "@/features/catalog/components/PlpFilters";
+import { PlpMobileFiltersSheet } from "@/features/catalog/components/PlpMobileFiltersSheet";
 
 import { addRecentSearch } from "../recent-searches";
 import { SEARCH_FILTER_GROUPS } from "../search-plp-config";
@@ -125,6 +125,7 @@ export function SearchResultsView({ query }: { query: string }) {
   }
 
   return (
+    <>
     <PageShell pad={false} className={categoryPlpPageShellClass}>
       <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
         Search results for “{trimmed}”
@@ -168,7 +169,7 @@ export function SearchResultsView({ query }: { query: string }) {
                 type="button"
                 className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass}`}
                 aria-expanded={mobileFiltersOpen}
-                onClick={() => setMobileFiltersOpen((open) => !open)}
+                onClick={() => setMobileFiltersOpen(true)}
               >
                 <FiltersIcon />
                 <span>Filters</span>
@@ -190,16 +191,6 @@ export function SearchResultsView({ query }: { query: string }) {
             </p>
           </div>
 
-          {hasFilters && mobileFiltersOpen ? (
-            <div className={categoryPlpMobileFiltersClass}>
-              <PlpFilters
-                groups={SEARCH_FILTER_GROUPS}
-                selections={selections}
-                onChange={setSelections}
-              />
-            </div>
-          ) : null}
-
           <ul className={categoryPlpProductGridClass}>
             {isInitialLoad
               ? Array.from({ length: 8 }).map((_, i) => (
@@ -208,7 +199,7 @@ export function SearchResultsView({ query }: { query: string }) {
                   </li>
                 ))
               : items.map((product) => (
-                  <li key={product.id}>
+                  <li key={product.id} className="h-full">
                     <SearchProductCard product={product} />
                   </li>
                 ))}
@@ -236,6 +227,17 @@ export function SearchResultsView({ query }: { query: string }) {
         </div>
       </div>
     </PageShell>
+
+    {hasFilters ? (
+      <PlpMobileFiltersSheet
+        open={mobileFiltersOpen}
+        groups={SEARCH_FILTER_GROUPS}
+        selections={selections}
+        onClose={() => setMobileFiltersOpen(false)}
+        onApply={setSelections}
+      />
+    ) : null}
+  </>
   );
 }
 

@@ -1,8 +1,9 @@
-import type {
-  ProductDetail,
-  ProductInformations,
-  ProductMetafields,
-} from "./types";
+import type { ProductDetail, ProductMetafields } from "./types";
+import {
+  healthBenefitsFromInformations,
+  regulatoryInformationHasContent,
+  type ProductInformations,
+} from "./product-informations";
 
 export type PdpTabKey = "details" | "instructions" | "regulatory";
 
@@ -12,16 +13,22 @@ function productDetailsFromInformations(
   return info?.productDetails;
 }
 
-function nutritionFromInformations(info: ProductInformations | undefined) {
-  return info?.nutritionalInformation;
-}
-
 function instructionsFromInformations(info: ProductInformations | undefined) {
   return info?.instructions;
 }
 
-function regulatoryFromInformations(info: ProductInformations | undefined) {
-  return info?.regulatoryInformation;
+function shelfLifeHasContent(
+  cms?: ProductInformations["instructions"],
+  meta?: ProductMetafields,
+): boolean {
+  const shelfLife = cms?.shelfLife;
+  return Boolean(
+    shelfLife?.duration ||
+      shelfLife?.manufacturingDate ||
+      shelfLife?.bestBefore ||
+      shelfLife?.value ||
+      meta?.shelfLife,
+  );
 }
 
 export function pdpDetailsHasContent(
@@ -29,6 +36,7 @@ export function pdpDetailsHasContent(
   meta?: ProductMetafields,
 ): boolean {
   const cms = productDetailsFromInformations(product.productInformations);
+  const healthBenefits = healthBenefitsFromInformations(product.productInformations);
   if (cms) {
     return Boolean(
       cms.brand ||
@@ -37,6 +45,7 @@ export function pdpDetailsHasContent(
         cms.keyFeatures?.items.length ||
         cms.ingredients?.contains?.value ||
         cms.ingredients?.allergenInfo ||
+        (healthBenefits?.items.length ?? 0) > 0 ||
         pdpNutritionHasContent(product, meta),
     );
   }
@@ -49,6 +58,7 @@ export function pdpDetailsHasContent(
       meta?.erpnextItemCode ||
       meta?.ingredients ||
       meta?.allergenInfo ||
+      (healthBenefits?.items.length ?? 0) > 0 ||
       (meta?.healthBenefits?.length ?? 0) > 0 ||
       product.tags.length > 0 ||
       product.regulatory?.organic ||
@@ -60,8 +70,8 @@ export function pdpNutritionHasContent(
   product: ProductDetail,
   meta?: ProductMetafields,
 ): boolean {
-  const cms = nutritionFromInformations(product.productInformations);
-  if (cms?.healthBenefits?.items.length) return true;
+  const cmsBenefits = healthBenefitsFromInformations(product.productInformations);
+  if (cmsBenefits?.items.length) return true;
 
   const n = product.nutrition;
   const hasMacros =
@@ -77,9 +87,7 @@ export function pdpInstructionsHasContent(
   const cms = instructionsFromInformations(product.productInformations);
   if (cms) {
     return Boolean(
-      cms.shelfLife?.duration ||
-        cms.shelfLife?.manufacturingDate ||
-        cms.shelfLife?.bestBefore ||
+      shelfLifeHasContent(cms, meta) ||
         cms.storageTips?.points.length ||
         cms.usageSuggestions?.points.length,
     );
@@ -90,40 +98,9 @@ export function pdpInstructionsHasContent(
   );
 }
 
-export function pdpRegulatoryHasContent(
-  product: ProductDetail,
-  meta?: ProductMetafields,
-): boolean {
-  const cms = regulatoryFromInformations(product.productInformations);
-  if (cms) {
-    return Boolean(
-      cms.fssai?.licenseNumber ||
-        cms.fssai?.licenseExpiry ||
-        cms.manufacturerDetails?.name ||
-        cms.manufacturerDetails?.address ||
-        cms.manufacturerDetails?.contact?.email ||
-        cms.manufacturerDetails?.contact?.phone ||
-        cms.sellerDetails?.soldBy ||
-        cms.sellerDetails?.registeredAddress ||
-        cms.sellerDetails?.gstin ||
-        cms.sellerDetails?.phone,
-    );
-  }
-
-  return Boolean(
-    product.fssai ||
-      product.regulatory?.veg != null ||
-      product.regulatory?.organic != null ||
-      meta?.countryOfOrigin ||
-      meta?.manufacturerName ||
-      meta?.manufacturerAddress ||
-      meta?.sellerName ||
-      meta?.sellerAddress ||
-      meta?.mfgDate ||
-      meta?.bestBefore ||
-      meta?.foodType ||
-      meta?.ccEmail ||
-      meta?.ccPhone,
+export function pdpRegulatoryHasContent(product: ProductDetail): boolean {
+  return regulatoryInformationHasContent(
+    product.productInformations?.regulatoryInformation,
   );
 }
 
@@ -132,6 +109,6 @@ export function visiblePdpTabs(product: ProductDetail): PdpTabKey[] {
   const tabs: PdpTabKey[] = [];
   if (pdpDetailsHasContent(product, meta)) tabs.push("details");
   if (pdpInstructionsHasContent(product, meta)) tabs.push("instructions");
-  if (pdpRegulatoryHasContent(product, meta)) tabs.push("regulatory");
+  if (pdpRegulatoryHasContent(product)) tabs.push("regulatory");
   return tabs;
 }
