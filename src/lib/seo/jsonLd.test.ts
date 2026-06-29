@@ -26,7 +26,7 @@ const PRODUCT: ProductDetail = {
 };
 
 describe("productJsonLd", () => {
-  it("builds a Product schema with offer in major currency units", () => {
+  it("builds a Product schema without price or availability assertions", () => {
     const ld = productJsonLd({
       baseUrl: "https://freshterra.in",
       product: PRODUCT,
@@ -36,22 +36,8 @@ describe("productJsonLd", () => {
     expect(ld.sku).toBe("FT-TOMATO-500G");
     expect(ld.image).toEqual(["https://cdn/tom.jpg"]);
     expect(ld.brand).toEqual({ "@type": "Brand", name: "FreshTerra Farms" });
-    const offers = ld.offers as Record<string, unknown>;
-    expect(offers.price).toBe("89.00");
-    expect(offers.priceCurrency).toBe("INR");
-    expect(offers.availability).toBe("https://schema.org/InStock");
-    expect(offers.url).toBe(
-      "https://freshterra.in/product/heirloom-tomatoes-500g",
-    );
-  });
-
-  it("marks out-of-stock products", () => {
-    const ld = productJsonLd({
-      baseUrl: "https://freshterra.in",
-      product: { ...PRODUCT, inStock: false },
-    });
-    const offers = ld.offers as Record<string, unknown>;
-    expect(offers.availability).toBe("https://schema.org/OutOfStock");
+    // Web shows no price/stock — offers must be absent from structured data.
+    expect(ld.offers).toBeUndefined();
   });
 });
 

@@ -17,7 +17,7 @@ import type {
 export interface UseCollectionProductsArgs {
   /** Saleor collection slug. Empty values skip the fetch. */
   slug?: string;
-  /** Required polygon. Empty values skip the fetch. */
+  /** Optional; retained for a future price feature, unused by the gate today. */
   polygonId?: string;
   sort?: PlpSort;
   filters?: Record<string, unknown>;
