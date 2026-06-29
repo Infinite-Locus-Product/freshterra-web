@@ -1,7 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-import { apiFetch, FreshTerraApiError } from "./freshterra-api";
+import {
+  apiFetch,
+  FreshTerraApiError,
+  type ApiErrorCode,
+} from "./freshterra-api";
 
 function jsonResponse(
   body: unknown,
@@ -11,6 +15,17 @@ function jsonResponse(
   if (init.requestId) headers.set("x-request-id", init.requestId);
   headers.set("content-type", "application/json");
   return new Response(JSON.stringify(body), { ...init, headers });
+}
+
+function errorResponse(status: number, code: ApiErrorCode | null): Response {
+  return jsonResponse(
+    {
+      success: false,
+      data: null,
+      error: code ? { code, message: `Error: ${code}` } : null,
+    },
+    { status },
+  );
 }
 
 const successEnvelope = (data: unknown) => ({
@@ -44,7 +59,10 @@ describe("apiFetch", () => {
   it("passes Next.js cache options on the server", async () => {
     const fetchSpy = vi.fn(async () => jsonResponse(successEnvelope({})));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
-    const windowDescriptor = Object.getOwnPropertyDescriptor(globalThis, "window");
+    const windowDescriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "window",
+    );
     Object.defineProperty(globalThis, "window", { value: undefined });
 
     try {
@@ -196,7 +214,10 @@ describe("apiFetch", () => {
   it("logs failures with structured context", async () => {
     const errorSpy = vi.spyOn(console, "error");
     globalThis.fetch = vi.fn(async () =>
-      jsonResponse({ success: false, data: null, error: null }, { status: 429 }),
+      jsonResponse(
+        { success: false, data: null, error: null },
+        { status: 429 },
+      ),
     ) as unknown as typeof fetch;
 
     await expect(apiFetch("/api/v1/thing")).rejects.toBeInstanceOf(
@@ -219,5 +240,50 @@ describe("apiFetch", () => {
         allowNullData: true,
       }),
     ).resolves.toBeUndefined();
+  });
+
+  it("suppresses console.error for an expected error code (still throws)", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(errorResponse(404, "NOT_FOUND"));
+    vi.stubGlobal("fetch", fetchMock);
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      apiFetch("/api/v1/products/missing", {
+        expectedErrorCodes: ["NOT_FOUND"],
+      }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  it("still logs an unexpected error code not in expectedErrorCodes", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(errorResponse(500, null));
+    vi.stubGlobal("fetch", fetchMock);
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      apiFetch("/api/v1/products/x", { expectedErrorCodes: ["NOT_FOUND"] }),
+    ).rejects.toBeInstanceOf(FreshTerraApiError);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    spy.mockRestore();
+  });
+
+  it("logs a 404 when expectedErrorCodes is not provided", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(errorResponse(404, "NOT_FOUND"));
+    vi.stubGlobal("fetch", fetchMock);
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(apiFetch("/api/v1/products/missing")).rejects.toMatchObject({
+      code: "NOT_FOUND",
+    });
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    spy.mockRestore();
   });
 });

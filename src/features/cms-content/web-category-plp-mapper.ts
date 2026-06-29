@@ -104,7 +104,9 @@ export function mapPlpL4Tabs(
     });
 }
 
-export function mapPlpL4TabsToPlpTabs(tabs: readonly PlpL4TabConfig[]): PlpTabView[] {
+export function mapPlpL4TabsToPlpTabs(
+  tabs: readonly PlpL4TabConfig[],
+): PlpTabView[] {
   return tabs.map(({ label, value }) => ({ label, value }));
 }
 
@@ -133,9 +135,7 @@ export function resolveActiveL4Tab(
   tabs: readonly PlpL4TabConfig[],
   activeTab: string,
 ): PlpL4TabConfig | undefined {
-  return (
-    tabs.find((tab) => tab.value === activeTab) ?? findAllL4Tab(tabs)
-  );
+  return tabs.find((tab) => tab.value === activeTab) ?? findAllL4Tab(tabs);
 }
 
 /** Category slug passed to the products API for the selected L4 tab. */
@@ -181,7 +181,9 @@ export function resolvePlpBannerForTab(
     return readTabValue(tab) === active.value;
   });
 
-  const hero = tabEntry?.hero_banner?.find((item) => isCmsActive(item.is_active));
+  const hero = tabEntry?.hero_banner?.find((item) =>
+    isCmsActive(item.is_active),
+  );
   const imageSrcWeb = hero?.hero_image_web?.trim();
   const imageSrcMweb = hero?.hero_image_mweb?.trim();
   const fallback = imageSrcMweb ?? imageSrcWeb;

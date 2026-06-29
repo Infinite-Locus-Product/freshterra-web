@@ -9,14 +9,16 @@ export const categoryPlpProductCardClass =
 export const categoryPlpProductCardImageClass =
   "relative aspect-[240/226] w-full overflow-hidden bg-gray-50 lg:aspect-auto lg:h-[226px] lg:w-[240px]";
 
-export const categoryPlpProductCardBodyClass = "flex flex-1 flex-col p-3 lg:p-4";
+export const categoryPlpProductCardBodyClass =
+  "flex flex-1 flex-col p-3 lg:p-4";
 
 /** Reserves two title lines so card bodies align in the PLP grid. */
 export const categoryPlpProductCardNameClass =
   "text-text-primary line-clamp-2 min-h-10 min-w-0 font-sans text-[14px] font-medium leading-5 tracking-[0] lg:min-h-[3rem] lg:text-[18px] lg:font-bold lg:leading-[1.35]";
 
 /** Variant meta row — fixed slot height when PLP cards show weight/options. */
-export const categoryPlpProductCardMetaSlotClass = "mt-0.5 min-h-[1.125rem] lg:min-h-5";
+export const categoryPlpProductCardMetaSlotClass =
+  "mt-0.5 min-h-[1.125rem] lg:min-h-5";
 
 /** mWeb variant meta — Manrope 12px regular, 140% lh. Web: 14px, 120% lh. */
 export const categoryPlpProductCardMetaClass =

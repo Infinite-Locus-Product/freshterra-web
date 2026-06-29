@@ -2,7 +2,8 @@
 export const HOME_SOURCING_SECTION_WIDTH = 1440;
 export const HOME_SOURCING_SECTION_HEIGHT = 600;
 
-export const homeSourcingSectionOuterClass = "bg-white pt-10 pb-0 md:pt-24 md:pb-0";
+export const homeSourcingSectionOuterClass =
+  "bg-white pt-10 pb-0 md:pt-12 md:pb-0";
 
 /** mWeb: full-bleed sage panel. Desktop: constrained content shell. */
 export const homeSourcingSectionFrameClass =
@@ -18,7 +19,7 @@ export const homeSourcingSectionDesktopShellClass =
 export const homeSourcingBgImageClass = "object-cover object-center";
 
 export const homeSourcingInnerClass =
-  "relative z-10 flex flex-col gap-6 pt-6 pb-8 md:gap-8 md:px-10 md:pt-[3.0625rem] md:pb-10 lg:px-10";
+  "relative z-10 flex flex-col gap-6 pt-6 pb-8 md:gap-8 md:px-10 md:pt-[3.0625rem] md:pb-10 lg:px-0";
 
 /** mWeb text inset inside full-bleed panel; image stays edge-to-edge. */
 export const homeSourcingContentInsetClass = "px-page md:px-0";

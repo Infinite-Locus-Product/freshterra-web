@@ -116,4 +116,35 @@ describe("useCategoryProducts", () => {
     expect(result.current.error?.code).toBe("UPSTREAM_UNAVAILABLE");
     expect(result.current.items).toEqual([]);
   });
+
+  it("seeds from initialData and skips the first fetch when the key matches", async () => {
+    const seed = {
+      items: [
+        {
+          id: "p1",
+          name: "Apple",
+          slug: "apple",
+          price: { list: 100, mrp: 100, currency: "INR", source: "polygon" },
+        },
+      ],
+      page: 1,
+      pageSize: 20,
+      total: 1,
+      facets: {},
+      category: { name: "Fruits", slug: "fruits" },
+    } as unknown as CategoryProductsData; // partial fixture
+
+    const { result } = renderHook(() =>
+      useCategoryProducts({
+        slug: "fruits",
+        polygonId: "poly_1",
+        initialData: seed,
+        initialKey: "fruits",
+      }),
+    );
+
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.total).toBe(1);
+    expect(mockGet).not.toHaveBeenCalled();
+  });
 });

@@ -40,7 +40,8 @@ function coerceHealthBenefitItem(item: unknown): string | undefined {
   if (typeof item === "number" && Number.isFinite(item)) {
     return String(item);
   }
-  if (!item || typeof item !== "object" || Array.isArray(item)) return undefined;
+  if (!item || typeof item !== "object" || Array.isArray(item))
+    return undefined;
 
   const record = item as Record<string, unknown>;
   return (
@@ -75,7 +76,9 @@ function normalizeHealthBenefitsWire(value: unknown): unknown {
   if (Array.isArray(record.items)) return value;
   if (Array.isArray(record.health_benefits)) {
     return {
-      ...(typeof record.heading === "string" ? { heading: record.heading } : {}),
+      ...(typeof record.heading === "string"
+        ? { heading: record.heading }
+        : {}),
       items: record.health_benefits,
     };
   }
@@ -339,7 +342,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /** Parses `health_benefits` from any BFF / metadata blob. */
-export function parseHealthBenefits(raw: unknown): HealthBenefitsBlock | undefined {
+export function parseHealthBenefits(
+  raw: unknown,
+): HealthBenefitsBlock | undefined {
   if (raw == null) return undefined;
 
   let parsed: unknown = raw;
@@ -455,7 +460,10 @@ function mapWireToProductInformations(
                 ? { duration: instructions.shelf_life.duration }
                 : {}),
               ...(instructions.shelf_life.manufacturing_date
-                ? { manufacturingDate: instructions.shelf_life.manufacturing_date }
+                ? {
+                    manufacturingDate:
+                      instructions.shelf_life.manufacturing_date,
+                  }
                 : {}),
               ...(instructions.shelf_life.best_before
                 ? { bestBefore: instructions.shelf_life.best_before }
@@ -623,7 +631,9 @@ export function parseRegulatoryInformation(
     }
   }
 
-  const wire = isRecord(parsed) ? parsed.regulatory_information ?? parsed : parsed;
+  const wire = isRecord(parsed)
+    ? (parsed.regulatory_information ?? parsed)
+    : parsed;
   const result = regulatoryInformationSchema.safeParse(wire);
   if (!result.success) return undefined;
 
@@ -645,15 +655,15 @@ export function regulatoryInformationHasContent(
 
   return Boolean(
     regulatory.fssai?.licenseNumber ||
-      regulatory.fssai?.licenseExpiry ||
-      regulatory.manufacturerDetails?.name ||
-      manufacturerAddressLines.length > 0 ||
-      regulatory.manufacturerDetails?.contact?.email ||
-      regulatory.manufacturerDetails?.contact?.phone ||
-      regulatory.sellerDetails?.soldBy ||
-      sellerAddressLines.length > 0 ||
-      regulatory.sellerDetails?.gstin ||
-      regulatory.sellerDetails?.phone,
+    regulatory.fssai?.licenseExpiry ||
+    regulatory.manufacturerDetails?.name ||
+    manufacturerAddressLines.length > 0 ||
+    regulatory.manufacturerDetails?.contact?.email ||
+    regulatory.manufacturerDetails?.contact?.phone ||
+    regulatory.sellerDetails?.soldBy ||
+    sellerAddressLines.length > 0 ||
+    regulatory.sellerDetails?.gstin ||
+    regulatory.sellerDetails?.phone,
   );
 }
 
@@ -689,7 +699,9 @@ function readTrustMarkersBlock(raw: unknown): unknown {
 }
 
 /** Lenient parser for BFF `trust_markers` / `trustMarkers` blocks. */
-export function parseTrustMarkers(raw: unknown): ProductInformationsLabeledIcon[] {
+export function parseTrustMarkers(
+  raw: unknown,
+): ProductInformationsLabeledIcon[] {
   if (raw == null) return [];
 
   let parsed: unknown = raw;
@@ -776,9 +788,9 @@ export function productInformationsHasContent(
   if (!info) return false;
   return Boolean(
     info.trustMarkers?.items.length ||
-      info.productDetails ||
-      info.nutritionalInformation ||
-      info.instructions ||
-      info.regulatoryInformation,
+    info.productDetails ||
+    info.nutritionalInformation ||
+    info.instructions ||
+    info.regulatoryInformation,
   );
 }

@@ -4,6 +4,12 @@ import Link from "next/link";
 import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
+import { APP_STORE_BADGES } from "@/components/layout/app-store-badges";
+import {
+  FOOTER_COPYRIGHT_LINE,
+  FOOTER_LEGAL_LINKS,
+} from "@/components/layout/footer-legal-links";
+import { FOOTER_FOLLOW_US_SOCIAL } from "@/components/layout/footer-social-links";
 import {
   marketingFooterBottomInnerClass,
   marketingFooterBottomShellClass,
@@ -18,18 +24,15 @@ import {
   marketingFooterMainBandClass,
   marketingFooterOfficeLineClass,
   marketingFooterOfficeTitleClass,
-  marketingFooterStoreButtonClass,
   marketingFooterStoreButtonStackClass,
 } from "@/components/layout/marketing-footer-layout";
-import { APP_STORE_BADGES } from "@/components/layout/app-store-badges";
-import {
-  FOOTER_COPYRIGHT_LINE,
-  FOOTER_LEGAL_LINKS,
-} from "@/components/layout/footer-legal-links";
-import { FOOTER_FOLLOW_US_SOCIAL } from "@/components/layout/footer-social-links";
 import { MarketingFooterArt } from "@/components/layout/MarketingFooterArt";
 
-import type { FooterContent, FooterLink, FooterSocial } from "@/features/cms-content/footer-content-types";
+import type {
+  FooterContent,
+  FooterLink,
+  FooterSocial,
+} from "@/features/cms-content/footer-content-types";
 import { socialShortLabel } from "@/features/cms-content/strapi-footer-mapper";
 
 type MarketingFooterViewProps = Readonly<{
@@ -41,13 +44,12 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
   const playStore = env.NEXT_PUBLIC_PLAY_STORE_URL ?? "/notify";
   const badgeHref = { appStore, playStore };
 
-  const totalColumns =
-    content.groups.length + (content.office ? 1 : 0) + 1;
+  const totalColumns = content.groups.length + (content.office ? 1 : 0) + 1;
 
   return (
     <footer
       role="contentinfo"
-      className="bg-brand-600 text-white-soft relative mt-0 overflow-hidden lg:mt-8"
+      className="bg-brand-600 text-white-soft relative mt-0 overflow-hidden"
     >
       <div className={marketingFooterMainBandClass}>
         <MarketingFooterArt />
@@ -59,25 +61,25 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
               totalColumns >= 4 && "xl:grid-cols-4",
             )}
           >
-          {content.groups.map((group) => (
-            <FooterColumn
-              key={group.title}
-              title={group.title}
-              items={group.links.map((link) => ({
-                label: link.label,
-                href: link.url,
-              }))}
-            />
-          ))}
+            {content.groups.map((group) => (
+              <FooterColumn
+                key={group.title}
+                title={group.title}
+                items={group.links.map((link) => ({
+                  label: link.label,
+                  href: link.url,
+                }))}
+              />
+            ))}
 
-          {content.office ? (
-            <FooterOfficeColumn
-              title={content.office.title}
-              lines={content.office.lines}
-            />
-          ) : null}
+            {content.office ? (
+              <FooterOfficeColumn
+                title={content.office.title}
+                lines={content.office.lines}
+              />
+            ) : null}
 
-          <div>
+            <div>
               <h3 className="mb-4 font-sans text-[1.125rem] leading-6 font-bold tracking-normal">
                 Download App
               </h3>
@@ -86,24 +88,16 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
                   <Link
                     key={badge.brandLine}
                     href={badgeHref[badge.hrefKey]}
-                    className={marketingFooterStoreButtonClass}
+                    aria-label={`${badge.topLine} ${badge.brandLine}`}
+                    className="inline-flex shrink-0"
                   >
                     <Image
-                      src={badge.iconSrc}
-                      alt=""
-                      aria-hidden
-                      width={30}
-                      height={30}
-                      className="size-7.5 shrink-0"
+                      src={badge.badgeSrc}
+                      alt={`${badge.topLine} ${badge.brandLine}`}
+                      width={badge.badgeWidth}
+                      height={badge.badgeHeight}
+                      className="h-[56px] w-[173px] object-fill lg:h-[58px] lg:w-[224px]"
                     />
-                    <span className="flex flex-col leading-none">
-                      <span className="text-[0.625rem] font-medium">
-                        {badge.topLine}
-                      </span>
-                      <span className="text-[1rem] font-bold">
-                        {badge.brandLine}
-                      </span>
-                    </span>
                   </Link>
                 ))}
               </div>
@@ -118,7 +112,7 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
                   ))}
                 </div>
               </div>
-          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -126,7 +120,9 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
       <div className="border-brand-100/70 bg-brand-600 relative border-t">
         <div className={marketingFooterBottomShellClass}>
           <div className={marketingFooterBottomInnerClass}>
-            <p className={marketingFooterCopyrightClass}>{FOOTER_COPYRIGHT_LINE}</p>
+            <p className={marketingFooterCopyrightClass}>
+              {FOOTER_COPYRIGHT_LINE}
+            </p>
             <nav aria-label="Legal" className={marketingFooterLegalNavClass}>
               <div className={marketingFooterLegalMwebStackClass}>
                 {FOOTER_LEGAL_LINKS.length >= 2 ? (
@@ -177,7 +173,10 @@ function FooterColumn({
         {items.map((item) => (
           <li key={item.href ? `${item.label}-${item.href}` : item.label}>
             {item.href ? (
-              <Link href={item.href} className="text-white-soft/80 hover:underline">
+              <Link
+                href={item.href}
+                className="text-white-soft/80 hover:underline"
+              >
                 {item.label}
               </Link>
             ) : (
@@ -247,9 +246,7 @@ function SocialLink({ social }: Readonly<{ social: FooterSocial }>) {
 
 function FooterLegalLink({ link }: Readonly<{ link: FooterLink }>) {
   if (!link.url) {
-    return (
-      <span className={marketingFooterLegalLinkClass}>{link.label}</span>
-    );
+    return <span className={marketingFooterLegalLinkClass}>{link.label}</span>;
   }
 
   const external = /^https?:\/\//i.test(link.url);
@@ -257,9 +254,7 @@ function FooterLegalLink({ link }: Readonly<{ link: FooterLink }>) {
     <Link
       href={link.url}
       className={marketingFooterLegalLinkClass}
-      {...(external
-        ? { target: "_blank", rel: "noopener noreferrer" }
-        : {})}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       {link.label}
     </Link>

@@ -99,6 +99,12 @@ export interface ApiFetchOptions<T> {
   next?: ApiFetchNextOptions;
   /** When true, a successful envelope with `data: null` resolves instead of throwing. */
   allowNullData?: boolean;
+  /**
+   * Error codes the caller treats as control flow (e.g. `NOT_FOUND` for a
+   * probe-and-fallback or `notFound()`). A thrown error whose code is listed
+   * here is NOT logged via console.error — it is still thrown.
+   */
+  expectedErrorCodes?: ApiErrorCode[];
 }
 
 function buildUrl(
@@ -108,7 +114,9 @@ function buildUrl(
   // Browser requests go through the same-origin `/bff` proxy (rewritten to the
   // backend in next.config) to dodge CORS; server-side requests call directly.
   const base =
-    typeof window === "undefined" ? (env.NEXT_PUBLIC_API_BASE_URL ?? "") : "/bff";
+    typeof window === "undefined"
+      ? (env.NEXT_PUBLIC_API_BASE_URL ?? "")
+      : "/bff";
   let query = "";
   if (searchParams) {
     const params = new URLSearchParams();
@@ -155,8 +163,9 @@ function resolveCode(
 
 function isAbortError(err: unknown): boolean {
   return (
-    err instanceof DOMException && err.name === "AbortError"
-  ) || (err instanceof Error && err.name === "AbortError");
+    (err instanceof DOMException && err.name === "AbortError") ||
+    (err instanceof Error && err.name === "AbortError")
+  );
 }
 
 function logError(
@@ -182,8 +191,16 @@ export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions<T> = {},
 ): Promise<T> {
-  const { method = "GET", searchParams, body, signal, schema, next, allowNullData } =
-    options;
+  const {
+    method = "GET",
+    searchParams,
+    body,
+    signal,
+    schema,
+    next,
+    allowNullData,
+    expectedErrorCodes,
+  } = options;
   const token = options.token === undefined ? getAuthToken() : options.token;
 
   const url = buildUrl(path, searchParams);
@@ -192,6 +209,13 @@ export async function apiFetch<T>(
   if (body !== undefined) headers["content-type"] = "application/json";
 
   const logContext = { url, method };
+  const maybeLog = (
+    apiError: FreshTerraApiError,
+    ctx: Record<string, unknown>,
+  ) => {
+    if (expectedErrorCodes?.includes(apiError.code)) return;
+    logError(apiError, ctx);
+  };
 
   const fetchInit: RequestInit & { next?: ApiFetchNextOptions } = {
     method,
@@ -214,7 +238,7 @@ export async function apiFetch<T>(
       err instanceof Error ? err.message : "Network request failed",
       "NETWORK_ERROR",
     );
-    logError(apiError, logContext);
+    maybeLog(apiError, logContext);
     throw apiError;
   }
 
@@ -240,7 +264,7 @@ export async function apiFetch<T>(
       requestId,
       envelopeError?.code,
     );
-    logError(apiError, logContext);
+    maybeLog(apiError, logContext);
     throw apiError;
   }
 
@@ -251,7 +275,7 @@ export async function apiFetch<T>(
       res.status,
       requestId,
     );
-    logError(apiError, logContext);
+    maybeLog(apiError, logContext);
     throw apiError;
   }
 
@@ -264,7 +288,7 @@ export async function apiFetch<T>(
       requestId,
       payload.error?.code,
     );
-    logError(apiError, logContext);
+    maybeLog(apiError, logContext);
     throw apiError;
   }
 
@@ -277,7 +301,7 @@ export async function apiFetch<T>(
         res.status,
         requestId,
       );
-      logError(apiError, { ...logContext, issues: parsed.error.issues });
+      maybeLog(apiError, { ...logContext, issues: parsed.error.issues });
       throw apiError;
     }
     return parsed.data;

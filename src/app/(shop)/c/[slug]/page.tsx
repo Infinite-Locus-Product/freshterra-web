@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,13 +28,22 @@ import { PageShell } from "@/components/layout/PageShell";
 
 import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
 import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
+import {
+  getCategoryProducts,
+  DEFAULT_CATEGORY_SORT,
+} from "@/features/catalog/category-service";
 import { getWebCategoryContent } from "@/features/cms-content/web-category-content-service";
-import { resolveWebCategoryPlpContext } from "@/features/cms-content/web-category-plp-resolver";
 
 type Params = Promise<{ slug: string }>;
 
 const EXPLORE_CATALOG_SLUG = "explore-catalog";
-const STORE_COOKIE = "ft_store_id";
+
+/** Store-neutral catalog content → ISR-cacheable. */
+export const revalidate = 300;
+
+export function generateStaticParams() {
+  return [];
+}
 
 function l3TileHref(
   tile: {
@@ -73,18 +81,10 @@ export async function generateMetadata({
 
 export default async function CategoryHubPage({
   params,
-  searchParams,
-}: Readonly<{
-  params: Params;
-  searchParams: Promise<{ parent?: string }>;
-}>) {
+}: Readonly<{ params: Params }>) {
   const { slug } = await params;
-  const { parent } = await searchParams;
-  const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
-  let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null = null;
-  let initialPlpContext: Awaited<
-    ReturnType<typeof resolveWebCategoryPlpContext>
-  > = null;
+  let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null =
+    null;
 
   if (slug !== EXPLORE_CATALOG_SLUG) {
     try {
@@ -92,13 +92,19 @@ export default async function CategoryHubPage({
     } catch {
       // If slug is already an L3 route (or endpoint is unavailable), show PLP.
     }
+  }
 
-    if (!webCategory) {
-      try {
-        initialPlpContext = await resolveWebCategoryPlpContext(slug, parent);
-      } catch {
-        // CMS PLP config is optional; client can retry if needed.
-      }
+  let initialProducts = null;
+  if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {
+    try {
+      initialProducts = await getCategoryProducts(
+        slug,
+        { sort: DEFAULT_CATEGORY_SORT },
+        { expectedErrorCodes: ["NOT_FOUND"] },
+      );
+    } catch {
+      // Best-effort; staging BFF may 404 (CATEGORY_NOT_FOUND). The client
+      // hook falls back to the Saleor PLP route as today.
     }
   }
 
@@ -109,12 +115,7 @@ export default async function CategoryHubPage({
     contentNode = <WebCategoryLandingView content={webCategory} />;
   } else {
     contentNode = (
-      <CategoryPlpView
-        slug={slug}
-        polygonId={polygonId}
-        initialPlpCms={initialPlpContext?.config ?? null}
-        initialParentSlug={initialPlpContext?.parentSlug ?? null}
-      />
+      <CategoryPlpView slug={slug} initialProducts={initialProducts} />
     );
   }
 
@@ -131,7 +132,8 @@ function WebCategoryLandingView({
   content,
 }: Readonly<{ content: Awaited<ReturnType<typeof getWebCategoryContent>> }>) {
   const title = content.label?.trim() || "Category";
-  const parentSlug = content.slug?.trim() || title.toLowerCase().replace(/\s+/g, "-");
+  const parentSlug =
+    content.slug?.trim() || title.toLowerCase().replace(/\s+/g, "-");
   const hero = content.category_hero_section;
   const heroImage = hero?.image_web || hero?.image_mweb;
   const tiles = [...(content.l2_category[0]?.l3_tiles ?? [])]
@@ -159,7 +161,9 @@ function WebCategoryLandingView({
                 {hero?.title?.trim() || title}
               </h1>
               {hero?.subtitle?.trim() ? (
-                <p className="mt-1 text-sm md:text-xl">{hero?.subtitle?.trim()}</p>
+                <p className="mt-1 text-sm md:text-xl">
+                  {hero?.subtitle?.trim()}
+                </p>
               ) : null}
             </div>
           </div>
@@ -176,7 +180,10 @@ function WebCategoryLandingView({
               </p>
             ) : null}
           </div>
-          <Link href="/c/explore-catalog" className={categorySectionCtaLinkClass}>
+          <Link
+            href="/c/explore-catalog"
+            className={categorySectionCtaLinkClass}
+          >
             <span className={categorySectionCtaLabelClass}>View All</span>
             <Image
               src="/Shape.svg"
@@ -193,7 +200,8 @@ function WebCategoryLandingView({
           {tiles.map((tile) => {
             const href = l3TileHref(tile, parentSlug);
             if (!href) return null;
-            const imageSrc = tile.image_url_web?.trim() || tile.image_url_mweb?.trim();
+            const imageSrc =
+              tile.image_url_web?.trim() || tile.image_url_mweb?.trim();
             if (!imageSrc) return null;
             const name =
               tile.saleor_l3_category_id?.trim() ||

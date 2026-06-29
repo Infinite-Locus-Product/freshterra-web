@@ -1,8 +1,15 @@
 "use client";
 
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -27,6 +34,9 @@ type HomeHeroCarouselProps = Readonly<{
 }>;
 
 const SLIDE_SELECTOR = "[data-hero-banner-slide]";
+
+/** Auto-advance interval for the hero carousel (only when >1 slide). */
+const AUTOPLAY_INTERVAL_MS = 5000;
 
 function isExternalHref(href: string): boolean {
   return /^https?:\/\//i.test(href);
@@ -66,6 +76,8 @@ function HeroBannerLink({
 export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
 
   const syncActiveIndexFromScroll = useCallback(() => {
     const track = trackRef.current;
@@ -101,7 +113,7 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
     return () => track.removeEventListener("scroll", onScroll);
   }, [syncActiveIndexFromScroll]);
 
-  const scrollToSlide = (index: number) => {
+  const scrollToSlide = useCallback((index: number) => {
     const track = trackRef.current;
     if (!track) return;
     const slide = track.querySelectorAll<HTMLElement>(SLIDE_SELECTOR)[index];
@@ -110,13 +122,40 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
       left: slide.offsetLeft + slide.offsetWidth / 2 - track.clientWidth / 2,
       behavior: "smooth",
     });
-  };
+  }, []);
+
+  // Keep a ref of the active index so the autoplay timer reads the latest
+  // position without resetting on every slide change.
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
+  // Auto-advance when there is more than one slide. Pauses on hover/focus and
+  // when the tab is hidden, and is disabled under reduced-motion.
+  useEffect(() => {
+    if (slides.length <= 1 || autoplayPaused) return;
+    if (typeof window === "undefined") return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const id = window.setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      scrollToSlide((activeIndexRef.current + 1) % slides.length);
+    }, AUTOPLAY_INTERVAL_MS);
+
+    return () => window.clearInterval(id);
+  }, [slides.length, autoplayPaused, scrollToSlide]);
 
   if (slides.length === 0) return null;
 
   return (
     <div className={cn(homeHeroBannerShellClass, className)}>
-      <div className={homeHeroBannerOuterClass}>
+      <div
+        className={homeHeroBannerOuterClass}
+        onMouseEnter={() => setAutoplayPaused(true)}
+        onMouseLeave={() => setAutoplayPaused(false)}
+        onFocusCapture={() => setAutoplayPaused(true)}
+        onBlurCapture={() => setAutoplayPaused(false)}
+      >
         <div
           ref={trackRef}
           className={homeHeroBannerTrackClass}
@@ -160,7 +199,9 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
                 )}
                 {slide.heading ? (
                   <div className={homeHeroBannerHeadingWrapClass}>
-                    <p className={homeHeroBannerHeadingClass}>{slide.heading}</p>
+                    <p className={homeHeroBannerHeadingClass}>
+                      {slide.heading}
+                    </p>
                   </div>
                 ) : null}
               </div>

@@ -21,10 +21,10 @@ const product = {
 };
 
 function productResponse(data: unknown = product): Response {
-  return new Response(
-    JSON.stringify({ success: true, data, error: null }),
-    { status: 200, headers: { "content-type": "application/json" } },
-  );
+  return new Response(JSON.stringify({ success: true, data, error: null }), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function errorResponse(status: number, code: string | null): Response {
@@ -172,5 +172,45 @@ describe("getProduct", () => {
     await expect(getProduct("prd_01HX9")).rejects.toMatchObject({
       code: "UPSTREAM_UNAVAILABLE",
     });
+  });
+
+  it("does not log a 404 when expectedErrorCodes includes NOT_FOUND", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(errorResponse(404, "PRODUCT_NOT_FOUND"));
+    vi.stubGlobal("fetch", fetchMock);
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      getProduct("prd_x", {}, { expectedErrorCodes: ["NOT_FOUND"] }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  it("forwards next cache options to the underlying fetch (server-side)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(productResponse());
+    vi.stubGlobal("fetch", fetchMock);
+    // Simulate server-side: apiFetch only attaches `next` when window is undefined.
+    vi.stubGlobal("window", undefined);
+
+    try {
+      await getProduct(
+        "prd_01HX9",
+        {},
+        { next: { tags: ["product:prd_01HX9"], revalidate: 120 } },
+      );
+
+      const init = fetchMock.mock.calls[0][1] as RequestInit & {
+        next?: { tags?: string[]; revalidate?: number | false };
+      };
+      expect(init.next).toEqual({
+        tags: ["product:prd_01HX9"],
+        revalidate: 120,
+      });
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

@@ -1,15 +1,14 @@
-import type { ProductDetail, ProductMetafields } from "./types";
 import {
   healthBenefitsFromInformations,
   regulatoryInformationHasContent,
   type ProductInformations,
 } from "./product-informations";
 
+import type { ProductDetail, ProductMetafields } from "./types";
+
 export type PdpTabKey = "details" | "instructions" | "regulatory";
 
-function productDetailsFromInformations(
-  info: ProductInformations | undefined,
-) {
+function productDetailsFromInformations(info: ProductInformations | undefined) {
   return info?.productDetails;
 }
 
@@ -24,10 +23,10 @@ function shelfLifeHasContent(
   const shelfLife = cms?.shelfLife;
   return Boolean(
     shelfLife?.duration ||
-      shelfLife?.manufacturingDate ||
-      shelfLife?.bestBefore ||
-      shelfLife?.value ||
-      meta?.shelfLife,
+    shelfLife?.manufacturingDate ||
+    shelfLife?.bestBefore ||
+    shelfLife?.value ||
+    meta?.shelfLife,
   );
 }
 
@@ -36,33 +35,35 @@ export function pdpDetailsHasContent(
   meta?: ProductMetafields,
 ): boolean {
   const cms = productDetailsFromInformations(product.productInformations);
-  const healthBenefits = healthBenefitsFromInformations(product.productInformations);
+  const healthBenefits = healthBenefitsFromInformations(
+    product.productInformations,
+  );
   if (cms) {
     return Boolean(
       cms.brand ||
-        cms.type ||
-        cms.category ||
-        cms.keyFeatures?.items.length ||
-        cms.ingredients?.contains?.value ||
-        cms.ingredients?.allergenInfo ||
-        (healthBenefits?.items.length ?? 0) > 0 ||
-        pdpNutritionHasContent(product, meta),
+      cms.type ||
+      cms.category ||
+      cms.keyFeatures?.items.length ||
+      cms.ingredients?.contains?.value ||
+      cms.ingredients?.allergenInfo ||
+      (healthBenefits?.items.length ?? 0) > 0 ||
+      pdpNutritionHasContent(product, meta),
     );
   }
 
   const brand = product.manufacturer ?? meta?.brand;
   return Boolean(
     brand ||
-      product.category ||
-      product.sku ||
-      meta?.erpnextItemCode ||
-      meta?.ingredients ||
-      meta?.allergenInfo ||
-      (healthBenefits?.items.length ?? 0) > 0 ||
-      (meta?.healthBenefits?.length ?? 0) > 0 ||
-      product.tags.length > 0 ||
-      product.regulatory?.organic ||
-      pdpNutritionHasContent(product, meta),
+    product.category ||
+    product.sku ||
+    meta?.erpnextItemCode ||
+    meta?.ingredients ||
+    meta?.allergenInfo ||
+    (healthBenefits?.items.length ?? 0) > 0 ||
+    (meta?.healthBenefits?.length ?? 0) > 0 ||
+    product.tags.length > 0 ||
+    product.regulatory?.organic ||
+    pdpNutritionHasContent(product, meta),
   );
 }
 
@@ -70,13 +71,14 @@ export function pdpNutritionHasContent(
   product: ProductDetail,
   meta?: ProductMetafields,
 ): boolean {
-  const cmsBenefits = healthBenefitsFromInformations(product.productInformations);
+  const cmsBenefits = healthBenefitsFromInformations(
+    product.productInformations,
+  );
   if (cmsBenefits?.items.length) return true;
 
   const n = product.nutrition;
   const hasMacros =
-    n != null &&
-    (n.kcal != null || n.protein != null || n.carbs != null);
+    n != null && (n.kcal != null || n.protein != null || n.carbs != null);
   return hasMacros || (meta?.healthBenefits?.length ?? 0) > 0;
 }
 
@@ -88,8 +90,8 @@ export function pdpInstructionsHasContent(
   if (cms) {
     return Boolean(
       shelfLifeHasContent(cms, meta) ||
-        cms.storageTips?.points.length ||
-        cms.usageSuggestions?.points.length,
+      cms.storageTips?.points.length ||
+      cms.usageSuggestions?.points.length,
     );
   }
 

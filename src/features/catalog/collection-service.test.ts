@@ -113,14 +113,19 @@ describe("getCollectionProducts", () => {
     });
   });
 
-  it("rejects a missing polygonId before calling out", async () => {
-    const fetchSpy = vi.fn();
+  it("fetches without a polygonId (store-neutral)", async () => {
+    const fetchSpy = vi.fn(async () => collectionResponse());
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await expect(
-      getCollectionProducts("seasonal", { polygonId: "" }),
-    ).rejects.toBeInstanceOf(Error);
-    expect(fetchSpy).not.toHaveBeenCalled();
+    await getCollectionProducts("seasonal");
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    // Inspect the raw request URL string directly (the `new URL(...)` helper
+    // can't parse the relative `/bff` base in this env — see the pre-existing
+    // `Invalid URL` failures).
+    const [requestUrl] = fetchSpy.mock.calls.at(-1) as unknown as [string];
+    expect(requestUrl).toContain("/api/v1/collections/seasonal/products");
+    expect(requestUrl).not.toContain("polygonId");
   });
 
   it("rejects a missing slug before calling out", async () => {

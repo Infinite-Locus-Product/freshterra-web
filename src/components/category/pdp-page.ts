@@ -1,7 +1,8 @@
 /** Figma PDP — mWeb tokens. */
 export const PDP_MWEB_CONTENT_INSET = 16;
 
-export const pdpPageShellClass = "w-full min-w-0 overflow-x-clip py-0 lg:px-page lg:py-8";
+export const pdpPageShellClass =
+  "w-full min-w-0 overflow-x-clip py-0 lg:px-page lg:py-8";
 
 /** Padded copy block below full-bleed gallery on mWeb. */
 export const pdpContentShellClass = "min-w-0 px-4 lg:px-0";
@@ -54,8 +55,7 @@ export const pdpMwebContentBleedXClass =
   "-mx-4 w-[calc(100%+2rem)] max-w-none lg:mx-0 lg:w-full";
 
 /** mWeb PDP full-bleed horizontal rule inside padded tab content. */
-export const pdpMwebFullBleedDividerClass =
-  `relative h-px shrink-0 bg-gray-divider lg:hidden ${pdpMwebContentBleedXClass}`;
+export const pdpMwebFullBleedDividerClass = `relative h-px shrink-0 bg-gray-divider lg:hidden ${pdpMwebContentBleedXClass}`;
 
 /** Instructions tab — section rule after Storage Tips / Usage Suggestions (mWeb + web). */
 export const pdpInstructionsSectionDividerClass =
@@ -103,20 +103,9 @@ export const pdpAppCardButtonsClass = "flex gap-2 max-lg:flex-nowrap lg:gap-3";
 export const PDP_STORE_BUTTON_MWEB_WIDTH = 156;
 export const PDP_STORE_BUTTON_MWEB_HEIGHT = 56;
 
+/** Sized box for the full App Store / Play Store badge SVG (mWeb 156×56, web 230×56). */
 export const pdpStoreButtonClass =
-  "box-border flex h-14 w-[156px] shrink-0 items-center gap-[11.73px] rounded-[9.78px] border-[0.73px] border-gray-200 bg-white px-2 transition-colors hover:bg-gray-50 lg:h-14 lg:w-[14.375rem] lg:gap-[11.73px]";
-
-/** Store badge icon — mWeb: 30×30, radius-xxs. Web: 30×30. */
-export const pdpStoreButtonIconClass =
-  "size-[30px] shrink-0 rounded-[var(--radius-xxs)] object-contain";
-
-/** mWeb store badge top line (e.g. “Download on the”) — 11.73px / 15.64px lh. */
-export const pdpStoreButtonTopLineClass =
-  "text-text-tertiary block font-sans text-[11.73px] font-normal leading-[15.64px] tracking-[0] lg:text-[10px] lg:leading-tight";
-
-/** mWeb store badge brand line (e.g. “App Store”) — 13.69px semibold / 19.55px lh. */
-export const pdpStoreButtonBrandLineClass =
-  "text-text-primary block font-sans text-[13.69px] font-semibold leading-[19.55px] tracking-[-0.15px] lg:text-sm lg:leading-tight lg:tracking-normal";
+  "box-border flex h-14 w-[156px] shrink-0 overflow-hidden rounded-[9.78px] transition-opacity hover:opacity-90 lg:w-[14.375rem]";
 
 /** Tab bar — grey band on web only (mWeb pills scroll on the page background). */
 export const pdpTabsBarShellClass = "w-full min-w-0 lg:bg-gray-50";
@@ -130,8 +119,7 @@ const pdpTabPillBaseClass =
 
 export const pdpTabActiveClass = `bg-brand-500 text-beige-100 ${pdpTabPillBaseClass}`;
 
-export const pdpTabInactiveClass =
-  `text-text-secondary border border-gray-200 bg-white ${pdpTabPillBaseClass}`;
+export const pdpTabInactiveClass = `text-text-secondary border border-gray-200 bg-white ${pdpTabPillBaseClass}`;
 
 export const pdpTabsSectionClass = "min-w-0";
 

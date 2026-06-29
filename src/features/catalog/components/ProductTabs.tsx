@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import Image from "next/image";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   pdpDetailsBodyTextClass,
   pdpDetailsRowLabelClass,
@@ -35,18 +37,15 @@ import {
   pdpTabsSectionClass,
   pdpContentShellClass,
 } from "@/components/category/pdp-page";
-import { cn } from "@/lib/utils/cn";
 
-import {
-  type PdpTabKey,
-  visiblePdpTabs,
-} from "../pdp-tab-content";
+import { type PdpTabKey, visiblePdpTabs } from "../pdp-tab-content";
 import {
   healthBenefitsFromInformations,
   productInformationsAddressLines,
   regulatoryInformationHasContent,
   type ProductInformations,
 } from "../product-informations";
+
 import type { ProductDetail, ProductMetafields } from "../types";
 
 const TAB_LABELS: Record<PdpTabKey, string> = {
@@ -57,9 +56,7 @@ const TAB_LABELS: Record<PdpTabKey, string> = {
 
 export function ProductTabs({ product }: { product: ProductDetail }) {
   const visibleTabs = useMemo(() => visiblePdpTabs(product), [product]);
-  const [active, setActive] = useState<PdpTabKey>(
-    visibleTabs[0] ?? "details",
-  );
+  const [active, setActive] = useState<PdpTabKey>(visibleTabs[0] ?? "details");
   const meta = product.metafields;
   const info = product.productInformations;
 
@@ -113,9 +110,7 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
         {active === "instructions" ? (
           <InstructionsPanel meta={meta} info={info} />
         ) : null}
-        {active === "regulatory" ? (
-          <RegulatoryPanel info={info} />
-        ) : null}
+        {active === "regulatory" ? <RegulatoryPanel info={info} /> : null}
       </div>
     </section>
   );
@@ -144,7 +139,9 @@ function DetailsPanel({
           <dl className="space-y-1.5">
             {cms.brand ? <Row label="Brand" value={cms.brand} /> : null}
             {cms.type ? <Row label="Type" value={cms.type} /> : null}
-            {cms.category ? <Row label="Category" value={cms.category} /> : null}
+            {cms.category ? (
+              <Row label="Category" value={cms.category} />
+            ) : null}
             {product.sku ? <Row label="SKU" value={product.sku} /> : null}
           </dl>
         </div>
@@ -163,7 +160,9 @@ function DetailsPanel({
                     className={pdpKeyFeatureItemClass}
                   >
                     <FeatureIcon iconLink={feature.iconLink} />
-                    <span className={pdpKeyFeatureLabelClass}>{feature.label}</span>
+                    <span className={pdpKeyFeatureLabelClass}>
+                      {feature.label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -178,7 +177,12 @@ function DetailsPanel({
               {ingredients.heading ?? "Ingredients"}
             </h3>
             {ingredients.contains.heading ? (
-              <p className={cn(pdpProductDetailsContainsTextClass, "font-medium")}>
+              <p
+                className={cn(
+                  pdpProductDetailsContainsTextClass,
+                  "font-medium",
+                )}
+              >
                 {ingredients.contains.heading}
               </p>
             ) : null}
@@ -193,7 +197,9 @@ function DetailsPanel({
             <h3 className={pdpProductDetailsHeadingClass}>
               Allergen Information
             </h3>
-            <p className={pdpDetailsBodyTextClass}>{ingredients.allergenInfo}</p>
+            <p className={pdpDetailsBodyTextClass}>
+              {ingredients.allergenInfo}
+            </p>
           </div>
         ) : null}
 
@@ -263,7 +269,9 @@ function DetailsPanel({
 
       {allergenInfo ? (
         <div>
-          <h3 className={pdpProductDetailsHeadingClass}>Allergen Information</h3>
+          <h3 className={pdpProductDetailsHeadingClass}>
+            Allergen Information
+          </h3>
           <p className={pdpDetailsBodyTextClass}>{allergenInfo}</p>
         </div>
       ) : null}
@@ -283,8 +291,9 @@ function HealthBenefitsSection({
   meta?: ProductMetafields;
 }) {
   const cmsBenefits = healthBenefitsFromInformations(info);
-  const benefits =
-    cmsBenefits?.items.length ? cmsBenefits.items : (meta?.healthBenefits ?? []);
+  const benefits = cmsBenefits?.items.length
+    ? cmsBenefits.items
+    : (meta?.healthBenefits ?? []);
 
   if (benefits.length === 0) return null;
 
@@ -314,8 +323,7 @@ function NutritionDetailsSection({
   const cms = info?.nutritionalInformation;
   const n = product.nutrition;
   const hasMacros =
-    n != null &&
-    (n.kcal != null || n.protein != null || n.carbs != null);
+    n != null && (n.kcal != null || n.protein != null || n.carbs != null);
 
   if (!hasMacros) {
     return null;
@@ -426,15 +434,15 @@ function RegulatoryPanel({
   );
   const hasManufacturer = Boolean(
     manufacturer?.name ||
-      manufacturerAddressLines.length > 0 ||
-      manufacturer?.contact?.email ||
-      manufacturer?.contact?.phone,
+    manufacturerAddressLines.length > 0 ||
+    manufacturer?.contact?.email ||
+    manufacturer?.contact?.phone,
   );
   const hasSeller = Boolean(
     seller?.soldBy ||
-      sellerAddressLines.length > 0 ||
-      seller?.gstin ||
-      seller?.phone,
+    sellerAddressLines.length > 0 ||
+    seller?.gstin ||
+    seller?.phone,
   );
 
   return (
@@ -526,10 +534,7 @@ function RegulatoryPanel({
             <h3 className={pdpProductDetailsHeadingClass}>{seller.heading}</h3>
           ) : null}
           {seller?.soldBy ? (
-            <RegulatoryField
-              label={seller.soldByLabel}
-              value={seller.soldBy}
-            />
+            <RegulatoryField label={seller.soldByLabel} value={seller.soldBy} />
           ) : null}
           {sellerAddressLines.length > 0 ? (
             <RegulatoryAddressField
@@ -561,8 +566,8 @@ function ShelfLifeSection({
 }) {
   const hasCmsStructured = Boolean(
     cmsShelfLife?.duration ||
-      cmsShelfLife?.manufacturingDate ||
-      cmsShelfLife?.bestBefore,
+    cmsShelfLife?.manufacturingDate ||
+    cmsShelfLife?.bestBefore,
   );
   const cmsValue = cmsShelfLife?.value?.trim();
 
@@ -663,13 +668,7 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function RegulatoryField({
-  label,
-  value,
-}: {
-  label?: string;
-  value: string;
-}) {
+function RegulatoryField({ label, value }: { label?: string; value: string }) {
   return (
     <div className={pdpRegulatoryFieldClass}>
       {label ? <p className={pdpRegulatoryFieldLabelClass}>{label}</p> : null}

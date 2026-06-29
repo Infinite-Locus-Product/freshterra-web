@@ -4,12 +4,13 @@ import { useCallback, useRef, useState } from "react";
 
 import Image from "next/image";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   pdpGalleryFrameClass,
   pdpGalleryScrollSlideClass,
   pdpGalleryScrollTrackClass,
 } from "@/components/category/pdp-page";
-import { cn } from "@/lib/utils/cn";
 
 import { ProductImageGalleryModal } from "./ProductImageGalleryModal";
 
@@ -72,7 +73,10 @@ export function ProductGallery({
           aria-label="Product images"
         >
           {images.map((image, index) => (
-            <div key={`${image.url}-${index}`} className={pdpGalleryScrollSlideClass}>
+            <div
+              key={`${image.url}-${index}`}
+              className={pdpGalleryScrollSlideClass}
+            >
               <Image
                 src={image.url}
                 alt={image.alt ?? name}

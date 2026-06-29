@@ -78,9 +78,7 @@ async function tryPlpContextForSlug(
       return { config, parentSlug };
     }
   } catch (error) {
-    if (
-      !(error instanceof FreshTerraApiError && error.code === "NOT_FOUND")
-    ) {
+    if (!(error instanceof FreshTerraApiError && error.code === "NOT_FOUND")) {
       throw error;
     }
   }
@@ -111,10 +109,7 @@ async function tryCandidatesInParallel(
         const ctx = await tryPlpContextForSlug(candidate, categorySlug);
         return { candidate, ctx };
       } catch (error) {
-        if (
-          error instanceof FreshTerraApiError &&
-          error.code === "NOT_FOUND"
-        ) {
+        if (error instanceof FreshTerraApiError && error.code === "NOT_FOUND") {
           return { candidate, ctx: null as WebCategoryPlpContext | null };
         }
         throw error;

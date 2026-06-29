@@ -2,9 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
+import { productDetailSchema } from "../types";
+
 import { ProductTabs } from "./ProductTabs";
 
-import { productDetailSchema } from "../types";
 import type { ProductDetail } from "../types";
 
 const product: ProductDetail = {
@@ -33,7 +34,9 @@ const product: ProductDetail = {
 describe("ProductTabs", () => {
   it("uses horizontal scroll tabs on mWeb and a wrapped row on web", () => {
     render(<ProductTabs product={product} />);
-    const tablist = screen.getByRole("tablist", { name: /product information/i });
+    const tablist = screen.getByRole("tablist", {
+      name: /product information/i,
+    });
     expect(tablist.className).toContain("overflow-x-auto");
     expect(tablist.className).toContain("px-4");
     expect(tablist.className).toContain("lg:flex-wrap");
@@ -100,7 +103,9 @@ describe("ProductTabs", () => {
       />,
     );
 
-    expect(screen.getByText("High in protein for muscle building and repair")).toBeInTheDocument();
+    expect(
+      screen.getByText("High in protein for muscle building and repair"),
+    ).toBeInTheDocument();
   });
 
   it("renders ingredients and nutrition macros in Product Details", () => {
@@ -126,9 +131,7 @@ describe("ProductTabs", () => {
     render(<ProductTabs product={product} />);
 
     await user.click(screen.getByRole("tab", { name: /instructions/i }));
-    expect(
-      screen.getByText(/store in a cool, dry place/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/store in a cool, dry place/i)).toBeInTheDocument();
     expect(screen.getByText(/enjoy as a snack/i)).toBeInTheDocument();
     expect(
       screen.getByText(/12 months from manufacturing date/i),
@@ -178,10 +181,14 @@ describe("ProductTabs", () => {
       />,
     );
 
-    await user.click(screen.getByRole("tab", { name: /regulatory information/i }));
+    await user.click(
+      screen.getByRole("tab", { name: /regulatory information/i }),
+    );
     expect(screen.getByText("10012031000312")).toBeInTheDocument();
     expect(screen.getAllByText("Indian Products Pvt. Ltd.")).toHaveLength(2);
-    expect(screen.getByText("Trade Centre, Mettuppalayam Road,")).toBeInTheDocument();
+    expect(
+      screen.getByText("Trade Centre, Mettuppalayam Road,"),
+    ).toBeInTheDocument();
     expect(screen.getByText("604 Queens Corner 'A',")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /manufacturer details/i }),

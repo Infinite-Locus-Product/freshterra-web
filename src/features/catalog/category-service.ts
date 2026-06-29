@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-import { FreshTerraApiError, apiFetch } from "@/lib/clients/freshterra-api";
+import {
+  FreshTerraApiError,
+  apiFetch,
+  type ApiErrorCode,
+  type ApiFetchNextOptions,
+} from "@/lib/clients/freshterra-api";
 
 import {
   categoryProductsDataSchema,
@@ -13,6 +18,8 @@ export const DEFAULT_CATEGORY_PAGE = 1;
 export const DEFAULT_CATEGORY_PAGE_SIZE = 20;
 export const MAX_CATEGORY_PAGE_SIZE = 100;
 export const DEFAULT_CATEGORY_LOCALE = "en-IN";
+/** Default PLP sort; shared by the server seed fetch and the client controllers. */
+export const DEFAULT_CATEGORY_SORT = "price_asc" as const;
 
 const CATEGORIES_PATH = "/api/v1/categories";
 
@@ -38,6 +45,10 @@ export interface CategoryProductsRequestOptions {
   signal?: AbortSignal;
   /** Bearer token override (see `apiFetch`). Auto-read when omitted. */
   token?: string | null;
+  /** Next.js cache options — applied server-side only (ISR tags/revalidate). */
+  next?: ApiFetchNextOptions;
+  /** Error codes treated as control flow — skips console.error (see apiFetch). */
+  expectedErrorCodes?: ApiErrorCode[];
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -80,6 +91,8 @@ export async function getCategoryProducts(
         },
         signal: options.signal,
         token: options.token,
+        next: options.next,
+        expectedErrorCodes: options.expectedErrorCodes,
         schema: categoryProductsDataSchema,
       },
     );

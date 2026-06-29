@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   plpMobileFiltersSheetApplyButtonClass,
   plpMobileFiltersSheetBackdropClass,
@@ -25,7 +27,6 @@ import {
   plpMobileFiltersSheetTitleClass,
 } from "@/components/category/category-plp-filters-sheet";
 import { categoryPlpFilterCheckboxInputClass } from "@/components/category/category-plp-page";
-import { cn } from "@/lib/utils/cn";
 
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
 
@@ -50,7 +51,9 @@ function buildChips(
       chips.push({
         group: groupKey,
         value,
-        label: group?.options.find((option) => option.value === value)?.label ?? value,
+        label:
+          group?.options.find((option) => option.value === value)?.label ??
+          value,
       });
     }
   }
@@ -127,10 +130,7 @@ export function PlpMobileFiltersSheet({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 lg:hidden"
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-50 lg:hidden" role="presentation">
       <button
         type="button"
         aria-label="Close filters"
@@ -207,7 +207,9 @@ export function PlpMobileFiltersSheet({
               className={plpMobileFiltersSheetOptionsListClass}
             >
               {visibleOptions.map((option) => {
-                const checked = (draft[activeGroupKey] ?? []).includes(option.value);
+                const checked = (draft[activeGroupKey] ?? []).includes(
+                  option.value,
+                );
                 return (
                   <label
                     key={option.value}

@@ -126,118 +126,118 @@ export function SearchResultsView({ query }: { query: string }) {
 
   return (
     <>
-    <PageShell pad={false} className={categoryPlpPageShellClass}>
-      <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
-        Search results for “{trimmed}”
-      </Heading>
+      <PageShell pad={false} className={categoryPlpPageShellClass}>
+        <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
+          Search results for “{trimmed}”
+        </Heading>
 
-      <div className={categoryPlpListingGridClass}>
-        {hasFilters ? (
-          <aside className="hidden lg:block lg:self-start">
-            <PlpFilters
-              groups={SEARCH_FILTER_GROUPS}
-              selections={selections}
-              onChange={setSelections}
-              variant="sidebar"
-            />
-          </aside>
-        ) : null}
-
-        <div className="min-w-0">
-          {activeChips.length > 0 ? (
-            <div className={categoryPlpActiveFiltersClass}>
-              {activeChips.map((chip) => (
-                <button
-                  key={`${chip.group}:${chip.value}`}
-                  type="button"
-                  onClick={() => removeChip(chip)}
-                  className="text-text-secondary hover:bg-gray-50 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-sm"
-                >
-                  <span aria-hidden className="text-text-tertiary">
-                    ✕
-                  </span>
-                  <span>{chip.label}</span>
-                  <span className="sr-only">Remove filter</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-
+        <div className={categoryPlpListingGridClass}>
           {hasFilters ? (
-            <div className={categoryPlpToolbarClass}>
-              <button
-                type="button"
-                className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass}`}
-                aria-expanded={mobileFiltersOpen}
-                onClick={() => setMobileFiltersOpen(true)}
-              >
-                <FiltersIcon />
-                <span>Filters</span>
-              </button>
-            </div>
+            <aside className="hidden lg:block lg:self-start">
+              <PlpFilters
+                groups={SEARCH_FILTER_GROUPS}
+                selections={selections}
+                onChange={setSelections}
+                variant="sidebar"
+              />
+            </aside>
           ) : null}
 
-          <p className={`${categoryPlpCountClass} lg:hidden`}>
-            {isInitialLoad
-              ? "Searching…"
-              : `Showing ${total} ${total === 1 ? "product" : "products"}`}
-          </p>
+          <div className="min-w-0">
+            {activeChips.length > 0 ? (
+              <div className={categoryPlpActiveFiltersClass}>
+                {activeChips.map((chip) => (
+                  <button
+                    key={`${chip.group}:${chip.value}`}
+                    type="button"
+                    onClick={() => removeChip(chip)}
+                    className="text-text-secondary inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-1.5 text-sm hover:bg-gray-50"
+                  >
+                    <span aria-hidden className="text-text-tertiary">
+                      ✕
+                    </span>
+                    <span>{chip.label}</span>
+                    <span className="sr-only">Remove filter</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
 
-          <div className="mb-6 hidden lg:block">
-            <p className="text-text-secondary text-sm">
+            {hasFilters ? (
+              <div className={categoryPlpToolbarClass}>
+                <button
+                  type="button"
+                  className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass}`}
+                  aria-expanded={mobileFiltersOpen}
+                  onClick={() => setMobileFiltersOpen(true)}
+                >
+                  <FiltersIcon />
+                  <span>Filters</span>
+                </button>
+              </div>
+            ) : null}
+
+            <p className={`${categoryPlpCountClass} lg:hidden`}>
               {isInitialLoad
                 ? "Searching…"
                 : `Showing ${total} ${total === 1 ? "product" : "products"}`}
             </p>
-          </div>
 
-          <ul className={categoryPlpProductGridClass}>
-            {isInitialLoad
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <li key={`skeleton-${i}`}>
-                    <ProductSkeleton />
-                  </li>
-                ))
-              : items.map((product) => (
-                  <li key={product.id} className="h-full">
-                    <SearchProductCard product={product} />
-                  </li>
-                ))}
-          </ul>
+            <div className="mb-6 hidden lg:block">
+              <p className="text-text-secondary text-sm">
+                {isInitialLoad
+                  ? "Searching…"
+                  : `Showing ${total} ${total === 1 ? "product" : "products"}`}
+              </p>
+            </div>
 
-          <div ref={sentinelRef} className="mt-8 flex justify-center">
-            {loadingMore ? (
-              <span
-                className="text-text-secondary text-sm"
-                role="status"
-                aria-live="polite"
-              >
-                Loading more…
-              </span>
-            ) : hasMore ? (
-              <button
-                type="button"
-                onClick={loadMore}
-                className="text-brand-600 hover:bg-brand-500/10 rounded-full px-5 py-2.5 text-sm font-semibold"
-              >
-                Load more products
-              </button>
-            ) : null}
+            <ul className={categoryPlpProductGridClass}>
+              {isInitialLoad
+                ? Array.from({ length: 8 }).map((_, i) => (
+                    <li key={`skeleton-${i}`}>
+                      <ProductSkeleton />
+                    </li>
+                  ))
+                : items.map((product) => (
+                    <li key={product.id} className="h-full">
+                      <SearchProductCard product={product} />
+                    </li>
+                  ))}
+            </ul>
+
+            <div ref={sentinelRef} className="mt-8 flex justify-center">
+              {loadingMore ? (
+                <span
+                  className="text-text-secondary text-sm"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Loading more…
+                </span>
+              ) : hasMore ? (
+                <button
+                  type="button"
+                  onClick={loadMore}
+                  className="text-brand-600 hover:bg-brand-500/10 rounded-full px-5 py-2.5 text-sm font-semibold"
+                >
+                  Load more products
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
-    </PageShell>
+      </PageShell>
 
-    {hasFilters ? (
-      <PlpMobileFiltersSheet
-        open={mobileFiltersOpen}
-        groups={SEARCH_FILTER_GROUPS}
-        selections={selections}
-        onClose={() => setMobileFiltersOpen(false)}
-        onApply={setSelections}
-      />
-    ) : null}
-  </>
+      {hasFilters ? (
+        <PlpMobileFiltersSheet
+          open={mobileFiltersOpen}
+          groups={SEARCH_FILTER_GROUPS}
+          selections={selections}
+          onClose={() => setMobileFiltersOpen(false)}
+          onApply={setSelections}
+        />
+      ) : null}
+    </>
   );
 }
 

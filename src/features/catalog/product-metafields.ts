@@ -1,3 +1,4 @@
+import { plainTextFromDescription } from "./product-description";
 import {
   healthBenefitsFromInformations,
   parseHealthBenefits,
@@ -6,7 +7,6 @@ import {
   parseTrustMarkers,
   type ProductInformations,
 } from "./product-informations";
-import { plainTextFromDescription } from "./product-description";
 import { parseWeightGrams } from "./variant-meta";
 
 import type { ProductDetail, ProductRegulatory } from "./types";
@@ -235,9 +235,7 @@ export function mapSaleorMetadataToProductMetafields(
     ccEmail: lookupMetadata(raw, "cc_email"),
     ccPhone: lookupMetadata(raw, "cc_phone"),
     erpnextItemCode: lookupMetadata(raw, "erpnext_item_code"),
-    trustMarkerReturn: parseBoolean(
-      lookupMetadata(raw, "trust_marker_return"),
-    ),
+    trustMarkerReturn: parseBoolean(lookupMetadata(raw, "trust_marker_return")),
   };
 }
 
@@ -286,7 +284,11 @@ function mergeRegulatory(
   tags: readonly string[],
 ): ProductRegulatory | undefined {
   const organic = existing?.organic ?? organicFromTags(tags);
-  const merged = { ...existing, ...fromFoodType, ...(organic != null ? { organic } : {}) };
+  const merged = {
+    ...existing,
+    ...fromFoodType,
+    ...(organic != null ? { organic } : {}),
+  };
   if (merged.veg == null && merged.organic == null) return existing;
   return merged;
 }
@@ -307,7 +309,9 @@ function nutritionFromMetadata(
     parseOptionalNumber(lookupMetadata(raw, "nutrition_carbs", "carbs"));
 
   if (kcal == null && protein == null && carbs == null) {
-    return isRecord(existing) ? (existing as { kcal?: number; protein?: number; carbs?: number }) : undefined;
+    return isRecord(existing)
+      ? (existing as { kcal?: number; protein?: number; carbs?: number })
+      : undefined;
   }
   return { kcal, protein, carbs };
 }
@@ -345,7 +349,10 @@ function priceFromRecord(record: UnknownRecord): {
   };
 }
 
-function enrichVariantRecord(variant: UnknownRecord, unit?: string): UnknownRecord {
+function enrichVariantRecord(
+  variant: UnknownRecord,
+  unit?: string,
+): UnknownRecord {
   const name = asString(variant.name) ?? unit;
   const weightG =
     typeof variant.weightG === "number" && Number.isFinite(variant.weightG)
@@ -366,7 +373,8 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   const name = asString(input.name);
   const unit = asString(input.unit);
   const variantCount =
-    typeof input.variantCount === "number" && Number.isFinite(input.variantCount)
+    typeof input.variantCount === "number" &&
+    Number.isFinite(input.variantCount)
       ? input.variantCount
       : undefined;
 
@@ -425,7 +433,12 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   if (!Array.isArray(out.variants) || out.variants.length === 0) {
     const variantId = asString(input.defaultVariantId);
     if (variantId) {
-      out.variants = [enrichVariantRecord({ id: variantId, sku: asString(input.sku) ?? "" }, unit)];
+      out.variants = [
+        enrichVariantRecord(
+          { id: variantId, sku: asString(input.sku) ?? "" },
+          unit,
+        ),
+      ];
     }
   } else {
     out.variants = out.variants.map((variant) =>
@@ -465,11 +478,11 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   );
   const metaFields = mapSaleorMetadataToProductMetafields(rawMeta);
   const foodType =
-    metaFields.foodType ??
-    asString(input.foodType) ??
-    asString(out.foodType);
+    metaFields.foodType ?? asString(input.foodType) ?? asString(out.foodType);
 
-  const existingRegulatory: ProductRegulatory | undefined = isRecord(out.regulatory)
+  const existingRegulatory: ProductRegulatory | undefined = isRecord(
+    out.regulatory,
+  )
     ? {
         veg:
           typeof out.regulatory.veg === "boolean"
@@ -564,9 +577,7 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
         ? fromRaw.healthBenefits
         : fromExisting.healthBenefits,
     foodType:
-      fromRaw.foodType ??
-      fromExisting.foodType ??
-      asString(catalog.foodType),
+      fromRaw.foodType ?? fromExisting.foodType ?? asString(catalog.foodType),
   };
 
   const tagsFromMeta = parseStringArray(
@@ -579,9 +590,7 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     meta.productDetails;
 
   const manufacturer =
-    asString(catalog.manufacturer) ??
-    meta.manufacturerName ??
-    meta.brand;
+    asString(catalog.manufacturer) ?? meta.manufacturerName ?? meta.brand;
 
   const fssai = asString(catalog.fssai) ?? meta.fssaiLicense;
 
@@ -611,7 +620,9 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     (isRecord(catalog.productInformations)
       ? catalog.productInformations
       : undefined) ??
-    (isRecord(input.productInformations) ? input.productInformations : undefined);
+    (isRecord(input.productInformations)
+      ? input.productInformations
+      : undefined);
 
   const productInformations = enrichProductInformationsFromSources(
     parseProductInformations(productInformationsRaw),
@@ -682,7 +693,12 @@ function enrichProductInformationsFromSources(
     }
   }
 
-  if (!info && trustItems.length === 0 && !regulatoryInformation && !healthBenefits) {
+  if (
+    !info &&
+    trustItems.length === 0 &&
+    !regulatoryInformation &&
+    !healthBenefits
+  ) {
     return undefined;
   }
 
@@ -697,8 +713,6 @@ function enrichProductInformationsFromSources(
           },
         }
       : {}),
-    ...(regulatoryInformation
-      ? { regulatoryInformation }
-      : {}),
+    ...(regulatoryInformation ? { regulatoryInformation } : {}),
   };
 }

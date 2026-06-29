@@ -34,13 +34,17 @@ describe("PlpMobileFiltersSheet", () => {
       />,
     );
 
-    expect(screen.getByRole("dialog", { name: /filters/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { name: /filters/i }),
+    ).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText(/search across the filters/i),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /brand/i })).toBeInTheDocument();
     expect(screen.getByText("Amul (24)")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /clear all/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /clear all/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /apply/i })).toBeInTheDocument();
   });
 

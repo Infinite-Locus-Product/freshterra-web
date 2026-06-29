@@ -11,7 +11,10 @@ import { productDetailSchema } from "./types";
 const sampleProductInformations = {
   trust_markers: {
     items: [
-      { icon_link: "https://cms-stg.freshterra.in/uploads/shape.png", label: "Fast Delivery" },
+      {
+        icon_link: "https://cms-stg.freshterra.in/uploads/shape.png",
+        label: "Fast Delivery",
+      },
       { label: "Quality Checked" },
     ],
   },
@@ -111,11 +114,13 @@ describe("parseProductInformations", () => {
         label: "Fast Delivery",
       },
       {
-        iconLink: "https://cms-stg.freshterra.in/uploads/Shape_1_2b047bd543.png",
+        iconLink:
+          "https://cms-stg.freshterra.in/uploads/Shape_1_2b047bd543.png",
         label: "12hr Return Window",
       },
       {
-        iconLink: "https://cms-stg.freshterra.in/uploads/Shape_2_eb92c7c0bd.png",
+        iconLink:
+          "https://cms-stg.freshterra.in/uploads/Shape_2_eb92c7c0bd.png",
         label: "Quality Checked",
       },
     ]);
@@ -131,8 +136,12 @@ describe("parseProductInformations", () => {
     expect(parsed?.productDetails?.ingredients?.contains?.value).toContain(
       "Organic Roasted Almonds",
     );
-    expect(parsed?.nutritionalInformation?.healthBenefits?.items).toHaveLength(1);
-    expect(parsed?.instructions?.storageTips?.points[0]).toContain("cool, dry place");
+    expect(parsed?.nutritionalInformation?.healthBenefits?.items).toHaveLength(
+      1,
+    );
+    expect(parsed?.instructions?.storageTips?.points[0]).toContain(
+      "cool, dry place",
+    );
     expect(parsed?.regulatoryInformation?.fssai?.licenseNumber).toBe(
       "12345678901234",
     );
@@ -194,7 +203,9 @@ describe("parseProductInformations", () => {
     expect(parsed?.nutritionalInformation?.healthBenefits?.heading).toBe(
       "Health Benefits",
     );
-    expect(parsed?.nutritionalInformation?.healthBenefits?.items).toHaveLength(5);
+    expect(parsed?.nutritionalInformation?.healthBenefits?.items).toHaveLength(
+      5,
+    );
     expect(parsed?.nutritionalInformation?.healthBenefits?.items[0]).toContain(
       "Garlic & Herb Blend",
     );
@@ -223,7 +234,12 @@ describe("parseProductInformations", () => {
   it("returns trust markers even when other CMS sections fail validation", () => {
     const parsed = parseProductInformations({
       trust_markers: {
-        items: [{ icon_link: "https://cms.example/icon.png", label: "Quality Checked" }],
+        items: [
+          {
+            icon_link: "https://cms.example/icon.png",
+            label: "Quality Checked",
+          },
+        ],
       },
       product_details: {
         key_features: {
@@ -341,9 +357,9 @@ describe("productDetailSchema with product_informations", () => {
     expect(product.productInformations?.productDetails?.brand).toBe(
       "FreshTerra Organic",
     );
-    expect(product.productInformations?.trustMarkers?.items[0]?.iconLink).toContain(
-      "cms-stg.freshterra.in",
-    );
+    expect(
+      product.productInformations?.trustMarkers?.items[0]?.iconLink,
+    ).toContain("cms-stg.freshterra.in");
     expect(product.tagPills).toEqual([]);
   });
 

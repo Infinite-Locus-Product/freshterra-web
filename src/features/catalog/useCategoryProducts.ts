@@ -8,6 +8,7 @@ import { getCategoryProducts } from "./category-service";
 
 import type {
   CategoryFacets,
+  CategoryProductsData,
   CategorySort,
   PlpProduct,
   ProductCategory,
@@ -23,6 +24,10 @@ export interface UseCategoryProductsArgs {
   locale?: string;
   /** Skip fetching while false. */
   enabled?: boolean;
+  /** Server-fetched first batch to seed before client fetches. */
+  initialData?: CategoryProductsData | null;
+  /** Effective productSlug the initialData was fetched for. */
+  initialKey?: string;
 }
 
 export interface UseCategoryProductsResult {
@@ -50,13 +55,30 @@ const EMPTY_FACETS: CategoryFacets = {};
 export function useCategoryProducts(
   args: UseCategoryProductsArgs = {},
 ): UseCategoryProductsResult {
-  const { slug, polygonId, sort, pageSize, locale, enabled = true } = args;
+  const {
+    slug,
+    polygonId,
+    sort,
+    pageSize,
+    locale,
+    enabled = true,
+    initialData = null,
+    initialKey,
+  } = args;
 
-  const [items, setItems] = useState<PlpProduct[]>([]);
-  const [category, setCategory] = useState<ProductCategory | null>(null);
-  const [facets, setFacets] = useState<CategoryFacets>(EMPTY_FACETS);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const seedMatches = Boolean(initialData && initialKey && initialKey === slug);
+
+  const [items, setItems] = useState<PlpProduct[]>(
+    seedMatches ? initialData!.items : [],
+  );
+  const [category, setCategory] = useState<ProductCategory | null>(
+    seedMatches ? (initialData!.category ?? null) : null,
+  );
+  const [facets, setFacets] = useState<CategoryFacets>(
+    seedMatches ? initialData!.facets : EMPTY_FACETS,
+  );
+  const [total, setTotal] = useState(seedMatches ? initialData!.total : 0);
+  const [page, setPage] = useState(seedMatches ? initialData!.page : 1);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<FreshTerraApiError | null>(null);
@@ -65,7 +87,8 @@ export function useCategoryProducts(
   argsRef.current = args;
 
   const abortRef = useRef<AbortController | null>(null);
-  const pageRef = useRef(1);
+  const pageRef = useRef(seedMatches ? initialData!.page : 1);
+  const skipNextFetchRef = useRef(seedMatches);
 
   const resetState = useCallback(() => {
     setItems([]);
@@ -149,6 +172,10 @@ export function useCategoryProducts(
     if (!active) {
       abortRef.current?.abort();
       resetState();
+      return;
+    }
+    if (skipNextFetchRef.current) {
+      skipNextFetchRef.current = false;
       return;
     }
     void fetchPage(1, false);

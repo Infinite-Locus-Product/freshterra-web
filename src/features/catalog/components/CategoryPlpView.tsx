@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
 import { useWebCategoryPlp } from "@/features/cms-content/useWebCategoryPlp";
 import {
   buildPlpTabHref,
   findAllL4Tab,
   mapPlpL4Tabs,
+  mapPlpL4TabsToPlpTabs,
   resolvePlpActiveTabValue,
   resolvePlpBannerForTab,
   resolvePlpProductSlug,
-  visiblePlpL4Tabs,
 } from "@/features/cms-content/web-category-plp-mapper";
 
 import { resolveListingTitle } from "../plp-listing-meta";
@@ -19,11 +21,8 @@ import { useCategoryProducts } from "../useCategoryProducts";
 
 import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 
-import type { WebCategoryPlpContent } from "@/features/cms-content/web-category-plp-service";
-import type { CategoryFacets } from "../types";
+import type { CategoryFacets, CategoryProductsData } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
-
-const DEFAULT_CATEGORY_SORT = "price_asc" as const;
 
 function prettyLabel(value: string): string {
   return value
@@ -31,6 +30,18 @@ function prettyLabel(value: string): string {
     .filter(Boolean)
     .map((w) => w[0]?.toUpperCase() + w.slice(1))
     .join(" ");
+}
+
+function normalizeToken(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[-_\s]+/g, " ");
+}
+
+function singularToken(value: string): string {
+  const normalized = normalizeToken(value);
+  return normalized.endsWith("s") ? normalized.slice(0, -1) : normalized;
 }
 
 function facetsToGroups(facets: CategoryFacets): PlpFilterGroup[] {
@@ -59,16 +70,12 @@ function facetsToTabs(facets: CategoryFacets): PlpTab[] | undefined {
 
 type CategoryPlpViewProps = {
   slug: string;
-  polygonId?: string;
-  initialPlpCms?: WebCategoryPlpContent | null;
-  initialParentSlug?: string | null;
+  initialProducts?: CategoryProductsData | null;
 };
 
 export function CategoryPlpView({
   slug,
-  polygonId,
-  initialPlpCms = null,
-  initialParentSlug = null,
+  initialProducts = null,
 }: Readonly<CategoryPlpViewProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -84,8 +91,6 @@ export function CategoryPlpView({
   } = useWebCategoryPlp({
     categorySlug: slug,
     parentSlug: parentFromQuery || undefined,
-    initialContent: initialPlpCms,
-    initialResolvedParentSlug: initialParentSlug,
   });
 
   const parentSlug = resolvedParentSlug ?? parentFromQuery ?? slug;
@@ -96,11 +101,9 @@ export function CategoryPlpView({
   );
 
   const cmsTabs = useMemo(
-    () => (plpCms ? visiblePlpL4Tabs(l4Tabs) : undefined),
-    [l4Tabs, plpCms],
+    () => (l4Tabs.length > 0 ? mapPlpL4TabsToPlpTabs(l4Tabs) : undefined),
+    [l4Tabs],
   );
-
-  const hasCmsL4Tabs = Boolean(plpCms?.l4_tab?.length);
 
   const allL4TabValue = useMemo(
     () => findAllL4Tab(l4Tabs)?.value ?? null,
@@ -119,6 +122,19 @@ export function CategoryPlpView({
     if (l4Tabs.length === 0) return slug;
     return resolvePlpProductSlug(slug, l4Tabs, effectiveL4Tab);
   }, [effectiveL4Tab, l4Tabs, slug]);
+
+  const baseCtrl = useCategoryProducts({
+    slug: productSlug,
+    sort: DEFAULT_CATEGORY_SORT,
+    filters: undefined,
+    initialData: initialProducts,
+    initialKey: slug,
+  });
+
+  const tabs = useMemo(() => {
+    if (cmsTabs?.length) return cmsTabs;
+    return facetsToTabs(baseCtrl.facets);
+  }, [cmsTabs, baseCtrl.facets]);
 
   useEffect(() => {
     if (!plpCms || parentFromQuery || !resolvedParentSlug) return;
@@ -148,32 +164,6 @@ export function CategoryPlpView({
     }
   }, [pendingL4Tab, routeActiveTab]);
 
-  const filters = useMemo(() => {
-    const base: Record<string, unknown> = {};
-    for (const [key, values] of Object.entries(selections)) {
-      if (values.length > 0) base[key] = values;
-    }
-    if (l4Tabs.length === 0 && activeTab !== "all") {
-      base.tags = [activeTab];
-    }
-    return Object.keys(base).length > 0 ? base : undefined;
-  }, [activeTab, l4Tabs.length, selections]);
-
-  const ctrl = useCategoryProducts({
-    slug: productSlug,
-    polygonId,
-    sort: DEFAULT_CATEGORY_SORT,
-    filters,
-  });
-
-  const tabs = useMemo(() => {
-    if (hasCmsL4Tabs) {
-      return cmsTabs?.length ? cmsTabs : undefined;
-    }
-    if (plpLoading) return undefined;
-    return facetsToTabs(ctrl.facets);
-  }, [cmsTabs, ctrl.facets, hasCmsL4Tabs, plpLoading]);
-
   useEffect(() => {
     if (l4Tabs.length > 0) return;
 
@@ -189,6 +179,60 @@ export function CategoryPlpView({
     }
   }, [l4Tabs.length, parentSlug, slug, tabs]);
 
+  const resolvedActiveTag = useMemo(() => {
+    if (l4Tabs.length > 0) return undefined;
+    if (activeTab === "all") return undefined;
+    if (!tabs?.length) return undefined;
+
+    const selectedTab = tabs.find((tab) => tab.value === activeTab);
+    const candidates = [
+      activeTab,
+      selectedTab?.label ?? "",
+      selectedTab?.value ?? "",
+    ]
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+    const tags = baseCtrl.facets.tags ?? [];
+    if (tags.length === 0) return activeTab;
+
+    const exact = tags.find((tag) => candidates.includes(tag.value));
+    if (exact) return exact.value;
+
+    const normalizedCandidates = new Set(candidates.map(normalizeToken));
+    const singularCandidates = new Set(candidates.map(singularToken));
+    const mapped = tags.find((tag) => {
+      const valueNorm = normalizeToken(tag.value);
+      const nameNorm = normalizeToken(tag.name ?? "");
+      const valueSingular = singularToken(tag.value);
+      const nameSingular = singularToken(tag.name ?? "");
+      return (
+        normalizedCandidates.has(valueNorm) ||
+        normalizedCandidates.has(nameNorm) ||
+        singularCandidates.has(valueSingular) ||
+        singularCandidates.has(nameSingular)
+      );
+    });
+
+    return mapped?.value ?? activeTab;
+  }, [activeTab, baseCtrl.facets.tags, l4Tabs.length, tabs]);
+
+  const filters = useMemo(() => {
+    const base: Record<string, unknown> = {};
+    for (const [key, values] of Object.entries(selections)) {
+      if (values.length > 0) base[key] = values;
+    }
+    if (resolvedActiveTag) base.tags = [resolvedActiveTag];
+    return Object.keys(base).length > 0 ? base : undefined;
+  }, [selections, resolvedActiveTag]);
+
+  const ctrl = useCategoryProducts({
+    slug: productSlug,
+    sort: DEFAULT_CATEGORY_SORT,
+    filters,
+    initialData: initialProducts,
+    initialKey: !filters && productSlug === slug ? slug : undefined,
+  });
+
   const filterGroups = useMemo(
     () => facetsToGroups(ctrl.facets),
     [ctrl.facets],
@@ -196,19 +240,14 @@ export function CategoryPlpView({
 
   const banner = useMemo<PlpBanner | undefined>(() => {
     if (!plpCms?.l4_tab?.length) return undefined;
-    const resolved = resolvePlpBannerForTab(
+    const view = resolvePlpBannerForTab(
       plpCms,
       l4Tabs.length > 0 ? effectiveL4Tab : activeTab,
       parentSlug,
     );
-    if (!resolved) return undefined;
-    return {
-      imageSrcWeb: resolved.imageSrcWeb,
-      imageSrcMweb: resolved.imageSrcMweb,
-    };
+    // PlpView's single-image banner: imageSrcWeb already falls back to mweb.
+    return view ? { imageSrc: view.imageSrcWeb } : undefined;
   }, [activeTab, effectiveL4Tab, l4Tabs.length, parentSlug, plpCms]);
-
-  const expectsBanner = Boolean(plpCms?.l4_tab?.length);
 
   const title = useMemo(
     () =>
@@ -234,7 +273,6 @@ export function CategoryPlpView({
       titleLoading={(ctrl.loading || plpLoading) && !title}
       breadcrumbs={breadcrumbs}
       banner={banner}
-      bannerLoading={plpLoading && expectsBanner && !banner}
       tabs={tabs}
       activeTab={l4Tabs.length > 0 ? effectiveL4Tab : activeTab}
       onTabChange={(nextTab) => {

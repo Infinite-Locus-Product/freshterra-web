@@ -56,5 +56,4 @@ export const plpMobileFiltersSheetFooterButtonClass =
 export const plpMobileFiltersSheetClearButtonClass =
   "border-brand-500 text-brand-500 border-[1.5px] bg-white";
 
-export const plpMobileFiltersSheetApplyButtonClass =
-  "bg-brand-500 text-white";
+export const plpMobileFiltersSheetApplyButtonClass = "bg-brand-500 text-white";

@@ -10,7 +10,7 @@ import { useCollectionProducts } from "../useCollectionProducts";
 
 import { PlpView, type Crumb } from "./PlpView";
 
-import type { Facets } from "../types";
+import type { CollectionProductsData, Facets } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
 
 const DEFAULT_COLLECTION_SORT = "relevance" as const;
@@ -38,15 +38,18 @@ function facetsToGroups(facets: Facets): PlpFilterGroup[] {
 
 type CollectionPlpViewProps = {
   slug: string;
-  /** Polygon scoping id (collection pricing/stock requires it). */
-  polygonId?: string;
+  /** Server-fetched first batch to seed the hook and skip a client waterfall. */
+  initialProducts?: CollectionProductsData | null;
 };
 
 /**
  * Connects the curated-collection API to the presentational PLP. Title and
  * filters come from the API — no slug-derived placeholders.
  */
-export function CollectionPlpView({ slug, polygonId }: CollectionPlpViewProps) {
+export function CollectionPlpView({
+  slug,
+  initialProducts = null,
+}: CollectionPlpViewProps) {
   const router = useRouter();
   const [selections, setSelections] = useState<FilterSelections>({});
 
@@ -59,9 +62,10 @@ export function CollectionPlpView({ slug, polygonId }: CollectionPlpViewProps) {
 
   const ctrl = useCollectionProducts({
     slug,
-    polygonId,
     sort: DEFAULT_COLLECTION_SORT,
     filters,
+    initialData: initialProducts,
+    initialKey: slug,
   });
 
   useEffect(() => {
@@ -77,10 +81,7 @@ export function CollectionPlpView({ slug, polygonId }: CollectionPlpViewProps) {
 
   const title = ctrl.collection?.name?.trim() ?? "";
   const breadcrumbs = useMemo<Crumb[]>(
-    () => [
-      { label: "Home", href: "/" },
-      ...(title ? [{ label: title }] : []),
-    ],
+    () => [{ label: "Home", href: "/" }, ...(title ? [{ label: title }] : [])],
     [title],
   );
 
