@@ -33,7 +33,10 @@ const loadProduct = cache((slug: string) =>
   getProduct(
     slug,
     {},
-    { next: { tags: [`product:${slug}`], revalidate }, expectedErrorCodes: ["NOT_FOUND"] },
+    {
+      next: { tags: [`product:${slug}`], revalidate },
+      expectedErrorCodes: ["NOT_FOUND"],
+    },
   ),
 );
 
