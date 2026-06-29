@@ -101,7 +101,7 @@ describe("apiFetch", () => {
       RequestInit,
     ];
     expect(url).toBe(
-      "https://api.stage.freshterra.in/api/v1/search/autocomplete?q=tomato&limit=8",
+      "https://api.freshterra.in/api/v1/search/autocomplete?q=tomato&limit=8",
     );
     expect(init.method).toBe("GET");
   });

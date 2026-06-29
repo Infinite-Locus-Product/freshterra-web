@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
   // directly — see buildUrl() in lib/clients/freshterra-api.ts.
   async rewrites() {
     const apiOrigin =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.stage.freshterra.in";
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.freshterra.in";
     return [{ source: "/bff/:path*", destination: `${apiOrigin}/:path*` }];
   },
   async headers() {

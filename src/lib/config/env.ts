@@ -55,7 +55,7 @@ const clientSchema = z.object({
   NEXT_PUBLIC_API_BASE_URL: z
     .string()
     .url()
-    .default("https://api.stage.freshterra.in"),
+    .default("https://api.freshterra.in"),
   NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: z.string().optional(),
   NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: z
     .string()

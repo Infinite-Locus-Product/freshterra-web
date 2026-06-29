@@ -21,7 +21,7 @@ function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const href = resolveFetchUrl(input);
   return href.startsWith("http")
     ? new URL(href)
-    : new URL(href, "https://api.stage.freshterra.in");
+    : new URL(href, "https://api.freshterra.in");
 }
 
 describe("getCategoriesContent", () => {

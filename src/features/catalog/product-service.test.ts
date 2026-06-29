@@ -53,7 +53,7 @@ function lastCall(fetchSpy: ReturnType<typeof vi.fn>): [URL, RequestInit] {
   const href = resolveFetchUrl(input);
   const url = href.startsWith("http")
     ? new URL(href)
-    : new URL(href, "https://api.stage.freshterra.in");
+    : new URL(href, "https://api.freshterra.in");
   return [url, init];
 }
 
