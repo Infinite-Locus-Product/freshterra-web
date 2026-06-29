@@ -21,9 +21,6 @@ import {
   pdpProductTagPillClass,
   pdpProductTagsRowClass,
   pdpStoreButtonClass,
-  pdpStoreButtonIconClass,
-  pdpStoreButtonTopLineClass,
-  pdpStoreButtonBrandLineClass,
   pdpStoryClass,
   pdpTitleClass,
   pdpTrustHeadingClass,
@@ -237,19 +234,18 @@ function StoreButton({
 }) {
   const badge = APP_STORE_BADGE_BY_STORE[store];
   return (
-    <Link href={href} className={pdpStoreButtonClass}>
+    <Link
+      href={href}
+      aria-label={`${badge.topLine} ${badge.brandLine}`}
+      className={pdpStoreButtonClass}
+    >
       <Image
-        src={badge.iconSrc}
-        alt=""
-        aria-hidden
-        width={30}
-        height={30}
-        className={pdpStoreButtonIconClass}
+        src={badge.badgeSrc}
+        alt={`${badge.topLine} ${badge.brandLine}`}
+        width={badge.badgeWidth}
+        height={badge.badgeHeight}
+        className="h-full w-full object-fill"
       />
-      <span className="leading-tight">
-        <span className={pdpStoreButtonTopLineClass}>{badge.topLine}</span>
-        <span className={pdpStoreButtonBrandLineClass}>{badge.brandLine}</span>
-      </span>
     </Link>
   );
 }
