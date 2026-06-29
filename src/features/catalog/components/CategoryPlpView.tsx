@@ -14,6 +14,8 @@ import {
   resolvePlpProductSlug,
 } from "@/features/cms-content/web-category-plp-mapper";
 
+import { DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
+
 import { resolveListingTitle } from "../plp-listing-meta";
 import { useCategoryProducts } from "../useCategoryProducts";
 
@@ -21,8 +23,6 @@ import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 
 import type { CategoryFacets, CategoryProductsData } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
-
-const DEFAULT_CATEGORY_SORT = "price_asc" as const;
 
 function prettyLabel(value: string): string {
   return value
@@ -229,6 +229,8 @@ export function CategoryPlpView({
     slug: productSlug,
     sort: DEFAULT_CATEGORY_SORT,
     filters,
+    initialData: initialProducts,
+    initialKey: !filters && productSlug === slug ? slug : undefined,
   });
 
   const filterGroups = useMemo(
