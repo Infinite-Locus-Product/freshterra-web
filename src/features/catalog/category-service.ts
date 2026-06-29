@@ -18,6 +18,8 @@ export const DEFAULT_CATEGORY_PAGE = 1;
 export const DEFAULT_CATEGORY_PAGE_SIZE = 20;
 export const MAX_CATEGORY_PAGE_SIZE = 100;
 export const DEFAULT_CATEGORY_LOCALE = "en-IN";
+/** Default PLP sort; shared by the server seed fetch and the client controllers. */
+export const DEFAULT_CATEGORY_SORT = "price_asc" as const;
 
 const CATEGORIES_PATH = "/api/v1/categories";
 
