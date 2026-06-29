@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { FreshTerraApiError } from "@/lib/clients/freshterra-api";
+import { cn } from "@/lib/utils/cn";
 
 import {
   categoryPlpActiveFiltersClass,
@@ -16,7 +17,8 @@ import {
   categoryPlpBreadcrumbCurrentClass,
   categoryPlpCountClass,
   categoryPlpListingGridClass,
-  categoryPlpMobileFiltersClass,
+  categoryPlpMobileFiltersToolbarClass,
+  categoryPlpMobileToolbarBleedClass,
   categoryPlpPageHeaderShellClass,
   categoryPlpPageListingShellClass,
   categoryPlpProductGridClass,
@@ -36,6 +38,7 @@ import {
   type FilterSelections,
   type PlpFilterGroup,
 } from "./PlpFilters";
+import { PlpMobileFiltersSheet } from "./PlpMobileFiltersSheet";
 import { ProductCard } from "./ProductCard";
 
 import type { PlpProduct } from "../types";
@@ -46,7 +49,12 @@ export type Crumb = { label: string; href?: string };
 export type PlpTab = { label: string; value: string };
 
 /** Hero banner above the listing (CMS-driven content). */
-export type PlpBanner = { title?: string; subtitle?: string; imageSrc: string };
+export type PlpBanner = {
+  title?: string;
+  subtitle?: string;
+  imageSrcWeb: string;
+  imageSrcMweb: string;
+};
 
 export type PlpViewProps = {
   /** Listing title from the API (category/collection name). */
@@ -56,6 +64,8 @@ export type PlpViewProps = {
   breadcrumbs?: Crumb[];
   /** Optional hero banner rendered full-width above the listing. */
   banner?: PlpBanner;
+  /** Show a banner-sized skeleton while CMS hero assets resolve. */
+  bannerLoading?: boolean;
   /** Optional quick-filter tabs rendered as pills under the title. */
   tabs?: PlpTab[];
   activeTab?: string;
@@ -112,6 +122,7 @@ export function PlpView({
   titleLoading = false,
   breadcrumbs,
   banner,
+  bannerLoading = false,
   tabs,
   activeTab,
   onTabChange,
@@ -195,6 +206,7 @@ export function PlpView({
   }
 
   const hasFilters = Boolean(filterGroups && filterGroups.length > 0);
+  const showMobileToolbar = hasFilters;
 
   return (
     <div className="w-full min-w-0">
@@ -262,18 +274,33 @@ export function PlpView({
         ) : null}
       </PageShell>
 
-      {banner ? (
+      {bannerLoading ? (
+        <div className={categoryPlpBannerBleedClass}>
+          <div
+            className={cn(categoryPlpBannerShellClass, "animate-pulse bg-gray-100")}
+            aria-hidden
+          />
+        </div>
+      ) : banner ? (
         <div className={categoryPlpBannerBleedClass}>
           <div className={categoryPlpBannerShellClass}>
-            <Image
-              src={banner.imageSrc}
-              alt=""
-              aria-hidden
-              fill
-              priority
-              sizes="100vw"
-              className={categoryPlpBannerImageClass}
-            />
+            <PlpHeroBanner banner={banner} />
+          </div>
+        </div>
+      ) : null}
+
+      {showMobileToolbar ? (
+        <div className={categoryPlpMobileToolbarBleedClass}>
+          <div className={categoryPlpMobileFiltersToolbarClass}>
+            <button
+              type="button"
+              className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass} w-full`}
+              aria-expanded={mobileFiltersOpen}
+              onClick={() => setMobileFiltersOpen(true)}
+            >
+              <FiltersIcon />
+              <span>Filters</span>
+            </button>
           </div>
         </div>
       ) : null}
@@ -318,35 +345,11 @@ export function PlpView({
             </div>
           ) : null}
 
-          {hasFilters ? (
-            <div className="border-gray-divider mb-4 border-y lg:hidden">
-              <button
-                type="button"
-                className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass} w-full`}
-                aria-expanded={mobileFiltersOpen}
-                onClick={() => setMobileFiltersOpen((open) => !open)}
-              >
-                <FiltersIcon />
-                <span>Filters</span>
-              </button>
-            </div>
-          ) : null}
-
           <p className={categoryPlpCountClass}>
             {isInitialLoad
               ? "Loading…"
               : `Showing ${total} ${total === 1 ? "product" : "products"}`}
           </p>
-
-          {hasFilters && mobileFiltersOpen ? (
-            <div className={categoryPlpMobileFiltersClass}>
-              <PlpFilters
-                groups={filterGroups}
-                selections={selections}
-                onChange={onFiltersChange}
-              />
-            </div>
-          ) : null}
 
           {!loading && items.length === 0 ? (
             <CenteredState
@@ -367,7 +370,7 @@ export function PlpView({
                     </li>
                   ))
                 : items.map((product) => (
-                    <li key={product.id}>
+                    <li key={product.id} className="h-full">
                       <ProductCard product={product} />
                     </li>
                   ))}
@@ -396,7 +399,51 @@ export function PlpView({
         </div>
       </div>
       </PageShell>
+
+      {hasFilters && filterGroups ? (
+        <PlpMobileFiltersSheet
+          open={mobileFiltersOpen}
+          groups={filterGroups}
+          selections={selections}
+          onClose={() => setMobileFiltersOpen(false)}
+          onApply={onFiltersChange}
+        />
+      ) : null}
     </div>
+  );
+}
+
+function PlpHeroBanner({ banner }: { banner: PlpBanner }) {
+  const usesDistinctAssets = banner.imageSrcMweb !== banner.imageSrcWeb;
+
+  return (
+    <>
+      <Image
+        src={banner.imageSrcMweb}
+        alt=""
+        aria-hidden
+        fill
+        priority
+        fetchPriority="high"
+        sizes="100vw"
+        className={cn(
+          categoryPlpBannerImageClass,
+          usesDistinctAssets && "lg:hidden",
+        )}
+      />
+      {usesDistinctAssets ? (
+        <Image
+          src={banner.imageSrcWeb}
+          alt=""
+          aria-hidden
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className={cn(categoryPlpBannerImageClass, "hidden lg:block")}
+        />
+      ) : null}
+    </>
   );
 }
 

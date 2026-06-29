@@ -157,7 +157,7 @@ export function ProductGallery({
         type="button"
         aria-label="Share this product"
         onClick={() => void shareProduct(name)}
-        className="text-text-primary absolute top-4 right-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
+        className="text-text-primary absolute right-4 bottom-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
       >
         <ShareIcon />
       </button>

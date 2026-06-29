@@ -6,6 +6,7 @@ import {
   categoryPlpProductCardClass,
   categoryPlpProductCardImageClass,
   categoryPlpProductCardMetaClass,
+  categoryPlpProductCardMetaSlotClass,
   categoryPlpProductCardNameClass,
   categoryPlpProductCardTagClass,
   categoryPlpProductCardTagsRowClass,
@@ -22,6 +23,7 @@ import {
 import { cn } from "@/lib/utils/cn";
 
 import { formatPlpVariantMeta } from "../variant-meta";
+import { resolveProductDietaryType } from "../dietary-badge";
 
 import { productPageHref } from "../product-href";
 
@@ -45,6 +47,7 @@ export function ProductCard({
   const meta = showVariantMeta ? formatPlpVariantMeta(product) : null;
   const isPdpRail = layout === "pdp-rail";
   const tagPills = (product.tagPills ?? []).slice(0, PLP_TAG_PILL_LIMIT);
+  const dietaryType = resolveProductDietaryType(product.regulatory);
 
   return (
     <Link
@@ -96,10 +99,16 @@ export function ProductCard({
             >
               {product.name}
             </h3>
-            {product.regulatory?.veg !== false ? <VegDietaryBadge /> : null}
+            {dietaryType ? <DietaryBadge type={dietaryType} /> : null}
           </div>
 
-          {meta ? (
+          {showVariantMeta && !isPdpRail ? (
+            <div className={categoryPlpProductCardMetaSlotClass}>
+              {meta ? (
+                <p className={categoryPlpProductCardMetaClass}>{meta}</p>
+              ) : null}
+            </div>
+          ) : meta ? (
             <p
               className={
                 isPdpRail
@@ -139,12 +148,12 @@ export function ProductCard({
   );
 }
 
-/** Green veg dietary marker beside the product name. */
-function VegDietaryBadge() {
+function DietaryBadge({ type }: { type: "veg" | "non-veg" }) {
+  const isVeg = type === "veg";
   return (
     <Image
-      src="/Container.svg"
-      alt="Vegetarian"
+      src={isVeg ? "/Container.svg" : "/Container-non-veg.svg"}
+      alt={isVeg ? "Vegetarian" : "Non-vegetarian"}
       width={18}
       height={18}
       className="shrink-0"
