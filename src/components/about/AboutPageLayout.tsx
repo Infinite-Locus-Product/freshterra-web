@@ -167,7 +167,7 @@ export function AboutPageLayout({ content }: Readonly<AboutPageLayoutProps>) {
 
         {showCoreValues ? (
           <section
-            className={aboutCoreValuesSectionClass}
+            className={`${aboutCoreValuesSectionClass} ${!showCustomerStories ? "md:mb-[31px]" : ""}`}
             aria-labelledby="about-core-values-heading"
           >
             {content.coreValues?.title ? (

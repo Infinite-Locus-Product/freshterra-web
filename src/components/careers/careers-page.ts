@@ -13,7 +13,7 @@ export const CAREERS_OPENINGS_TO_FOOTER_GAP_MWEB = 31.36;
 export const CAREERS_HERO_TO_OPENINGS_GAP_MWEB = 38;
 
 export const careersPageSectionClass =
-  "text-text-primary bg-white pt-8 pb-[31.36px] md:pt-10 md:pb-0";
+  "text-text-primary bg-white pt-8 pb-[31.36px] md:pt-10 md:pb-[28px]";
 
 export const careersBreadcrumbClass =
   "text-text-secondary mb-[14px] flex items-center gap-2 text-xs leading-none tracking-[0] md:mb-4 md:text-sm md:leading-[17px]";
