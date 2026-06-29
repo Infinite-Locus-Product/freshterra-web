@@ -27,6 +27,8 @@ type HomeCategoryTileProps = Readonly<{
   imageSizes?: string;
   /** Override tile wrapper width (defaults to homepage 78.4px mWeb). */
   tileClassName?: string;
+  /** Eager-load + high fetch priority for above-the-fold tiles (first row). */
+  priority?: boolean;
   className?: string;
 }>;
 
@@ -40,6 +42,7 @@ export function HomeCategoryTile({
   circleClassName = homeCategoriesCircleClass,
   imageSizes = "(max-width: 768px) 78.4px, 140px",
   tileClassName = homeCategoriesTileClass,
+  priority = false,
   className,
 }: HomeCategoryTileProps) {
   const content = (
@@ -50,6 +53,7 @@ export function HomeCategoryTile({
             src={imageSrc}
             alt={name}
             fill
+            priority={priority}
             loader={useImageKitTiles ? categoryTileImageLoader : undefined}
             className={homeCategoriesImageClass}
             sizes={imageSizes}

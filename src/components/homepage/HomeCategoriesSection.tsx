@@ -44,11 +44,7 @@ export function HomeCategoriesSection({
 }: HomeCategoriesSectionProps) {
   const { title, subtitle, ctaLabel, viewAllHref, items } = categories;
 
-  if (
-    items.length === 0 &&
-    !title.trim() &&
-    !subtitle.trim()
-  ) {
+  if (items.length === 0 && !title.trim() && !subtitle.trim()) {
     return null;
   }
 
@@ -78,12 +74,13 @@ export function HomeCategoriesSection({
 
         {items.length > 0 ? (
           <div className={homeCategoriesGridClass}>
-            {items.map((tile) => (
+            {items.map((tile, index) => (
               <HomeCategoryTile
                 key={tile.key}
                 name={tile.name}
                 imageSrc={tile.imageSrc}
                 href={tile.href}
+                priority={index < 4}
               />
             ))}
           </div>
