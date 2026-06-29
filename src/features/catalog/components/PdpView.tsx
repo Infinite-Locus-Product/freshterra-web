@@ -21,6 +21,9 @@ import {
   pdpProductTagPillClass,
   pdpProductTagsRowClass,
   pdpStoreButtonClass,
+  pdpStoreButtonIconClass,
+  pdpStoreButtonTopLineClass,
+  pdpStoreButtonBrandLineClass,
   pdpStoryClass,
   pdpTitleClass,
   pdpTrustHeadingClass,
@@ -68,7 +71,10 @@ export function PdpView({
           className={`${pdpContentShellClass} text-text-secondary mb-4 hidden flex-wrap items-center gap-2 text-sm lg:mb-6 lg:flex`}
         >
           {breadcrumbs.map((crumb, i) => (
-            <span key={`${crumb.label}-${i}`} className="flex items-center gap-2">
+            <span
+              key={`${crumb.label}-${i}`}
+              className="flex items-center gap-2"
+            >
               {crumb.href ? (
                 <Link href={crumb.href} className="hover:underline">
                   {crumb.label}
@@ -121,7 +127,10 @@ function ProductInfo({ product }: { product: ProductDetail }) {
         {tagPills.length > 0 ? (
           <div className={pdpProductTagsRowClass}>
             {tagPills.slice(0, PDP_TAG_PILL_LIMIT).map((tag) => (
-              <span key={tag} className={cn(pdpProductTagPillClass, "capitalize")}>
+              <span
+                key={tag}
+                className={cn(pdpProductTagPillClass, "capitalize")}
+              >
                 {tag}
               </span>
             ))}
@@ -238,18 +247,19 @@ function StoreButton({
 }) {
   const badge = APP_STORE_BADGE_BY_STORE[store];
   return (
-    <Link
-      href={href}
-      aria-label={`${badge.topLine} ${badge.brandLine}`}
-      className={pdpStoreButtonClass}
-    >
+    <Link href={href} className={pdpStoreButtonClass}>
       <Image
-        src={badge.badgeSrc}
-        alt={`${badge.topLine} ${badge.brandLine}`}
-        width={badge.badgeWidth}
-        height={badge.badgeHeight}
-        className="h-full w-full object-fill"
+        src={badge.iconSrc}
+        alt=""
+        aria-hidden
+        width={30}
+        height={30}
+        className={pdpStoreButtonIconClass}
       />
+      <span className="leading-tight">
+        <span className={pdpStoreButtonTopLineClass}>{badge.topLine}</span>
+        <span className={pdpStoreButtonBrandLineClass}>{badge.brandLine}</span>
+      </span>
     </Link>
   );
 }
