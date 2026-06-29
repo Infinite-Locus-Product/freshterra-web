@@ -38,10 +38,11 @@ export const categoryPlpTabInactiveClass =
 
 /** Full-bleed hero banner — edge-to-edge on mWeb; contained on web. */
 export const categoryPlpBannerBleedClass =
-  "relative left-1/2 w-screen max-w-none -translate-x-1/2 max-lg:px-0 lg:relative lg:left-auto lg:mb-6 lg:w-full lg:max-w-none lg:translate-x-0";
+  "w-full max-lg:overflow-hidden lg:relative lg:mb-6 lg:w-full lg:max-w-none";
 
+/** mWeb scales with viewport width (393:171); web uses 16:5 hero ratio. */
 export const categoryPlpBannerShellClass =
-  "relative box-border h-[171px] w-full min-w-0 overflow-hidden lg:aspect-[16/5] lg:h-auto";
+  "relative box-border w-full min-w-0 overflow-hidden aspect-[393/171] max-lg:h-auto lg:aspect-[16/5] lg:h-auto";
 
 export const categoryPlpBannerImageClass = "object-cover object-center";
 
