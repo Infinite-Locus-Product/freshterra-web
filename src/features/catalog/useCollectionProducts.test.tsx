@@ -21,6 +21,7 @@ const makeProduct = (id: string): PlpProduct => ({
   variants: [],
   price: { list: 8900, mrp: 9900, currency: "INR" },
   tags: [],
+  tagPills: [],
   inStock: true,
 });
 
@@ -76,10 +77,9 @@ describe("useCollectionProducts", () => {
     expect(result.current.hasMore).toBe(false);
   });
 
-  it("does not fetch without slug or polygonId", async () => {
-    const initialProps: { slug?: string; polygonId?: string } = {
-      slug: "seasonal",
-    };
+  it("does not fetch without a slug", async () => {
+    mockGet.mockResolvedValue(page(["a", "b"], 1, 2));
+    const initialProps: { slug?: string; polygonId?: string } = {};
     const { rerender } = renderHook(
       (args: { slug?: string; polygonId?: string }) =>
         useCollectionProducts(args),
@@ -88,7 +88,7 @@ describe("useCollectionProducts", () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(mockGet).not.toHaveBeenCalled();
 
-    rerender({ slug: "seasonal", polygonId: "poly_1" });
+    rerender({ slug: "seasonal" });
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
   });
 
@@ -155,5 +155,18 @@ describe("useCollectionProducts", () => {
     await waitFor(() => expect(result.current.error).not.toBeNull());
     expect(result.current.error?.code).toBe("UPSTREAM_UNAVAILABLE");
     expect(result.current.items).toEqual([]);
+  });
+
+  it("fetches with slug only when no polygonId is provided", async () => {
+    mockGet.mockResolvedValue({
+      items: [],
+      page: 1,
+      pageSize: 20,
+      total: 0,
+      facets: {},
+    } as unknown as CollectionProductsData); // partial fixture
+    renderHook(() => useCollectionProducts({ slug: "fruits" }));
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1));
+    expect(mockGet.mock.calls[0][0]).toBe("fruits");
   });
 });

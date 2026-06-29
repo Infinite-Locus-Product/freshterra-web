@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 
-import { cookies } from "next/headers";
-
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 
@@ -10,8 +8,12 @@ import { getCollectionProducts } from "@/features/catalog/collection-service";
 
 type Params = Promise<{ slug: string }>;
 
-/** Polygon scoping id available client-side today (serviceability TBD). */
-const STORE_COOKIE = "ft_store_id";
+/** Store-neutral catalog content → ISR-cacheable. */
+export const revalidate = 300;
+
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({
   params,
@@ -19,16 +21,8 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
-  if (!polygonId) {
-    return { alternates: { canonical: `/collection/${slug}` } };
-  }
-
   try {
-    const data = await getCollectionProducts(slug, {
-      polygonId,
-      pageSize: 1,
-    });
+    const data = await getCollectionProducts(slug, { pageSize: 1 });
     const title = data.collection?.name?.trim();
     if (!title) {
       return { alternates: { canonical: `/collection/${slug}` } };
@@ -47,26 +41,19 @@ export default async function CollectionProductsPage({
   params,
 }: Readonly<{ params: Params }>) {
   const { slug } = await params;
-  const polygonId = (await cookies()).get(STORE_COOKIE)?.value;
 
   let initialProducts = null;
-  if (polygonId) {
-    try {
-      initialProducts = await getCollectionProducts(slug, { polygonId });
-    } catch {
-      // Best-effort seed — client hook will fetch on mount if this fails.
-    }
+  try {
+    initialProducts = await getCollectionProducts(slug);
+  } catch {
+    // Best-effort seed — client hook will fetch on mount if this fails.
   }
 
   return (
     <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white">
       <MarketingHeader />
       <main className="text-text-primary w-full min-w-0 flex-1 overflow-x-clip">
-        <CollectionPlpView
-          slug={slug}
-          polygonId={polygonId}
-          initialProducts={initialProducts}
-        />
+        <CollectionPlpView slug={slug} initialProducts={initialProducts} />
       </main>
       <MarketingFooter />
     </div>

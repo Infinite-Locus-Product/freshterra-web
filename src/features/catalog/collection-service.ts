@@ -22,8 +22,8 @@ const slugSchema = z.string().trim().min(1, "Collection slug is required.");
 const polygonIdSchema = z.string().trim().min(1, "polygonId is required.");
 
 export interface CollectionProductsParams {
-  /** Required serviceability polygon — scopes catalog/pricing/stock. */
-  polygonId: string;
+  /** Optional serviceability polygon — scopes catalog/pricing/stock when provided. */
+  polygonId?: string;
   /** 1-based page number. */
   page?: number;
   /** Items per batch (clamped to [1, 100]). */
@@ -62,11 +62,13 @@ function clamp(value: number, min: number, max: number): number {
  */
 export async function getCollectionProducts(
   slug: string,
-  params: CollectionProductsParams,
+  params: CollectionProductsParams = {},
   options: CollectionProductsRequestOptions = {},
 ): Promise<CollectionProductsData> {
   const collectionSlug = slugSchema.parse(slug);
-  const polygonId = polygonIdSchema.parse(params.polygonId);
+  const polygonId = params.polygonId
+    ? polygonIdSchema.parse(params.polygonId)
+    : undefined;
   const page = Math.max(DEFAULT_PLP_PAGE, params.page ?? DEFAULT_PLP_PAGE);
   const pageSize = clamp(
     params.pageSize ?? DEFAULT_PLP_PAGE_SIZE,
