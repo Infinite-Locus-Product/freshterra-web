@@ -32,6 +32,74 @@ const ingredientsBlockSchema = z.object({
   allergen_info: z.string().optional(),
 });
 
+function coerceHealthBenefitItem(item: unknown): string | undefined {
+  if (typeof item === "string") {
+    const trimmed = item.trim();
+    return trimmed || undefined;
+  }
+  if (typeof item === "number" && Number.isFinite(item)) {
+    return String(item);
+  }
+  if (!item || typeof item !== "object" || Array.isArray(item))
+    return undefined;
+
+  const record = item as Record<string, unknown>;
+  return (
+    coerceHealthBenefitItem(record.text) ??
+    coerceHealthBenefitItem(record.label) ??
+    coerceHealthBenefitItem(record.value) ??
+    coerceHealthBenefitItem(record.description)
+  );
+}
+
+function normalizeHealthBenefitsWire(value: unknown): unknown {
+  if (value == null) return undefined;
+  if (Array.isArray(value)) {
+    return {
+      items: value
+        .map((item) => coerceHealthBenefitItem(item))
+        .filter((item): item is string => Boolean(item)),
+    };
+  }
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    try {
+      return normalizeHealthBenefitsWire(JSON.parse(trimmed) as unknown);
+    } catch {
+      return { items: [trimmed] };
+    }
+  }
+  if (typeof value !== "object") return value;
+
+  const record = value as Record<string, unknown>;
+  if (Array.isArray(record.items)) return value;
+  if (Array.isArray(record.health_benefits)) {
+    return {
+      ...(typeof record.heading === "string"
+        ? { heading: record.heading }
+        : {}),
+      items: record.health_benefits,
+    };
+  }
+  return value;
+}
+
+const healthBenefitsBlockSchema = z.preprocess(
+  normalizeHealthBenefitsWire,
+  z.object({
+    heading: z.string().optional(),
+    items: z
+      .array(z.unknown())
+      .default([])
+      .transform((items) =>
+        items
+          .map((item) => coerceHealthBenefitItem(item))
+          .filter((item): item is string => Boolean(item)),
+      ),
+  }),
+);
+
 const productDetailsSchema = z.object({
   heading: z.string().optional(),
   brand: z.string().optional(),
@@ -39,11 +107,7 @@ const productDetailsSchema = z.object({
   category: z.string().optional(),
   key_features: keyFeaturesSchema.optional(),
   ingredients: ingredientsBlockSchema.optional(),
-});
-
-const healthBenefitsBlockSchema = z.object({
-  heading: z.string().optional(),
-  items: z.array(z.string()).default([]),
+  health_benefits: healthBenefitsBlockSchema.optional(),
 });
 
 const nutritionalInformationSchema = z.object({
@@ -51,12 +115,16 @@ const nutritionalInformationSchema = z.object({
   health_benefits: healthBenefitsBlockSchema.optional(),
 });
 
-const shelfLifeBlockSchema = z.object({
-  heading: z.string().optional(),
-  duration: z.string().optional(),
-  manufacturing_date: z.string().optional(),
-  best_before: z.string().optional(),
-});
+const shelfLifeBlockSchema = z.preprocess(
+  (value) => (typeof value === "string" ? { value } : value),
+  z.object({
+    heading: z.string().optional(),
+    duration: z.string().optional(),
+    manufacturing_date: z.string().optional(),
+    best_before: z.string().optional(),
+    value: z.string().optional(),
+  }),
+);
 
 const pointsBlockSchema = z.object({
   heading: z.string().optional(),
@@ -121,6 +189,8 @@ const regulatoryInformationSchema = z.object({
 const productInformationsWireSchema = z.object({
   trust_markers: trustMarkersSchema.optional(),
   product_details: productDetailsSchema.optional(),
+  /** CMS may send health benefits at the root or under `nutritional_information`. */
+  health_benefits: healthBenefitsBlockSchema.optional(),
   nutritional_information: nutritionalInformationSchema.optional(),
   instructions: instructionsSchema.optional(),
   regulatory_information: regulatoryInformationSchema.optional(),
@@ -174,6 +244,7 @@ export type ProductInformations = {
       duration?: string;
       manufacturingDate?: string;
       bestBefore?: string;
+      value?: string;
     };
     storageTips?: {
       heading?: string;
@@ -240,6 +311,78 @@ function mapAddress(
   };
 }
 
+type HealthBenefitsBlock = {
+  heading?: string;
+  items: string[];
+};
+
+function mapHealthBenefitsBlock(
+  block: HealthBenefitsBlock | undefined,
+): HealthBenefitsBlock | undefined {
+  const items = (block?.items ?? []).map((item) => item.trim()).filter(Boolean);
+  if (items.length === 0) return undefined;
+  return {
+    ...(block?.heading ? { heading: block.heading } : {}),
+    items,
+  };
+}
+
+function resolveHealthBenefitsFromWire(
+  wire: z.infer<typeof productInformationsWireSchema>,
+): ReturnType<typeof mapHealthBenefitsBlock> {
+  return (
+    mapHealthBenefitsBlock(wire.health_benefits) ??
+    mapHealthBenefitsBlock(wire.product_details?.health_benefits) ??
+    mapHealthBenefitsBlock(wire.nutritional_information?.health_benefits)
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+/** Parses `health_benefits` from any BFF / metadata blob. */
+export function parseHealthBenefits(
+  raw: unknown,
+): HealthBenefitsBlock | undefined {
+  if (raw == null) return undefined;
+
+  let parsed: unknown = raw;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (!trimmed) return undefined;
+    try {
+      parsed = JSON.parse(trimmed) as unknown;
+    } catch {
+      return mapHealthBenefitsBlock({ items: [trimmed] });
+    }
+  }
+
+  if (isRecord(parsed)) {
+    const nestedSources = [
+      parsed.health_benefits,
+      isRecord(parsed.product_details)
+        ? parsed.product_details.health_benefits
+        : undefined,
+      isRecord(parsed.nutritional_information)
+        ? parsed.nutritional_information.health_benefits
+        : undefined,
+    ];
+
+    for (const source of nestedSources) {
+      const nested = healthBenefitsBlockSchema.safeParse(source);
+      if (nested.success) {
+        const mapped = mapHealthBenefitsBlock(nested.data);
+        if (mapped) return mapped;
+      }
+    }
+  }
+
+  const result = healthBenefitsBlockSchema.safeParse(parsed);
+  if (!result.success) return undefined;
+  return mapHealthBenefitsBlock(result.data);
+}
+
 function mapWireToProductInformations(
   wire: z.infer<typeof productInformationsWireSchema>,
 ): ProductInformations {
@@ -295,20 +438,12 @@ function mapWireToProductInformations(
     };
   }
 
-  if (wire.nutritional_information) {
+  const healthBenefits = resolveHealthBenefitsFromWire(wire);
+  if (wire.nutritional_information || healthBenefits) {
     const nutrition = wire.nutritional_information;
     out.nutritionalInformation = {
-      ...(nutrition.heading ? { heading: nutrition.heading } : {}),
-      ...(nutrition.health_benefits?.items.length
-        ? {
-            healthBenefits: {
-              ...(nutrition.health_benefits.heading
-                ? { heading: nutrition.health_benefits.heading }
-                : {}),
-              items: nutrition.health_benefits.items,
-            },
-          }
-        : {}),
+      ...(nutrition?.heading ? { heading: nutrition.heading } : {}),
+      ...(healthBenefits ? { healthBenefits } : {}),
     };
   }
 
@@ -325,10 +460,16 @@ function mapWireToProductInformations(
                 ? { duration: instructions.shelf_life.duration }
                 : {}),
               ...(instructions.shelf_life.manufacturing_date
-                ? { manufacturingDate: instructions.shelf_life.manufacturing_date }
+                ? {
+                    manufacturingDate:
+                      instructions.shelf_life.manufacturing_date,
+                  }
                 : {}),
               ...(instructions.shelf_life.best_before
                 ? { bestBefore: instructions.shelf_life.best_before }
+                : {}),
+              ...(instructions.shelf_life.value
+                ? { value: instructions.shelf_life.value }
                 : {}),
             },
           }
@@ -357,128 +498,195 @@ function mapWireToProductInformations(
   }
 
   if (wire.regulatory_information) {
-    const regulatory = wire.regulatory_information;
-    out.regulatoryInformation = {
-      ...(regulatory.heading ? { heading: regulatory.heading } : {}),
-      ...(regulatory.fssai
-        ? {
-            fssai: {
-              ...(regulatory.fssai.license_label
-                ? { licenseLabel: regulatory.fssai.license_label }
-                : {}),
-              ...(regulatory.fssai.license_number
-                ? { licenseNumber: regulatory.fssai.license_number }
-                : {}),
-              ...(regulatory.fssai.license_expiry_label
-                ? { licenseExpiryLabel: regulatory.fssai.license_expiry_label }
-                : {}),
-              ...(regulatory.fssai.license_expiry
-                ? { licenseExpiry: regulatory.fssai.license_expiry }
-                : {}),
-            },
-          }
-        : {}),
-      ...(regulatory.manufacturer_details
-        ? {
-            manufacturerDetails: {
-              ...(regulatory.manufacturer_details.heading
-                ? { heading: regulatory.manufacturer_details.heading }
-                : {}),
-              ...(regulatory.manufacturer_details.name_label
-                ? { nameLabel: regulatory.manufacturer_details.name_label }
-                : {}),
-              ...(regulatory.manufacturer_details.name
-                ? { name: regulatory.manufacturer_details.name }
-                : {}),
-              ...(regulatory.manufacturer_details.address_label
-                ? { addressLabel: regulatory.manufacturer_details.address_label }
-                : {}),
-              ...(regulatory.manufacturer_details.address
-                ? {
-                    address: mapAddress(regulatory.manufacturer_details.address),
-                  }
-                : {}),
-              ...(regulatory.manufacturer_details.contact_label
-                ? { contactLabel: regulatory.manufacturer_details.contact_label }
-                : {}),
-              ...(regulatory.manufacturer_details.contact
-                ? {
-                    contact: {
-                      ...(regulatory.manufacturer_details.contact.email
-                        ? { email: regulatory.manufacturer_details.contact.email }
-                        : {}),
-                      ...(regulatory.manufacturer_details.contact.phone
-                        ? { phone: regulatory.manufacturer_details.contact.phone }
-                        : {}),
-                    },
-                  }
-                : {}),
-            },
-          }
-        : {}),
-      ...(regulatory.seller_details
-        ? {
-            sellerDetails: {
-              ...(regulatory.seller_details.heading
-                ? { heading: regulatory.seller_details.heading }
-                : {}),
-              ...(regulatory.seller_details.sold_by_label
-                ? { soldByLabel: regulatory.seller_details.sold_by_label }
-                : {}),
-              ...(regulatory.seller_details.sold_by
-                ? { soldBy: regulatory.seller_details.sold_by }
-                : {}),
-              ...(regulatory.seller_details.registered_address_label
-                ? {
-                    registeredAddressLabel:
-                      regulatory.seller_details.registered_address_label,
-                  }
-                : {}),
-              ...(regulatory.seller_details.registered_address
-                ? {
-                    registeredAddress: mapAddress(
-                      regulatory.seller_details.registered_address,
-                    ),
-                  }
-                : {}),
-              ...(regulatory.seller_details.gstin_label
-                ? { gstinLabel: regulatory.seller_details.gstin_label }
-                : {}),
-              ...(regulatory.seller_details.gstin
-                ? { gstin: regulatory.seller_details.gstin }
-                : {}),
-              ...(regulatory.seller_details.phone_label
-                ? { phoneLabel: regulatory.seller_details.phone_label }
-                : {}),
-              ...(regulatory.seller_details.phone
-                ? { phone: regulatory.seller_details.phone }
-                : {}),
-            },
-          }
-        : {}),
-    };
+    out.regulatoryInformation = mapRegulatoryInformationWire(
+      wire.regulatory_information,
+    );
   }
 
   return out;
+}
+
+export type RegulatoryInformation = NonNullable<
+  ProductInformations["regulatoryInformation"]
+>;
+
+function mapRegulatoryInformationWire(
+  regulatory: z.infer<typeof regulatoryInformationSchema>,
+): RegulatoryInformation {
+  return {
+    ...(regulatory.heading ? { heading: regulatory.heading } : {}),
+    ...(regulatory.fssai
+      ? {
+          fssai: {
+            ...(regulatory.fssai.license_label
+              ? { licenseLabel: regulatory.fssai.license_label }
+              : {}),
+            ...(regulatory.fssai.license_number
+              ? { licenseNumber: regulatory.fssai.license_number }
+              : {}),
+            ...(regulatory.fssai.license_expiry_label
+              ? { licenseExpiryLabel: regulatory.fssai.license_expiry_label }
+              : {}),
+            ...(regulatory.fssai.license_expiry
+              ? { licenseExpiry: regulatory.fssai.license_expiry }
+              : {}),
+          },
+        }
+      : {}),
+    ...(regulatory.manufacturer_details
+      ? {
+          manufacturerDetails: {
+            ...(regulatory.manufacturer_details.heading
+              ? { heading: regulatory.manufacturer_details.heading }
+              : {}),
+            ...(regulatory.manufacturer_details.name_label
+              ? { nameLabel: regulatory.manufacturer_details.name_label }
+              : {}),
+            ...(regulatory.manufacturer_details.name
+              ? { name: regulatory.manufacturer_details.name }
+              : {}),
+            ...(regulatory.manufacturer_details.address_label
+              ? { addressLabel: regulatory.manufacturer_details.address_label }
+              : {}),
+            ...(regulatory.manufacturer_details.address
+              ? {
+                  address: mapAddress(regulatory.manufacturer_details.address),
+                }
+              : {}),
+            ...(regulatory.manufacturer_details.contact_label
+              ? { contactLabel: regulatory.manufacturer_details.contact_label }
+              : {}),
+            ...(regulatory.manufacturer_details.contact
+              ? {
+                  contact: {
+                    ...(regulatory.manufacturer_details.contact.email
+                      ? { email: regulatory.manufacturer_details.contact.email }
+                      : {}),
+                    ...(regulatory.manufacturer_details.contact.phone
+                      ? { phone: regulatory.manufacturer_details.contact.phone }
+                      : {}),
+                  },
+                }
+              : {}),
+          },
+        }
+      : {}),
+    ...(regulatory.seller_details
+      ? {
+          sellerDetails: {
+            ...(regulatory.seller_details.heading
+              ? { heading: regulatory.seller_details.heading }
+              : {}),
+            ...(regulatory.seller_details.sold_by_label
+              ? { soldByLabel: regulatory.seller_details.sold_by_label }
+              : {}),
+            ...(regulatory.seller_details.sold_by
+              ? { soldBy: regulatory.seller_details.sold_by }
+              : {}),
+            ...(regulatory.seller_details.registered_address_label
+              ? {
+                  registeredAddressLabel:
+                    regulatory.seller_details.registered_address_label,
+                }
+              : {}),
+            ...(regulatory.seller_details.registered_address
+              ? {
+                  registeredAddress: mapAddress(
+                    regulatory.seller_details.registered_address,
+                  ),
+                }
+              : {}),
+            ...(regulatory.seller_details.gstin_label
+              ? { gstinLabel: regulatory.seller_details.gstin_label }
+              : {}),
+            ...(regulatory.seller_details.gstin
+              ? { gstin: regulatory.seller_details.gstin }
+              : {}),
+            ...(regulatory.seller_details.phone_label
+              ? { phoneLabel: regulatory.seller_details.phone_label }
+              : {}),
+            ...(regulatory.seller_details.phone
+              ? { phone: regulatory.seller_details.phone }
+              : {}),
+          },
+        }
+      : {}),
+  };
+}
+
+/** Parses a standalone `regulatory_information` blob from the BFF payload. */
+export function parseRegulatoryInformation(
+  raw: unknown,
+): RegulatoryInformation | undefined {
+  if (raw == null) return undefined;
+
+  let parsed: unknown = raw;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (!trimmed) return undefined;
+    try {
+      parsed = JSON.parse(trimmed) as unknown;
+    } catch {
+      return undefined;
+    }
+  }
+
+  const wire = isRecord(parsed)
+    ? (parsed.regulatory_information ?? parsed)
+    : parsed;
+  const result = regulatoryInformationSchema.safeParse(wire);
+  if (!result.success) return undefined;
+
+  const mapped = mapRegulatoryInformationWire(result.data);
+  return regulatoryInformationHasContent(mapped) ? mapped : undefined;
+}
+
+export function regulatoryInformationHasContent(
+  regulatory: RegulatoryInformation | undefined,
+): boolean {
+  if (!regulatory) return false;
+
+  const manufacturerAddressLines = productInformationsAddressLines(
+    regulatory.manufacturerDetails?.address,
+  );
+  const sellerAddressLines = productInformationsAddressLines(
+    regulatory.sellerDetails?.registeredAddress,
+  );
+
+  return Boolean(
+    regulatory.fssai?.licenseNumber ||
+    regulatory.fssai?.licenseExpiry ||
+    regulatory.manufacturerDetails?.name ||
+    manufacturerAddressLines.length > 0 ||
+    regulatory.manufacturerDetails?.contact?.email ||
+    regulatory.manufacturerDetails?.contact?.phone ||
+    regulatory.sellerDetails?.soldBy ||
+    sellerAddressLines.length > 0 ||
+    regulatory.sellerDetails?.gstin ||
+    regulatory.sellerDetails?.phone,
+  );
 }
 
 /** Formats a multi-line CMS address block into a single display string. */
 export function formatProductInformationsAddress(
   address: ProductInformationsAddress | undefined,
 ): string | undefined {
-  if (!address) return undefined;
-  const parts = [
+  const lines = productInformationsAddressLines(address);
+  return lines.length > 0 ? lines.join(", ") : undefined;
+}
+
+/** Ordered address lines for stacked regulatory display. */
+export function productInformationsAddressLines(
+  address: ProductInformationsAddress | undefined,
+): string[] {
+  if (!address) return [];
+  return [
     address.line1,
     address.line2,
     address.line3,
     address.state,
     address.country,
   ].filter((part): part is string => Boolean(part?.trim()));
-  return parts.length > 0 ? parts.join(", ") : undefined;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function readTrustMarkersBlock(raw: unknown): unknown {
@@ -491,7 +699,9 @@ function readTrustMarkersBlock(raw: unknown): unknown {
 }
 
 /** Lenient parser for BFF `trust_markers` / `trustMarkers` blocks. */
-export function parseTrustMarkers(raw: unknown): ProductInformationsLabeledIcon[] {
+export function parseTrustMarkers(
+  raw: unknown,
+): ProductInformationsLabeledIcon[] {
   if (raw == null) return [];
 
   let parsed: unknown = raw;
@@ -527,6 +737,14 @@ export function parseTrustMarkers(raw: unknown): ProductInformationsLabeledIcon[
       return iconLink ? { label, iconLink } : { label };
     })
     .filter((item): item is ProductInformationsLabeledIcon => item !== null);
+}
+
+export function healthBenefitsFromInformations(
+  info: ProductInformations | undefined,
+): HealthBenefitsBlock | undefined {
+  const benefits = info?.nutritionalInformation?.healthBenefits;
+  if (!benefits?.items.length) return undefined;
+  return benefits;
 }
 
 /** Parses the Saleor `product_informations` metadata JSON blob. */
@@ -570,9 +788,9 @@ export function productInformationsHasContent(
   if (!info) return false;
   return Boolean(
     info.trustMarkers?.items.length ||
-      info.productDetails ||
-      info.nutritionalInformation ||
-      info.instructions ||
-      info.regulatoryInformation,
+    info.productDetails ||
+    info.nutritionalInformation ||
+    info.instructions ||
+    info.regulatoryInformation,
   );
 }

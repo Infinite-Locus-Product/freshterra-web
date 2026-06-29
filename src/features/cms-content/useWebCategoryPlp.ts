@@ -13,6 +13,9 @@ export interface UseWebCategoryPlpArgs {
   categorySlug?: string;
   /** Optional `?parent=` query hint from CMS deeplinks. */
   parentSlug?: string;
+  /** Optional SSR-hydrated CMS payload — skips the first client fetch. */
+  initialContent?: WebCategoryPlpContent | null;
+  initialResolvedParentSlug?: string | null;
   enabled?: boolean;
 }
 
@@ -27,14 +30,25 @@ export interface UseWebCategoryPlpResult {
 export function useWebCategoryPlp(
   args: UseWebCategoryPlpArgs = {},
 ): UseWebCategoryPlpResult {
-  const { categorySlug, parentSlug, enabled = true } = args;
-  const [content, setContent] = useState<WebCategoryPlpContent | null>(null);
-  const [resolvedParentSlug, setResolvedParentSlug] = useState<string | null>(
-    null,
+  const {
+    categorySlug,
+    parentSlug,
+    initialContent = null,
+    initialResolvedParentSlug = null,
+    enabled = true,
+  } = args;
+  const [content, setContent] = useState<WebCategoryPlpContent | null>(
+    initialContent,
   );
-  const [loading, setLoading] = useState(false);
+  const [resolvedParentSlug, setResolvedParentSlug] = useState<string | null>(
+    initialResolvedParentSlug,
+  );
+  const [loading, setLoading] = useState(
+    enabled && !initialContent && Boolean(categorySlug?.trim()),
+  );
   const [error, setError] = useState<FreshTerraApiError | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const skipHydrationFetchRef = useRef(Boolean(initialContent));
 
   const fetchContent = useCallback(async () => {
     if (!enabled || !categorySlug?.trim()) {
@@ -77,6 +91,10 @@ export function useWebCategoryPlp(
   }, [enabled, categorySlug, parentSlug]);
 
   useEffect(() => {
+    if (skipHydrationFetchRef.current) {
+      skipHydrationFetchRef.current = false;
+      return;
+    }
     void fetchContent();
     return () => abortRef.current?.abort();
   }, [fetchContent]);

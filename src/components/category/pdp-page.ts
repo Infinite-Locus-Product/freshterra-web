@@ -57,17 +57,30 @@ export const pdpMwebContentBleedXClass =
 /** mWeb PDP full-bleed horizontal rule inside padded tab content. */
 export const pdpMwebFullBleedDividerClass = `relative h-px shrink-0 bg-gray-divider lg:hidden ${pdpMwebContentBleedXClass}`;
 
-/** Trust markers — mWeb + web: in-content dividers (not full bleed). */
+/** Instructions tab — section rule after Storage Tips / Usage Suggestions (mWeb + web). */
+export const pdpInstructionsSectionDividerClass =
+  "h-px w-full shrink-0 bg-[#E5E7EA]";
+
+/** Trust markers — top inset above row; bottom gap lives on {@link pdpTrustRowClass}. */
 export const pdpTrustSectionShellClass =
-  "border-gray-divider border-t border-b py-4 lg:py-6";
+  "border-gray-divider border-t border-b pt-4 lg:pt-6";
 
 export const pdpTrustSectionInnerClass = "lg:px-0";
 
+export const PDP_TRUST_MARKER_BOTTOM_GAP_MWEB = 16;
+export const PDP_TRUST_MARKER_BOTTOM_GAP_WEB = 24;
+
 export const pdpTrustRowClass =
-  "grid w-full grid-cols-3 items-start gap-1 lg:flex lg:justify-start lg:gap-12";
+  "grid w-full grid-cols-3 items-start gap-1 pb-4 lg:flex lg:justify-start lg:gap-12 lg:pb-6";
 
 export const pdpTrustItemClass =
   "text-brand-500 flex min-w-0 flex-col items-center gap-1.5 text-center font-sans text-xs font-medium leading-tight lg:shrink-0";
+
+/** Fixed icon row so all trust markers align on one line. */
+export const pdpTrustIconShellClass =
+  "flex h-7 w-full shrink-0 items-center justify-center";
+
+export const pdpTrustLabelClass = "w-full leading-tight";
 
 export const PDP_APP_CARD_MWEB_WIDTH = 361;
 export const PDP_APP_CARD_MWEB_HEIGHT = 140;
@@ -123,6 +136,37 @@ export const pdpDetailsRowValueClass =
 
 export const pdpDetailsBodyTextClass =
   "text-text-secondary font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
+
+/** Ingredients “contains” copy — #131927 on mWeb + web. */
+export const pdpProductDetailsContainsTextClass =
+  "text-text-primary font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
+
+/** Regulatory tab — FSSAI cards stack full-width on mWeb and web. */
+export const pdpRegulatoryFssaiGridClass = "grid grid-cols-1 gap-3";
+
+export const pdpRegulatoryFssaiCardClass =
+  "box-border w-full rounded-[10px] border border-gray-200 bg-white px-4 py-3";
+
+export const pdpRegulatoryFssaiCardLabelClass =
+  "text-text-tertiary mb-1 block font-sans text-[12px] font-normal leading-[1.4] tracking-[0] lg:text-[14px]";
+
+export const pdpRegulatoryFssaiCardValueClass =
+  "text-text-primary block font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
+
+export const pdpRegulatorySectionDividerClass =
+  "h-px w-full shrink-0 bg-gray-divider";
+
+export const pdpRegulatorySubsectionClass = "space-y-4";
+
+export const pdpRegulatoryFieldClass = "space-y-1";
+
+export const pdpRegulatoryFieldLabelClass = pdpDetailsRowLabelClass;
+
+export const pdpRegulatoryFieldValueClass = pdpDetailsRowValueClass;
+
+/** Stacked address lines — tight line-height, no extra paragraph gap. */
+export const pdpRegulatoryAddressLineClass =
+  "text-text-primary m-0 block font-sans text-[14px] font-medium leading-4 tracking-[0] lg:text-[16px] lg:font-normal lg:leading-[130%]";
 
 export const PDP_KEY_FEATURE_MWEB_ITEM_WIDTH = 76;
 export const PDP_KEY_FEATURE_MWEB_ITEM_HEIGHT = 72;

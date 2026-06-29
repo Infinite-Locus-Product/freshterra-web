@@ -19,6 +19,7 @@ const base: PlpProduct = {
   tags: ["organic", "fresh"],
   tagPills: ["organic", "fresh", "local"],
   inStock: true,
+  regulatory: { veg: true },
 };
 
 describe("ProductCard", () => {
@@ -64,12 +65,19 @@ describe("ProductCard", () => {
     expect(article?.className).not.toContain("lg:w-[240px]");
   });
 
-  it("hides the vegetarian badge for non-veg products", () => {
+  it("renders a red non-vegetarian badge when regulatory.veg is false", () => {
     render(
       <ProductCard
         product={{ ...base, inStock: false, regulatory: { veg: false } }}
       />,
     );
     expect(screen.queryByAltText("Vegetarian")).not.toBeInTheDocument();
+    expect(screen.getByAltText("Non-vegetarian")).toBeInTheDocument();
+  });
+
+  it("hides dietary badges when food type is unknown", () => {
+    render(<ProductCard product={{ ...base, regulatory: undefined }} />);
+    expect(screen.queryByAltText("Vegetarian")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("Non-vegetarian")).not.toBeInTheDocument();
   });
 });

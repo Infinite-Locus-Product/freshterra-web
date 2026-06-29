@@ -3,7 +3,8 @@ import { isCmsActive } from "./cms-boolean";
 import type { WebCategoryPlpContent } from "./web-category-plp-service";
 
 export type PlpBannerView = {
-  imageSrc: string;
+  imageSrcWeb: string;
+  imageSrcMweb: string;
 };
 
 export type PlpTabView = {
@@ -37,9 +38,19 @@ function readTabLabel(tab: L4Tab): string {
   return readTabCategoryId(tab);
 }
 
-/** All L4 tabs have `l4_category_id`; only the All tab omits `l4_category_slug`. */
-export function isAllL4Tab(tab: L4Tab): boolean {
-  return !tab.l4_category_slug?.trim();
+/** True for the aggregate tab — omits slug, matches parent slug, or id/label is "All". */
+export function isAllL4Tab(tab: L4Tab, parentSlug?: string): boolean {
+  const categoryId = tab.l4_category_id?.trim().toLowerCase();
+  const label = tab.label?.trim().toLowerCase();
+  if (categoryId === "all" || label === "all") return true;
+
+  const slug = tab.l4_category_slug?.trim();
+  if (!slug) return true;
+
+  const parent = parentSlug?.trim().toLowerCase();
+  if (parent && slug.toLowerCase() === parent) return true;
+
+  return false;
 }
 
 function readTabValue(tab: L4Tab): string {
@@ -47,7 +58,7 @@ function readTabValue(tab: L4Tab): string {
 }
 
 function readTabTargetSlug(tab: L4Tab, parentSlug: string): string {
-  if (isAllL4Tab(tab)) {
+  if (isAllL4Tab(tab, parentSlug)) {
     return parentSlug;
   }
   const slug = tab.l4_category_slug?.trim();
@@ -87,14 +98,31 @@ export function mapPlpL4Tabs(
           label,
           value,
           targetSlug: readTabTargetSlug(tab, parentSlug),
-          isAll: isAllL4Tab(tab),
+          isAll: isAllL4Tab(tab, parentSlug),
         },
       ];
     });
 }
 
-export function mapPlpL4TabsToPlpTabs(tabs: readonly PlpL4TabConfig[]): PlpTabView[] {
+export function mapPlpL4TabsToPlpTabs(
+  tabs: readonly PlpL4TabConfig[],
+): PlpTabView[] {
   return tabs.map(({ label, value }) => ({ label, value }));
+}
+
+/** True when CMS defines at least one L4 subcategory pill besides "All". */
+export function hasVisibleL4CategoryPills(
+  tabs: readonly PlpL4TabConfig[],
+): boolean {
+  return tabs.some((tab) => !tab.isAll);
+}
+
+/** L4 pills for the PLP toolbar — empty when only the "All" tab is configured. */
+export function visiblePlpL4Tabs(
+  tabs: readonly PlpL4TabConfig[],
+): PlpTabView[] {
+  if (!hasVisibleL4CategoryPills(tabs)) return [];
+  return mapPlpL4TabsToPlpTabs(tabs);
 }
 
 export function findAllL4Tab(
@@ -107,9 +135,7 @@ export function resolveActiveL4Tab(
   tabs: readonly PlpL4TabConfig[],
   activeTab: string,
 ): PlpL4TabConfig | undefined {
-  return (
-    tabs.find((tab) => tab.value === activeTab) ?? findAllL4Tab(tabs)
-  );
+  return tabs.find((tab) => tab.value === activeTab) ?? findAllL4Tab(tabs);
 }
 
 /** Category slug passed to the products API for the selected L4 tab. */
@@ -155,9 +181,18 @@ export function resolvePlpBannerForTab(
     return readTabValue(tab) === active.value;
   });
 
-  const hero = tabEntry?.hero_banner?.find((item) => isCmsActive(item.is_active));
-  const imageSrc = hero?.hero_image_web?.trim() || hero?.hero_image_mweb?.trim();
-  return imageSrc ? { imageSrc } : undefined;
+  const hero = tabEntry?.hero_banner?.find((item) =>
+    isCmsActive(item.is_active),
+  );
+  const imageSrcWeb = hero?.hero_image_web?.trim();
+  const imageSrcMweb = hero?.hero_image_mweb?.trim();
+  const fallback = imageSrcMweb ?? imageSrcWeb;
+  if (!fallback) return undefined;
+
+  return {
+    imageSrcWeb: imageSrcWeb ?? fallback,
+    imageSrcMweb: imageSrcMweb ?? fallback,
+  };
 }
 
 export function buildPlpTabHref(

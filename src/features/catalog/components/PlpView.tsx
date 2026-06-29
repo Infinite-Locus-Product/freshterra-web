@@ -16,7 +16,6 @@ import {
   categoryPlpBreadcrumbCurrentClass,
   categoryPlpCountClass,
   categoryPlpListingGridClass,
-  categoryPlpMobileFiltersClass,
   categoryPlpPageHeaderShellClass,
   categoryPlpPageListingShellClass,
   categoryPlpProductGridClass,
@@ -36,6 +35,7 @@ import {
   type FilterSelections,
   type PlpFilterGroup,
 } from "./PlpFilters";
+import { PlpMobileFiltersSheet } from "./PlpMobileFiltersSheet";
 import { ProductCard } from "./ProductCard";
 
 import type { PlpProduct } from "../types";
@@ -322,7 +322,7 @@ export function PlpView({
                   type="button"
                   className={`${categoryPlpToolbarButtonClass} ${categoryPlpToolbarLabelClass} w-full`}
                   aria-expanded={mobileFiltersOpen}
-                  onClick={() => setMobileFiltersOpen((open) => !open)}
+                  onClick={() => setMobileFiltersOpen(true)}
                 >
                   <FiltersIcon />
                   <span>Filters</span>
@@ -335,16 +335,6 @@ export function PlpView({
                 ? "Loading…"
                 : `Showing ${total} ${total === 1 ? "product" : "products"}`}
             </p>
-
-            {hasFilters && mobileFiltersOpen ? (
-              <div className={categoryPlpMobileFiltersClass}>
-                <PlpFilters
-                  groups={filterGroups}
-                  selections={selections}
-                  onChange={onFiltersChange}
-                />
-              </div>
-            ) : null}
 
             {!loading && items.length === 0 ? (
               <CenteredState
@@ -394,6 +384,16 @@ export function PlpView({
           </div>
         </div>
       </PageShell>
+
+      {hasFilters && filterGroups ? (
+        <PlpMobileFiltersSheet
+          open={mobileFiltersOpen}
+          groups={filterGroups}
+          selections={selections}
+          onClose={() => setMobileFiltersOpen(false)}
+          onApply={onFiltersChange}
+        />
+      ) : null}
     </div>
   );
 }

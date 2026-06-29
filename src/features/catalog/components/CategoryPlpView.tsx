@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
 import { useWebCategoryPlp } from "@/features/cms-content/useWebCategoryPlp";
 import {
   buildPlpTabHref,
@@ -13,8 +15,6 @@ import {
   resolvePlpBannerForTab,
   resolvePlpProductSlug,
 } from "@/features/cms-content/web-category-plp-mapper";
-
-import { DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
 
 import { resolveListingTitle } from "../plp-listing-meta";
 import { useCategoryProducts } from "../useCategoryProducts";
@@ -240,11 +240,13 @@ export function CategoryPlpView({
 
   const banner = useMemo<PlpBanner | undefined>(() => {
     if (!plpCms?.l4_tab?.length) return undefined;
-    return resolvePlpBannerForTab(
+    const view = resolvePlpBannerForTab(
       plpCms,
       l4Tabs.length > 0 ? effectiveL4Tab : activeTab,
       parentSlug,
     );
+    // PlpView's single-image banner: imageSrcWeb already falls back to mweb.
+    return view ? { imageSrc: view.imageSrcWeb } : undefined;
   }, [activeTab, effectiveL4Tab, l4Tabs.length, parentSlug, plpCms]);
 
   const title = useMemo(

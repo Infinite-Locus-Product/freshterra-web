@@ -1,9 +1,12 @@
+import { plainTextFromDescription } from "./product-description";
 import {
+  healthBenefitsFromInformations,
+  parseHealthBenefits,
   parseProductInformations,
+  parseRegulatoryInformation,
   parseTrustMarkers,
   type ProductInformations,
 } from "./product-informations";
-import { plainTextFromDescription } from "./product-description";
 import { parseWeightGrams } from "./variant-meta";
 
 import type { ProductDetail, ProductRegulatory } from "./types";
@@ -65,6 +68,7 @@ export const SALEOR_PRODUCT_METADATA_KEYS = [
   "nutrition_protein",
   "nutrition_carbs",
   "product_informations",
+  "regulatory_information",
 ] as const;
 
 export type SaleorProductMetadataKey =
@@ -231,9 +235,7 @@ export function mapSaleorMetadataToProductMetafields(
     ccEmail: lookupMetadata(raw, "cc_email"),
     ccPhone: lookupMetadata(raw, "cc_phone"),
     erpnextItemCode: lookupMetadata(raw, "erpnext_item_code"),
-    trustMarkerReturn: parseBoolean(
-      lookupMetadata(raw, "trust_marker_return"),
-    ),
+    trustMarkerReturn: parseBoolean(lookupMetadata(raw, "trust_marker_return")),
   };
 }
 
@@ -259,8 +261,10 @@ function foodTypeToRegulatory(foodType: string | undefined): ProductRegulatory {
   }
   if (
     normalized === "non-veg" ||
+    normalized === "non veg" ||
     normalized === "nonveg" ||
-    normalized === "non vegetarian"
+    normalized === "non vegetarian" ||
+    normalized === "non-vegetarian"
   ) {
     return { veg: false };
   }
@@ -280,7 +284,11 @@ function mergeRegulatory(
   tags: readonly string[],
 ): ProductRegulatory | undefined {
   const organic = existing?.organic ?? organicFromTags(tags);
-  const merged = { ...existing, ...fromFoodType, ...(organic != null ? { organic } : {}) };
+  const merged = {
+    ...existing,
+    ...fromFoodType,
+    ...(organic != null ? { organic } : {}),
+  };
   if (merged.veg == null && merged.organic == null) return existing;
   return merged;
 }
@@ -301,7 +309,9 @@ function nutritionFromMetadata(
     parseOptionalNumber(lookupMetadata(raw, "nutrition_carbs", "carbs"));
 
   if (kcal == null && protein == null && carbs == null) {
-    return isRecord(existing) ? (existing as { kcal?: number; protein?: number; carbs?: number }) : undefined;
+    return isRecord(existing)
+      ? (existing as { kcal?: number; protein?: number; carbs?: number })
+      : undefined;
   }
   return { kcal, protein, carbs };
 }
@@ -339,7 +349,10 @@ function priceFromRecord(record: UnknownRecord): {
   };
 }
 
-function enrichVariantRecord(variant: UnknownRecord, unit?: string): UnknownRecord {
+function enrichVariantRecord(
+  variant: UnknownRecord,
+  unit?: string,
+): UnknownRecord {
   const name = asString(variant.name) ?? unit;
   const weightG =
     typeof variant.weightG === "number" && Number.isFinite(variant.weightG)
@@ -360,7 +373,8 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   const name = asString(input.name);
   const unit = asString(input.unit);
   const variantCount =
-    typeof input.variantCount === "number" && Number.isFinite(input.variantCount)
+    typeof input.variantCount === "number" &&
+    Number.isFinite(input.variantCount)
       ? input.variantCount
       : undefined;
 
@@ -419,7 +433,12 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   if (!Array.isArray(out.variants) || out.variants.length === 0) {
     const variantId = asString(input.defaultVariantId);
     if (variantId) {
-      out.variants = [enrichVariantRecord({ id: variantId, sku: asString(input.sku) ?? "" }, unit)];
+      out.variants = [
+        enrichVariantRecord(
+          { id: variantId, sku: asString(input.sku) ?? "" },
+          unit,
+        ),
+      ];
     }
   } else {
     out.variants = out.variants.map((variant) =>
@@ -452,6 +471,40 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   const tagPills = tagPillsFromInput(input);
   if (tagPills.length > 0) {
     out.tagPills = tagPills;
+  }
+
+  const rawMeta = parseSaleorMetadataInput(
+    input.metadata ?? input.metafields ?? input.meta,
+  );
+  const metaFields = mapSaleorMetadataToProductMetafields(rawMeta);
+  const foodType =
+    metaFields.foodType ?? asString(input.foodType) ?? asString(out.foodType);
+
+  const existingRegulatory: ProductRegulatory | undefined = isRecord(
+    out.regulatory,
+  )
+    ? {
+        veg:
+          typeof out.regulatory.veg === "boolean"
+            ? out.regulatory.veg
+            : undefined,
+        organic:
+          typeof out.regulatory.organic === "boolean"
+            ? out.regulatory.organic
+            : undefined,
+      }
+    : typeof input.veg === "boolean"
+      ? { veg: input.veg }
+      : undefined;
+
+  const tags = Array.isArray(out.tags) ? (out.tags as string[]) : [];
+  const regulatory = mergeRegulatory(
+    existingRegulatory,
+    foodTypeToRegulatory(foodType),
+    tags,
+  );
+  if (regulatory) {
+    out.regulatory = regulatory;
   }
 
   return out;
@@ -524,9 +577,7 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
         ? fromRaw.healthBenefits
         : fromExisting.healthBenefits,
     foodType:
-      fromRaw.foodType ??
-      fromExisting.foodType ??
-      asString(catalog.foodType),
+      fromRaw.foodType ?? fromExisting.foodType ?? asString(catalog.foodType),
   };
 
   const tagsFromMeta = parseStringArray(
@@ -539,9 +590,7 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     meta.productDetails;
 
   const manufacturer =
-    asString(catalog.manufacturer) ??
-    meta.manufacturerName ??
-    meta.brand;
+    asString(catalog.manufacturer) ?? meta.manufacturerName ?? meta.brand;
 
   const fssai = asString(catalog.fssai) ?? meta.fssaiLicense;
 
@@ -571,11 +620,18 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     (isRecord(catalog.productInformations)
       ? catalog.productInformations
       : undefined) ??
-    (isRecord(input.productInformations) ? input.productInformations : undefined);
+    (isRecord(input.productInformations)
+      ? input.productInformations
+      : undefined);
 
-  const productInformations = mergeProductInformationsWithTrustMarkers(
+  const productInformations = enrichProductInformationsFromSources(
     parseProductInformations(productInformationsRaw),
-    [productInformationsRaw, input, catalog],
+    [
+      productInformationsRaw,
+      lookupMetadata(rawMeta, "regulatory_information"),
+      input,
+      catalog,
+    ],
   );
 
   const {
@@ -606,25 +662,57 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
   } satisfies Partial<ProductDetail>;
 }
 
-/** Prefer the richest trust-marker list across BFF payload locations. */
-function mergeProductInformationsWithTrustMarkers(
+/** Prefer the richest CMS blocks across BFF payload locations. */
+function enrichProductInformationsFromSources(
   info: ProductInformations | undefined,
   sources: unknown[],
 ): ProductInformations | undefined {
   let trustItems = info?.trustMarkers?.items ?? [];
+  let regulatoryInformation = info?.regulatoryInformation;
+  let healthBenefits = healthBenefitsFromInformations(info);
 
   for (const source of sources) {
     if (source == null) continue;
-    const parsed = parseTrustMarkers(source);
-    if (parsed.length > trustItems.length) {
-      trustItems = parsed;
+
+    const parsedTrust = parseTrustMarkers(source);
+    if (parsedTrust.length > trustItems.length) {
+      trustItems = parsedTrust;
+    }
+
+    const parsedRegulatory = parseRegulatoryInformation(source);
+    if (parsedRegulatory) {
+      regulatoryInformation = parsedRegulatory;
+    }
+
+    const parsedHealthBenefits = parseHealthBenefits(source);
+    if (
+      parsedHealthBenefits &&
+      parsedHealthBenefits.items.length > (healthBenefits?.items.length ?? 0)
+    ) {
+      healthBenefits = parsedHealthBenefits;
     }
   }
 
-  if (!info && trustItems.length === 0) return undefined;
+  if (
+    !info &&
+    trustItems.length === 0 &&
+    !regulatoryInformation &&
+    !healthBenefits
+  ) {
+    return undefined;
+  }
 
   return {
     ...info,
     ...(trustItems.length > 0 ? { trustMarkers: { items: trustItems } } : {}),
+    ...(healthBenefits
+      ? {
+          nutritionalInformation: {
+            ...info?.nutritionalInformation,
+            healthBenefits,
+          },
+        }
+      : {}),
+    ...(regulatoryInformation ? { regulatoryInformation } : {}),
   };
 }

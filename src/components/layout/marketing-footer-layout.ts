@@ -51,8 +51,9 @@ export const marketingFooterGridClass =
 export const marketingFooterOfficeTitleClass =
   "mb-4 font-sans text-[1.125rem] leading-6 font-bold tracking-normal";
 
+/** Head Office address lines — Manrope 14px regular, 120% lh, 0.2px tracking. */
 export const marketingFooterOfficeLineClass =
-  "text-white-soft/80 font-sans text-sm font-normal leading-[1.4] tracking-[0]";
+  "text-white-soft/80 m-0 block font-sans text-[14px] font-normal leading-[1.2] tracking-[0.2px]";
 
 /** Download App store badges — Figma mWeb 173 × 56. */
 export const MARKETING_FOOTER_STORE_BUTTON_MWEB_WIDTH = 173;

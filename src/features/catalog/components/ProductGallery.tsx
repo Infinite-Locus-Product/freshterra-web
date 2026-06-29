@@ -4,12 +4,13 @@ import { useCallback, useRef, useState } from "react";
 
 import Image from "next/image";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   pdpGalleryFrameClass,
   pdpGalleryScrollSlideClass,
   pdpGalleryScrollTrackClass,
 } from "@/components/category/pdp-page";
-import { cn } from "@/lib/utils/cn";
 
 import { ProductImageGalleryModal } from "./ProductImageGalleryModal";
 
@@ -72,7 +73,10 @@ export function ProductGallery({
           aria-label="Product images"
         >
           {images.map((image, index) => (
-            <div key={`${image.url}-${index}`} className={pdpGalleryScrollSlideClass}>
+            <div
+              key={`${image.url}-${index}`}
+              className={pdpGalleryScrollSlideClass}
+            >
               <Image
                 src={image.url}
                 alt={image.alt ?? name}
@@ -157,7 +161,7 @@ export function ProductGallery({
         type="button"
         aria-label="Share this product"
         onClick={() => void shareProduct(name)}
-        className="text-text-primary absolute top-4 right-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
+        className="text-text-primary absolute right-4 bottom-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-colors hover:bg-white"
       >
         <ShareIcon />
       </button>
