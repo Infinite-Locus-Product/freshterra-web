@@ -202,90 +202,98 @@ export function PlpView({
 
   const hasFilters = Boolean(filterGroups && filterGroups.length > 0);
 
-  return (
-    <div className="w-full min-w-0 overflow-x-clip">
-      <PageShell pad={false} className={categoryPlpPageHeaderShellClass}>
-        {breadcrumbs && breadcrumbs.length > 0 ? (
-          <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
-            {breadcrumbs.map((crumb, i) => (
-              <span
-                key={`${crumb.label}-${i}`}
-                className="flex items-center gap-2"
-              >
-                {crumb.href ? (
-                  <Link href={crumb.href} className="hover:underline">
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span
-                    className={
-                      i === breadcrumbs.length - 1
-                        ? categoryPlpBreadcrumbCurrentClass
-                        : undefined
-                    }
-                  >
-                    {crumb.label}
-                  </span>
-                )}
-                {i < breadcrumbs.length - 1 ? <span aria-hidden>›</span> : null}
-              </span>
-            ))}
-          </nav>
-        ) : null}
-
-        {titleLoading ? (
-          <div
-            className="mb-4 h-9 w-48 max-w-full animate-pulse rounded bg-gray-100 lg:mb-5"
-            aria-hidden
-          />
-        ) : title ? (
-          <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
-            {title}
-          </Heading>
-        ) : null}
-
-        {tabs && tabs.length > 0 ? (
-          <div
-            role="tablist"
-            aria-label="Quick filters"
-            className={categoryPlpTabsRowClass}
-          >
-            {tabs.map((tab) => {
-              const selected = (activeTab ?? tabs[0]?.value) === tab.value;
-              return (
-                <button
-                  key={tab.value}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  onClick={() => onTabChange?.(tab.value)}
+  const headerBlock = (
+    <PageShell pad={false} className={categoryPlpPageHeaderShellClass}>
+      {breadcrumbs && breadcrumbs.length > 0 ? (
+        <nav aria-label="Breadcrumb" className={categoryPlpBreadcrumbClass}>
+          {breadcrumbs.map((crumb, i) => (
+            <span
+              key={`${crumb.label}-${i}`}
+              className="flex items-center gap-2"
+            >
+              {crumb.href ? (
+                <Link href={crumb.href} className="hover:underline">
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span
                   className={
-                    selected
-                      ? categoryPlpTabActiveClass
-                      : categoryPlpTabInactiveClass
+                    i === breadcrumbs.length - 1
+                      ? categoryPlpBreadcrumbCurrentClass
+                      : undefined
                   }
                 >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-      </PageShell>
-
-      {banner ? (
-        <div className={categoryPlpBannerBleedClass}>
-          <div className={categoryPlpBannerShellClass}>
-            <BannerImage
-              key={`${banner.imageSrcWeb}-${banner.imageSrcMweb}`}
-              imageSrcWeb={banner.imageSrcWeb}
-              imageSrcMweb={banner.imageSrcMweb}
-            />
-          </div>
-        </div>
+                  {crumb.label}
+                </span>
+              )}
+              {i < breadcrumbs.length - 1 ? <span aria-hidden>›</span> : null}
+            </span>
+          ))}
+        </nav>
       ) : null}
 
-      <PageShell pad={false} className={categoryPlpPageListingShellClass}>
+      {titleLoading ? (
+        <div
+          className="mb-4 h-9 w-48 max-w-full animate-pulse rounded bg-gray-100 lg:mb-5"
+          aria-hidden
+        />
+      ) : title ? (
+        <Heading level={1} variant="h2" className={categoryPlpTitleClass}>
+          {title}
+        </Heading>
+      ) : null}
+
+      {tabs && tabs.length > 0 ? (
+        <div
+          role="tablist"
+          aria-label="Quick filters"
+          className={categoryPlpTabsRowClass}
+        >
+          {tabs.map((tab) => {
+            const selected = (activeTab ?? tabs[0]?.value) === tab.value;
+            return (
+              <button
+                key={tab.value}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                onClick={() => onTabChange?.(tab.value)}
+                className={
+                  selected
+                    ? categoryPlpTabActiveClass
+                    : categoryPlpTabInactiveClass
+                }
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </PageShell>
+  );
+
+  const bannerBlock =
+    banner ? (
+      <div className={categoryPlpBannerBleedClass}>
+        <div className={categoryPlpBannerShellClass}>
+          <BannerImage
+            key={`${banner.imageSrcWeb}-${banner.imageSrcMweb}`}
+            imageSrcWeb={banner.imageSrcWeb}
+            imageSrcMweb={banner.imageSrcMweb}
+          />
+        </div>
+      </div>
+    ) : null;
+
+  return (
+    <>
+      <div className="w-full min-w-0 overflow-x-clip">{headerBlock}</div>
+
+      {bannerBlock}
+
+      <div className="w-full min-w-0 overflow-x-clip">
+        <PageShell pad={false} className={categoryPlpPageListingShellClass}>
         <div
           ref={listingRef}
           className={
@@ -403,7 +411,8 @@ export function PlpView({
           onApply={onFiltersChange}
         />
       ) : null}
-    </div>
+      </div>
+    </>
   );
 }
 

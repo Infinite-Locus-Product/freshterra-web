@@ -37,6 +37,23 @@ describe("mapContactFormToPayload", () => {
       message: "Wholesale partnership inquiry",
     });
   });
+
+  it("omits email from the payload when the field is empty", () => {
+    expect(
+      mapContactFormToPayload({
+        inquiryType: "Partnership",
+        name: "Rahul Sharma",
+        email: "",
+        phone: "+91 9876543210",
+        message: "Wholesale partnership inquiry",
+      }),
+    ).toEqual({
+      inquiry_type: "Partnership",
+      name: "Rahul Sharma",
+      phone: "+91 9876543210",
+      message: "Wholesale partnership inquiry",
+    });
+  });
 });
 
 describe("submitContactUsForm", () => {
@@ -79,6 +96,27 @@ describe("submitContactUsForm", () => {
       phone: "+91 8793787393",
       message:
         "I would like to discuss a wholesale supply partnership for organic produce across Bengaluru…",
+    });
+  });
+
+  it("POSTs without email when the field is empty", async () => {
+    const fetchSpy = vi.fn(async () => successEnvelope());
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await submitContactUsForm({
+      inquiryType: "General Query",
+      name: "Rahul Sharma",
+      email: "",
+      phone: "+91 9876543210",
+      message: "This is a test message with at least thirty words in it for validation purposes here.",
+    });
+
+    expect(JSON.parse(String(fetchSpy.mock.calls[0]?.[1]?.body))).toEqual({
+      inquiry_type: "General Query",
+      name: "Rahul Sharma",
+      phone: "+91 9876543210",
+      message:
+        "This is a test message with at least thirty words in it for validation purposes here.",
     });
   });
 });
