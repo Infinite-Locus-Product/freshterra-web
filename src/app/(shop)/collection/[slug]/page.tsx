@@ -22,7 +22,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const data = await getCollectionProducts(slug, { pageSize: 1 }, { expectedErrorCodes: ["NOT_FOUND"] });
+    const data = await getCollectionProducts(
+      slug,
+      { pageSize: 1 },
+      { expectedErrorCodes: ["NOT_FOUND"] },
+    );
     const title = data.collection?.name?.trim();
     if (!title) {
       return { alternates: { canonical: `/collection/${slug}` } };
@@ -44,7 +48,11 @@ export default async function CollectionProductsPage({
 
   let initialProducts = null;
   try {
-    initialProducts = await getCollectionProducts(slug, {}, { expectedErrorCodes: ["NOT_FOUND"] });
+    initialProducts = await getCollectionProducts(
+      slug,
+      {},
+      { expectedErrorCodes: ["NOT_FOUND"] },
+    );
   } catch {
     // Best-effort seed — client hook will fetch on mount if this fails.
   }

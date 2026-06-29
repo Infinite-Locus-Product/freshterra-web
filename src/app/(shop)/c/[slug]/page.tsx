@@ -28,7 +28,10 @@ import { PageShell } from "@/components/layout/PageShell";
 
 import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
 import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
-import { getCategoryProducts, DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
+import {
+  getCategoryProducts,
+  DEFAULT_CATEGORY_SORT,
+} from "@/features/catalog/category-service";
 import { getWebCategoryContent } from "@/features/cms-content/web-category-content-service";
 import { resolveWebCategoryPlpContext } from "@/features/cms-content/web-category-plp-resolver";
 

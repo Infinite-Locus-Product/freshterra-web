@@ -175,7 +175,9 @@ describe("getProduct", () => {
   });
 
   it("does not log a 404 when expectedErrorCodes includes NOT_FOUND", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(errorResponse(404, "PRODUCT_NOT_FOUND"));
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(errorResponse(404, "PRODUCT_NOT_FOUND"));
     vi.stubGlobal("fetch", fetchMock);
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
