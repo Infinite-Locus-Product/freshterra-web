@@ -12,7 +12,7 @@ const APPLY_NOW_PATH = "/api/v1/forms/apply-now";
 export const applyNowPayloadSchema = z.object({
   position: z.string().min(1),
   name: z.string().min(1),
-  email: z.string(),
+  email: z.string().optional(),
   phone: z.string().min(1),
   resume_key: z.string().min(1),
 });
@@ -31,10 +31,12 @@ export function mapCareerApplicationToPayload(
   values: CareerApplicationSubmission,
   resumeKey: string,
 ): ApplyNowPayload {
+  const email = values.email.trim();
+
   return applyNowPayloadSchema.parse({
     position: values.position.trim(),
     name: values.name.trim(),
-    email: values.email.trim(),
+    ...(email ? { email } : {}),
     phone: values.phone.trim(),
     resume_key: resumeKey,
   });
