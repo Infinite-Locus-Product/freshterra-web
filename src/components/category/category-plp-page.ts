@@ -38,7 +38,7 @@ export const categoryPlpTabInactiveClass =
 
 /** Full-bleed hero banner — edge-to-edge on mWeb and web. */
 export const categoryPlpBannerBleedClass =
-  "relative left-1/2 mb-4 w-screen max-w-none -translate-x-1/2 lg:mb-6";
+  "relative left-1/2 w-screen max-w-none -translate-x-1/2 lg:mb-6";
 
 export const categoryPlpBannerShellClass =
   "relative box-border h-[171px] w-full overflow-hidden lg:aspect-[16/5] lg:h-auto";
@@ -57,9 +57,17 @@ export const categoryPlpBannerSubtitleClass =
 export const categoryPlpBannerCopyClass =
   "relative flex h-full flex-col justify-center px-4 lg:px-12";
 
-/** Filters | Sort split bar — mWeb only. */
+/** Filters | Sort split bar — mWeb only; full-bleed when wrapped in bleed shell. */
 export const categoryPlpToolbarClass =
   "border-gray-divider mb-4 grid grid-cols-2 border-y lg:hidden";
+
+/** Breaks the mWeb toolbar out of page horizontal padding (edge-to-edge borders). */
+export const categoryPlpMobileToolbarBleedClass =
+  "relative left-1/2 w-screen max-w-none -translate-x-1/2 lg:hidden";
+
+/** mWeb filters-only toolbar — full-width borders, single Filters control. */
+export const categoryPlpMobileFiltersToolbarClass =
+  "border-gray-divider mb-4 border-y lg:hidden";
 
 /** Filters / Sort By — mWeb: Manrope 14px bold, 150% line-height, brand green, centered. */
 export const categoryPlpToolbarLabelClass =
@@ -72,7 +80,8 @@ export const categoryPlpClearTextClass =
 export const categoryPlpToolbarButtonClass =
   "flex h-12 items-center justify-center gap-2";
 
-export const categoryPlpToolbarDividerClass = "border-gray-divider border-l";
+export const categoryPlpToolbarDividerClass =
+  "border-gray-divider self-stretch border-l";
 
 /** Web sort trigger — Manrope 14px bold, 16px line-height, brand border + text. */
 export const categoryPlpSortTriggerClass =
@@ -90,9 +99,9 @@ export const categoryPlpActiveFiltersClass =
 export const categoryPlpListingGridClass =
   "grid min-w-0 gap-8 lg:grid-cols-[minmax(0,16.25rem)_minmax(0,1fr)]";
 
-/** mWeb: strict 2-col grid with 16px horizontal gap. */
+/** mWeb: strict 2-col grid with 16px horizontal gap; rows share card height. */
 export const categoryPlpProductGridClass =
-  "grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-y-8";
+  "grid grid-cols-2 items-stretch gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-y-8";
 
 /** Mobile filter panel below toolbar. */
 export const categoryPlpMobileFiltersClass = "mb-4 lg:hidden";

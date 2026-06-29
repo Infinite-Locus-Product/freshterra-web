@@ -24,7 +24,9 @@ import {
   pdpStoryClass,
   pdpTitleClass,
   pdpTrustHeadingClass,
+  pdpTrustIconShellClass,
   pdpTrustItemClass,
+  pdpTrustLabelClass,
   pdpTrustSectionInnerClass,
   pdpTrustSectionShellClass,
   pdpTrustRowClass,
@@ -188,15 +190,17 @@ function TrustMarkers({
         <div className={pdpTrustRowClass}>
           {items.map((marker) => (
             <div key={marker.label} className={pdpTrustItemClass}>
-              <Image
-                src={marker.iconLink ?? "/Checkmark.svg"}
-                alt=""
-                aria-hidden
-                width={28}
-                height={28}
-                className="shrink-0 object-contain"
-              />
-              <span>{marker.label}</span>
+              <div className={pdpTrustIconShellClass}>
+                <Image
+                  src={marker.iconLink ?? "/Checkmark.svg"}
+                  alt=""
+                  aria-hidden
+                  width={28}
+                  height={28}
+                  className="size-7 shrink-0 object-contain"
+                />
+              </div>
+              <span className={pdpTrustLabelClass}>{marker.label}</span>
             </div>
           ))}
         </div>

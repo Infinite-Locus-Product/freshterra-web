@@ -88,6 +88,56 @@ async function tryPlpContextForSlug(
   return null;
 }
 
+async function tryCandidatesInOrder(
+  candidates: string[],
+  categorySlug: string,
+): Promise<WebCategoryPlpContext | null> {
+  for (const candidate of candidates) {
+    const resolved = await tryPlpContextForSlug(candidate, categorySlug);
+    if (resolved) return resolved;
+  }
+  return null;
+}
+
+async function tryCandidatesInParallel(
+  candidates: string[],
+  categorySlug: string,
+): Promise<WebCategoryPlpContext | null> {
+  if (candidates.length === 0) return null;
+
+  const attempts = await Promise.all(
+    candidates.map(async (candidate) => {
+      try {
+        const ctx = await tryPlpContextForSlug(candidate, categorySlug);
+        return { candidate, ctx };
+      } catch (error) {
+        if (
+          error instanceof FreshTerraApiError &&
+          error.code === "NOT_FOUND"
+        ) {
+          return { candidate, ctx: null as WebCategoryPlpContext | null };
+        }
+        throw error;
+      }
+    }),
+  );
+
+  for (const candidate of candidates) {
+    const match = attempts.find(
+      (attempt) => attempt.candidate === candidate && attempt.ctx,
+    );
+    if (match?.ctx) return match.ctx;
+  }
+
+  return null;
+}
+
+function uniqueCandidates(candidates: Array<string | undefined>): string[] {
+  return candidates.filter((value, index, array): value is string => {
+    return Boolean(value?.trim()) && array.indexOf(value) === index;
+  });
+}
+
 /**
  * Resolves `web-category-plps/:parentSlug` for an L3/L4 category route.
  *
@@ -101,19 +151,18 @@ export async function resolveWebCategoryPlpContext(
   const slug = categorySlug.trim();
   if (!slug) return null;
 
-  const orderedCandidates = [
+  const fastCandidates = uniqueCandidates([
     parentHint?.trim(),
     slug,
     ...heuristicParentCandidates(slug),
+  ]);
+
+  const fastResolved = await tryCandidatesInParallel(fastCandidates, slug);
+  if (fastResolved) return fastResolved;
+
+  const slowCandidates = uniqueCandidates([
     ...(await collectCmsCategorySlugs()),
-  ].filter((value, index, array): value is string => {
-    return Boolean(value) && array.indexOf(value) === index;
-  });
+  ]).filter((candidate) => !fastCandidates.includes(candidate));
 
-  for (const candidate of orderedCandidates) {
-    const resolved = await tryPlpContextForSlug(candidate, slug);
-    if (resolved) return resolved;
-  }
-
-  return null;
+  return tryCandidatesInOrder(slowCandidates, slug);
 }

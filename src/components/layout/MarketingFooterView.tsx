@@ -196,7 +196,7 @@ function FooterOfficeColumn({
   return (
     <div>
       <h3 className={marketingFooterOfficeTitleClass}>{title}</h3>
-      <address className="space-y-2 not-italic">
+      <address className="not-italic">
         {lines.map((line) => (
           <p key={line} className={marketingFooterOfficeLineClass}>
             {line}
