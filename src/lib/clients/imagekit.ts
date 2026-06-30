@@ -34,6 +34,20 @@ export function buildImageKitUrl(
   return `${endpoint.replace(/\/$/, "")}/tr:${tr}/${cleaned}`;
 }
 
+/** Max edge for circular category tiles (140px desktop @2x). */
+export const CATEGORY_TILE_IMAGE_SIZE = 280;
+
+/** Applies ImageKit transforms for explore-catalog / homepage category circles. */
+export function buildCategoryTileImageUrl(src: string): string {
+  return buildImageKitUrl(src, {
+    w: CATEGORY_TILE_IMAGE_SIZE,
+    h: CATEGORY_TILE_IMAGE_SIZE,
+    c: "at_max",
+    q: "auto",
+    f: "auto",
+  });
+}
+
 /** next/image custom loader. Register in next.config.ts when ready. */
 export function imagekitLoader({
   src,
@@ -45,4 +59,22 @@ export function imagekitLoader({
   quality?: number;
 }) {
   return buildImageKitUrl(src, { w: width, q: quality ?? "auto" });
+}
+
+/** Square crop loader for circular category tiles (`HomeCategoryTile`). */
+export function categoryTileImageLoader({
+  src,
+  width,
+}: {
+  src: string;
+  width: number;
+}) {
+  const edge = Math.max(width, CATEGORY_TILE_IMAGE_SIZE);
+  return buildImageKitUrl(src, {
+    w: edge,
+    h: edge,
+    c: "at_max",
+    q: "auto",
+    f: "auto",
+  });
 }

@@ -8,6 +8,8 @@
   --color-brand-100: #b7cabf;
   --color-accent-olive: #4e7511;
   --color-accent-terracotta: #ac612d;
+  --color-amber-700: #a47223;
+  --color-brown-700: #81614a;
   --color-beige-100: #fcfaf5;
   --color-cream-50: #fffef8;
   --color-white-soft: #fefefe;
@@ -16,9 +18,11 @@
   --color-gray-200: #e5e7ea;
   --color-gray-divider: #e5e7ea;
   --color-header-tint: #ecfcec;
+  --color-surface-olive: #e9f0e2;
   --color-text-primary: #131927;
   --color-text-secondary: #6d717f;
   --color-text-tertiary: #9ea2ae;
+  --color-icon-black: #131927;
   --color-input-border: rgba(0, 0, 0, 0.38);
   --color-input-text: rgba(0, 0, 0, 0.87);
   --color-input-label: rgba(0, 0, 0, 0.6);
@@ -31,15 +35,35 @@
   --color-primary: oklch(0.55 0.18 145);
   --color-primary-fg: oklch(0.99 0 0);
 
+  --radius-xxs: 0.125rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xxl: 1.75rem;
 
+  /* Layout — rem-based content width and header controls (16px root) */
+  --max-width-content: 90rem;
+  --max-width-content-narrow: 85rem;
+  --width-header-search-max: 35.375rem;
+  --width-header-location-max: 15.625rem;
+  --width-header-download-max: 15.0625rem;
+  --width-brand-tagline-max: 23.1875rem;
+
   /* Font families — wired to next/font CSS variables in app/layout.tsx */
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-display:
     var(--font-playfair), ui-serif, Georgia, "Times New Roman", serif;
+  --font-handsome:
+    "Handsome", var(--font-playfair), ui-serif, Georgia, "Times New Roman",
+    serif;
+}
+
+@font-face {
+  font-family: "Handsome";
+  src: url("/fonts/Handsome-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -52,11 +76,59 @@
   }
 }
 
+:root {
+  --content-max: 90rem;
+  --content-narrow: 85rem;
+  --page-padding-x: clamp(1rem, 4vw, 2.5rem);
+  --header-search-max: 35.375rem;
+  --header-location-max: 15.625rem;
+  --header-download-max: 15.0625rem;
+  --brand-tagline-max: 23.1875rem;
+}
+
+html {
+  font-size: 100%;
+}
+
 html,
 body {
   background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+@utility max-w-content {
+  max-width: var(--content-max);
+}
+
+@utility max-w-content-narrow {
+  max-width: var(--content-narrow);
+}
+
+@utility px-page {
+  padding-inline: var(--page-padding-x);
+}
+
+@utility scroll-px-page {
+  scroll-padding-inline: var(--page-padding-x);
+}
+
+@utility max-w-header-search {
+  max-width: var(--header-search-max);
+}
+
+@utility max-w-header-location {
+  max-width: var(--header-location-max);
+}
+
+@utility max-w-header-download {
+  max-width: var(--header-download-max);
+}
+
+@utility max-w-brand-tagline {
+  max-width: var(--brand-tagline-max);
 }
 
 @layer base {
@@ -64,6 +136,20 @@ body {
   *::before,
   *::after {
     border-color: var(--color-border);
+  }
+
+  /* Override the browser autofill styling (Chrome's blue/yellow tint) so
+     fields filled from saved data keep the normal text color and white
+     background instead of showing a blue tint. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-text-primary);
+    caret-color: var(--color-text-primary);
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
+    box-shadow: 0 0 0 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 

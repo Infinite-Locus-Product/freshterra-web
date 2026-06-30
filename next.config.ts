@@ -23,10 +23,24 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ik.imagekit.io" },
       { protocol: "https", hostname: "**.saleor.cloud" },
       { protocol: "https", hostname: "**.freshterra.in" },
+      { protocol: "https", hostname: "strapi.tenxyou.com" },
+      { protocol: "https", hostname: "cms-stg.freshterra.in" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      // Saleor product media (S3, ap-south-1) — staging + prod buckets,
+      // e.g. freshterra-saleor-media-staging.s3.ap-south-1.amazonaws.com
+      { protocol: "https", hostname: "**.s3.ap-south-1.amazonaws.com" },
     ],
   },
   typedRoutes: true,
+  // Same-origin proxy for browser → backend calls. The BFF sends no CORS
+  // headers, so client-side requests go to `/bff/*` and Next forwards them to
+  // the backend server-side (no CORS). Server-side (RSC) calls hit the backend
+  // directly — see buildUrl() in lib/clients/freshterra-api.ts.
+  async rewrites() {
+    const apiOrigin =
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.freshterra.in";
+    return [{ source: "/bff/:path*", destination: `${apiOrigin}/:path*` }];
+  },
   async headers() {
     if (isProdHost()) return [];
     return [

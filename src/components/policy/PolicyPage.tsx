@@ -3,6 +3,7 @@ import { Heading } from "@/components/ui/Heading";
 
 import type { PolicyDocument } from "@/features/cms-content/types";
 
+import { policyPageBreadcrumbClass } from "./policy-page";
 import { PolicySectionRenderer } from "./PolicySectionRenderer";
 
 type PolicyPageProps = {
@@ -20,9 +21,12 @@ export function PolicyPage({ document: doc }: PolicyPageProps) {
   const formattedDate = formatDate(doc.lastUpdated);
 
   return (
-    <div className="bg-gray-50 px-4 py-6 md:px-10 md:py-8">
+    <div className="bg-gray-50 px-page pt-6 pb-0 md:pt-8">
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-6">
-        <Breadcrumb current={doc.breadcrumbLabel} />
+        <Breadcrumb
+          current={doc.breadcrumbLabel}
+          className={policyPageBreadcrumbClass}
+        />
 
         <Heading level={1} variant="policyTitle" className="text-text-primary">
           {doc.title}

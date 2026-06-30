@@ -11,10 +11,10 @@ describe("BrandRevealSection", () => {
     const headline = screen.getByRole("heading", { level: 1 });
     const className = headline.className;
 
-    expect(className).toContain("w-[18.4375rem]");
-    expect(className).toContain("text-2xl");
+    expect(className).toContain("max-w-[18.4375rem]");
+    expect(className).toContain("text-[1.5rem]");
     expect(className).toContain("leading-[1.2]");
-    expect(className).toContain("md:w-auto");
+    expect(className).toContain("md:max-w-none");
     expect(className).toContain("md:text-[3.125rem]");
   });
 
@@ -25,15 +25,14 @@ describe("BrandRevealSection", () => {
     const className = subheadline.className;
 
     // mWeb Figma frame.
-    expect(className).toContain("w-[21.5625rem]");
-    expect(className).toContain("max-w-full");
+    expect(className).toContain("max-w-[21.5625rem]");
     expect(className).toContain("text-base");
     expect(className).toContain("leading-[1.375rem]");
     // Desktop reverts.
-    expect(className).toContain("md:w-auto");
+    expect(className).toContain("md:max-w-none");
     expect(className).toContain("md:leading-normal");
     // Desktop styles from the HeroScreen variant must survive the merge.
-    expect(className).toContain("md:max-w-xl");
+    expect(className).toContain("md:max-w-none");
     expect(className).toContain("md:text-2xl");
   });
 
@@ -42,9 +41,8 @@ describe("BrandRevealSection", () => {
 
     const stack = screen.getByRole("heading", { level: 1 }).parentElement;
     expect(stack).not.toBeNull();
-    expect(stack!.className).toContain("w-[24.5625rem]");
+    expect(stack!.className).toContain("max-w-[24.5625rem]");
     expect(stack!.className).toContain("h-[22.375rem]");
-    expect(stack!.className).toContain("max-w-full");
     expect(stack!.className).toContain("justify-start");
     expect(stack!.className).toContain("gap-6");
     expect(stack!.className).toContain("md:gap-0");

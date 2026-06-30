@@ -8,6 +8,8 @@ const serverSchema = z.object({
     .default("development"),
 
   SALEOR_APP_TOKEN: z.string().min(1).optional(),
+  /** Saleor channel slug for product pricing/availability when no store cookie is set. */
+  SALEOR_DEFAULT_CHANNEL: z.string().min(1).default("default-channel"),
   ERPNEXT_API_URL: z.string().url().optional(),
   ERPNEXT_API_KEY: z.string().optional(),
   ERPNEXT_API_SECRET: z.string().optional(),
@@ -47,6 +49,13 @@ const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
+  // FreshTerra BFF base URL (search autocomplete, etc.). Defaults to the
+  // staging gateway; override per environment. Requests are issued as
+  // `${NEXT_PUBLIC_API_BASE_URL}/api/v1/...`.
+  NEXT_PUBLIC_API_BASE_URL: z
+    .string()
+    .url()
+    .default("https://api.freshterra.in"),
   NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: z.string().optional(),
   NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: z
     .string()
@@ -93,6 +102,9 @@ const clientEnvRaw = {
   NEXT_PUBLIC_PLAY_STORE_URL: blankAsUndefined(
     process.env.NEXT_PUBLIC_PLAY_STORE_URL,
   ),
+  NEXT_PUBLIC_API_BASE_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_API_BASE_URL,
+  ),
   NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: blankAsUndefined(
     process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY,
   ),
@@ -112,6 +124,7 @@ const isServer = typeof window === "undefined";
 const serverEnvRaw = {
   NODE_ENV: blankAsUndefined(process.env.NODE_ENV),
   SALEOR_APP_TOKEN: blankAsUndefined(process.env.SALEOR_APP_TOKEN),
+  SALEOR_DEFAULT_CHANNEL: blankAsUndefined(process.env.SALEOR_DEFAULT_CHANNEL),
   ERPNEXT_API_URL: blankAsUndefined(process.env.ERPNEXT_API_URL),
   ERPNEXT_API_KEY: blankAsUndefined(process.env.ERPNEXT_API_KEY),
   ERPNEXT_API_SECRET: blankAsUndefined(process.env.ERPNEXT_API_SECRET),

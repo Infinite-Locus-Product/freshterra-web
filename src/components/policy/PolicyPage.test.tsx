@@ -36,7 +36,7 @@ describe("PolicyPage", () => {
     expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
     expect(
       screen.getByRole("navigation", { name: /breadcrumb/i }),
-    ).toBeInTheDocument();
+    ).toHaveClass("text-xs");
   });
 
   it("renders the intro and all sections", () => {
