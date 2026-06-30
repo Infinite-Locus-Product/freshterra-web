@@ -39,12 +39,7 @@ type Params = Promise<{ slug: string }>;
 
 const EXPLORE_CATALOG_SLUG = "explore-catalog";
 
-/** Store-neutral catalog content → ISR-cacheable. */
-export const revalidate = 300;
-
-export function generateStaticParams() {
-  return [];
-}
+export const dynamic = "force-dynamic";
 
 function l3TileHref(
   tile: {
