@@ -7,7 +7,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const NAME_MIN_LENGTH = 2;
 const NAME_MAX_LENGTH = 80;
-export const MESSAGE_MIN_WORDS = 30;
+export const MESSAGE_MIN_WORDS = 10;
 
 /** Letters, spaces, apostrophes, hyphens, and periods (common in personal names). */
 const NAME_PATTERN = /^[\p{L}][\p{L}\s'.-]*$/u;
@@ -58,7 +58,8 @@ export const contactFormSchema = z.object({
   email: z
     .string()
     .trim()
-    .refine((value) => value === "" || EMAIL_REGEX.test(value), {
+    .min(1, { message: "Email is required." })
+    .refine((value) => EMAIL_REGEX.test(value), {
       message: "Enter a valid email address.",
     }),
   phone: z

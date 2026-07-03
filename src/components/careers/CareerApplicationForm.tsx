@@ -110,7 +110,7 @@ export function CareerApplicationForm({
       />
 
       <LabeledInput
-        label="Email Address (optional)"
+        label="Email Address*"
         type="email"
         autoComplete="email"
         placeholder="your.email@example.com"

@@ -48,8 +48,8 @@ describe("mapCareerApplicationToPayload", () => {
     });
   });
 
-  it("omits email from the payload when the field is empty", () => {
-    expect(
+  it("throws when email is empty", () => {
+    expect(() =>
       mapCareerApplicationToPayload(
         {
           position: "Senior Backend Engineer",
@@ -60,12 +60,7 @@ describe("mapCareerApplicationToPayload", () => {
         },
         "uploads/resume/2b1c-f9.pdf",
       ),
-    ).toEqual({
-      position: "Senior Backend Engineer",
-      name: "Rahul Sharma",
-      phone: "+91 8793787393",
-      resume_key: "uploads/resume/2b1c-f9.pdf",
-    });
+    ).toThrow();
   });
 });
 
@@ -123,29 +118,21 @@ describe("submitCareerApplication", () => {
     });
   });
 
-  it("POSTs without email when the field is empty", async () => {
+  it("rejects submission when email is empty", async () => {
     const fetchSpy = vi.fn(async () => successEnvelope());
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
     const resume = makeFile("resume.pdf", "application/pdf", 1024);
-    await submitCareerApplication({
-      position: "Senior Backend Engineer",
-      name: "Rahul Sharma",
-      email: "",
-      phone: "+91 8793787393",
-      resume,
-    });
+    await expect(
+      submitCareerApplication({
+        position: "Senior Backend Engineer",
+        name: "Rahul Sharma",
+        email: "",
+        phone: "+91 8793787393",
+        resume,
+      }),
+    ).rejects.toThrow();
 
-    const applyNowCall = fetchSpy.mock.calls.find(([url]) =>
-      resolveFetchUrl(url).includes("/api/v1/forms/apply-now"),
-    );
-    expect(applyNowCall).toBeDefined();
-    const [, init] = applyNowCall as [string, RequestInit];
-    expect(JSON.parse(String(init.body))).toEqual({
-      position: "Senior Backend Engineer",
-      name: "Rahul Sharma",
-      phone: "+91 8793787393",
-      resume_key: "uploads/resume/2b1c-f9.pdf",
-    });
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

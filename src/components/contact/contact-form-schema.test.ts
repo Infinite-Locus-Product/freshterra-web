@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { contactFormSchema } from "./contact-form-schema";
 
-const validMessage = Array.from({ length: 30 }, (_, i) => `word${i + 1}`).join(
+const validMessage = Array.from({ length: 10 }, (_, i) => `word${i + 1}`).join(
   " ",
 );
 
@@ -20,9 +20,12 @@ describe("contactFormSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts when email is empty (optional)", () => {
+  it("rejects an empty email", () => {
     const result = contactFormSchema.safeParse({ ...validBase, email: "" });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors.email).toBeDefined();
+    }
   });
 
   it("rejects an empty name", () => {
@@ -60,10 +63,10 @@ describe("contactFormSchema", () => {
     }
   });
 
-  it("rejects a message shorter than 30 words", () => {
+  it("rejects a message shorter than 10 words", () => {
     const result = contactFormSchema.safeParse({
       ...validBase,
-      message: "This message is far too short.",
+      message: "Too short.",
     });
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -71,7 +74,7 @@ describe("contactFormSchema", () => {
     }
   });
 
-  it("accepts a message with at least 30 words", () => {
+  it("accepts a message with at least 10 words", () => {
     const result = contactFormSchema.safeParse(validBase);
     expect(result.success).toBe(true);
   });
