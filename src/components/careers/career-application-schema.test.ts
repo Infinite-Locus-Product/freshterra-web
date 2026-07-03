@@ -26,12 +26,15 @@ describe("careerApplicationSchema", () => {
     expect(careerApplicationSchema.safeParse(validBase).success).toBe(true);
   });
 
-  it("accepts when email is empty (optional)", () => {
+  it("rejects an empty email", () => {
     const result = careerApplicationSchema.safeParse({
       ...validBase,
       email: "",
     });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors.email).toBeDefined();
+    }
   });
 
   it("rejects an empty name", () => {

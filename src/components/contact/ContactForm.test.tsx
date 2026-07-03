@@ -16,15 +16,15 @@ const defaultProps = {
   fields: {
     inquiryType: "Inquiry type*",
     name: "Name*",
-    email: "Email Address (optional)",
+    email: "Email Address*",
     phone: "Phone Number*",
-    message: "Message (Minimum 30 words)",
+    message: "Message (Minimum 10 words)",
   },
   inquiryOptions: ["General Query", "Support"] as const,
   ctaLabel: "Submit Application",
 };
 
-const validMessage = Array.from({ length: 30 }, (_, i) => `word${i + 1}`).join(
+const validMessage = Array.from({ length: 10 }, (_, i) => `word${i + 1}`).join(
   " ",
 );
 
@@ -78,7 +78,7 @@ describe("ContactForm", () => {
     });
   });
 
-  it("submits without email when the field is left empty", async () => {
+  it("shows validation error when email is left empty", async () => {
     const user = userEvent.setup();
     render(<ContactForm {...defaultProps} />);
 
@@ -91,14 +91,8 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /submit application/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("status")).toHaveTextContent(/received your message/i);
+      expect(screen.getByText(/email is required/i)).toBeInTheDocument();
     });
-    expect(mockSubmitContactUsForm).toHaveBeenCalledWith({
-      inquiryType: "General Query",
-      name: "Rahul Sharma",
-      email: "",
-      phone: "+91 9876543210",
-      message: validMessage,
-    });
+    expect(mockSubmitContactUsForm).not.toHaveBeenCalled();
   });
 });

@@ -38,8 +38,8 @@ describe("mapContactFormToPayload", () => {
     });
   });
 
-  it("omits email from the payload when the field is empty", () => {
-    expect(
+  it("throws when email is empty", () => {
+    expect(() =>
       mapContactFormToPayload({
         inquiryType: "Partnership",
         name: "Rahul Sharma",
@@ -47,12 +47,7 @@ describe("mapContactFormToPayload", () => {
         phone: "+91 9876543210",
         message: "Wholesale partnership inquiry",
       }),
-    ).toEqual({
-      inquiry_type: "Partnership",
-      name: "Rahul Sharma",
-      phone: "+91 9876543210",
-      message: "Wholesale partnership inquiry",
-    });
+    ).toThrow();
   });
 });
 
@@ -99,24 +94,21 @@ describe("submitContactUsForm", () => {
     });
   });
 
-  it("POSTs without email when the field is empty", async () => {
+  it("rejects submission when email is empty", async () => {
     const fetchSpy = vi.fn(async () => successEnvelope());
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await submitContactUsForm({
-      inquiryType: "General Query",
-      name: "Rahul Sharma",
-      email: "",
-      phone: "+91 9876543210",
-      message: "This is a test message with at least thirty words in it for validation purposes here.",
-    });
+    await expect(
+      submitContactUsForm({
+        inquiryType: "General Query",
+        name: "Rahul Sharma",
+        email: "",
+        phone: "+91 9876543210",
+        message:
+          "This is a test message with at least ten words in it for validation purposes here.",
+      }),
+    ).rejects.toThrow();
 
-    expect(JSON.parse(String(fetchSpy.mock.calls[0]?.[1]?.body))).toEqual({
-      inquiry_type: "General Query",
-      name: "Rahul Sharma",
-      phone: "+91 9876543210",
-      message:
-        "This is a test message with at least thirty words in it for validation purposes here.",
-    });
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
