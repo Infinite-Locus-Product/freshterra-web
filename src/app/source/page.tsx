@@ -6,7 +6,7 @@ import { Logo } from "@/components/ui/Logo";
 import { BatchCodeForm } from "./BatchCodeForm";
 
 export const metadata: Metadata = {
-  title: "Know Your Product",
+  title: "Manufacturer Details",
   description:
     "Scan the QR code on the pack or enter the batch code to trace where your FreshTerra product was sourced.",
   alternates: { canonical: "/source" },
@@ -37,7 +37,7 @@ export default function SourcePage() {
           align="center"
           className="text-[2rem] md:text-[2.5rem]"
         >
-          Know Your Product
+          Manufacturer Details
         </Heading>
 
         <p className="text-text-secondary mt-3 mb-8 max-w-[600px] text-center text-base md:text-lg">

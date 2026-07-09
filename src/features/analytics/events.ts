@@ -71,6 +71,23 @@ export type AnalyticsEvent =
       name: "privacy_policy_click";
       source_section: "footer";
       source_page_url: string;
+    }
+  | { name: "batch_lookup_page_view"; entry_point: BatchLookupEntryPoint }
+  | { name: "batch_lookup_input_started"; entry_point: BatchLookupEntryPoint }
+  | { name: "batch_lookup_initiated"; outcome: "submitted" }
+  | { name: "batch_lookup_success"; outcome: "success" }
+  | { name: "batch_lookup_not_found"; outcome: "not_found" }
+  | { name: "batch_lookup_error"; outcome: "error" }
+  | {
+      name: "batch_lookup_search_again";
+      previous_outcome: BatchLookupOutcome;
+      entry_point: BatchLookupEntryPoint;
     };
+
+/** How the user arrived on /source — QR deep-link vs any other entry. */
+export type BatchLookupEntryPoint = "qr_scan" | "direct";
+
+/** Terminal state of a completed lookup, reused for `search_again`. */
+export type BatchLookupOutcome = "success" | "not_found" | "error";
 
 export type AnalyticsEventName = AnalyticsEvent["name"];
