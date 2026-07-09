@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { track } from "@/lib/analytics/tracker";
 import {
   FreshTerraApiError,
   type ApiErrorCode,
@@ -10,6 +11,10 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
+import type {
+  BatchLookupEntryPoint,
+  BatchLookupOutcome,
+} from "@/features/analytics/events";
 import { ProductSourceError } from "@/features/product-source/components/ProductSourceError";
 import { ProductSourceResult } from "@/features/product-source/components/ProductSourceResult";
 import {
@@ -19,6 +24,20 @@ import {
 
 const BATCH_CODE_MIN = 2;
 const BATCH_CODE_MAX = 20;
+
+/** Query-param values that mark a QR deep-link entry. */
+const QR_ENTRY_VALUES = new Set(["qr", "qr_scan", "qrcode", "qr-code"]);
+/** Params the QR deep-link might carry the entry hint in. */
+const QR_ENTRY_PARAMS = ["entry_point", "entry", "src", "source", "utm_source"];
+
+function resolveEntryPoint(search: string): BatchLookupEntryPoint {
+  const params = new URLSearchParams(search);
+  for (const key of QR_ENTRY_PARAMS) {
+    const value = params.get(key);
+    if (value && QR_ENTRY_VALUES.has(value.toLowerCase())) return "qr_scan";
+  }
+  return "direct";
+}
 
 /**
  * Batch codes are 2–20 chars, alphanumeric plus hyphens (real codes look like
@@ -63,6 +82,29 @@ export function BatchCodeForm() {
 
   // Cancel an in-flight lookup if the user submits a new one.
   const abortRef = useRef<AbortController | null>(null);
+  const entryPointRef = useRef<BatchLookupEntryPoint>("direct");
+  const firedPageViewRef = useRef(false);
+  const firedInputStartRef = useRef(false);
+  const lastOutcomeRef = useRef<BatchLookupOutcome | null>(null);
+
+  useEffect(() => {
+    if (firedPageViewRef.current) return;
+    firedPageViewRef.current = true;
+    entryPointRef.current = resolveEntryPoint(window.location.search);
+    track({
+      name: "batch_lookup_page_view",
+      entry_point: entryPointRef.current,
+    });
+  }, []);
+
+  const handleInputStart = () => {
+    if (firedInputStartRef.current) return;
+    firedInputStartRef.current = true;
+    track({
+      name: "batch_lookup_input_started",
+      entry_point: entryPointRef.current,
+    });
+  };
 
   const trimmed = code.trim();
   const isValid =
@@ -80,17 +122,27 @@ export function BatchCodeForm() {
     setStatus("loading");
     setError(null);
     setResult(null);
+    track({ name: "batch_lookup_initiated", outcome: "submitted" });
 
     try {
       const source = await fetchProductSource(trimmed, {
         signal: controller.signal,
       });
       setResult(source);
+      lastOutcomeRef.current = "success";
+      track({ name: "batch_lookup_success", outcome: "success" });
     } catch (err) {
       if (err instanceof FreshTerraApiError && err.code === "ABORTED") return;
       const code =
         err instanceof FreshTerraApiError ? err.code : ("UNKNOWN" as const);
       setError(errorContent(code));
+      if (code === "NOT_FOUND") {
+        lastOutcomeRef.current = "not_found";
+        track({ name: "batch_lookup_not_found", outcome: "not_found" });
+      } else {
+        lastOutcomeRef.current = "error";
+        track({ name: "batch_lookup_error", outcome: "error" });
+      }
     } finally {
       if (abortRef.current === controller) {
         setStatus("idle");
@@ -100,6 +152,16 @@ export function BatchCodeForm() {
   };
 
   const handleClear = () => {
+    // Only a "search again" when clearing an already-rendered result/error.
+    const previousOutcome = lastOutcomeRef.current;
+    if (previousOutcome) {
+      track({
+        name: "batch_lookup_search_again",
+        previous_outcome: previousOutcome,
+        entry_point: entryPointRef.current,
+      });
+      lastOutcomeRef.current = null;
+    }
     setCode("");
     setResult(null);
     setError(null);
@@ -121,7 +183,11 @@ export function BatchCodeForm() {
             inputMode="text"
             maxLength={BATCH_CODE_MAX}
             value={code}
-            onChange={(e) => setCode(sanitizeBatchCode(e.target.value))}
+            onFocus={handleInputStart}
+            onChange={(e) => {
+              handleInputStart();
+              setCode(sanitizeBatchCode(e.target.value));
+            }}
             onClear={handleClear}
             labelBgClass="bg-beige-100"
             className="md:flex-1"
