@@ -5,10 +5,13 @@ import type { AnalyticsEvent } from "@/features/analytics/events";
  *
  * Pushes typed events to `window.dataLayer`. GTM (loaded by
  * `<GoogleTagManager />` at the root layout) consumes these and routes them
- * to GA4 + any other configured tags. Page-standard params (page_url,
- * page_title, page_referrer, session_id) are auto-attached by GA4 inside
- * GTM — we only push the *custom* params from the spec table plus a
- * computed `device_type`.
+ * to GA4 + any other configured tags.
+ *
+ * We stamp `page_location` and `page_referrer` (GA4-standard param names) plus
+ * a computed `device_type` onto every push so they are available as dataLayer
+ * variables in GTM — GA4's auto-collection isn't reliably surfaced to every
+ * custom event. Caller params are spread last, so an event that carries its
+ * own `page_referrer` (e.g. `back_to_home_cta`) overrides the default.
  *
  * Never call `window.dataLayer.push` directly from a component or feature —
  * always go through `track()` in `tracker.ts` (CLAUDE.md §5.7).
@@ -43,6 +46,8 @@ export const gtm = {
     window.dataLayer.push({
       event: name,
       device_type: getDeviceType(),
+      page_location: window.location.href,
+      page_referrer: document.referrer,
       ...params,
     });
   },
