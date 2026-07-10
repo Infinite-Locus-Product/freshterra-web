@@ -53,9 +53,9 @@ function errorContent(code: ApiErrorCode): ErrorContent {
   switch (code) {
     case "NOT_FOUND":
       return {
-        title: "Product not found",
+        title: "Manufacturer details not found",
         description:
-          "We couldn't find a product for that batch code. Please check the code on your pack and try again.",
+          "We couldn't find manufacturer details for that batch code. Please check the code on your pack and try again.",
       };
     case "NETWORK_ERROR":
       return {
