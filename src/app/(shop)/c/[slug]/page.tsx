@@ -1,8 +1,11 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
+
+import type { Metadata } from "next";
 
 import Image from "next/image";
 import Link from "next/link";
+
+import { slugToTitle } from "@/lib/utils/slug";
 
 import {
   exploreCatalogBannerHeaderGapClass,
@@ -26,12 +29,12 @@ import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 import { PageShell } from "@/components/layout/PageShell";
 
-import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
-import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
 import {
   getCategoryProducts,
   DEFAULT_CATEGORY_SORT,
 } from "@/features/catalog/category-service";
+import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
+import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
 import { getWebCategoryContent } from "@/features/cms-content/web-category-content-service";
 
 type Params = Promise<{ slug: string }>;
@@ -68,14 +71,26 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  if (slug !== EXPLORE_CATALOG_SLUG) {
-    return { alternates: { canonical: `/c/${slug}` } };
-  }
+  const title =
+    slug === EXPLORE_CATALOG_SLUG ? "Explore Catalog" : slugToTitle(slug);
+  const description =
+    slug === EXPLORE_CATALOG_SLUG
+      ? "Browse FreshTerra categories and discover products."
+      : `Browse ${title} on FreshTerra.`;
 
   return {
-    title: "Explore Catalog",
-    description: "Browse FreshTerra categories and discover products.",
-    alternates: { canonical: `/c/${EXPLORE_CATALOG_SLUG}` },
+    title,
+    description,
+    alternates: { canonical: `/c/${slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/c/${slug}`,
+      type: "website",
+      // Page-level openGraph replaces the inherited file-convention image,
+      // so re-attach the site banner explicitly.
+      images: ["/opengraph-image.png"],
+    },
   };
 }
 

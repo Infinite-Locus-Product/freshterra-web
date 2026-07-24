@@ -13,3 +13,16 @@ export function slugify(value: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
+
+/**
+ * Converts a URL slug back into a display label.
+ *
+ * @example slugToTitle("fresh-fruits") // "Fresh Fruits"
+ */
+export function slugToTitle(slug: string): string {
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}

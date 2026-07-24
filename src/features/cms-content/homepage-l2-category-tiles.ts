@@ -1,3 +1,5 @@
+import { slugToTitle } from "@/lib/utils/slug";
+
 import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
 import { isCmsActive } from "./cms-boolean";
@@ -21,14 +23,6 @@ function pickTileImage(
   const mobile = tile.iamge_mweb?.trim() || tile.image_mweb?.trim() || "";
   const src = preferMobile ? mobile || web : web || mobile;
   return src.length > 0 ? src : undefined;
-}
-
-function slugToTitle(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function tileLabel(tile: WebHomepageL2CategoryTile): string | undefined {
@@ -77,7 +71,9 @@ function tileKey(tile: WebHomepageL2CategoryTile, index: number): string {
   return `homepage-l2-tile-${index}`;
 }
 
-function normalizeViewAllHref(slug: string | null | undefined): string | undefined {
+function normalizeViewAllHref(
+  slug: string | null | undefined,
+): string | undefined {
   return normalizeCmsSlugHref(slug) ?? normalizeCmsDeeplink(slug) ?? undefined;
 }
 
@@ -116,8 +112,7 @@ export async function buildHomepageL2CategoryTileItems(
   const rawTiles = l2.l2_category_tile ?? [];
   if (rawTiles.length === 0) return [];
 
-  const limit =
-    l2?.limit && l2.limit > 0 ? l2.limit : rawTiles.length;
+  const limit = l2?.limit && l2.limit > 0 ? l2.limit : rawTiles.length;
 
   const sorted = [...rawTiles]
     .filter((tile) => isCmsActive(tile.is_active))
@@ -172,8 +167,8 @@ export function hasHomepageL2CategoryTiles(
       isCmsActive(tile.is_active) &&
       Boolean(
         tile.image_web?.trim() ||
-          tile.iamge_mweb?.trim() ||
-          tile.image_mweb?.trim(),
+        tile.iamge_mweb?.trim() ||
+        tile.image_mweb?.trim(),
       ),
   );
 }
