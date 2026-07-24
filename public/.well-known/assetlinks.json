@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.freshterramobile",
+      "sha256_cert_fingerprints": [
+        "59:71:65:6C:FF:E7:E8:A3:C3:2E:8D:3F:B3:E2:38:74:23:AA:1D:F2:36:5A:BA:67:93:C3:A2:A7:73:D8:7D:27",
+        "28:76:C5:B6:73:4F:5E:ED:B1:FF:CC:DD:70:F0:C6:B5:62:F6:DF:22:61:67:D9:3C:17:83:5B:05:FD:03:9B:EE"
+      ]
+    }
+  }
+]
