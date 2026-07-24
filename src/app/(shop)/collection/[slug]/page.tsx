@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 
-import { CollectionPlpView } from "@/features/catalog/components/CollectionPlpView";
 import { getCollectionProducts } from "@/features/catalog/collection-service";
+import { CollectionPlpView } from "@/features/catalog/components/CollectionPlpView";
 
 type Params = Promise<{ slug: string }>;
 
@@ -31,10 +31,20 @@ export async function generateMetadata({
     if (!title) {
       return { alternates: { canonical: `/collection/${slug}` } };
     }
+    const description = `Browse ${title} on FreshTerra.`;
     return {
       title,
-      description: `Browse ${title} on FreshTerra.`,
+      description,
       alternates: { canonical: `/collection/${slug}` },
+      openGraph: {
+        title,
+        description,
+        url: `/collection/${slug}`,
+        type: "website",
+        // Page-level openGraph replaces the inherited file-convention image,
+        // so re-attach the site banner explicitly.
+        images: ["/opengraph-image.png"],
+      },
     };
   } catch {
     return { alternates: { canonical: `/collection/${slug}` } };
