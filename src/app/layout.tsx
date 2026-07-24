@@ -41,6 +41,9 @@ export const metadata: Metadata = {
     template: "%s | FreshTerra",
   },
   description: siteDescription,
+  other: {
+    "facebook-domain-verification": "e03n9hccxijbya6kwoypn9oyn6yvqf",
+  },
   openGraph: {
     type: "website",
     siteName: "FreshTerra",
