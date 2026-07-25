@@ -42,8 +42,19 @@ const nextConfig: NextConfig = {
     return [{ source: "/bff/:path*", destination: `${apiOrigin}/:path*` }];
   },
   async headers() {
-    if (isProdHost()) return [];
+    // Universal Links / App Links association files. The AASA file is served
+    // extensionless, so Next won't infer a content-type — Apple's CDN requires
+    // application/json. Must apply in ALL environments, hence before the
+    // prod-host early return. assetlinks.json gets its type from the extension.
+    const wellKnown = [
+      {
+        source: "/.well-known/apple-app-site-association",
+        headers: [{ key: "Content-Type", value: "application/json" }],
+      },
+    ];
+    if (isProdHost()) return wellKnown;
     return [
+      ...wellKnown,
       {
         source: "/:path*",
         headers: [
