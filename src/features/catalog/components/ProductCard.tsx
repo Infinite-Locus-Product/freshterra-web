@@ -55,6 +55,7 @@ export function ProductCard({
   return (
     <Link
       href={productPageHref(product)}
+      prefetch={false}
       className="group block h-full focus-visible:outline-none"
     >
       <article
