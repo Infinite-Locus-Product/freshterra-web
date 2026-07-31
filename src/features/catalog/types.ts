@@ -1,10 +1,10 @@
 import { z } from "zod";
 
+import { type ProductInformations } from "./product-informations";
 import {
   normalizeBffListingProduct,
   normalizeProductDetailEnvelope,
 } from "./product-metafields";
-import { type ProductInformations } from "./product-informations";
 
 export type { ProductInformations } from "./product-informations";
 
@@ -164,16 +164,19 @@ export const collectionCollectionSchema = z.object({
 });
 export type CollectionSummary = z.infer<typeof collectionCollectionSchema>;
 
-export const collectionProductsDataSchema = z.object({
-  items: z.array(plpProductSchema),
-  page: z.number(),
-  pageSize: z.number(),
-  total: z.number(),
-  facets: facetsSchema.default({}),
-  collection: collectionCollectionSchema.optional(),
-  expires_at: z.string().nullable().optional(),
-  redirect_url: z.string().nullable().optional(),
-});
+export const collectionProductsDataSchema = z.preprocess(
+  normalizeCollectionProductsPayload,
+  z.object({
+    items: z.array(plpProductSchema),
+    page: z.number(),
+    pageSize: z.number(),
+    total: z.number(),
+    facets: facetsSchema.default({}),
+    collection: collectionCollectionSchema.optional(),
+    expires_at: z.string().nullable().optional(),
+    redirect_url: z.string().nullable().optional(),
+  }),
+);
 export type CollectionProductsData = z.infer<
   typeof collectionProductsDataSchema
 >;
@@ -224,11 +227,15 @@ function inferCategoryFromListingPayload(
 
   const seo = seoMeta as Record<string, unknown>;
   const title =
-    typeof seo.title === "string" ? seo.title.split("—")[0]?.split("|")[0]?.trim() : "";
+    typeof seo.title === "string"
+      ? seo.title.split("—")[0]?.split("|")[0]?.trim()
+      : "";
   let slug = "";
   if (typeof seo.canonicalUrl === "string") {
     try {
-      slug = new URL(seo.canonicalUrl).pathname.split("/").filter(Boolean).pop() ?? "";
+      slug =
+        new URL(seo.canonicalUrl).pathname.split("/").filter(Boolean).pop() ??
+        "";
     } catch {
       slug = "";
     }
@@ -325,6 +332,66 @@ export const categoryProductsDataSchema = z.preprocess(
   }),
 );
 export type CategoryProductsData = z.infer<typeof categoryProductsDataSchema>;
+
+/**
+ * The BFF now returns collection facets in the same dynamic `{ key, options[] }[]`
+ * array shape as category (one group per product attribute + dietary/health), but
+ * the collection UI model uses `{ slug, count, name? }`. Mirror of
+ * `normalizeCategoryFacets` emitting `slug` instead of `value`. (function
+ * declarations are hoisted, so `collectionProductsDataSchema` above can reference this.)
+ */
+function normalizeCollectionFacets(facets: unknown): Facets {
+  if (!facets) return {};
+  if (isRecord(facets) && !Array.isArray(facets)) return facets as Facets;
+  if (!Array.isArray(facets)) return {};
+
+  const out: Facets = {};
+  for (const group of facets) {
+    if (!isRecord(group)) continue;
+    const key =
+      typeof group.key === "string"
+        ? group.key
+        : typeof group.slug === "string"
+          ? group.slug
+          : "";
+    if (!key) continue;
+
+    const options = Array.isArray(group.options) ? group.options : [];
+    const values = options
+      .map((option) => {
+        if (!isRecord(option)) return null;
+        const slug =
+          typeof option.value === "string"
+            ? option.value
+            : typeof option.slug === "string"
+              ? option.slug
+              : "";
+        if (!slug) return null;
+        const count =
+          typeof option.count === "number" && Number.isFinite(option.count)
+            ? option.count
+            : 0;
+        const name =
+          typeof option.label === "string"
+            ? option.label
+            : typeof option.name === "string"
+              ? option.name
+              : undefined;
+        return { slug, count, ...(name ? { name } : {}) };
+      })
+      .filter((entry): entry is FacetValue => entry !== null);
+
+    if (values.length > 0) out[key] = values;
+  }
+  return out;
+}
+
+function normalizeCollectionProductsPayload(input: unknown): unknown {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return input;
+  const record = input as Record<string, unknown>;
+  if (!Array.isArray(record.items)) return input;
+  return { ...record, facets: normalizeCollectionFacets(record.facets) };
+}
 
 /**
  * The `data` payload returned inside the success envelope. Shared by both PDP
