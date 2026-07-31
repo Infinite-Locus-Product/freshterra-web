@@ -46,6 +46,11 @@ const clientSchema = z.object({
     .optional(),
   NEXT_PUBLIC_GTM_AUTH: z.string().optional(),
   NEXT_PUBLIC_GTM_PREVIEW: z.string().optional(),
+  /** Meta (Facebook) Pixel ID — numeric string, e.g. `2236394120514859`. */
+  NEXT_PUBLIC_META_PIXEL_ID: z
+    .string()
+    .regex(/^\d+$/)
+    .optional(),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
@@ -94,6 +99,9 @@ const clientEnvRaw = {
   NEXT_PUBLIC_GTM_AUTH: blankAsUndefined(process.env.NEXT_PUBLIC_GTM_AUTH),
   NEXT_PUBLIC_GTM_PREVIEW: blankAsUndefined(
     process.env.NEXT_PUBLIC_GTM_PREVIEW,
+  ),
+  NEXT_PUBLIC_META_PIXEL_ID: blankAsUndefined(
+    process.env.NEXT_PUBLIC_META_PIXEL_ID,
   ),
   NEXT_PUBLIC_APP_URL: blankAsUndefined(process.env.NEXT_PUBLIC_APP_URL),
   NEXT_PUBLIC_APP_STORE_URL: blankAsUndefined(
