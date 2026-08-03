@@ -46,6 +46,14 @@ const clientSchema = z.object({
     .optional(),
   NEXT_PUBLIC_GTM_AUTH: z.string().optional(),
   NEXT_PUBLIC_GTM_PREVIEW: z.string().optional(),
+  // Meta (Facebook) Pixel. Public identifier — it ships in the page source
+  // of every site running a pixel — so the prod ID is the default here and
+  // the env var only exists to retarget/disable a non-prod build.
+  NEXT_PUBLIC_META_PIXEL_ID: z
+    .string()
+    .regex(/^\d+$/)
+    .optional()
+    .default("2236394120514859"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
@@ -94,6 +102,9 @@ const clientEnvRaw = {
   NEXT_PUBLIC_GTM_AUTH: blankAsUndefined(process.env.NEXT_PUBLIC_GTM_AUTH),
   NEXT_PUBLIC_GTM_PREVIEW: blankAsUndefined(
     process.env.NEXT_PUBLIC_GTM_PREVIEW,
+  ),
+  NEXT_PUBLIC_META_PIXEL_ID: blankAsUndefined(
+    process.env.NEXT_PUBLIC_META_PIXEL_ID,
   ),
   NEXT_PUBLIC_APP_URL: blankAsUndefined(process.env.NEXT_PUBLIC_APP_URL),
   NEXT_PUBLIC_APP_STORE_URL: blankAsUndefined(
