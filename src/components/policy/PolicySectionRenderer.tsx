@@ -45,6 +45,15 @@ export function PolicySectionRenderer({
 }
 
 function BlockRenderer({ block }: { block: PolicyBlock }) {
+  if (block.type === "heading") {
+    return (
+      <Heading level={block.level} variant="policySubSection">
+        {block.spans.map((span, i) => (
+          <SpanRenderer key={i} span={span} />
+        ))}
+      </Heading>
+    );
+  }
   if (block.type === "paragraph") {
     return (
       <p className="text-text-primary font-sans text-sm leading-relaxed tracking-[0.2px]">

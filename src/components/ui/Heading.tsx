@@ -9,7 +9,8 @@ type HeadingVariant =
   | "h2"
   | "h3"
   | "policyTitle"
-  | "policySection";
+  | "policySection"
+  | "policySubSection";
 type HeadingAlign = "left" | "center" | "right";
 
 type HeadingProps = {
@@ -32,6 +33,9 @@ const variantClass: Record<HeadingVariant, string> = {
   /** Numbered section heading inside the policy card — Manrope Bold, 20px mobile / 28px desktop. Always dark on light card. */
   policySection:
     "font-sans font-bold leading-[1.3] text-[1.25rem] text-text-primary md:text-[1.75rem] md:leading-[1.2]",
+  /** Sub-heading inside a policy section (markdown `###`/`####`) — sits between section heading and body copy. */
+  policySubSection:
+    "font-sans font-semibold leading-[1.3] text-[1rem] text-text-primary md:text-[1.125rem]",
 };
 
 const alignClass: Record<HeadingAlign, string> = {
