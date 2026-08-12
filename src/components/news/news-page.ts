@@ -6,12 +6,16 @@ export const NEWS_PAGE_BREADCRUMB_MWEB_FONT_SIZE = 12;
 export const newsPageBreadcrumbClass =
   "text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
 
+/** mWeb sits on one flat white surface; desktop keeps the light-gray page. */
 export const newsPageSectionClass =
-  "bg-gray-50 px-page pt-6 pb-10 md:pt-8 md:pb-14";
+  "bg-white-soft px-page pt-6 pb-10 md:bg-gray-50 md:pt-8 md:pb-14";
 
-/** White content card — same radius/shadow as the policy pages' article card. */
+/**
+ * Content card — desktop only. The mWeb Figma has no panel, so the radius,
+ * surface, shadow and inset are all held back until `md`.
+ */
 export const newsPageCardClass =
-  "bg-white-soft rounded-[14.516px] p-5 shadow-[0px_1.452px_2.178px_rgba(0,0,0,0.1),0px_1.452px_1.452px_rgba(0,0,0,0.1)] md:p-10";
+  "bg-transparent p-0 md:bg-white-soft md:rounded-[14.516px] md:p-10 md:shadow-[0px_1.452px_2.178px_rgba(0,0,0,0.1),0px_1.452px_1.452px_rgba(0,0,0,0.1)]";
 
 /** Vertical rhythm between the "Major Dailies" / "Other Publications" blocks. */
 export const newsPageSectionStackClass = "flex flex-col gap-9 md:gap-12";
@@ -43,17 +47,21 @@ export const newsClippingImageWrapClass = "relative aspect-[3/2] w-full";
 
 export const newsClippingImageClass = "object-contain object-bottom";
 
-/** Clipping caption — Manrope semibold, 12px mWeb / 16px desktop. */
+export const NEWS_CLIPPING_TITLE_FONT_SIZE = 16;
+
+/** Clipping caption — Manrope semibold, 16px at both breakpoints. */
 export const newsClippingTitleClass =
-  "text-text-primary mt-3 font-sans text-xs font-semibold leading-[1.3] tracking-[0.2px] md:mt-4 md:text-base";
+  "text-text-primary mt-3 font-sans text-base font-semibold leading-[1.3] tracking-[0.2px] md:mt-4";
 
 /**
  * Publication logos — wrapping row, each logo at its natural width (Figma).
  * Rows pack as many marks as fit, so mWeb lands 2–3 per line and desktop 4–5,
  * instead of the equal columns a grid would force.
  */
+export const PUBLICATION_LOGO_GAP_MWEB = 30;
+
 export const publicationGridClass =
-  "mt-5 flex flex-wrap items-center gap-x-4 gap-y-6 md:mt-7 md:gap-x-12 md:gap-y-10";
+  "mt-5 flex flex-wrap items-center gap-[30px] md:mt-7 md:gap-x-12 md:gap-y-10";
 
 export const PUBLICATION_LOGO_MAX_HEIGHT_MWEB = 32;
 export const PUBLICATION_LOGO_MAX_WIDTH_MWEB = 120;
