@@ -1,7 +1,5 @@
 /** Figma News & Media page — mWeb + desktop tokens. */
 
-export const NEWS_PAGE_BREADCRUMB_MWEB_FONT_SIZE = 12;
-
 /** Matches the policy pages' breadcrumb scale. */
 export const newsPageBreadcrumbClass =
   "text-xs leading-none tracking-[0] md:text-sm md:leading-[17px]";
@@ -39,15 +37,10 @@ export const newsClippingItemClass =
 export const newsClippingLinkClass =
   "rounded-[10px] transition-transform hover:-translate-y-0.5 focus-visible:ring-brand-100 focus-visible:ring-2 focus-visible:ring-offset-2";
 
-export const NEWS_CLIPPING_MAX_WIDTH_MWEB = 220;
-export const NEWS_CLIPPING_MAX_WIDTH_WEB = 260;
-
 /** Clipping frame — assets are pre-composed (folded-paper edge), so contain. */
 export const newsClippingImageWrapClass = "relative aspect-[3/2] w-full";
 
 export const newsClippingImageClass = "object-contain object-bottom";
-
-export const NEWS_CLIPPING_TITLE_FONT_SIZE = 16;
 
 /** Clipping caption — Manrope semibold, 16px at both breakpoints. */
 export const newsClippingTitleClass =
@@ -58,20 +51,13 @@ export const newsClippingTitleClass =
  * Rows pack as many marks as fit, so mWeb lands 2–3 per line and desktop 4–5,
  * instead of the equal columns a grid would force.
  */
-export const PUBLICATION_LOGO_GAP_MWEB = 30;
-
 export const publicationGridClass =
   "mt-5 flex flex-wrap items-center gap-[30px] md:mt-7 md:gap-x-12 md:gap-y-10";
 
-export const PUBLICATION_LOGO_MAX_HEIGHT_MWEB = 32;
-export const PUBLICATION_LOGO_MAX_WIDTH_MWEB = 120;
-export const PUBLICATION_LOGO_MAX_HEIGHT_WEB = 56;
-export const PUBLICATION_LOGO_MAX_WIDTH_WEB = 240;
-
 /**
- * Logo — intrinsic aspect ratio preserved, scaled down to fit the height and
- * width caps. Every asset is far larger than the caps (smallest is 364 × 160),
- * so one cap always binds and nothing is ever upscaled.
+ * Logo — intrinsic aspect ratio preserved, scaled down to fit the caps
+ * (32 × 120 mWeb, 56 × 240 desktop). Every asset is far larger than the caps
+ * (smallest is 364 × 160), so one always binds and nothing is ever upscaled.
  */
 export const publicationLogoImageClass =
   "h-auto max-h-8 w-auto max-w-[7.5rem] object-contain md:max-h-14 md:max-w-[15rem]";

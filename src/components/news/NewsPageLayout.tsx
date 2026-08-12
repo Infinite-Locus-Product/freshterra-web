@@ -28,6 +28,7 @@ import type {
   NewsPageContent,
   NewsPaperItem,
   NewsPaperSection,
+  NewsPageSection,
   PublicationLogoItem,
   PublicationSection,
 } from "@/features/cms-content/news-page-types";
@@ -55,18 +56,36 @@ export function NewsPageLayout({ content }: Readonly<NewsPageLayoutProps>) {
 
         <article className={newsPageCardClass}>
           <div className={newsPageSectionStackClass}>
-            {content.sections.map((section) =>
-              section.kind === "newspapers" ? (
-                <NewsPaperBlock key={section.key} section={section} />
-              ) : (
-                <PublicationBlock key={section.key} section={section} />
-              ),
-            )}
+            {content.sections.map((section) => (
+              <SectionBlock key={section.key} section={section} />
+            ))}
           </div>
         </article>
       </div>
     </div>
   );
+}
+
+/**
+ * Dispatches on the dynamic-zone block kind. The `never` default makes adding a
+ * section kind without a branch here a compile error, and renders nothing at
+ * runtime — so an unrecognised block is skipped rather than mis-rendered as
+ * another kind or crashing the page.
+ */
+function SectionBlock({ section }: Readonly<{ section: NewsPageSection }>) {
+  switch (section.kind) {
+    case "newspapers":
+      return <NewsPaperBlock section={section} />;
+    case "publications":
+      return <PublicationBlock section={section} />;
+    default:
+      return unhandledSection(section);
+  }
+}
+
+/** Only callable with `never` — an unhandled `kind` fails to compile here. */
+function unhandledSection(_section: never): null {
+  return null;
 }
 
 function NewsPaperBlock({ section }: Readonly<{ section: NewsPaperSection }>) {
