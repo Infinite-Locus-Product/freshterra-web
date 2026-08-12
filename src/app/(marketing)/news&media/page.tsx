@@ -7,11 +7,13 @@ import { NewsPageLayout } from "@/components/news/NewsPageLayout";
 import { fetchNewsPageContentSafe } from "@/features/cms-content/news-page-service";
 
 /**
- * ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache and
- * `CMS_NEWS_PAGE_REVALIDATE_SECONDS`). Must stay a literal — Next only
- * statically analyses segment config exports.
+ * No Full Route Cache — the page is server-rendered on every request so a CMS
+ * publish shows up immediately, with no ISR window to wait out. Pair this with
+ * the uncached fetch in `news-page-service`; caching either one alone still
+ * serves stale content. Must stay a literal — Next only statically analyses
+ * segment config exports.
  */
-export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "News & Media | FreshTerra",

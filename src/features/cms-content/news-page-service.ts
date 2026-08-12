@@ -1,9 +1,6 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
-import {
-  CMS_NEWS_PAGE_REVALIDATE_SECONDS,
-  CMS_NEWS_PAGE_TAGS,
-} from "./cms-cache-tags";
+import { CMS_NEWS_PAGE_TAGS } from "./cms-cache-tags";
 import { hasNewsPageContent, mapNewsPageContent } from "./news-page-mapper";
 import { newsContentSchema } from "./news-page-types";
 import { getSingleContent } from "./single-content-service";
@@ -25,6 +22,12 @@ type NewsPageRequestOptions = Pick<
  * Fetches the News & Media single type from
  * `GET /api/v1/content/single/news-page?locale=`. The BFF already returns the
  * `listing` dynamic zone fully populated, so no `populate` params are needed.
+ *
+ * `revalidate: 0` opts out of the Next Data Cache so every render reads the
+ * BFF live — the page must reflect a CMS publish immediately. The tags are kept
+ * so restoring caching is a two-line change: put
+ * `CMS_NEWS_PAGE_REVALIDATE_SECONDS` back here and swap `force-dynamic` for
+ * `revalidate` on the route.
  */
 export async function getNewsPageContent(
   params: ContentEntryParams = {},
@@ -36,7 +39,7 @@ export async function getNewsPageContent(
     token: options.token,
     next: {
       tags: [...CMS_NEWS_PAGE_TAGS],
-      revalidate: CMS_NEWS_PAGE_REVALIDATE_SECONDS,
+      revalidate: 0,
     },
   });
 }
