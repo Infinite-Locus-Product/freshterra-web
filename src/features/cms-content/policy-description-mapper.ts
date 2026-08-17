@@ -1,16 +1,36 @@
-import type { PolicyBlock, PolicyDocument, PolicySlug, PolicySpan } from "./types";
-
 import type { PolicyCmsContent } from "./policy-cms-types";
+import type {
+  PolicyBlock,
+  PolicyDocument,
+  PolicySection,
+  PolicySlug,
+  PolicySpan,
+} from "./types";
 
-const SECTION_HEADING_PATTERN = /\*\*#\s*(\d+)\.\s*([^*]+)\*\*/g;
-const ALT_SECTION_HEADING_PATTERN = /#\s*\*\*(\d+)\.\s*([^*]+)\*\*/g;
 const LAST_UPDATED_PATTERN = /\n\nLast Updated:\s*([^\n]+)\s*$/i;
 const EMAIL_PATTERN = /([\w.+-]+@[\w.-]+\.\w+)/;
+
+/**
+ * Legacy CMS heading — hashes live *inside* the bold markers: `**# 1. Title**`.
+ * Still used by the Terms and Refunds single types.
+ */
+const LEGACY_HEADING_PATTERN = /^\*\*(#{1,6})\s*(.+?)\*\*$/;
+
+/** Standard markdown ATX heading: `## 1. Title`. Used by Privacy. */
+const ATX_HEADING_PATTERN = /^(#{1,6})\s+(.+)$/;
+
+/** `•`, `-` or `*` followed by whitespace (the `•\t…` legacy form included). */
+const BULLET_PATTERN = /^([•*]|-)\s+/;
+
+/** Horizontal rules (`---`, `***`) must not be mistaken for bullets. */
+const THEMATIC_BREAK_PATTERN = /^([-*_])\1{2,}$/;
 
 type MapPolicyDescriptionOptions = {
   slug: PolicySlug;
   defaultTitle: string;
 };
+
+type ParsedHeading = { level: number; text: string };
 
 function parseUsDateLabel(label: string): string {
   const parsed = new Date(label.trim());
@@ -21,13 +41,6 @@ function parseUsDateLabel(label: string): string {
     return `${year}-${month}-${day}`;
   }
   return label.trim();
-}
-
-function normalizePolicyDescription(description: string): string {
-  return description.replace(
-    ALT_SECTION_HEADING_PATTERN,
-    "**# $1. $2**",
-  );
 }
 
 function stripLastUpdatedFooter(text: string): {
@@ -45,105 +58,149 @@ function stripLastUpdatedFooter(text: string): {
   };
 }
 
-function parseSpans(text: string): PolicySpan[] {
-  if (!text.includes("**")) {
-    return text ? [{ text }] : [];
-  }
-
-  const spans: PolicySpan[] = [];
-  const parts = text.split("**");
-
-  for (let index = 0; index < parts.length; index += 1) {
-    const part = parts[index];
-    if (!part) continue;
-    spans.push({
-      text: part,
-      ...(index % 2 === 1 ? { bold: true } : {}),
-    });
-  }
-
-  return spans;
+/** `**Title**` → `Title`. Heading text carries its emphasis structurally. */
+function stripWrappingBold(text: string): string {
+  const match = /^\*\*(.+)\*\*$/.exec(text.trim());
+  return match?.[1]?.trim() ?? text.trim();
 }
 
-function normalizeBulletLine(line: string): string {
-  return line.replace(/^•\t?/, "").trim();
+/**
+ * Recognises both authoring styles:
+ *   - `**# 1. Title**`  (legacy — Terms / Refunds)
+ *   - `## 1. Title`     (standard markdown — Privacy)
+ */
+function parseHeadingLine(line: string): ParsedHeading | null {
+  const trimmed = line.trim();
+
+  const legacy = LEGACY_HEADING_PATTERN.exec(trimmed);
+  if (legacy?.[1] && legacy[2]) {
+    return { level: legacy[1].length, text: legacy[2].trim() };
+  }
+
+  const atx = ATX_HEADING_PATTERN.exec(trimmed);
+  if (atx?.[1] && atx[2]) {
+    // `# **1. Title**` — the old alternate form — lands here too.
+    return { level: atx[1].length, text: stripWrappingBold(atx[2]) };
+  }
+
+  return null;
+}
+
+/**
+ * Splits `**bold**` runs out of a line.
+ *
+ * Regex-scans rather than splitting on `**`, so an unbalanced marker is left
+ * as literal text instead of flipping every following span to bold.
+ */
+function parseSpans(text: string): PolicySpan[] {
+  const spans: PolicySpan[] = [];
+  const pattern = /\*\*(.+?)\*\*/g;
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > cursor) {
+      spans.push({ text: text.slice(cursor, match.index) });
+    }
+    if (match[1]) spans.push({ text: match[1], bold: true });
+    cursor = match.index + match[0].length;
+  }
+
+  if (cursor < text.length) spans.push({ text: text.slice(cursor) });
+
+  return spans.filter((span) => span.text.length > 0);
 }
 
 function isBulletLine(line: string): boolean {
-  return line.trim().startsWith("•");
+  const trimmed = line.trim();
+  if (THEMATIC_BREAK_PATTERN.test(trimmed)) return false;
+  return BULLET_PATTERN.test(trimmed) || trimmed.startsWith("•");
 }
 
-function parseBlocks(body: string): PolicyBlock[] {
-  const blocks: PolicyBlock[] = [];
-  let bulletBuffer: string[] = [];
-
-  const flushBullets = () => {
-    if (bulletBuffer.length === 0) return;
-    blocks.push({
-      type: "list",
-      items: bulletBuffer.map((line) =>
-        parseSpans(normalizeBulletLine(line)),
-      ),
-    });
-    bulletBuffer = [];
-  };
-
-  for (const chunk of body.split(/\n\n+/).map((part) => part.trim()).filter(Boolean)) {
-    const lines = chunk.split("\n").map((line) => line.trim()).filter(Boolean);
-
-    for (const line of lines) {
-      if (isBulletLine(line)) {
-        bulletBuffer.push(line);
-        continue;
-      }
-
-      flushBullets();
-      blocks.push({
-        type: "paragraph",
-        spans: parseSpans(line),
-      });
-    }
-
-    flushBullets();
-  }
-
-  return blocks;
+function normalizeBulletLine(line: string): string {
+  return line.trim().replace(/^•\t?/, "").replace(BULLET_PATTERN, "").trim();
 }
 
+/** `1. Information We Collect` → `section-1`; otherwise a slug of the title. */
+function sectionId(headingText: string, fallbackIndex: number): string {
+  const numbered = /^(\d+)[.)]/.exec(headingText.trim());
+  if (numbered?.[1]) return `section-${numbered[1]}`;
+
+  const slug = headingText
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug ? `section-${slug}` : `section-${fallbackIndex}`;
+}
+
+/**
+ * Single linear pass over the description.
+ *
+ * Levels 1–2 open a new {@link PolicySection}; 3 and deeper become a heading
+ * block inside the current section. Content before the first heading is the
+ * intro.
+ */
 function splitIntroAndSections(body: string): {
   intro?: PolicyDocument["intro"];
   sections: PolicyDocument["sections"];
 } {
-  const matches = [...body.matchAll(SECTION_HEADING_PATTERN)];
-  if (matches.length === 0) {
-    const blocks = parseBlocks(body);
-    return {
-      ...(blocks.length > 0 ? { intro: { blocks } } : {}),
-      sections: [],
-    };
-  }
+  const introBlocks: PolicyBlock[] = [];
+  const sections: PolicySection[] = [];
+  let current: PolicySection | null = null;
+  let bulletBuffer: string[] = [];
 
-  const introText = body.slice(0, matches[0]?.index ?? 0).trim();
-  const sections: PolicyDocument["sections"] = [];
+  const targetBlocks = (): PolicyBlock[] => current?.blocks ?? introBlocks;
 
-  for (let index = 0; index < matches.length; index += 1) {
-    const match = matches[index];
-    if (!match) continue;
-
-    const sectionStart = (match.index ?? 0) + match[0].length;
-    const sectionEnd = matches[index + 1]?.index ?? body.length;
-    const sectionBody = body.slice(sectionStart, sectionEnd).trim();
-    const sectionNumber = match[1] ?? String(index + 1);
-    const sectionTitle = match[2]?.trim() ?? "";
-
-    sections.push({
-      id: `section-${sectionNumber}`,
-      heading: `${sectionNumber}. ${sectionTitle}`,
-      blocks: parseBlocks(sectionBody),
+  const flushBullets = () => {
+    if (bulletBuffer.length === 0) return;
+    targetBlocks().push({
+      type: "list",
+      items: bulletBuffer.map((line) => parseSpans(normalizeBulletLine(line))),
     });
+    bulletBuffer = [];
+  };
+
+  for (const rawLine of body.split("\n")) {
+    const line = rawLine.trim();
+
+    // A blank line terminates the current list.
+    if (!line) {
+      flushBullets();
+      continue;
+    }
+
+    const heading = parseHeadingLine(line);
+    if (heading) {
+      flushBullets();
+
+      if (heading.level <= 2) {
+        current = {
+          id: sectionId(heading.text, sections.length + 1),
+          heading: heading.text,
+          blocks: [],
+        };
+        sections.push(current);
+      } else {
+        targetBlocks().push({
+          type: "heading",
+          level: heading.level >= 4 ? 4 : 3,
+          spans: parseSpans(heading.text),
+        });
+      }
+      continue;
+    }
+
+    if (isBulletLine(line)) {
+      bulletBuffer.push(line);
+      continue;
+    }
+
+    flushBullets();
+    targetBlocks().push({ type: "paragraph", spans: parseSpans(line) });
   }
 
-  const introBlocks = introText ? parseBlocks(introText) : [];
+  flushBullets();
 
   return {
     ...(introBlocks.length > 0 ? { intro: { blocks: introBlocks } } : {}),
@@ -152,8 +209,11 @@ function splitIntroAndSections(body: string): {
 }
 
 /**
- * Maps a Strapi policy single type (`title` + markdown-style `description`)
- * into the shared {@link PolicyDocument} view model.
+ * Maps a Strapi policy single type (`title` + markdown `description`) into the
+ * shared {@link PolicyDocument} view model.
+ *
+ * Handles both authoring styles the CMS currently contains — standard markdown
+ * (`##` headings, `-` bullets) and the legacy `**# n. Title**` + `•` form.
  */
 export function mapPolicyDescriptionContent(
   input: PolicyCmsContent,
@@ -162,8 +222,7 @@ export function mapPolicyDescriptionContent(
   const description = input.description?.trim() ?? "";
   if (!description) return null;
 
-  const normalized = normalizePolicyDescription(description);
-  const { body, lastUpdatedLabel } = stripLastUpdatedFooter(normalized);
+  const { body, lastUpdatedLabel } = stripLastUpdatedFooter(description);
   const { intro, sections } = splitIntroAndSections(body);
 
   const title = input.title?.trim() || options.defaultTitle;
@@ -173,7 +232,7 @@ export function mapPolicyDescriptionContent(
     input.publishedAt?.slice(0, 10) ||
     "";
 
-  const emailMatch = EMAIL_PATTERN.exec(normalized);
+  const emailMatch = EMAIL_PATTERN.exec(description);
 
   return {
     slug: options.slug,

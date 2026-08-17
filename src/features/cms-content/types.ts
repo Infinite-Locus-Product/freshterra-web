@@ -10,7 +10,12 @@ export type PolicySpan = { text: string; bold?: boolean };
 
 export type PolicyBlock =
   | { type: "paragraph"; spans: PolicySpan[] }
-  | { type: "list"; items: PolicySpan[][] };
+  | { type: "list"; items: PolicySpan[][] }
+  /**
+   * Sub-heading inside a section — markdown `###`/`####` and deeper. Top-level
+   * `#`/`##` become a {@link PolicySection} heading instead.
+   */
+  | { type: "heading"; level: 3 | 4; spans: PolicySpan[] };
 
 export type PolicySection = {
   /** Optional anchor for deep-linking later. */
