@@ -14,7 +14,11 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
-import { getProduct } from "@/features/catalog/product-service";
+import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
+import {
+  getProduct,
+  getProductBySlug,
+} from "@/features/catalog/product-service";
 
 type Params = Promise<{ slug: string }>;
 
@@ -29,9 +33,14 @@ export function generateStaticParams() {
 /**
  * Store-neutral product fetch (web never displays per-store price/stock).
  * Deduped via `cache()` so generateMetadata + the page body share one request.
+ *
+ * `/product/{slug}` is the canonical URL going forward, but already
+ * published/bookmarked links may still carry the Saleor global id in that
+ * segment (the pre-slug-endpoint scheme) — route those to the by-id lookup
+ * so they keep resolving, and everything else to the by-slug lookup.
  */
 const loadProduct = cache((slug: string) =>
-  getProduct(
+  (isSaleorProductGlobalId(slug) ? getProduct : getProductBySlug)(
     slug,
     {},
     {
