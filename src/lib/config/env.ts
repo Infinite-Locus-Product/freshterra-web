@@ -49,6 +49,13 @@ const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
+  // Single smart app-download link. The BFF sniffs the visitor's device and
+  // redirects to the App Store or Play Store, so both store CTAs (header +
+  // footer) point at this one URL.
+  NEXT_PUBLIC_APP_DOWNLOAD_URL: z
+    .string()
+    .url()
+    .default("https://api.stage.freshterra.in/app?source=website"),
   // FreshTerra BFF base URL (search autocomplete, etc.). Defaults to the
   // staging gateway; override per environment. Requests are issued as
   // `${NEXT_PUBLIC_API_BASE_URL}/api/v1/...`.
@@ -101,6 +108,9 @@ const clientEnvRaw = {
   ),
   NEXT_PUBLIC_PLAY_STORE_URL: blankAsUndefined(
     process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_APP_DOWNLOAD_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
   ),
   NEXT_PUBLIC_API_BASE_URL: blankAsUndefined(
     process.env.NEXT_PUBLIC_API_BASE_URL,

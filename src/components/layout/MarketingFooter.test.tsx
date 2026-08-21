@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { env } from "@/lib/config/env";
+
 import type { FooterContent } from "@/features/cms-content/footer-content-types";
 
 import { FOOTER_COPYRIGHT_LINE } from "./footer-legal-links";
@@ -96,6 +98,16 @@ describe("MarketingFooterView", () => {
       "href",
       "/categories/beverages",
     );
+  });
+
+  it("points both store badges at the app download URL", () => {
+    render(<MarketingFooterView content={sampleFooter} />);
+    for (const name of [/download on the app store/i, /get it on google play/i]) {
+      expect(screen.getByRole("link", { name })).toHaveAttribute(
+        "href",
+        env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
+      );
+    }
   });
 
   it("renders hardcoded Follow Us social links", () => {
