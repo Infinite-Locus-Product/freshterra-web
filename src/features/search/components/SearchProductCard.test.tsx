@@ -28,16 +28,18 @@ describe("SearchProductCard", () => {
   it("links to the PDP and renders the product name without variant meta", () => {
     render(
       <SearchProductCard
-        product={{
-          ...base,
-          unit: "500g",
-          variantCount: 2,
-        } as SearchProduct & { unit?: string; variantCount?: number }}
+        product={
+          {
+            ...base,
+            unit: "500g",
+            variantCount: 2,
+          } as SearchProduct & { unit?: string; variantCount?: number }
+        }
       />,
     );
 
     const link = screen.getByRole("link", { name: /organic tomatoes/i });
-    expect(link).toHaveAttribute("href", "/product/prd_1");
+    expect(link).toHaveAttribute("href", "/product/organic-tomatoes");
     expect(screen.getByText("Organic Tomatoes")).toBeInTheDocument();
     expect(screen.queryByText(/options/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/250g/i)).not.toBeInTheDocument();

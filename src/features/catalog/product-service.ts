@@ -52,6 +52,9 @@ function productDetailPath(id: string): string {
 /** `sku` is a SKU code (e.g. FT-TOMATO-500G) — required, non-empty. */
 const skuSchema = z.string().trim().min(1, "Product SKU is required.");
 
+/** `slug` is a human-readable Saleor product slug — required, non-empty. */
+const slugSchema = z.string().trim().min(1, "Product slug is required.");
+
 export interface GetProductParams {
   /** Optional serviceability polygon. Absent → `sku_price_default` pricing. */
   polygonId?: string;
@@ -125,6 +128,41 @@ export async function getProductBySku(
     token: options.token,
     schema: productDetailSchema,
   });
+}
+
+/**
+ * Fetches product detail by its human-readable slug (PDP entry from a
+ * canonical `/product/{slug}` URL).
+ *
+ * Identical contract to {@link getProduct} but keyed on `slug`:
+ * - Validates `slug` (required) before calling out.
+ * - Forwards an optional `polygonId` (drives polygon pricing + stock).
+ * - Attaches a JWT automatically when available (anon browse allowed).
+ * - Returns the product, or throws a `FreshTerraApiError`
+ *   (`AUTH_TOKEN_INVALID` | `NOT_FOUND` | `RATE_LIMITED` |
+ *   `UPSTREAM_UNAVAILABLE` | `NETWORK_ERROR` | `PARSE_ERROR` | `ABORTED`).
+ *   For a missing product, `err.code` is `NOT_FOUND` and `err.serverCode` is
+ *   `"PRODUCT_NOT_FOUND"`.
+ */
+export async function getProductBySlug(
+  slug: string,
+  params: GetProductParams = {},
+  options: GetProductRequestOptions = {},
+): Promise<ProductDetail> {
+  const productSlug = slugSchema.parse(slug);
+
+  return apiFetch(
+    `${PRODUCTS_PATH}/slug/${encodeURIComponent(decodePathSegment(productSlug))}`,
+    {
+      method: "GET",
+      searchParams: { polygonId: params.polygonId },
+      signal: options.signal,
+      token: options.token,
+      next: options.next,
+      expectedErrorCodes: options.expectedErrorCodes,
+      schema: productDetailSchema,
+    },
+  );
 }
 
 export interface GetRelatedProductsParams extends GetProductParams {
