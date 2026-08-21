@@ -58,8 +58,11 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
           <div
             className={cn(
               marketingFooterGridClass,
-              totalColumns === 3 && "xl:grid-cols-3",
-              totalColumns >= 4 && "xl:grid-cols-4",
+              totalColumns === 3 && "lg:grid-cols-3",
+              // 4 columns need >= 224px each to fit the store badge at its spec
+              // width — that lands at the custom `lgx` (1160px) breakpoint,
+              // earlier than xl but later than lg.
+              totalColumns >= 4 && "lgx:grid-cols-4",
             )}
           >
             {content.groups.map((group) => (

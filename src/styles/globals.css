@@ -41,6 +41,13 @@
   --radius-lg: 0.75rem;
   --radius-xxl: 1.75rem;
 
+  /* Extra desktop step between lg (64rem) and xl (80rem). 1160px is the
+     narrowest viewport where a 4-column footer grid still gives each column
+     the 224px the store badge needs at its spec width. Registered as a real
+     breakpoint rather than an inline `min-[1160px]:` variant so it sorts after
+     `md:` in the output CSS instead of being overridden by it. */
+  --breakpoint-lgx: 72.5rem;
+
   /* Layout — rem-based content width and header controls (16px root) */
   --max-width-content: 90rem;
   --max-width-content-narrow: 85rem;
