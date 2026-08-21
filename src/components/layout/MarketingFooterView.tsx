@@ -40,9 +40,10 @@ type MarketingFooterViewProps = Readonly<{
 }>;
 
 export function MarketingFooterView({ content }: MarketingFooterViewProps) {
-  const appStore = env.NEXT_PUBLIC_APP_STORE_URL ?? "/notify";
-  const playStore = env.NEXT_PUBLIC_PLAY_STORE_URL ?? "/notify";
-  const badgeHref = { appStore, playStore };
+  // One device-aware redirect serves both badges — the BFF resolves App Store
+  // vs Play Store from the visitor's user agent.
+  const downloadHref = env.NEXT_PUBLIC_APP_DOWNLOAD_URL;
+  const badgeHref = { appStore: downloadHref, playStore: downloadHref };
 
   const totalColumns = content.groups.length + (content.office ? 1 : 0) + 1;
 
