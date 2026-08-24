@@ -34,6 +34,15 @@ const serverSchema = z.object({
   LEAD_FRESHTERRA_API_KEY: z.string().optional(),
 });
 
+/** Production BFF gateway — the safe default for any environment. */
+const DEFAULT_API_BASE_URL = "https://api.freshterra.in";
+
+/** Device-sniffing redirect path served by the BFF. */
+const APP_DOWNLOAD_PATH = "/app?source=website";
+
+const appDownloadUrlFrom = (apiBaseUrl: string | undefined) =>
+  `${(apiBaseUrl ?? DEFAULT_API_BASE_URL).replace(/\/+$/, "")}${APP_DOWNLOAD_PATH}`;
+
 const clientSchema = z.object({
   NEXT_PUBLIC_SALEOR_API_URL: z.string().url().optional(),
   NEXT_PUBLIC_GOOGLE_MAPS_BROWSER_KEY: z.string().optional(),
@@ -49,13 +58,20 @@ const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_STORE_URL: z.string().url().optional(),
   NEXT_PUBLIC_PLAY_STORE_URL: z.string().url().optional(),
-  // FreshTerra BFF base URL (search autocomplete, etc.). Defaults to the
-  // staging gateway; override per environment. Requests are issued as
-  // `${NEXT_PUBLIC_API_BASE_URL}/api/v1/...`.
+  // Single smart app-download link. The BFF sniffs the visitor's device and
+  // redirects to the App Store or Play Store, so both store CTAs (header +
+  // footer) point at this one URL. Left optional on purpose: when unset it is
+  // derived from NEXT_PUBLIC_API_BASE_URL below, so a staging deploy that
+  // points at the staging gateway gets the staging app link and production
+  // never silently ships a staging URL.
+  NEXT_PUBLIC_APP_DOWNLOAD_URL: z.string().url().optional(),
+  // FreshTerra BFF base URL (search autocomplete, app-download redirect, ...).
+  // Defaults to the production gateway; override per environment. Requests are
+  // issued as `${NEXT_PUBLIC_API_BASE_URL}/api/v1/...`.
   NEXT_PUBLIC_API_BASE_URL: z
     .string()
     .url()
-    .default("https://api.freshterra.in"),
+    .default(DEFAULT_API_BASE_URL),
   NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: z.string().optional(),
   NEXT_PUBLIC_WEB3FORMS_SUBMIT_URL: z
     .string()
@@ -101,6 +117,9 @@ const clientEnvRaw = {
   ),
   NEXT_PUBLIC_PLAY_STORE_URL: blankAsUndefined(
     process.env.NEXT_PUBLIC_PLAY_STORE_URL,
+  ),
+  NEXT_PUBLIC_APP_DOWNLOAD_URL: blankAsUndefined(
+    process.env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
   ),
   NEXT_PUBLIC_API_BASE_URL: blankAsUndefined(
     process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -170,13 +189,20 @@ if (!clientParsed.success) {
   if (isProd) throw new Error("Invalid client environment variables");
 }
 
+const clientEnv = clientParsed.success
+  ? clientParsed.data
+  : ({} as z.infer<typeof clientSchema>);
+
 export const env = {
   ...(serverParsed.success
     ? serverParsed.data
     : ({} as z.infer<typeof serverSchema>)),
-  ...(clientParsed.success
-    ? clientParsed.data
-    : ({} as z.infer<typeof clientSchema>)),
+  ...clientEnv,
+  // Falls back to the BFF gateway this environment is already talking to,
+  // rather than a hardcoded staging host.
+  NEXT_PUBLIC_APP_DOWNLOAD_URL:
+    clientEnv.NEXT_PUBLIC_APP_DOWNLOAD_URL ??
+    appDownloadUrlFrom(clientEnv.NEXT_PUBLIC_API_BASE_URL),
 };
 
 export type Env = typeof env;
