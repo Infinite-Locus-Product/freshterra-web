@@ -1,19 +1,24 @@
+import { cache } from "react";
+
 import type { Metadata } from "next";
 
 import { notFound } from "next/navigation";
-import { cache } from "react";
 
-import { JsonLd } from "@/components/seo/JsonLd";
-import { MarketingFooter } from "@/components/layout/MarketingFooter";
-import { MarketingHeader } from "@/components/layout/MarketingHeader";
-
-import { PdpView } from "@/features/catalog/components/PdpView";
-import { getProduct } from "@/features/catalog/product-service";
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import { env } from "@/lib/config/env";
 import { breadcrumbListJsonLd, productJsonLd } from "@/lib/seo/jsonLd";
 
+import { MarketingFooter } from "@/components/layout/MarketingFooter";
+import { MarketingHeader } from "@/components/layout/MarketingHeader";
+import { JsonLd } from "@/components/seo/JsonLd";
+
+import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
+import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
+import {
+  getProduct,
+  getProductBySlug,
+} from "@/features/catalog/product-service";
 
 type Params = Promise<{ slug: string }>;
 
@@ -28,9 +33,14 @@ export function generateStaticParams() {
 /**
  * Store-neutral product fetch (web never displays per-store price/stock).
  * Deduped via `cache()` so generateMetadata + the page body share one request.
+ *
+ * `/product/{slug}` is the canonical URL going forward, but already
+ * published/bookmarked links may still carry the Saleor global id in that
+ * segment (the pre-slug-endpoint scheme) — route those to the by-id lookup
+ * so they keep resolving, and everything else to the by-slug lookup.
  */
 const loadProduct = cache((slug: string) =>
-  getProduct(
+  (isSaleorProductGlobalId(slug) ? getProduct : getProductBySlug)(
     slug,
     {},
     {
