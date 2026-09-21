@@ -26,11 +26,11 @@ export type MarketingNavLink = Readonly<{
 const NAV_LINK_CLASS = marketingHeaderNavLinkLabelClass;
 
 export const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
-  { label: "Explore Products", href: "/c/products" },
+  { label: "Explore Products", href: "/c/vegetables-fruits" },
   { label: "Our Philosophy", href: "/food-philosophy" },
   { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
-  { label: "Stores Coming Soon", href: "/stores" },
+  { label: "Stores", href: "/stores" },
   { label: "Contact Us", href: "/contact" },
   { label: "FAQ", href: "/faq" },
 ] as const;
@@ -64,7 +64,9 @@ export function MarketingHeader({
   className,
 }: MarketingHeaderProps) {
   const desktopInner = (
-    <div className={`${PAGE_SHELL_INNER_CLASS} hidden flex-col gap-6 lg:flex md:gap-10`}>
+    <div
+      className={`${PAGE_SHELL_INNER_CLASS} hidden flex-col gap-6 md:gap-10 lg:flex`}
+    >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-3">
           <Logo tone="light" variant="header" priority linkToHome />
