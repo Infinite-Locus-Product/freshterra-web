@@ -3,11 +3,11 @@ export const CATEGORY_PLP_PRODUCT_CARD_IMAGE_WEB_WIDTH = 240;
 export const CATEGORY_PLP_PRODUCT_CARD_IMAGE_WEB_HEIGHT = 226;
 
 export const categoryPlpProductCardClass =
-  "flex h-full w-full flex-col overflow-hidden rounded-[10px] border border-gray-200 bg-white lg:w-[240px] lg:rounded-2xl";
+  "flex h-full w-full flex-col overflow-hidden rounded-[10px] border border-gray-200 bg-white lg:rounded-2xl";
 
-/** Image — mWeb: 240×226 ratio. Web: fixed 240×226. */
+/** Image — keeps the 240×226 Figma ratio while the card fills its grid track. */
 export const categoryPlpProductCardImageClass =
-  "relative aspect-[240/226] w-full overflow-hidden bg-gray-50 lg:aspect-auto lg:h-[226px] lg:w-[240px]";
+  "relative aspect-[240/226] w-full overflow-hidden bg-gray-50";
 
 export const categoryPlpProductCardBodyClass =
   "flex flex-1 flex-col p-3 lg:p-4";
