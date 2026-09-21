@@ -23,8 +23,8 @@ import {
   pdpSimilarProductCardTagsRowClass,
 } from "@/components/category/pdp-page";
 
-import { productPageHref } from "../product-href";
 import { resolveProductDietaryType } from "../dietary-badge";
+import { productPageHref } from "../product-href";
 import { formatPlpVariantMeta } from "../variant-meta";
 
 import type { PlpProduct } from "../types";
@@ -78,7 +78,7 @@ export function ProductCard({
               sizes={
                 isPdpRail
                   ? "210px"
-                  : "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 240px"
+                  : "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               }
               className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
             />
