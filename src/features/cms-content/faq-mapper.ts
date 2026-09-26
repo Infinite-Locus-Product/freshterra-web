@@ -1,5 +1,7 @@
-import type { FaqContent, FaqItem, FaqPageContent } from "./faq-types";
+import { readCmsSeo } from "./cms-seo";
 import { faqPageLinkSchema } from "./faq-types";
+
+import type { FaqContent, FaqItem, FaqPageContent } from "./faq-types";
 import type { z } from "zod";
 
 type FaqPageLink = z.infer<typeof faqPageLinkSchema>;
@@ -51,7 +53,9 @@ function mapFaqItem(raw: UnknownRecord): FaqItem | null {
 
   const answerRaw = raw.answer;
   const answer =
-    typeof answerRaw === "string" ? answerRaw.replace(/\u2028/g, "\n").trim() : "";
+    typeof answerRaw === "string"
+      ? answerRaw.replace(/\u2028/g, "\n").trim()
+      : "";
 
   return {
     question,
@@ -65,8 +69,7 @@ function mapPageLink(raw: FaqPageLink): { label: string; href: string } | null {
   const label = readString(record, "page_title", "title", "label");
   if (!label) return null;
 
-  const slug =
-    typeof record.page_slug === "string" ? record.page_slug : null;
+  const slug = typeof record.page_slug === "string" ? record.page_slug : null;
 
   return {
     label,
@@ -86,9 +89,9 @@ function sortByOrder<T extends UnknownRecord>(items: T[]): T[] {
 export function hasFaqContent(content: FaqPageContent): boolean {
   return Boolean(
     content.hero.title ||
-      content.items.length > 0 ||
-      content.supportCta.title ||
-      content.legalPolicies.links.length > 0,
+    content.items.length > 0 ||
+    content.supportCta.title ||
+    content.legalPolicies.links.length > 0,
   );
 }
 
@@ -117,6 +120,7 @@ export function mapFaqContent(input: FaqContent): FaqPageContent {
   const ctaLabel = readString(input as UnknownRecord, "cta");
   const ctaHref = resolveCtaHref(input.cta_slug);
 
+  const seo = readCmsSeo(input);
   const pagesTitle = readString(input as UnknownRecord, "pages_title");
   const links = sortByOrder(
     (input.pages ?? [])
@@ -142,5 +146,6 @@ export function mapFaqContent(input: FaqContent): FaqPageContent {
       title: pagesTitle || "Legal & Policies",
       links,
     },
+    ...(seo ? { seo } : {}),
   };
 }

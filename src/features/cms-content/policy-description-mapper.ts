@@ -1,6 +1,12 @@
-import type { PolicyBlock, PolicyDocument, PolicySlug, PolicySpan } from "./types";
+import { readCmsSeo } from "./cms-seo";
 
 import type { PolicyCmsContent } from "./policy-cms-types";
+import type {
+  PolicyBlock,
+  PolicyDocument,
+  PolicySlug,
+  PolicySpan,
+} from "./types";
 
 const SECTION_HEADING_PATTERN = /\*\*#\s*(\d+)\.\s*([^*]+)\*\*/g;
 const ALT_SECTION_HEADING_PATTERN = /#\s*\*\*(\d+)\.\s*([^*]+)\*\*/g;
@@ -24,10 +30,7 @@ function parseUsDateLabel(label: string): string {
 }
 
 function normalizePolicyDescription(description: string): string {
-  return description.replace(
-    ALT_SECTION_HEADING_PATTERN,
-    "**# $1. $2**",
-  );
+  return description.replace(ALT_SECTION_HEADING_PATTERN, "**# $1. $2**");
 }
 
 function stripLastUpdatedFooter(text: string): {
@@ -81,15 +84,19 @@ function parseBlocks(body: string): PolicyBlock[] {
     if (bulletBuffer.length === 0) return;
     blocks.push({
       type: "list",
-      items: bulletBuffer.map((line) =>
-        parseSpans(normalizeBulletLine(line)),
-      ),
+      items: bulletBuffer.map((line) => parseSpans(normalizeBulletLine(line))),
     });
     bulletBuffer = [];
   };
 
-  for (const chunk of body.split(/\n\n+/).map((part) => part.trim()).filter(Boolean)) {
-    const lines = chunk.split("\n").map((line) => line.trim()).filter(Boolean);
+  for (const chunk of body
+    .split(/\n\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean)) {
+    const lines = chunk
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
 
     for (const line of lines) {
       if (isBulletLine(line)) {
@@ -174,6 +181,7 @@ export function mapPolicyDescriptionContent(
     "";
 
   const emailMatch = EMAIL_PATTERN.exec(normalized);
+  const seo = readCmsSeo(input);
 
   return {
     slug: options.slug,
@@ -183,5 +191,6 @@ export function mapPolicyDescriptionContent(
     ...(emailMatch?.[1] ? { contactEmail: emailMatch[1] } : {}),
     ...(intro ? { intro } : {}),
     sections,
+    ...(seo ? { seo } : {}),
   };
 }

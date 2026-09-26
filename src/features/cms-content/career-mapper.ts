@@ -1,3 +1,5 @@
+import { readCmsSeo } from "./cms-seo";
+
 import type {
   CareerContent,
   CareerDepartmentGroup,
@@ -61,7 +63,12 @@ function mapJob(raw: UnknownRecord): CareerJob | null {
   if (!isActive(raw)) return null;
 
   const title = readString(raw, "job_title", "title");
-  const description = readString(raw, "job_subtitle", "description", "subtitle");
+  const description = readString(
+    raw,
+    "job_subtitle",
+    "description",
+    "subtitle",
+  );
   const applyCtaLabel = readString(raw, "apply_cta", "cta") || "Apply Now";
 
   if (!title) return null;
@@ -93,10 +100,10 @@ function mapDepartment(raw: UnknownRecord): CareerDepartmentGroup | null {
 export function hasCareerContent(content: CareersPageContent): boolean {
   return Boolean(
     content.hero.title ||
-      content.hero.subtitle ||
-      content.hero.paragraphs.length > 0 ||
-      content.hero.bannerSrc ||
-      content.openings.groups.length > 0,
+    content.hero.subtitle ||
+    content.hero.paragraphs.length > 0 ||
+    content.hero.bannerSrc ||
+    content.openings.groups.length > 0,
   );
 }
 
@@ -106,7 +113,12 @@ export function mapCareerContent(input: CareerContent): CareersPageContent {
 
   const title = readString(heroRecord, "title") || "Careers at FreshTerra";
   const subtitle = readString(heroRecord, "subtitile", "subtitle");
-  const bannerSrc = readMediaUrl(heroRecord, "heroimage", "hero_image", "image");
+  const bannerSrc = readMediaUrl(
+    heroRecord,
+    "heroimage",
+    "hero_image",
+    "image",
+  );
   const bannerSrcMobile =
     readMediaUrl(heroRecord, "hero_image_mweb", "heroImageMweb") || bannerSrc;
   const description = readString(heroRecord, "description");
@@ -114,7 +126,9 @@ export function mapCareerContent(input: CareerContent): CareersPageContent {
   const bannerAlt =
     readString(heroRecord, "short_title", "subtitile", "subtitle") || title;
 
-  const departmentsRaw = Array.isArray(input.department) ? input.department : [];
+  const departmentsRaw = Array.isArray(input.department)
+    ? input.department
+    : [];
   const groups = sortByOrder(departmentsRaw as UnknownRecord[])
     .map((item) => mapDepartment(item))
     .filter((group): group is CareerDepartmentGroup => group !== null);
@@ -123,6 +137,8 @@ export function mapCareerContent(input: CareerContent): CareersPageContent {
     typeof input.position_title === "string" && input.position_title.trim()
       ? input.position_title.trim()
       : "Open Positions";
+
+  const seo = readCmsSeo(input);
 
   return {
     hero: {
@@ -137,5 +153,6 @@ export function mapCareerContent(input: CareerContent): CareersPageContent {
       title: openingsTitle,
       groups,
     },
+    ...(seo ? { seo } : {}),
   };
 }

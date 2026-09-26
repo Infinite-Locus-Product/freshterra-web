@@ -5,7 +5,7 @@ export const HOME_CATEGORIES_TITLE_MWEB_FONT_SIZE = 20;
 export const HOME_CATEGORIES_BANNER_GAP = 30;
 
 export const homeCategoriesTitleClass =
-  "font-display text-text-primary box-border max-w-full shrink-0 text-[20px] font-semibold leading-[1.3] tracking-[0] md:h-[54px] md:w-[175px] md:text-[36px] md:font-medium md:leading-[1.5]";
+  "font-display text-text-primary box-border max-w-full shrink-0 text-[20px] font-semibold leading-[1.3] tracking-[0] md:h-[54px] md:w-auto md:whitespace-nowrap md:text-[36px] md:font-medium md:leading-[1.5]";
 
 export const homeCategoriesSectionClass = "bg-white pt-[30px] pb-0 md:pt-12";
 

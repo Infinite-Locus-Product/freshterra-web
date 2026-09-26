@@ -15,6 +15,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
 import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
+import { productPageMetadata } from "@/features/catalog/product-seo";
 import {
   getProduct,
   getProductBySlug,
@@ -57,37 +58,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const product = await loadProduct(slug);
-    const description =
-      product.story?.trim() ||
-      product.metafields?.productDetails?.trim() ||
-      `${product.name} on FreshTerra.`;
-    const image = product.images[0]?.url
-      ? [
-          {
-            url: product.images[0].url,
-            alt: product.images[0].alt ?? product.name,
-          },
-        ]
-      : undefined;
-    return {
-      title: product.name,
-      description,
-      alternates: { canonical: `/product/${slug}` },
-      openGraph: {
-        title: product.name,
-        description,
-        url: `/product/${slug}`,
-        type: "website",
-        images: image,
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: product.name,
-        description,
-        images: image?.map((img) => img.url),
-      },
-    };
+    return productPageMetadata({ product: await loadProduct(slug), slug });
   } catch {
     return { alternates: { canonical: `/product/${slug}` } };
   }

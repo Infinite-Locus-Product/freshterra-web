@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 export const faqQuestionSchema = z
   .object({
     id: z.number().optional(),
@@ -70,5 +72,6 @@ export type FaqPageContent = {
   legalPolicies: {
     title: string;
     links: Array<{ label: string; href: string }>;
-  };
+  }; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

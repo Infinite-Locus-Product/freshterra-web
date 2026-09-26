@@ -334,6 +334,19 @@ export const categoryProductsDataSchema = z.preprocess(
 export type CategoryProductsData = z.infer<typeof categoryProductsDataSchema>;
 
 /**
+ * BFF-resolved SEO block on `GET /products/slug/:slug` (FRES-2213). The backend
+ * already applies the marketing → default fallbacks (title, ~160-char
+ * description, `/product/{slug}` canonical), so the web renders it as-is.
+ */
+export const productSeoMetaSchema = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  canonicalUrl: z.string().nullish(),
+  ogImage: z.string().nullish(),
+});
+export type ProductSeoMeta = z.infer<typeof productSeoMetaSchema>;
+
+/**
  * The BFF now returns collection facets in the same dynamic `{ key, options[] }[]`
  * array shape as category (one group per product attribute + dietary/health), but
  * the collection UI model uses `{ slug, count, name? }`. Mirror of
@@ -424,6 +437,8 @@ const productDetailDataSchema = z.object({
   productInformations: z.custom<ProductInformations>().optional(),
   /** Cross-sell rail from the PDP BFF payload (`similarProducts`). */
   similarProducts: z.array(plpProductSchema).default([]),
+  /** Marketing SEO with backend fallbacks applied — see {@link productSeoMetaSchema}. */
+  seoMeta: productSeoMetaSchema.optional(),
 });
 
 /** Validates + normalizes Saleor metadata from the BFF PDP payload. */

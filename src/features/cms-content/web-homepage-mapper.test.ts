@@ -44,7 +44,8 @@ describe("mapWebHomepageContent", () => {
       our_store: [
         {
           store_name: "FreshTerra Gurugram",
-          store_address: "Golf Course Road, Sector 5\nGurgaon, Haryana  - 122011",
+          store_address:
+            "Golf Course Road, Sector 5\nGurgaon, Haryana  - 122011",
           view_store_cta: "View Store",
           locate_us_cta: "Locate Us",
           store_image: "https://cms-stg.freshterra.in/uploads/store.png",
@@ -68,7 +69,9 @@ describe("mapWebHomepageContent", () => {
     expect(content.sourcing.title).toBe("How We Source");
     expect(content.sourcing.paragraphs).toHaveLength(2);
     expect(content.testimonials.items[0]?.name).toBe("Mankirat Singh");
-    expect(content.testimonials.title).toBe("Stories from Our Valued Customers");
+    expect(content.testimonials.title).toBe(
+      "Stories from Our Valued Customers",
+    );
     expect(content.store.name).toBe("FreshTerra Gurugram");
     expect(content.store.addressHtml).toBe(
       "<p>Golf Course Road, Sector 5</p><p>Gurgaon, Haryana  - 122011</p>",
@@ -234,7 +237,8 @@ describe("mapWebHomepageContent", () => {
         {
           id: 41,
           image: "https://cms-stg.freshterra.in/uploads/Banner_b44fa794a6.png",
-          iamge_mweb: "https://cms-stg.freshterra.in/uploads/Banner_10ea13ed1e.png",
+          iamge_mweb:
+            "https://cms-stg.freshterra.in/uploads/Banner_10ea13ed1e.png",
           heading: "From our shelves to your family table",
           tagline: null,
           cta_label: null,
@@ -254,7 +258,8 @@ describe("mapWebHomepageContent", () => {
           position: 1,
           banner: [
             {
-              store_image: "https://cms-stg.freshterra.in/uploads/Button_3ef39d5db6.png",
+              store_image:
+                "https://cms-stg.freshterra.in/uploads/Button_3ef39d5db6.png",
               store_image_mweb:
                 "https://cms-stg.freshterra.in/uploads/Button_1_5e40ed0558.png",
             },
@@ -329,7 +334,8 @@ describe("mapWebHomepageContent", () => {
       web_herosection: [
         {
           image: "https://cms-stg.freshterra.in/uploads/Banner_b44fa794a6.png",
-          iamge_mweb: "https://cms-stg.freshterra.in/uploads/Banner_10ea13ed1e.png",
+          iamge_mweb:
+            "https://cms-stg.freshterra.in/uploads/Banner_10ea13ed1e.png",
           heading: "From our shelves to your family table",
           tagline: null,
           cta_slug: null,
@@ -340,5 +346,21 @@ describe("mapWebHomepageContent", () => {
     });
 
     expect(parsed.success).toBe(true);
+  });
+});
+
+describe("mapWebHomepageContent seo", () => {
+  it("passes the marketing seo component through", () => {
+    const content = mapWebHomepageContent({
+      seo: { metaTitle: "FreshTerra — Fresh Groceries Online" },
+    });
+
+    expect(content.seo).toEqual({
+      title: "FreshTerra — Fresh Groceries Online",
+    });
+  });
+
+  it("omits seo for an empty payload", () => {
+    expect(mapWebHomepageContent({})).not.toHaveProperty("seo");
   });
 });

@@ -1,3 +1,9 @@
+import {
+  aboutFreshterraCoreImageSchema,
+  aboutFreshterraStorySchema,
+} from "./about-freshterra-types";
+import { readCmsSeo } from "./cms-seo";
+
 import type {
   AboutCoreValueItem,
   AboutFreshterraContent,
@@ -5,10 +11,6 @@ import type {
   AboutStoryItem,
 } from "./about-freshterra-types";
 import type { z } from "zod";
-import {
-  aboutFreshterraCoreImageSchema,
-  aboutFreshterraStorySchema,
-} from "./about-freshterra-types";
 
 type AboutFreshterraCoreImage = z.infer<typeof aboutFreshterraCoreImageSchema>;
 type AboutFreshterraStory = z.infer<typeof aboutFreshterraStorySchema>;
@@ -68,7 +70,9 @@ function isActive(record: UnknownRecord): boolean {
   return true;
 }
 
-function mapCoreValue(raw: AboutFreshterraCoreImage): AboutCoreValueItem | null {
+function mapCoreValue(
+  raw: AboutFreshterraCoreImage,
+): AboutCoreValueItem | null {
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
@@ -116,10 +120,10 @@ function mapStory(raw: AboutFreshterraStory): AboutStoryItem | null {
   return { name, ageLabel, quote, imageSrc };
 }
 
-function hasStoryContent(story: NonNullable<AboutPageContent["story"]>): boolean {
-  return Boolean(
-    story.title || story.subtitle || story.paragraphs.length > 0,
-  );
+function hasStoryContent(
+  story: NonNullable<AboutPageContent["story"]>,
+): boolean {
+  return Boolean(story.title || story.subtitle || story.paragraphs.length > 0);
 }
 
 function hasMissionContent(
@@ -138,7 +142,12 @@ export function mapAboutFreshterraContent(
   const result: AboutPageContent = {};
   const heroRecord = isRecord(input.herosection) ? input.herosection : {};
 
-  const bannerSrc = readMediaUrl(heroRecord, "heroimage", "hero_image", "image");
+  const bannerSrc = readMediaUrl(
+    heroRecord,
+    "heroimage",
+    "hero_image",
+    "image",
+  );
   const bannerSrcMobile =
     readMediaUrl(heroRecord, "hero_image_mweb", "heroImageMweb") || bannerSrc;
   const heroTitle = readString(heroRecord, "title");
@@ -185,7 +194,9 @@ export function mapAboutFreshterraContent(
     .filter((item): item is AboutCoreValueItem => item !== null);
   if (coreImages.length > 0) {
     const valuesHeading =
-      typeof input.values_heading === "string" ? input.values_heading.trim() : "";
+      typeof input.values_heading === "string"
+        ? input.values_heading.trim()
+        : "";
     const valuesSubtitle =
       typeof input.values_subtitle === "string"
         ? input.values_subtitle.trim()
@@ -214,6 +225,9 @@ export function mapAboutFreshterraContent(
       ...(storiesSubtitle ? { subtitle: storiesSubtitle } : {}),
     };
   }
+
+  const seo = readCmsSeo(input);
+  if (seo) result.seo = seo;
 
   return result;
 }
