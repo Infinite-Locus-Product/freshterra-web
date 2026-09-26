@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { breadcrumbListJsonLd, productJsonLd } from "./jsonLd";
-
 import type { ProductDetail } from "@/features/catalog/types";
+
+import { breadcrumbListJsonLd, productJsonLd } from "./jsonLd";
 
 const PRODUCT: ProductDetail = {
   id: "prd_01HX9",
@@ -26,18 +26,74 @@ const PRODUCT: ProductDetail = {
 };
 
 describe("productJsonLd", () => {
-  it("builds a Product schema without price or availability assertions", () => {
+  const SEO_META = {
+    title: "Heirloom Tomatoes, Farm Fresh | FreshTerra",
+    description: "Juicy heirloom tomatoes from local farms.",
+    canonicalUrl: "https://freshterra.in/product/heirloom-tomatoes-500g",
+    ogImage: null,
+  };
+
+  it("builds the marketing Product schema from seoMeta", () => {
     const ld = productJsonLd({
       baseUrl: "https://freshterra.in",
-      product: PRODUCT,
+      product: { ...PRODUCT, seoMeta: SEO_META },
     });
-    expect(ld["@type"]).toBe("Product");
-    expect(ld.name).toBe("Heirloom Tomatoes 500g");
-    expect(ld.sku).toBe("FT-TOMATO-500G");
-    expect(ld.image).toEqual(["https://cdn/tom.jpg"]);
-    expect(ld.brand).toEqual({ "@type": "Brand", name: "FreshTerra Farms" });
+
+    expect(ld).toEqual({
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      name: "Heirloom Tomatoes, Farm Fresh | FreshTerra",
+      sku: "FT-TOMATO-500G",
+      image: "https://cdn/tom.jpg",
+      description: "Juicy heirloom tomatoes from local farms.",
+      brand: { "@type": "Brand", name: "FRESH TERRA" },
+    });
+    // No real reviews → no aggregateRating (never a placeholder).
+    expect(ld.aggregateRating).toBeUndefined();
     // Web shows no price/stock — offers must be absent from structured data.
     expect(ld.offers).toBeUndefined();
+  });
+
+  it("prefers seoMeta.ogImage for the image", () => {
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in",
+      product: {
+        ...PRODUCT,
+        seoMeta: { ...SEO_META, ogImage: "https://cdn/og.jpg" },
+      },
+    });
+    expect(ld.image).toBe("https://cdn/og.jpg");
+  });
+
+  it("falls back to the product name, story and the site logo", () => {
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in/",
+      product: { ...PRODUCT, images: [], story: "Sun-ripened." },
+    });
+    expect(ld.name).toBe("Heirloom Tomatoes 500g");
+    expect(ld.description).toBe("Sun-ripened.");
+    expect(ld.image).toBe("https://freshterra.in/logo.svg");
+  });
+
+  it("omits aggregateRating when the rating has no reviews", () => {
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in",
+      product: { ...PRODUCT, rating: { avg: 0, count: 0 } },
+    });
+    expect(ld.aggregateRating).toBeUndefined();
+  });
+
+  it("uses the product's own rating when the BFF sends one", () => {
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in",
+      product: { ...PRODUCT, rating: { avg: 4.64, count: 37 } },
+    });
+    expect(ld.aggregateRating).toEqual({
+      "@type": "AggregateRating",
+      bestRating: "5.0",
+      ratingValue: "4.6",
+      ratingCount: "37",
+    });
   });
 });
 

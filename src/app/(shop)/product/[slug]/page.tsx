@@ -15,6 +15,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
 import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
+import { productPageMetadata } from "@/features/catalog/product-seo";
 import {
   getProduct,
   getProductBySlug,
@@ -57,16 +58,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const product = await loadProduct(slug);
-    const description =
-      product.story?.trim() ||
-      product.metafields?.productDetails?.trim() ||
-      `${product.name} on FreshTerra.`;
-    return {
-      title: product.name,
-      description,
-      alternates: { canonical: `/product/${slug}` },
-    };
+    return productPageMetadata({ product: await loadProduct(slug), slug });
   } catch {
     return { alternates: { canonical: `/product/${slug}` } };
   }

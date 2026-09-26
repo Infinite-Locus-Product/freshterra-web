@@ -1,31 +1,31 @@
+import { cache } from "react";
+
 import type { Metadata } from "next";
+
 import { notFound } from "next/navigation";
+
+import { buildPageMetadata, siteTitle } from "@/lib/seo/pageMetadata";
 
 import { StoresPageLayout } from "@/components/stores/StoresPageLayout";
 
 import { fetchStorePageWebContentSafe } from "@/features/cms-content/store-page-web-service";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
-
 /** ISR: re-fetch CMS content every 10 min (matches the BFF cache). */
 export const revalidate = 600;
 
+/** Deduped so generateMetadata + the page body share one BFF request. */
+const loadStoresPage = cache(() => fetchStorePageWebContentSafe());
+
 export async function generateMetadata(): Promise<Metadata> {
-  const content = await fetchStorePageWebContentSafe();
+  const content = await loadStoresPage();
   const title = content?.title ?? "Our Stores";
 
-  return {
-    title: `${title} | FreshTerra`,
-    description: `Visit ${title} — store hours, contact details, directions, and in-store categories.`,
-    alternates: { canonical: "/stores" },
-    openGraph: {
-      title: `${title} | FreshTerra`,
-      description: `Visit ${title} — store hours, contact details, directions, and in-store categories.`,
-      url: `${APP_URL}/stores`,
-      siteName: "FreshTerra",
-      type: "website",
-    },
-  };
+  return buildPageMetadata({
+    path: "/stores",
+    fallbackTitle: siteTitle(title),
+    fallbackDescription: `Visit ${title} — store hours, contact details, directions, and in-store categories.`,
+    seo: content?.seo,
+  });
 }
 
 /**
@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * entry is unavailable or cannot be mapped.
  */
 export default async function StoresPage() {
-  const content = await fetchStorePageWebContentSafe();
+  const content = await loadStoresPage();
   if (!content) notFound();
 
   return <StoresPageLayout content={content} />;

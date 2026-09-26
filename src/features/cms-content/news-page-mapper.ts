@@ -1,4 +1,5 @@
 import { normalizeCmsDeeplink } from "./cms-href";
+import { readCmsSeo } from "./cms-seo";
 import {
   NEWS_LISTING_COMPONENT,
   PUBLICATION_LOGO_COMPONENT,
@@ -126,10 +127,13 @@ export function mapNewsPageContent(input: NewsContent): NewsPageContent {
     .map(mapBlock)
     .filter((section): section is NewsPageSection => section !== null);
 
+  const seo = readCmsSeo(input);
+
   return {
     breadcrumbLabel: title,
     hero: { title },
     sections,
+    ...(seo ? { seo } : {}),
   };
 }
 

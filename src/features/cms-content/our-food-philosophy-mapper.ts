@@ -1,3 +1,11 @@
+import { readCmsSeo } from "./cms-seo";
+import {
+  ourFoodPhilosophyFarmerBannerSchema,
+  ourFoodPhilosophyRelatedBannerSchema,
+  ourFoodPhilosophySourceSchema,
+  ourFoodPhilosophyTrustMarkerSchema,
+} from "./our-food-philosophy-types";
+
 import type {
   FoodPhilosophyCertificationItem,
   FoodPhilosophyPageContent,
@@ -7,12 +15,6 @@ import type {
   OurFoodPhilosophyContent,
 } from "./our-food-philosophy-types";
 import type { z } from "zod";
-import {
-  ourFoodPhilosophyFarmerBannerSchema,
-  ourFoodPhilosophyRelatedBannerSchema,
-  ourFoodPhilosophySourceSchema,
-  ourFoodPhilosophyTrustMarkerSchema,
-} from "./our-food-philosophy-types";
 
 type OurFoodPhilosophySource = z.infer<typeof ourFoodPhilosophySourceSchema>;
 type OurFoodPhilosophyTrustMarker = z.infer<
@@ -90,14 +92,15 @@ function sortByOrder<T extends { sort_order?: number; order?: number }>(
   items: readonly T[],
   orderKey: "sort_order" | "order",
 ): T[] {
-  return [...items].sort(
-    (a, b) => (a[orderKey] ?? 0) - (b[orderKey] ?? 0),
-  );
+  return [...items].sort((a, b) => (a[orderKey] ?? 0) - (b[orderKey] ?? 0));
 }
 
 function mapSourceSection(
   raw: OurFoodPhilosophySource,
-): Pick<NonNullable<FoodPhilosophyPageContent["sourcing"]>, "title" | "subtitle" | "paragraphs"> | null {
+): Pick<
+  NonNullable<FoodPhilosophyPageContent["sourcing"]>,
+  "title" | "subtitle" | "paragraphs"
+> | null {
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
@@ -203,7 +206,9 @@ export function mapOurFoodPhilosophyContent(
     "sort_order",
   )
     .map(mapSourceSection)
-    .filter((section): section is NonNullable<typeof section> => section !== null);
+    .filter(
+      (section): section is NonNullable<typeof section> => section !== null,
+    );
 
   if (philosophySections[0]) {
     result.sourcing = philosophySections[0];
@@ -240,21 +245,32 @@ export function mapOurFoodPhilosophyContent(
     };
   }
 
-  const sustainabilityItems = sortByOrder(input.related_banners ?? [], "sort_order")
+  const sustainabilityItems = sortByOrder(
+    input.related_banners ?? [],
+    "sort_order",
+  )
     .map(mapRelatedBanner)
     .filter((item): item is FoodPhilosophySustainabilityItem => item !== null);
 
-  const sustainabilityTitle = input.sustainability_section_heading?.trim() ?? "";
+  const sustainabilityTitle =
+    input.sustainability_section_heading?.trim() ?? "";
   const sustainabilitySubtitle =
     input.sustainability_section_tagline?.trim() ?? "";
 
-  if (sustainabilityTitle || sustainabilitySubtitle || sustainabilityItems.length > 0) {
+  if (
+    sustainabilityTitle ||
+    sustainabilitySubtitle ||
+    sustainabilityItems.length > 0
+  ) {
     result.sustainability = {
       ...(sustainabilityTitle ? { title: sustainabilityTitle } : {}),
       ...(sustainabilitySubtitle ? { subtitle: sustainabilitySubtitle } : {}),
       items: sustainabilityItems,
     };
   }
+
+  const seo = readCmsSeo(input);
+  if (seo) result.seo = seo;
 
   return result;
 }
@@ -264,14 +280,14 @@ export function hasFoodPhilosophyContent(
 ): boolean {
   return Boolean(
     content.hero?.title ||
-      content.hero?.imageSrc ||
-      content.hero?.imageSrcMobile ||
-      content.sourcing ||
-      (content.certifications &&
-        (content.certifications.title ||
-          content.certifications.paragraphs.length > 0 ||
-          content.certifications.items.length > 0)) ||
-      (content.partnerships && content.partnerships.items.length > 0) ||
-      (content.sustainability && content.sustainability.items.length > 0),
+    content.hero?.imageSrc ||
+    content.hero?.imageSrcMobile ||
+    content.sourcing ||
+    (content.certifications &&
+      (content.certifications.title ||
+        content.certifications.paragraphs.length > 0 ||
+        content.certifications.items.length > 0)) ||
+    (content.partnerships && content.partnerships.items.length > 0) ||
+    (content.sustainability && content.sustainability.items.length > 0),
   );
 }

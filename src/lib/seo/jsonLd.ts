@@ -26,6 +26,14 @@ export function websiteJsonLd({ baseUrl }: WithBaseUrl): JsonLdObject {
   };
 }
 
+/** Brand shown on every product's structured data (marketing spec). */
+export const PRODUCT_JSON_LD_BRAND = "FRESH TERRA";
+
+/**
+ * Product structured data. `name` and `description` use the same marketing
+ * SEO values as the page's `<title>` and meta description (`seoMeta`), so the
+ * rich result matches the search snippet.
+ */
 export function productJsonLd({
   baseUrl,
   product,
@@ -33,21 +41,38 @@ export function productJsonLd({
   baseUrl: string;
   product: ProductDetail;
 }): JsonLdObject {
+  const origin = baseUrl.replace(/\/+$/, "");
+  const seo = product.seoMeta;
+  const name = seo?.title?.trim() || product.name;
   const description =
+    seo?.description?.trim() ||
     product.story?.trim() ||
     product.metafields?.productDetails?.trim() ||
     `${product.name} on FreshTerra.`;
+  const image =
+    seo?.ogImage?.trim() || product.images[0]?.url || `${origin}/logo.svg`;
+
+  // Only real review data — never a placeholder rating (Google policy).
+  const rating = product.rating;
+  const aggregateRating =
+    rating && rating.count > 0
+      ? {
+          "@type": "AggregateRating",
+          bestRating: "5.0",
+          ratingValue: rating.avg.toFixed(1),
+          ratingCount: String(rating.count),
+        }
+      : undefined;
 
   return {
-    "@context": "https://schema.org",
+    "@context": "https://schema.org/",
     "@type": "Product",
-    name: product.name,
-    sku: product.sku,
+    name,
+    ...(product.sku ? { sku: product.sku } : {}),
+    image,
     description,
-    image: product.images.map((img) => img.url),
-    ...(product.metafields?.brand
-      ? { brand: { "@type": "Brand", name: product.metafields.brand } }
-      : {}),
+    brand: { "@type": "Brand", name: PRODUCT_JSON_LD_BRAND },
+    ...(aggregateRating ? { aggregateRating } : {}),
   };
 }
 
