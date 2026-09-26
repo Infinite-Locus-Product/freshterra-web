@@ -1,17 +1,17 @@
 import { apiFetch, FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
-import {
-  DEFAULT_CONTENT_LOCALE,
-  type ContentEntryParams,
-  type ContentEntryRequestOptions,
-} from "./content-entry-service";
 import { hasCareerContent, mapCareerContent } from "./career-mapper";
-
 import {
   careerContentSchema,
   type CareerContent,
   type CareersPageContent,
 } from "./career-types";
+import { CMS_SEO_POPULATE } from "./cms-seo";
+import {
+  DEFAULT_CONTENT_LOCALE,
+  type ContentEntryParams,
+  type ContentEntryRequestOptions,
+} from "./content-entry-service";
 
 const CAREER_CONTENT_PATH = "/api/v1/content/single/career";
 
@@ -21,6 +21,7 @@ const CAREER_CONTENT_PATH = "/api/v1/content/single/career";
 const CAREER_POPULATE = {
   "populate[career_hero]": "*",
   "populate[department][populate]": "*",
+  ...CMS_SEO_POPULATE,
 } as const;
 
 export const CAREER_CONTENT_TYPE = "career";

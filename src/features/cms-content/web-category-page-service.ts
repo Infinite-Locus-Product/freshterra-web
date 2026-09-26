@@ -1,11 +1,12 @@
 import { apiFetch } from "@/lib/clients/freshterra-api";
 
-import type { ContentEntryRequestOptions } from "./content-entry-service";
-
+import { CMS_SEO_POPULATE } from "./cms-seo";
 import {
   webCategoryPageDataSchema,
   type WebCategoryPageContent,
 } from "./web-category-page-types";
+
+import type { ContentEntryRequestOptions } from "./content-entry-service";
 
 const WEB_CATEGORY_PAGE_PATH = "/api/v1/content/single/web-category-page";
 
@@ -17,6 +18,7 @@ const WEB_CATEGORY_PAGE_PATH = "/api/v1/content/single/web-category-page";
 const WEB_CATEGORY_PAGE_POPULATE = {
   "populate[l2_category][populate][l3_tiles][populate]": "*",
   "populate[category_hero_section][populate]": "*",
+  ...CMS_SEO_POPULATE,
 } as const;
 
 /**

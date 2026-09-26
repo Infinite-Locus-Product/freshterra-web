@@ -11,7 +11,10 @@ const strapiBoolSchema = z
     return value.toLowerCase() !== "false";
   });
 
-function readString(record: Record<string, unknown>, ...keys: string[]): string {
+function readString(
+  record: Record<string, unknown>,
+  ...keys: string[]
+): string {
   for (const key of keys) {
     const value = record[key];
     if (typeof value === "string" && value.trim().length > 0) {
@@ -22,7 +25,10 @@ function readString(record: Record<string, unknown>, ...keys: string[]): string 
 }
 
 /** Reads Strapi media as a plain URL string or nested `{ url }` / `{ data.attributes.url }`. */
-function readMediaUrl(record: Record<string, unknown>, ...keys: string[]): string {
+function readMediaUrl(
+  record: Record<string, unknown>,
+  ...keys: string[]
+): string {
   for (const key of keys) {
     const value = record[key];
     if (typeof value === "string" && value.trim().length > 0) {
@@ -39,8 +45,16 @@ function readMediaUrl(record: Record<string, unknown>, ...keys: string[]): strin
 
     const dataRecord = data as Record<string, unknown>;
     const attributes = dataRecord.attributes;
-    if (attributes && typeof attributes === "object" && !Array.isArray(attributes)) {
-      const fromAttrs = readString(attributes as Record<string, unknown>, "url", "src");
+    if (
+      attributes &&
+      typeof attributes === "object" &&
+      !Array.isArray(attributes)
+    ) {
+      const fromAttrs = readString(
+        attributes as Record<string, unknown>,
+        "url",
+        "src",
+      );
       if (fromAttrs) return fromAttrs;
     }
 
@@ -50,7 +64,10 @@ function readMediaUrl(record: Record<string, unknown>, ...keys: string[]): strin
   return "";
 }
 
-function readNumber(record: Record<string, unknown>, ...keys: string[]): number {
+function readNumber(
+  record: Record<string, unknown>,
+  ...keys: string[]
+): number {
   for (const key of keys) {
     const value = record[key];
     if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -65,8 +82,10 @@ function readNumber(record: Record<string, unknown>, ...keys: string[]): number 
 function readNestedCategory(
   record: Record<string, unknown>,
 ): z.infer<typeof productCategorySchema> | undefined {
-  const nested = record.category ?? record.saleorCategory ?? record.saleor_category;
-  if (!nested || typeof nested !== "object" || Array.isArray(nested)) return undefined;
+  const nested =
+    record.category ?? record.saleorCategory ?? record.saleor_category;
+  if (!nested || typeof nested !== "object" || Array.isArray(nested))
+    return undefined;
   const parsed = productCategorySchema.safeParse(nested);
   return parsed.success ? parsed.data : undefined;
 }
@@ -182,7 +201,12 @@ function normalizeHero(raw: unknown) {
       "image_url_web",
       "imageUrlWeb",
     ),
-    imageMweb: readMediaUrl(record, "image_url_mweb", "imageUrlMweb", "image_mweb"),
+    imageMweb: readMediaUrl(
+      record,
+      "image_url_mweb",
+      "imageUrlMweb",
+      "image_mweb",
+    ),
   };
 }
 
@@ -193,7 +217,9 @@ function normalizeWebCategoryPage(input: unknown): unknown {
   const sections = Array.isArray(rawL2)
     ? rawL2
         .map(normalizeL2Category)
-        .filter((section): section is NonNullable<typeof section> => section !== null)
+        .filter(
+          (section): section is NonNullable<typeof section> => section !== null,
+        )
         .sort((a, b) => a.position - b.position)
     : [];
 
@@ -206,6 +232,8 @@ function normalizeWebCategoryPage(input: unknown): unknown {
   return {
     hero: normalizeHero(heroRaw),
     sections,
+    /** Marketing `seo` component — kept for `generateMetadata`. */
+    seo: record.seo,
   };
 }
 
@@ -227,7 +255,9 @@ export const webCategoryPageL2SectionSchema = z.object({
   position: z.number(),
   tiles: z.array(webCategoryPageL3TileSchema),
 });
-export type WebCategoryPageL2Section = z.infer<typeof webCategoryPageL2SectionSchema>;
+export type WebCategoryPageL2Section = z.infer<
+  typeof webCategoryPageL2SectionSchema
+>;
 
 export const webCategoryPageHeroSchema = z.object({
   title: z.string(),
@@ -243,6 +273,7 @@ export const webCategoryPageDataSchema = z.preprocess(
     .object({
       hero: webCategoryPageHeroSchema.optional(),
       sections: z.array(webCategoryPageL2SectionSchema).default([]),
+      seo: z.unknown().optional(),
     })
     .catchall(z.unknown()),
 );

@@ -135,3 +135,23 @@ describe("mapAboutFreshterraContent", () => {
     expect(content.customerStories).toBeUndefined();
   });
 });
+
+describe("mapAboutFreshterraContent seo", () => {
+  it("passes the marketing seo component through", () => {
+    const content = mapAboutFreshterraContent({
+      seo: {
+        metaTitle: "About Us | FreshTerra",
+        canonicalUrl: "https://freshterra.in/about",
+      },
+    });
+
+    expect(content.seo).toEqual({
+      title: "About Us | FreshTerra",
+      canonicalUrl: "https://freshterra.in/about",
+    });
+  });
+
+  it("omits seo when the component is null", () => {
+    expect(mapAboutFreshterraContent({ seo: null })).not.toHaveProperty("seo");
+  });
+});

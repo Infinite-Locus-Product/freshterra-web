@@ -1,12 +1,19 @@
-import { richTextToHtml, richTextToPlainText } from "./cms-rich-text";
 import { isCmsActive } from "./cms-boolean";
-import { resolveL2CategoryViewAllHref } from "./homepage-l2-category-tiles";
 import {
   buildGoogleMapsSearchUrl,
   normalizeCmsDeeplink,
   normalizeCmsSlugHref,
   normalizeStoreHref,
 } from "./cms-href";
+import { richTextToHtml, richTextToPlainText } from "./cms-rich-text";
+import { readCmsSeo } from "./cms-seo";
+import { resolveL2CategoryViewAllHref } from "./homepage-l2-category-tiles";
+import {
+  webHomepageHeroSchema,
+  webHomepageSourceSchema,
+  webHomepageStoreSchema,
+  webHomepageStorySchema,
+} from "./web-homepage-types";
 
 import type {
   HomeHeroSlide,
@@ -14,12 +21,6 @@ import type {
   WebHomepageContent,
 } from "./web-homepage-types";
 import type { z } from "zod";
-import {
-  webHomepageHeroSchema,
-  webHomepageSourceSchema,
-  webHomepageStoreSchema,
-  webHomepageStorySchema,
-} from "./web-homepage-types";
 
 type WebHomepageHero = z.infer<typeof webHomepageHeroSchema>;
 type WebHomepageSource = z.infer<typeof webHomepageSourceSchema>;
@@ -94,7 +95,9 @@ function normalizeHref(slug: string | null | undefined): string | undefined {
   return normalizeCmsSlugHref(slug);
 }
 
-function normalizeDeeplink(value: string | null | undefined): string | undefined {
+function normalizeDeeplink(
+  value: string | null | undefined,
+): string | undefined {
   return normalizeCmsDeeplink(value);
 }
 
@@ -107,7 +110,10 @@ function readDeeplink(record: UnknownRecord): string {
   return "";
 }
 
-function mapHeroSlide(raw: WebHomepageHero, index: number): HomeHeroSlide | null {
+function mapHeroSlide(
+  raw: WebHomepageHero,
+  index: number,
+): HomeHeroSlide | null {
   const record = raw as UnknownRecord;
   const imageWeb = readMediaUrl(record, "image");
   const imageMobile =
@@ -121,7 +127,9 @@ function mapHeroSlide(raw: WebHomepageHero, index: number): HomeHeroSlide | null
   const href =
     normalizeDeeplink(deeplink) ||
     normalizeHref(ctaSlug) ||
-    (collectionId ? `/collection/${encodeURIComponent(collectionId)}` : undefined);
+    (collectionId
+      ? `/collection/${encodeURIComponent(collectionId)}`
+      : undefined);
 
   const id =
     readString(record, "id") ||
@@ -151,7 +159,12 @@ function mapStory(
   const record = raw as UnknownRecord;
   const name = readString(record, "customer_name", "name");
   const quote = readString(record, "quote");
-  const imageSrc = readMediaUrl(record, "thumbnail_image_mweb", "thumbnail", "image");
+  const imageSrc = readMediaUrl(
+    record,
+    "thumbnail_image_mweb",
+    "thumbnail",
+    "image",
+  );
   if (!name || !quote) return null;
 
   return {
@@ -184,8 +197,7 @@ function resolveLocateUsHref(
   hasSecondaryLabel: boolean,
 ): string | undefined {
   const slug = readString(record, "locate_us_slug");
-  const fromSlug =
-    normalizeStoreHref(slug) ?? normalizeCmsDeeplink(slug);
+  const fromSlug = normalizeStoreHref(slug) ?? normalizeCmsDeeplink(slug);
   if (fromSlug) return fromSlug;
 
   const explicit = normalizeCmsDeeplink(
@@ -267,7 +279,9 @@ function mapSource(raw: WebHomepageSource): HomePageContent["sourcing"] {
 }
 
 /** Maps `web-homepage` CMS payload into the homepage view model (CMS fields only). */
-export function mapWebHomepageContent(input: WebHomepageContent): HomePageContent {
+export function mapWebHomepageContent(
+  input: WebHomepageContent,
+): HomePageContent {
   const heroSlides = (input.web_herosection ?? [])
     .filter((slide) => isCmsActive(slide.is_active))
     .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
@@ -293,10 +307,11 @@ export function mapWebHomepageContent(input: WebHomepageContent): HomePageConten
     ? resolveL2CategoryViewAllHref(l2)
     : undefined;
   const categoriesCtaLabel = l2SectionActive
-    ? l2?.view_all_cta?.trim() ?? ""
+    ? (l2?.view_all_cta?.trim() ?? "")
     : "";
 
   const storeSectionTitle = input.store_section_heading?.trim() ?? "";
+  const seo = readCmsSeo(input);
 
   return {
     hero: {
@@ -312,7 +327,9 @@ export function mapWebHomepageContent(input: WebHomepageContent): HomePageConten
           subtitle: l2?.tagline?.trim() ?? "",
           ctaLabel: categoriesCtaLabel,
           items: [],
-          ...(categoriesViewAllHref ? { viewAllHref: categoriesViewAllHref } : {}),
+          ...(categoriesViewAllHref
+            ? { viewAllHref: categoriesViewAllHref }
+            : {}),
         }
       : {
           title: "",
@@ -340,5 +357,6 @@ export function mapWebHomepageContent(input: WebHomepageContent): HomePageConten
       officeLines: [],
       appBadges: [],
     },
+    ...(seo ? { seo } : {}),
   };
 }
