@@ -1,4 +1,5 @@
 import { normalizeCmsDeeplink } from "./cms-href";
+import { readCmsString } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 import {
   NEWS_LISTING_COMPONENT,
@@ -13,16 +14,6 @@ import {
 type UnknownRecord = Record<string, unknown>;
 
 const DEFAULT_PAGE_HEADING = "News & Media";
-
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
 
 /** `sort_order` arrives as a numeric string; unparseable values sort last. */
 function readOrder(record: UnknownRecord): number {
@@ -44,7 +35,7 @@ function sortByOrder<T extends UnknownRecord>(items: readonly T[]): T[] {
 }
 
 function readHref(record: UnknownRecord): string | null {
-  return normalizeCmsDeeplink(readString(record, "redirection")) ?? null;
+  return normalizeCmsDeeplink(readCmsString(record, "redirection")) ?? null;
 }
 
 function blockKey(prefix: string, id: unknown, index: number): string {
@@ -52,14 +43,14 @@ function blockKey(prefix: string, id: unknown, index: number): string {
 }
 
 function mapNewsPaper(raw: UnknownRecord, index: number): NewsPaperItem | null {
-  const imageWeb = readString(raw, "image_web");
-  const imageMweb = readString(raw, "image_mweb");
+  const imageWeb = readCmsString(raw, "image_web");
+  const imageMweb = readCmsString(raw, "image_mweb");
   const imageSrc = imageWeb || imageMweb;
   if (!imageSrc) return null;
 
   return {
     key: blockKey("news", raw.id, index),
-    title: readString(raw, "news_title"),
+    title: readCmsString(raw, "news_title"),
     href: readHref(raw),
     imageSrc,
     imageSrcMobile: imageMweb || imageWeb,
@@ -70,7 +61,7 @@ function mapPublicationLogo(
   raw: UnknownRecord,
   index: number,
 ): PublicationLogoItem | null {
-  const logoSrc = readString(raw, "logo");
+  const logoSrc = readCmsString(raw, "logo");
   if (!logoSrc) return null;
 
   return {
@@ -81,7 +72,7 @@ function mapPublicationLogo(
 }
 
 function mapBlock(raw: UnknownRecord, index: number): NewsPageSection | null {
-  const component = readString(raw, "__component");
+  const component = readCmsString(raw, "__component");
 
   if (component === NEWS_LISTING_COMPONENT) {
     const items = sortByOrder(
@@ -94,7 +85,7 @@ function mapBlock(raw: UnknownRecord, index: number): NewsPageSection | null {
     return {
       kind: "newspapers",
       key: blockKey("news-listing", raw.id, index),
-      heading: readString(raw, "heading", "title"),
+      heading: readCmsString(raw, "heading", "title"),
       items,
     };
   }
@@ -110,7 +101,7 @@ function mapBlock(raw: UnknownRecord, index: number): NewsPageSection | null {
     return {
       kind: "publications",
       key: blockKey("publication-logo", raw.id, index),
-      heading: readString(raw, "title", "heading"),
+      heading: readCmsString(raw, "title", "heading"),
       items,
     };
   }
@@ -121,7 +112,7 @@ function mapBlock(raw: UnknownRecord, index: number): NewsPageSection | null {
 /** Maps the Strapi `news-page` single type into the News & Media layout model. */
 export function mapNewsPageContent(input: NewsContent): NewsPageContent {
   const record = input as UnknownRecord;
-  const title = readString(record, "page_heading") || DEFAULT_PAGE_HEADING;
+  const title = readCmsString(record, "page_heading") || DEFAULT_PAGE_HEADING;
 
   const sections = ((record.listing as UnknownRecord[] | undefined) ?? [])
     .map(mapBlock)

@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { productCategorySchema } from "@/features/catalog/types";
 
+import { readCmsString } from "./cms-readers";
+
 const strapiBoolSchema = z
   .union([z.boolean(), z.string()])
   .optional()
@@ -10,19 +12,6 @@ const strapiBoolSchema = z
     if (typeof value === "boolean") return value;
     return value.toLowerCase() !== "false";
   });
-
-function readString(
-  record: Record<string, unknown>,
-  ...keys: string[]
-): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
 
 /** Reads Strapi media as a plain URL string or nested `{ url }` / `{ data.attributes.url }`. */
 function readMediaUrl(
@@ -37,7 +26,7 @@ function readMediaUrl(
     if (!value || typeof value !== "object" || Array.isArray(value)) continue;
 
     const media = value as Record<string, unknown>;
-    const direct = readString(media, "url", "src", "href");
+    const direct = readCmsString(media, "url", "src", "href");
     if (direct) return direct;
 
     const data = media.data;
@@ -50,7 +39,7 @@ function readMediaUrl(
       typeof attributes === "object" &&
       !Array.isArray(attributes)
     ) {
-      const fromAttrs = readString(
+      const fromAttrs = readCmsString(
         attributes as Record<string, unknown>,
         "url",
         "src",
@@ -58,7 +47,7 @@ function readMediaUrl(
       if (fromAttrs) return fromAttrs;
     }
 
-    const fromData = readString(dataRecord, "url", "src");
+    const fromData = readCmsString(dataRecord, "url", "src");
     if (fromData) return fromData;
   }
   return "";
@@ -94,7 +83,7 @@ function normalizeL3Tile(raw: unknown) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const record = raw as Record<string, unknown>;
   const nested = readNestedCategory(record);
-  const saleorId = readString(
+  const saleorId = readCmsString(
     record,
     "saleor_l3_category_id",
     "saleorL3CategoryId",
@@ -102,11 +91,11 @@ function normalizeL3Tile(raw: unknown) {
     "category_id",
   );
   const name =
-    readString(record, "name", "title", "category_name", "categoryName") ||
+    readCmsString(record, "name", "title", "category_name", "categoryName") ||
     nested?.name ||
     "";
   const slug =
-    readString(record, "slug", "category_slug", "categorySlug") ||
+    readCmsString(record, "slug", "category_slug", "categorySlug") ||
     nested?.slug ||
     "";
   const imageWeb = readMediaUrl(
@@ -145,7 +134,7 @@ function normalizeL2Category(raw: unknown) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const record = raw as Record<string, unknown>;
   const nested = readNestedCategory(record);
-  const saleorId = readString(
+  const saleorId = readCmsString(
     record,
     "saleor_l2_category_id",
     "saleor_l2category_id",
@@ -154,14 +143,14 @@ function normalizeL2Category(raw: unknown) {
     "category_id",
   );
   const name =
-    readString(record, "name", "title", "category_name", "categoryName") ||
+    readCmsString(record, "name", "title", "category_name", "categoryName") ||
     nested?.name ||
     "";
   const slug =
-    readString(record, "slug", "category_slug", "categorySlug") ||
+    readCmsString(record, "slug", "category_slug", "categorySlug") ||
     nested?.slug ||
     "";
-  const tagline = readString(record, "tagline", "subtitle");
+  const tagline = readCmsString(record, "tagline", "subtitle");
   const isActive = strapiBoolSchema.parse(record.is_active ?? record.isActive);
   const position = readNumber(record, "position");
   const rawTiles = record.l3_tiles ?? record.l3Tiles ?? record.tiles;
@@ -192,8 +181,8 @@ function normalizeHero(raw: unknown) {
   if (!isActive) return undefined;
 
   return {
-    title: readString(record, "title", "headline"),
-    subtitle: readString(record, "subtitle"),
+    title: readCmsString(record, "title", "headline"),
+    subtitle: readCmsString(record, "subtitle"),
     imageWeb: readMediaUrl(
       record,
       "image_web",

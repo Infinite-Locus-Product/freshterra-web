@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { slugToTitle } from "./cms-readers";
 import { getContentEntry } from "./content-entry-service";
 
 import type { HomeCategoryTileItem } from "./web-homepage-types";

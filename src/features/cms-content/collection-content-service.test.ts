@@ -94,3 +94,36 @@ describe("fetchCollectionSeoSafe", () => {
     expect(console.warn).toHaveBeenCalled();
   });
 });
+
+describe("fetchCollectionSeoSafe cache tags", () => {
+  afterEach(() => {
+    vi.doUnmock("./content-entry-service");
+    vi.resetModules();
+  });
+
+  it("tags the fetch so the revalidate webhook can bust it", async () => {
+    const getContentEntry = vi.fn(async () => ({ seo: null }));
+    vi.resetModules();
+    vi.doMock("./content-entry-service", () => ({ getContentEntry }));
+
+    const { fetchCollectionSeoSafe: fetchSeo } =
+      await import("./collection-content-service");
+    await fetchSeo("summer-picks");
+
+    expect(getContentEntry).toHaveBeenCalledWith(
+      "collections",
+      "summer-picks",
+      {},
+      expect.objectContaining({
+        next: {
+          tags: [
+            "cms:collection",
+            "cms:collections",
+            "cms:collection:summer-picks",
+          ],
+          revalidate: 600,
+        },
+      }),
+    );
+  });
+});

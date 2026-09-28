@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 export const SITE_NAME = "FreshTerra";
 const SITE_TITLE_SUFFIX = ` | ${SITE_NAME}`;
+/** Matches a trailing "| FreshTerra" in any casing / spacing. */
+const SITE_TITLE_SUFFIX_PATTERN = /\|\s*fresh\s*terra\s*$/i;
 
 /**
  * Root `src/app/opengraph-image.png` / `twitter-image.png`, served by Next.
@@ -49,7 +51,7 @@ function clean(value: string | null | undefined): string | undefined {
  */
 export function siteTitle(pageName: string): string {
   const name = pageName.trim();
-  return name.endsWith(SITE_TITLE_SUFFIX)
+  return SITE_TITLE_SUFFIX_PATTERN.test(name)
     ? name
     : `${name}${SITE_TITLE_SUFFIX}`;
 }
