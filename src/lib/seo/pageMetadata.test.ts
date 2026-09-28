@@ -20,6 +20,22 @@ describe("siteTitle", () => {
     );
   });
 
+  it("does not double the suffix when casing or spacing differ", () => {
+    expect(siteTitle("Contact Us | freshterra")).toBe(
+      "Contact Us | freshterra",
+    );
+    expect(siteTitle("Contact Us |FreshTerra ")).toBe("Contact Us |FreshTerra");
+    expect(siteTitle("Contact Us | Fresh Terra")).toBe(
+      "Contact Us | Fresh Terra",
+    );
+  });
+
+  it("still appends when FreshTerra is not the trailing suffix", () => {
+    expect(siteTitle("FreshTerra Gurugram")).toBe(
+      "FreshTerra Gurugram | FreshTerra",
+    );
+  });
+
   it("trims surrounding whitespace", () => {
     expect(siteTitle("  FAQs  ")).toBe("FAQs | FreshTerra");
   });

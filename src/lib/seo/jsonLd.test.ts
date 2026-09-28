@@ -33,7 +33,7 @@ describe("productJsonLd", () => {
     ogImage: null,
   };
 
-  it("builds the marketing Product schema from seoMeta", () => {
+  it("builds the Product schema: clean name, seo description, own brand", () => {
     const ld = productJsonLd({
       baseUrl: "https://freshterra.in",
       product: { ...PRODUCT, seoMeta: SEO_META },
@@ -42,37 +42,61 @@ describe("productJsonLd", () => {
     expect(ld).toEqual({
       "@context": "https://schema.org/",
       "@type": "Product",
-      name: "Heirloom Tomatoes, Farm Fresh | FreshTerra",
+      name: "Heirloom Tomatoes 500g",
       sku: "FT-TOMATO-500G",
-      image: "https://cdn/tom.jpg",
+      image: ["https://cdn/tom.jpg"],
       description: "Juicy heirloom tomatoes from local farms.",
-      brand: { "@type": "Brand", name: "FRESH TERRA" },
+      brand: { "@type": "Brand", name: "FreshTerra Farms" },
     });
-    // No real reviews → no aggregateRating (never a placeholder).
-    expect(ld.aggregateRating).toBeUndefined();
     // Web shows no price/stock — offers must be absent from structured data.
     expect(ld.offers).toBeUndefined();
+    // No real reviews → no aggregateRating (never a placeholder).
+    expect(ld.aggregateRating).toBeUndefined();
   });
 
-  it("prefers seoMeta.ogImage for the image", () => {
+  it("never uses the SEO title (with its site suffix) as the name", () => {
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in",
+      product: { ...PRODUCT, seoMeta: SEO_META },
+    });
+    expect(ld.name).not.toContain("| FreshTerra");
+  });
+
+  it("falls back to FRESH TERRA when the product has no brand", () => {
+    const ld = productJsonLd({
+      baseUrl: "https://freshterra.in",
+      product: { ...PRODUCT, metafields: { healthBenefits: [] } },
+    });
+    expect(ld.brand).toEqual({ "@type": "Brand", name: "FRESH TERRA" });
+  });
+
+  it("lists the seo ogImage first, then the full gallery, without duplicates", () => {
     const ld = productJsonLd({
       baseUrl: "https://freshterra.in",
       product: {
         ...PRODUCT,
+        images: [
+          { url: "https://cdn/tom.jpg", alt: "tomato" },
+          { url: "https://cdn/tom-2.jpg", alt: "tomato side" },
+          { url: "https://cdn/og.jpg", alt: "dup" },
+        ],
         seoMeta: { ...SEO_META, ogImage: "https://cdn/og.jpg" },
       },
     });
-    expect(ld.image).toBe("https://cdn/og.jpg");
+    expect(ld.image).toEqual([
+      "https://cdn/og.jpg",
+      "https://cdn/tom.jpg",
+      "https://cdn/tom-2.jpg",
+    ]);
   });
 
-  it("falls back to the product name, story and the site logo", () => {
+  it("falls back to the story and the site logo", () => {
     const ld = productJsonLd({
       baseUrl: "https://freshterra.in/",
       product: { ...PRODUCT, images: [], story: "Sun-ripened." },
     });
-    expect(ld.name).toBe("Heirloom Tomatoes 500g");
     expect(ld.description).toBe("Sun-ripened.");
-    expect(ld.image).toBe("https://freshterra.in/logo.svg");
+    expect(ld.image).toEqual(["https://freshterra.in/logo.svg"]);
   });
 
   it("omits aggregateRating when the rating has no reviews", () => {

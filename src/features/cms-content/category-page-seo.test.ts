@@ -71,6 +71,16 @@ describe("categoryPageMetadata", () => {
     expect(meta.description).toBe("Browse Basmati on FreshTerra.");
   });
 
+  it("matches the PLP config's own page despite CMS slug casing", () => {
+    const meta = categoryPageMetadata({
+      slug: "rice-2",
+      webCategory: null,
+      plpContext: { config: riceConfig, parentSlug: " Rice-2 " },
+    });
+
+    expect(meta.alternates?.canonical).toBe("https://freshterra.in/c/rice-2");
+  });
+
   it("title-cases the slug when there is no CMS content", () => {
     const meta = categoryPageMetadata({
       slug: "cold-pressed-oils",

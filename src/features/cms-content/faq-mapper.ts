@@ -1,3 +1,4 @@
+import { readCmsString } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 import { faqPageLinkSchema } from "./faq-types";
 
@@ -16,16 +17,6 @@ type UnknownRecord = Record<string, unknown>;
 
 function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
 }
 
 function resolvePageHref(
@@ -48,7 +39,7 @@ function resolveCtaHref(slug: string | null | undefined): string {
 }
 
 function mapFaqItem(raw: UnknownRecord): FaqItem | null {
-  const question = readString(raw, "question");
+  const question = readCmsString(raw, "question");
   if (!question) return null;
 
   const answerRaw = raw.answer;
@@ -66,7 +57,7 @@ function mapFaqItem(raw: UnknownRecord): FaqItem | null {
 
 function mapPageLink(raw: FaqPageLink): { label: string; href: string } | null {
   const record = raw as UnknownRecord;
-  const label = readString(record, "page_title", "title", "label");
+  const label = readCmsString(record, "page_title", "title", "label");
   if (!label) return null;
 
   const slug = typeof record.page_slug === "string" ? record.page_slug : null;
@@ -100,7 +91,7 @@ export function hasFaqContent(content: FaqPageContent): boolean {
  */
 export function mapFaqContent(input: FaqContent): FaqPageContent {
   const faqSection = isRecord(input.faq) ? input.faq : {};
-  const heroTitle = readString(faqSection, "title") || "FAQs";
+  const heroTitle = readCmsString(faqSection, "title") || "FAQs";
 
   const items = sortByOrder(
     (faqSection.faq_question as UnknownRecord[] | undefined) ?? [],
@@ -108,20 +99,20 @@ export function mapFaqContent(input: FaqContent): FaqPageContent {
     .map(mapFaqItem)
     .filter((item): item is FaqItem => item !== null);
 
-  const supportTitle = readString(
+  const supportTitle = readCmsString(
     input as UnknownRecord,
     "have_question_title",
   );
-  const supportDescription = readString(
+  const supportDescription = readCmsString(
     input as UnknownRecord,
     "have_question_subtitile",
     "have_question_subtitle",
   );
-  const ctaLabel = readString(input as UnknownRecord, "cta");
+  const ctaLabel = readCmsString(input as UnknownRecord, "cta");
   const ctaHref = resolveCtaHref(input.cta_slug);
 
   const seo = readCmsSeo(input);
-  const pagesTitle = readString(input as UnknownRecord, "pages_title");
+  const pagesTitle = readCmsString(input as UnknownRecord, "pages_title");
   const links = sortByOrder(
     (input.pages ?? [])
       .map((page) => faqPageLinkSchema.safeParse(page))

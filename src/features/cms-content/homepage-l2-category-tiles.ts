@@ -1,9 +1,8 @@
-import { slugToTitle } from "@/lib/utils/slug";
-
 import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
 import { isCmsActive } from "./cms-boolean";
 import { normalizeCmsDeeplink, normalizeCmsSlugHref } from "./cms-href";
+import { slugToTitle } from "./cms-readers";
 
 import type { CategoryLookup } from "./web-category-page-mapper";
 import type {

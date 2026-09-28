@@ -1,3 +1,4 @@
+import { readCmsString } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 
 import type {
@@ -13,16 +14,6 @@ function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
-
 function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
   for (const key of keys) {
     const value = record[key];
@@ -31,7 +22,7 @@ function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
     }
     if (!isRecord(value)) continue;
 
-    const direct = readString(value, "url", "src", "href");
+    const direct = readCmsString(value, "url", "src", "href");
     if (direct) return direct;
   }
   return "";
@@ -62,14 +53,14 @@ function sortByOrder(items: UnknownRecord[]): UnknownRecord[] {
 function mapJob(raw: UnknownRecord): CareerJob | null {
   if (!isActive(raw)) return null;
 
-  const title = readString(raw, "job_title", "title");
-  const description = readString(
+  const title = readCmsString(raw, "job_title", "title");
+  const description = readCmsString(
     raw,
     "job_subtitle",
     "description",
     "subtitle",
   );
-  const applyCtaLabel = readString(raw, "apply_cta", "cta") || "Apply Now";
+  const applyCtaLabel = readCmsString(raw, "apply_cta", "cta") || "Apply Now";
 
   if (!title) return null;
 
@@ -83,7 +74,7 @@ function mapJob(raw: UnknownRecord): CareerJob | null {
 function mapDepartment(raw: UnknownRecord): CareerDepartmentGroup | null {
   if (!isActive(raw)) return null;
 
-  const title = readString(raw, "department_title", "title");
+  const title = readCmsString(raw, "department_title", "title");
   if (!title) return null;
 
   const careersRaw = Array.isArray(raw.careers) ? raw.careers : [];
@@ -111,8 +102,8 @@ export function hasCareerContent(content: CareersPageContent): boolean {
 export function mapCareerContent(input: CareerContent): CareersPageContent {
   const heroRecord = isRecord(input.career_hero) ? input.career_hero : {};
 
-  const title = readString(heroRecord, "title") || "Careers at FreshTerra";
-  const subtitle = readString(heroRecord, "subtitile", "subtitle");
+  const title = readCmsString(heroRecord, "title") || "Careers at FreshTerra";
+  const subtitle = readCmsString(heroRecord, "subtitile", "subtitle");
   const bannerSrc = readMediaUrl(
     heroRecord,
     "heroimage",
@@ -121,10 +112,10 @@ export function mapCareerContent(input: CareerContent): CareersPageContent {
   );
   const bannerSrcMobile =
     readMediaUrl(heroRecord, "hero_image_mweb", "heroImageMweb") || bannerSrc;
-  const description = readString(heroRecord, "description");
+  const description = readCmsString(heroRecord, "description");
   const paragraphs = description ? splitParagraphs(description) : [];
   const bannerAlt =
-    readString(heroRecord, "short_title", "subtitile", "subtitle") || title;
+    readCmsString(heroRecord, "short_title", "subtitile", "subtitle") || title;
 
   const departmentsRaw = Array.isArray(input.department)
     ? input.department
