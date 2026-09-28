@@ -36,13 +36,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const path = `/collection/${slug}`;
 
-  let name: string | undefined;
-  try {
-    name = (await loadCollection(slug)).collection?.name?.trim();
-  } catch {
-    // Unknown collection — keep the canonical-only metadata below.
-  }
+  // Independent endpoints — fetch in parallel. The SEO fetch never throws.
+  const [collection, seo] = await Promise.all([
+    loadCollection(slug).catch(() => null),
+    loadCollectionSeo(slug),
+  ]);
+  const name = collection?.collection?.name?.trim();
   if (!name) {
+    // Unknown collection — canonical only.
     return { alternates: { canonical: path } };
   }
 
@@ -50,7 +51,7 @@ export async function generateMetadata({
     path,
     fallbackTitle: siteTitle(name),
     fallbackDescription: `Browse ${name} on FreshTerra.`,
-    seo: await loadCollectionSeo(slug),
+    seo,
   });
 }
 

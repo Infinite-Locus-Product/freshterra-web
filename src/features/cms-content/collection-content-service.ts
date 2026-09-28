@@ -1,6 +1,11 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import type { SeoOverrides } from "@/lib/seo/pageMetadata";
 
+import {
+  CMS_COLLECTION_REVALIDATE_SECONDS,
+  CMS_COLLECTION_TAGS,
+  cmsCollectionTag,
+} from "./cms-cache-tags";
 import { readCmsSeo } from "./cms-seo";
 import { getContentEntry } from "./content-entry-service";
 
@@ -22,7 +27,13 @@ export async function fetchCollectionSeoSafe(
       COLLECTION_CONTENT_TYPE,
       slug,
       {},
-      { expectedErrorCodes: ["NOT_FOUND"] },
+      {
+        expectedErrorCodes: ["NOT_FOUND"],
+        next: {
+          tags: [...CMS_COLLECTION_TAGS, cmsCollectionTag(slug)],
+          revalidate: CMS_COLLECTION_REVALIDATE_SECONDS,
+        },
+      },
     );
     return readCmsSeo(entry);
   } catch (error) {

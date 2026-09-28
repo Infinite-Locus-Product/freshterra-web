@@ -6,6 +6,7 @@ import {
   type SeoOverrides,
 } from "@/lib/seo/pageMetadata";
 
+import { slugToTitle } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 
 import type { WebCategoryContent } from "./web-category-content-service";
@@ -20,23 +21,20 @@ export type CategoryPageData = {
   plpContext: WebCategoryPlpContext | null;
 };
 
-/** `basmati-rice` → `Basmati Rice`. */
-function titleFromSlug(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+/** Slug comparison tolerant of CMS casing / stray whitespace. */
+function sameSlug(a: string | null | undefined, b: string): boolean {
+  return (a ?? "").trim().toLowerCase() === b.trim().toLowerCase();
 }
+
+/** `basmati-rice` → `Basmati Rice`. */
 
 /** Label of the `l4_tab` whose category slug is this route, for L4 children. */
 function l4TabLabel(
   context: WebCategoryPlpContext | null,
   slug: string,
 ): string | undefined {
-  const wanted = slug.trim().toLowerCase();
-  const tab = context?.config.l4_tab.find(
-    (entry) => entry.l4_category_slug?.trim().toLowerCase() === wanted,
+  const tab = context?.config.l4_tab.find((entry) =>
+    sameSlug(entry.l4_category_slug, slug),
   );
   return tab?.label?.trim() || undefined;
 }
@@ -54,7 +52,9 @@ export function categoryPageMetadata({
   plpContext,
 }: CategoryPageData & { slug: string }): Metadata {
   const ownPlp =
-    plpContext && plpContext.parentSlug === slug ? plpContext.config : null;
+    plpContext && sameSlug(plpContext.parentSlug, slug)
+      ? plpContext.config
+      : null;
   const seo = readCmsSeo(webCategory) ?? readCmsSeo(ownPlp);
   const hero = webCategory?.category_hero_section;
 
@@ -63,7 +63,7 @@ export function categoryPageMetadata({
     hero?.title?.trim() ||
     ownPlp?.label?.trim() ||
     l4TabLabel(plpContext, slug) ||
-    titleFromSlug(slug);
+    slugToTitle(slug);
 
   return buildPageMetadata({
     path: `/c/${slug}`,

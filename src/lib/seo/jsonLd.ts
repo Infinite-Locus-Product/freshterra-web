@@ -26,13 +26,13 @@ export function websiteJsonLd({ baseUrl }: WithBaseUrl): JsonLdObject {
   };
 }
 
-/** Brand shown on every product's structured data (marketing spec). */
+/** Brand used when a product has no brand of its own (FreshTerra own label). */
 export const PRODUCT_JSON_LD_BRAND = "FRESH TERRA";
 
 /**
- * Product structured data. `name` and `description` use the same marketing
- * SEO values as the page's `<title>` and meta description (`seoMeta`), so the
- * rich result matches the search snippet.
+ * Product structured data. `name` is the clean product name (Google: the
+ * product's name, not a page title); `description` uses the marketing SEO
+ * description (`seoMeta`) so the rich result matches the search snippet.
  */
 export function productJsonLd({
   baseUrl,
@@ -43,14 +43,21 @@ export function productJsonLd({
 }): JsonLdObject {
   const origin = baseUrl.replace(/\/+$/, "");
   const seo = product.seoMeta;
-  const name = seo?.title?.trim() || product.name;
   const description =
     seo?.description?.trim() ||
     product.story?.trim() ||
     product.metafields?.productDetails?.trim() ||
     `${product.name} on FreshTerra.`;
-  const image =
-    seo?.ogImage?.trim() || product.images[0]?.url || `${origin}/logo.svg`;
+
+  // Marketing OG image first, then the full gallery; logo only when empty.
+  const gallery = [
+    seo?.ogImage?.trim(),
+    ...product.images.map((img) => img.url?.trim()),
+  ].filter((url): url is string => Boolean(url));
+  const images = [...new Set(gallery)];
+  const image = images.length > 0 ? images : [`${origin}/logo.svg`];
+
+  const brand = product.metafields?.brand?.trim() || PRODUCT_JSON_LD_BRAND;
 
   // Only real review data — never a placeholder rating (Google policy).
   const rating = product.rating;
@@ -67,11 +74,11 @@ export function productJsonLd({
   return {
     "@context": "https://schema.org/",
     "@type": "Product",
-    name,
+    name: product.name,
     ...(product.sku ? { sku: product.sku } : {}),
     image,
     description,
-    brand: { "@type": "Brand", name: PRODUCT_JSON_LD_BRAND },
+    brand: { "@type": "Brand", name: brand },
     ...(aggregateRating ? { aggregateRating } : {}),
   };
 }

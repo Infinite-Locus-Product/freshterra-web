@@ -2,6 +2,7 @@ import {
   aboutFreshterraCoreImageSchema,
   aboutFreshterraStorySchema,
 } from "./about-freshterra-types";
+import { readCmsString } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 
 import type {
@@ -21,16 +22,6 @@ function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
-
 function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
   for (const key of keys) {
     const value = record[key];
@@ -39,18 +30,18 @@ function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
     }
     if (!isRecord(value)) continue;
 
-    const direct = readString(value, "url", "src", "href");
+    const direct = readCmsString(value, "url", "src", "href");
     if (direct) return direct;
 
     const data = value.data;
     if (!isRecord(data)) continue;
 
-    const fromData = readString(data, "url", "src");
+    const fromData = readCmsString(data, "url", "src");
     if (fromData) return fromData;
 
     const attributes = data.attributes;
     if (isRecord(attributes)) {
-      const fromAttrs = readString(attributes, "url", "src");
+      const fromAttrs = readCmsString(attributes, "url", "src");
       if (fromAttrs) return fromAttrs;
     }
   }
@@ -90,8 +81,8 @@ function mapCoreValue(
   if (!imageSrc) return null;
 
   return {
-    label: readString(record, "label", "title", "name"),
-    description: readString(record, "description", "subtitle"),
+    label: readCmsString(record, "label", "title", "name"),
+    description: readCmsString(record, "description", "subtitle"),
     imageSrc,
   };
 }
@@ -100,8 +91,8 @@ function mapStory(raw: AboutFreshterraStory): AboutStoryItem | null {
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
-  const name = readString(record, "customer_name", "name");
-  const quote = readString(record, "quote", "testimonial", "description");
+  const name = readCmsString(record, "customer_name", "name");
+  const quote = readCmsString(record, "quote", "testimonial", "description");
   const imageSrc = readMediaUrl(
     record,
     "thumbnail_image_mweb",
@@ -114,7 +105,7 @@ function mapStory(raw: AboutFreshterraStory): AboutStoryItem | null {
   if (!name || !quote || !imageSrc) return null;
 
   const ageLabel =
-    readString(record, "customer_title", "ageLabel", "age") ||
+    readCmsString(record, "customer_title", "ageLabel", "age") ||
     (typeof record.age === "number" ? `${record.age} Years` : "");
 
   return { name, ageLabel, quote, imageSrc };
@@ -150,8 +141,8 @@ export function mapAboutFreshterraContent(
   );
   const bannerSrcMobile =
     readMediaUrl(heroRecord, "hero_image_mweb", "heroImageMweb") || bannerSrc;
-  const heroTitle = readString(heroRecord, "title");
-  const storySubtitle = readString(heroRecord, "subtitile", "subtitle");
+  const heroTitle = readCmsString(heroRecord, "title");
+  const storySubtitle = readCmsString(heroRecord, "subtitile", "subtitle");
 
   if (heroTitle || bannerSrc || bannerSrcMobile) {
     result.hero = {
@@ -162,8 +153,8 @@ export function mapAboutFreshterraContent(
     };
   }
 
-  const storyTitle = readString(heroRecord, "short_title", "story_title");
-  const description = readString(heroRecord, "description");
+  const storyTitle = readCmsString(heroRecord, "short_title", "story_title");
+  const description = readCmsString(heroRecord, "description");
   const storyParagraphs = description ? splitParagraphs(description) : [];
 
   if (storyTitle || storySubtitle || storyParagraphs.length > 0) {

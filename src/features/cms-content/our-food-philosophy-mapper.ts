@@ -1,3 +1,4 @@
+import { readCmsString } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 import {
   ourFoodPhilosophyFarmerBannerSchema,
@@ -39,16 +40,6 @@ function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
-
 function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
   for (const key of keys) {
     const value = record[key];
@@ -57,18 +48,18 @@ function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
     }
     if (!isRecord(value)) continue;
 
-    const direct = readString(value, "url", "src", "href");
+    const direct = readCmsString(value, "url", "src", "href");
     if (direct) return direct;
 
     const data = value.data;
     if (!isRecord(data)) continue;
 
-    const fromData = readString(data, "url", "src");
+    const fromData = readCmsString(data, "url", "src");
     if (fromData) return fromData;
 
     const attributes = data.attributes;
     if (isRecord(attributes)) {
-      const fromAttrs = readString(attributes, "url", "src");
+      const fromAttrs = readCmsString(attributes, "url", "src");
       if (fromAttrs) return fromAttrs;
     }
   }
@@ -104,9 +95,9 @@ function mapSourceSection(
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
-  const title = readString(record, "title");
-  const subtitle = readString(record, "tagline", "subtitle");
-  const description = readString(record, "description");
+  const title = readCmsString(record, "title");
+  const subtitle = readCmsString(record, "tagline", "subtitle");
+  const description = readCmsString(record, "description");
   const paragraphs = description ? splitParagraphs(description) : [];
 
   if (!title && !subtitle && paragraphs.length === 0) return null;
@@ -124,7 +115,7 @@ function mapTrustMarker(
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
-  const label = readString(record, "title", "label", "name");
+  const label = readCmsString(record, "title", "label", "name");
   const imageSrc = readMediaUrl(record, "icon", "image", "imageUrl");
   if (!label || !imageSrc) return null;
 
@@ -143,9 +134,9 @@ function mapFarmerBanner(
     readMediaUrl(record, "image_mweb", "image_mobile") || imageSrc;
   if (!imageSrc && !imageSrcMobile) return null;
 
-  const quote = readString(record, "quote", "testimonial");
-  const name = readString(record, "name", "farmer_name");
-  const location = readString(record, "location", "farmer_location");
+  const quote = readCmsString(record, "quote", "testimonial");
+  const name = readCmsString(record, "name", "farmer_name");
+  const location = readCmsString(record, "location", "farmer_location");
 
   return {
     imageSrc: imageSrc || imageSrcMobile,
@@ -169,8 +160,8 @@ function mapRelatedBanner(
     imageSrc;
   if (!imageSrc && !imageSrcMobile) return null;
 
-  const label = readString(record, "label", "title", "name");
-  const description = readString(record, "description", "subtitle");
+  const label = readCmsString(record, "label", "title", "name");
+  const description = readCmsString(record, "description", "subtitle");
 
   return {
     label,

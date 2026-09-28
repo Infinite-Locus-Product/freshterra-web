@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import type { SeoOverrides } from "@/lib/seo/pageMetadata";
 
+import { readCmsString } from "./cms-readers";
+
 const seoString = z.string().nullish();
 
 /**
@@ -28,17 +30,6 @@ export type CmsSeo = z.infer<typeof cmsSeoSchema>;
  */
 export const CMS_SEO_POPULATE = { "populate[seo]": "*" } as const;
 
-function readString(
-  record: Record<string, unknown>,
-  ...keys: string[]
-): string | undefined {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim()) return value.trim();
-  }
-  return undefined;
-}
-
 /**
  * Reads the `seo` component off a raw CMS entry. Never throws: a missing, null
  * or malformed component yields `null`, as does one whose fields are all blank.
@@ -51,10 +42,13 @@ export function readCmsSeo(entry: unknown): SeoOverrides | null {
   if (!parsed.success) return null;
 
   const record: Record<string, unknown> = parsed.data;
-  const title = readString(record, "metaTitle", "meta_title");
-  const description = readString(record, "metaDescription", "meta_description");
-  const canonicalUrl = readString(record, "canonicalUrl", "canonical_url");
-  const ogImage = readString(record, "ogImageUrl", "og_image_url");
+  const title = readCmsString(record, "metaTitle", "meta_title") || undefined;
+  const description =
+    readCmsString(record, "metaDescription", "meta_description") || undefined;
+  const canonicalUrl =
+    readCmsString(record, "canonicalUrl", "canonical_url") || undefined;
+  const ogImage =
+    readCmsString(record, "ogImageUrl", "og_image_url") || undefined;
 
   if (!title && !description && !canonicalUrl && !ogImage) return null;
 
