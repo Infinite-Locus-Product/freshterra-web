@@ -1,5 +1,10 @@
+import { cache } from "react";
+
 import type { Metadata } from "next";
+
 import { notFound } from "next/navigation";
+
+import { buildPageMetadata, siteTitle } from "@/lib/seo/pageMetadata";
 
 import { FaqPageLayout } from "@/components/faq/FaqPageLayout";
 
@@ -8,18 +13,29 @@ import { fetchFaqContentSafe } from "@/features/cms-content/faq-service";
 /** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
 export const revalidate = 600;
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions | FreshTerra",
-  description:
-    "Find answers to common questions about FreshTerra orders, delivery, quality, payments, returns, and support.",
-};
+const PAGE_DESCRIPTION =
+  "Find answers to common questions about FreshTerra orders, delivery, quality, payments, returns, and support.";
+
+/** Deduped so generateMetadata + the page body share one BFF request. */
+const loadFaqPage = cache(() => fetchFaqContentSafe());
+
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await loadFaqPage();
+
+  return buildPageMetadata({
+    path: "/faq",
+    fallbackTitle: siteTitle("Frequently Asked Questions"),
+    fallbackDescription: PAGE_DESCRIPTION,
+    seo: content?.seo,
+  });
+}
 
 /**
  * Renders the FAQ page from the CMS single type
  * (`GET /api/v1/content/single/faq`).
  */
 export default async function FaqPage() {
-  const content = await fetchFaqContentSafe();
+  const content = await loadFaqPage();
   if (!content) notFound();
 
   return <FaqPageLayout content={content} />;

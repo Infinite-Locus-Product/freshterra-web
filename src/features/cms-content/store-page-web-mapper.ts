@@ -4,6 +4,7 @@ import {
   normalizeCmsDeeplink,
   normalizeCmsSlugHref,
 } from "./cms-href";
+import { readCmsSeo } from "./cms-seo";
 import { STORES_DIRECTIONS_FALLBACK_ADDRESS } from "./store-page-web-directions";
 
 import type {
@@ -24,7 +25,9 @@ function readMediaUrl(
   return undefined;
 }
 
-function splitDescriptionLines(description: string | null | undefined): string[] {
+function splitDescriptionLines(
+  description: string | null | undefined,
+): string[] {
   if (!description?.trim()) return [];
   return description
     .split(/\n+/)
@@ -66,7 +69,11 @@ function mapCategoryTile(
 
   const label = row.label?.trim() ?? "";
   const imageWeb = readMediaUrl(row.image_web);
-  const imageMobile = readMediaUrl(row.iamge_mweb, row.image_mweb, row.image_web);
+  const imageMobile = readMediaUrl(
+    row.iamge_mweb,
+    row.image_mweb,
+    row.image_web,
+  );
   if (!label || !imageWeb || !imageMobile) return null;
 
   const href = normalizeCmsSlugHref(row.image_slug);
@@ -121,6 +128,7 @@ export function mapStorePageWebContent(
   const directionsUrl = resolveDirectionsUrl(input);
   const directionsLabel = input.direction_cta?.trim() ?? "";
   const categorySectionTitle = input.store_category_heading?.trim() ?? "";
+  const seo = readCmsSeo(input);
 
   return {
     title,
@@ -131,5 +139,6 @@ export function mapStorePageWebContent(
     categorySectionTitle,
     information,
     categories,
+    ...(seo ? { seo } : {}),
   };
 }

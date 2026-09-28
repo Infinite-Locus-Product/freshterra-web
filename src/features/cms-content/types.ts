@@ -1,3 +1,5 @@
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 /**
  * Shape of a policy/legal document. Designed to round-trip cleanly with
  * Strapi rich-text output (paragraphs + lists with optional bold spans).
@@ -36,5 +38,6 @@ export type PolicyDocument = {
   sections: PolicySection[];
   /** ISO date string. Formatted at render time. */
   lastUpdated: string;
-  contactEmail?: string;
+  contactEmail?: string; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

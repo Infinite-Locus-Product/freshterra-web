@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 export const careerHeroSchema = z
   .object({
     title: z.string().optional(),
@@ -73,5 +75,6 @@ export type CareersPageContent = {
   openings: {
     title: string;
     groups: CareerDepartmentGroup[];
-  };
+  }; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

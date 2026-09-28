@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 import { cmsBoolSchema } from "./cms-boolean";
 
 /** Strapi often sends `null` for empty optional text fields. */
@@ -64,7 +66,14 @@ export const webHomepageStoreSchema = z
     store_name: cmsString,
     store_image: cmsString,
     store_image_mweb: cmsString,
-    store_address: z.union([cmsString, z.array(z.unknown()), z.record(z.string(), z.unknown())]).nullable().optional(),
+    store_address: z
+      .union([
+        cmsString,
+        z.array(z.unknown()),
+        z.record(z.string(), z.unknown()),
+      ])
+      .nullable()
+      .optional(),
     view_store_cta: cmsString,
     view_store_slug: cmsString,
     locate_us_cta: cmsString,
@@ -185,6 +194,8 @@ export type HomePageContent = Readonly<{
     officeLines: readonly string[];
     appBadges: readonly string[];
   };
+  /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 }>;
 
 export type HomeCategoryTileItem = Readonly<{
