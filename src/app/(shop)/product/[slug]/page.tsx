@@ -14,13 +14,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
-import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
 import { productPageMetadata } from "@/features/catalog/product-seo";
 import { getProduct } from "@/features/catalog/product-service";
-import {
-  getProduct,
-  getProductBySlug,
-} from "@/features/catalog/product-service";
 
 type Params = Promise<{ slug: string }>;
 

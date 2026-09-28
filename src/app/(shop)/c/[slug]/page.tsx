@@ -51,7 +51,6 @@ import {
 } from "@/features/cms-content/web-category-plp-resolver";
 
 type Params = Promise<{ slug: string }>;
-type SearchParams = Promise<{ parent?: string }>;
 
 const EMPTY_CATEGORY_PAGE_DATA: CategoryPageData = {
   webCategory: null,
@@ -61,12 +60,13 @@ const EMPTY_CATEGORY_PAGE_DATA: CategoryPageData = {
 /**
  * Deduped via `cache()` so generateMetadata + the page body share one CMS
  * resolution — the PLP resolver can fan out to several BFF calls.
+ *
+ * Deliberately ignores the `?parent=` hint: reading `searchParams` in this
+ * ISR route (revalidate + generateStaticParams) throws DYNAMIC_SERVER_USAGE
+ * and 500s every /c/* request. The resolver finds the parent without it.
  */
 const loadCategoryPageData = cache(
-  async (
-    slug: string,
-    parent: string | undefined,
-  ): Promise<CategoryPageData> => {
+  async (slug: string): Promise<CategoryPageData> => {
     let webCategory: WebCategoryContent | null = null;
     try {
       webCategory = await getWebCategoryContent(slug);
@@ -77,7 +77,7 @@ const loadCategoryPageData = cache(
     let plpContext: WebCategoryPlpContext | null = null;
     if (!webCategory) {
       try {
-        plpContext = await resolveWebCategoryPlpContext(slug, parent);
+        plpContext = await resolveWebCategoryPlpContext(slug);
       } catch {
         // CMS PLP config is optional; client can retry if needed.
       }
@@ -117,36 +117,28 @@ function l3TileHref(
 
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Params;
-  searchParams: SearchParams;
 }): Promise<Metadata> {
   const { slug } = await params;
   if (slug === EXPLORE_CATALOG_SLUG) {
     return exploreCatalogMetadata(await loadExploreCatalogSeo());
   }
 
-  const { parent } = await searchParams;
   return categoryPageMetadata({
     slug,
-    ...(await loadCategoryPageData(slug, parent)),
+    ...(await loadCategoryPageData(slug)),
   });
 }
 
 export default async function CategoryHubPage({
   params,
-  searchParams,
-}: Readonly<{
-  params: Params;
-  searchParams: SearchParams;
-}>) {
+}: Readonly<{ params: Params }>) {
   const { slug } = await params;
-  const { parent } = await searchParams;
   const { webCategory, plpContext: initialPlpContext } =
     slug === EXPLORE_CATALOG_SLUG
       ? EMPTY_CATEGORY_PAGE_DATA
-      : await loadCategoryPageData(slug, parent);
+      : await loadCategoryPageData(slug);
 
   let initialProducts = null;
   if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {

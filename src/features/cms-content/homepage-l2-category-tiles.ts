@@ -24,14 +24,6 @@ function pickTileImage(
   return src.length > 0 ? src : undefined;
 }
 
-function slugToTitle(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
 function tileLabel(tile: WebHomepageL2CategoryTile): string | undefined {
   const label = tile.label?.trim();
   if (label) return label;
