@@ -140,3 +140,24 @@ describe("bold parsing robustness", () => {
     expect(doc?.intro?.blocks.some((b) => b.type === "list")).toBe(false);
   });
 });
+
+describe("seo passthrough", () => {
+  it("passes the marketing seo component through", () => {
+    const doc = mapPolicyDescriptionContent(
+      {
+        title: "Privacy Policy",
+        description: "Body text.",
+        seo: { metaDescription: "How FreshTerra handles your data." },
+      },
+      options,
+    );
+
+    expect(doc?.seo).toEqual({
+      description: "How FreshTerra handles your data.",
+    });
+  });
+
+  it("omits seo when the component is absent", () => {
+    expect(map("Body text.")).not.toHaveProperty("seo");
+  });
+});

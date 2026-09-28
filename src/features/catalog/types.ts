@@ -1,10 +1,10 @@
 import { z } from "zod";
 
+import { type ProductInformations } from "./product-informations";
 import {
   normalizeBffListingProduct,
   normalizeProductDetailEnvelope,
 } from "./product-metafields";
-import { type ProductInformations } from "./product-informations";
 
 export type { ProductInformations } from "./product-informations";
 
@@ -224,11 +224,15 @@ function inferCategoryFromListingPayload(
 
   const seo = seoMeta as Record<string, unknown>;
   const title =
-    typeof seo.title === "string" ? seo.title.split("—")[0]?.split("|")[0]?.trim() : "";
+    typeof seo.title === "string"
+      ? seo.title.split("—")[0]?.split("|")[0]?.trim()
+      : "";
   let slug = "";
   if (typeof seo.canonicalUrl === "string") {
     try {
-      slug = new URL(seo.canonicalUrl).pathname.split("/").filter(Boolean).pop() ?? "";
+      slug =
+        new URL(seo.canonicalUrl).pathname.split("/").filter(Boolean).pop() ??
+        "";
     } catch {
       slug = "";
     }
@@ -327,6 +331,19 @@ export const categoryProductsDataSchema = z.preprocess(
 export type CategoryProductsData = z.infer<typeof categoryProductsDataSchema>;
 
 /**
+ * BFF-resolved SEO block on `GET /products/slug/:slug` (FRES-2213). The backend
+ * already applies the marketing → default fallbacks (title, ~160-char
+ * description, `/product/{slug}` canonical), so the web renders it as-is.
+ */
+export const productSeoMetaSchema = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  canonicalUrl: z.string().nullish(),
+  ogImage: z.string().nullish(),
+});
+export type ProductSeoMeta = z.infer<typeof productSeoMetaSchema>;
+
+/**
  * The `data` payload returned inside the success envelope. Shared by both PDP
  * endpoints (`/products/:id` and `/products/by-sku/:sku`): fields unique to
  * one variant — `category`, `regulatory`, `manufacturer`, `price.source` — are
@@ -357,6 +374,8 @@ const productDetailDataSchema = z.object({
   productInformations: z.custom<ProductInformations>().optional(),
   /** Cross-sell rail from the PDP BFF payload (`similarProducts`). */
   similarProducts: z.array(plpProductSchema).default([]),
+  /** Marketing SEO with backend fallbacks applied — see {@link productSeoMetaSchema}. */
+  seoMeta: productSeoMetaSchema.optional(),
 });
 
 /** Validates + normalizes Saleor metadata from the BFF PDP payload. */
