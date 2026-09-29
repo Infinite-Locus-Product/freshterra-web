@@ -2,6 +2,7 @@ import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
 import { isCmsActive } from "./cms-boolean";
 import { normalizeCmsDeeplink, normalizeCmsSlugHref } from "./cms-href";
+import { slugToTitle } from "./cms-readers";
 
 import type { CategoryLookup } from "./web-category-page-mapper";
 import type {
@@ -21,14 +22,6 @@ function pickTileImage(
   const mobile = tile.iamge_mweb?.trim() || tile.image_mweb?.trim() || "";
   const src = preferMobile ? mobile || web : web || mobile;
   return src.length > 0 ? src : undefined;
-}
-
-function slugToTitle(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function tileLabel(tile: WebHomepageL2CategoryTile): string | undefined {

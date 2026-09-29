@@ -1,3 +1,5 @@
+import { readCmsString } from "./cms-readers";
+
 import type {
   ContactGetInTouchItem,
   ContactWebContent,
@@ -9,16 +11,6 @@ function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
-
 function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
   for (const key of keys) {
     const value = record[key];
@@ -27,7 +19,7 @@ function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
     }
     if (!isRecord(value)) continue;
 
-    const direct = readString(value, "url", "src", "href");
+    const direct = readCmsString(value, "url", "src", "href");
     if (direct) return direct;
   }
   return "";
@@ -81,9 +73,9 @@ function mapGetInTouchLines(label: string, description: string): string[] {
 function mapGetInTouchItem(raw: UnknownRecord): ContactGetInTouchItem | null {
   if (!isActive(raw)) return null;
 
-  const label = readString(raw, "info_heading", "title", "label");
+  const label = readCmsString(raw, "info_heading", "title", "label");
   const iconSrc = readMediaUrl(raw, "icon", "image", "imageUrl");
-  const description = readString(raw, "description", "value", "body");
+  const description = readCmsString(raw, "description", "value", "body");
   const lines = description ? mapGetInTouchLines(label, description) : [];
 
   if (!label || !iconSrc) return null;
@@ -108,12 +100,14 @@ export function mapContactWebGetInTouch(
 function mapInquiryOption(raw: UnknownRecord): string | null {
   if (!isActive(raw)) return null;
 
-  const label = readString(raw, "label", "title", "name");
+  const label = readCmsString(raw, "label", "title", "name");
   return label || null;
 }
 
 /** Maps `inquiry` rows from the contact-web single type into select options. */
-export function mapContactWebInquiryOptions(input: ContactWebContent): string[] {
+export function mapContactWebInquiryOptions(
+  input: ContactWebContent,
+): string[] {
   return [...(input.inquiry ?? [])]
     .sort(
       (a, b) =>

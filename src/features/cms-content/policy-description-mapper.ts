@@ -1,3 +1,5 @@
+import { readCmsSeo } from "./cms-seo";
+
 import type { PolicyCmsContent } from "./policy-cms-types";
 import type {
   PolicyBlock,
@@ -233,6 +235,7 @@ export function mapPolicyDescriptionContent(
     "";
 
   const emailMatch = EMAIL_PATTERN.exec(description);
+  const seo = readCmsSeo(input);
 
   return {
     slug: options.slug,
@@ -242,5 +245,6 @@ export function mapPolicyDescriptionContent(
     ...(emailMatch?.[1] ? { contactEmail: emailMatch[1] } : {}),
     ...(intro ? { intro } : {}),
     sections,
+    ...(seo ? { seo } : {}),
   };
 }

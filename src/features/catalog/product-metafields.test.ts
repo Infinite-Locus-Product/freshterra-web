@@ -39,7 +39,10 @@ const milkChocolateMetadata = [
     }),
   },
   { key: "manufacturer_name", value: "FreshTerra Organic Foods Pvt. Ltd." },
-  { key: "manufacturer_address", value: "Plot No. 123, Industrial Area Phase-II" },
+  {
+    key: "manufacturer_address",
+    value: "Plot No. 123, Industrial Area Phase-II",
+  },
   { key: "seller_name", value: "F&W Foods" },
   { key: "seller_address", value: "Cyber City, DLF Phase 3" },
   { key: "mfg_date", value: "Jan 2026" },
@@ -88,7 +91,9 @@ describe("normalizeProductDetailPayload", () => {
     expect(normalized.manufacturer).toBe("FreshTerra Organic Foods Pvt. Ltd.");
     expect(normalized.fssai).toBe("12345678901234");
     expect(normalized.regulatory?.veg).toBe(true);
-    expect(normalized.tags).toEqual(expect.arrayContaining(["Organic", "Fresh"]));
+    expect(normalized.tags).toEqual(
+      expect.arrayContaining(["Organic", "Fresh"]),
+    );
     expect(normalized.tagPills).toEqual(["Organic", "Fresh"]);
     expect(normalized.metafields?.ingredients).toContain("Organic tomatoes");
     expect(normalized.metafields?.storageTips).toContain("cool, dry place");
@@ -117,7 +122,9 @@ describe("normalizeProductDetailPayload", () => {
       price: { list: 19900, mrp: 24900, currency: "INR" },
       inStock: true,
       description: JSON.stringify({
-        blocks: [{ data: { text: "Smooth milk chocolate" }, type: "paragraph" }],
+        blocks: [
+          { data: { text: "Smooth milk chocolate" }, type: "paragraph" },
+        ],
       }),
     });
 
@@ -135,9 +142,7 @@ describe("normalizeProductDetailPayload", () => {
       metadata: [{ key: "PRODUCT_DETAILS", value: "From metadata" }],
     });
 
-    expect(
-      (normalized as { story?: string }).story,
-    ).toBe("Already set by BFF");
+    expect((normalized as { story?: string }).story).toBe("Already set by BFF");
   });
 
   it("normalizes staging BFF catalog payload (string images, pricing/stock arrays)", () => {
@@ -170,8 +175,17 @@ describe("normalizeProductDetailPayload", () => {
           inStock: true,
         },
       ],
-      pricing: [{ variantId: "UHJvZHVjdFZhcmlhbnQ6MjA=", price: 4500, mrp: 5000, currency: "INR" }],
-      stock: [{ variantId: "UHJvZHVjdFZhcmlhbnQ6MjA=", inStock: true, qty: 50 }],
+      pricing: [
+        {
+          variantId: "UHJvZHVjdFZhcmlhbnQ6MjA=",
+          price: 4500,
+          mrp: 5000,
+          currency: "INR",
+        },
+      ],
+      stock: [
+        { variantId: "UHJvZHVjdFZhcmlhbnQ6MjA=", inStock: true, qty: 50 },
+      ],
       rating: null,
     });
 
@@ -222,8 +236,18 @@ describe("normalizeProductDetailPayload", () => {
         },
       ],
       pricing: [
-        { variantId: "UHJvZHVjdFZhcmlhbnQ6MTQ=", price: 0, mrp: 0, currency: "INR" },
-        { variantId: "UHJvZHVjdFZhcmlhbnQ6MjU=", price: 0, mrp: 0, currency: "INR" },
+        {
+          variantId: "UHJvZHVjdFZhcmlhbnQ6MTQ=",
+          price: 0,
+          mrp: 0,
+          currency: "INR",
+        },
+        {
+          variantId: "UHJvZHVjdFZhcmlhbnQ6MjU=",
+          price: 0,
+          mrp: 0,
+          currency: "INR",
+        },
       ],
       stock: [
         { variantId: "UHJvZHVjdFZhcmlhbnQ6MTQ=", inStock: true, qty: null },
@@ -291,6 +315,49 @@ describe("normalizeProductDetailPayload", () => {
     expect(product.similarProducts[0]?.name).toBe("Coconut Oil");
     expect(product.similarProducts[0]?.images[0]?.url).toContain("coconut-oil");
     expect(product.similarProducts[1]?.variantCount).toBe(2);
+  });
+});
+
+describe("normalizeProductDetailPayload seoMeta passthrough", () => {
+  const base = {
+    id: "prd_almond",
+    name: "Almond Butter Crunchy",
+    slug: "almond-butter-crunchy",
+    price: { list: 39900, mrp: 44900, currency: "INR" },
+    inStock: true,
+  };
+
+  it("keeps the BFF seoMeta block, including null fields", () => {
+    const normalized = productDetailSchema.parse({
+      ...base,
+      seoMeta: {
+        title: "Crunchy Almond Butter, Stone-Ground | FreshTerra",
+        description: "Stone-ground crunchy almond butter with no added sugar.",
+        canonicalUrl: "https://freshterra.in/product/almond-butter-crunchy",
+        ogImage: null,
+      },
+    });
+
+    expect(normalized.seoMeta).toEqual({
+      title: "Crunchy Almond Butter, Stone-Ground | FreshTerra",
+      description: "Stone-ground crunchy almond butter with no added sugar.",
+      canonicalUrl: "https://freshterra.in/product/almond-butter-crunchy",
+      ogImage: null,
+    });
+  });
+
+  it("leaves seoMeta undefined when the BFF does not send it", () => {
+    const normalized = productDetailSchema.parse(base);
+    expect(normalized.seoMeta).toBeUndefined();
+  });
+
+  it("drops a malformed seoMeta instead of failing the parse", () => {
+    expect(
+      productDetailSchema.parse({ ...base, seoMeta: "junk" }).seoMeta,
+    ).toBeUndefined();
+    expect(
+      productDetailSchema.parse({ ...base, seoMeta: { title: 42 } }).seoMeta,
+    ).toEqual({});
   });
 });
 
@@ -406,7 +473,12 @@ describe("normalizeBffListingProduct", () => {
       inStock: true,
     });
 
-    expect(product.tagPills).toEqual(["Organic", "Fresh", "Heathy", "Original"]);
+    expect(product.tagPills).toEqual([
+      "Organic",
+      "Fresh",
+      "Heathy",
+      "Original",
+    ]);
   });
 
   it("attaches per-product regulatory_information from API metadata", () => {

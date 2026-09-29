@@ -14,6 +14,9 @@ import { PageShell } from "@/components/layout/PageShell";
 
 import type { HomePageContent } from "@/features/cms-content/web-homepage-types";
 
+/** SEO-recommended homepage H1 when the CMS section title is blank. */
+export const HOME_CATEGORIES_DEFAULT_TITLE = "Food Categories";
+
 type HomeCategoriesSectionProps = Readonly<{
   categories: HomePageContent["categories"];
 }>;
@@ -38,11 +41,14 @@ function CategoriesChevronIcon() {
 
 /**
  * Homepage category rail — tiles from `web-homepage.l2_category.l2_category_tile`.
+ * Its title is the homepage's only `<h1>` (SEO: "Food Categories"); the text
+ * comes from Strapi `web-homepage.l2_category.title`.
  */
 export function HomeCategoriesSection({
   categories,
 }: HomeCategoriesSectionProps) {
   const { title, subtitle, ctaLabel, viewAllHref, items } = categories;
+  const heading = title.trim() || HOME_CATEGORIES_DEFAULT_TITLE;
 
   if (items.length === 0 && !title.trim() && !subtitle.trim()) {
     return null;
@@ -53,9 +59,7 @@ export function HomeCategoriesSection({
       <PageShell>
         <div className={homeCategoriesHeaderRowClass}>
           <div>
-            {title.trim() ? (
-              <h2 className={homeCategoriesTitleClass}>{title}</h2>
-            ) : null}
+            <h1 className={homeCategoriesTitleClass}>{heading}</h1>
             {subtitle.trim() ? (
               <p className={homeCategoriesSubtitleClass}>{subtitle}</p>
             ) : null}

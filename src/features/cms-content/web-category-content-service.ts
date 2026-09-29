@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { slugToTitle } from "./cms-readers";
 import { getContentEntry } from "./content-entry-service";
 
 import type { HomeCategoryTileItem } from "./web-homepage-types";
@@ -46,14 +47,6 @@ export const webCategoryContentSchema = z
   .catchall(z.unknown());
 
 export type WebCategoryContent = z.infer<typeof webCategoryContentSchema>;
-
-function slugToTitle(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
 
 function normalizeCategorySlug(slug: string | null | undefined): string {
   return slug?.trim() ?? "";

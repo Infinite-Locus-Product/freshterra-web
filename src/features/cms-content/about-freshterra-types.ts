@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 /** Nested hero component on the about-freshterra single type. */
 export const aboutFreshterraHeroSectionSchema = z
   .object({
@@ -71,7 +73,9 @@ export const aboutFreshterraContentSchema = z
   })
   .catchall(z.unknown());
 
-export type AboutFreshterraContent = z.infer<typeof aboutFreshterraContentSchema>;
+export type AboutFreshterraContent = z.infer<
+  typeof aboutFreshterraContentSchema
+>;
 
 /** CMS-only About page view model — sections omitted when Strapi has no data. */
 export type AboutCoreValueItem = {
@@ -112,5 +116,6 @@ export type AboutPageContent = {
     title?: string;
     subtitle?: string;
     items: AboutStoryItem[];
-  };
+  }; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

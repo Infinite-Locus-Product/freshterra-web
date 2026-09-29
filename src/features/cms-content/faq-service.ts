@@ -1,12 +1,12 @@
 import { apiFetch, FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
+import { CMS_SEO_POPULATE } from "./cms-seo";
 import {
   DEFAULT_CONTENT_LOCALE,
   type ContentEntryParams,
   type ContentEntryRequestOptions,
 } from "./content-entry-service";
 import { hasFaqContent, mapFaqContent } from "./faq-mapper";
-
 import {
   faqContentSchema,
   type FaqContent,
@@ -21,6 +21,7 @@ const FAQ_CONTENT_PATH = "/api/v1/content/single/faq";
 const FAQ_POPULATE = {
   "populate[faq][populate]": "*",
   "populate[pages]": "*",
+  ...CMS_SEO_POPULATE,
 } as const;
 
 export const FAQ_CONTENT_TYPE = "faq";
