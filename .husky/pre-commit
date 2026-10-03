@@ -1,2 +1,5 @@
 pnpm exec lint-staged
 pnpm typecheck
+
+# Delivery Rule 6: tests related to staged files
+.githooks/test-gate.sh pre-commit
