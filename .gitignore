@@ -62,3 +62,6 @@ skills-lock.json
 qa/
 # Delivery Rule 6 test gate, machine-specific
 .test-gate.local.conf
+
+# Claude Code instructions are personal - never committed
+CLAUDE.md
