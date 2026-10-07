@@ -1,19 +1,21 @@
+import { cache } from "react";
+
 import type { Metadata } from "next";
 
 import { notFound } from "next/navigation";
-import { cache } from "react";
 
-import { JsonLd } from "@/components/seo/JsonLd";
-import { MarketingFooter } from "@/components/layout/MarketingFooter";
-import { MarketingHeader } from "@/components/layout/MarketingHeader";
-
-import { PdpView } from "@/features/catalog/components/PdpView";
-import { getProduct } from "@/features/catalog/product-service";
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 import { env } from "@/lib/config/env";
 import { breadcrumbListJsonLd, productJsonLd } from "@/lib/seo/jsonLd";
 
+import { MarketingFooter } from "@/components/layout/MarketingFooter";
+import { MarketingHeader } from "@/components/layout/MarketingHeader";
+import { JsonLd } from "@/components/seo/JsonLd";
+
+import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
+import { productPageMetadata } from "@/features/catalog/product-seo";
+import { getProduct } from "@/features/catalog/product-service";
 
 type Params = Promise<{ slug: string }>;
 
@@ -47,16 +49,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const product = await loadProduct(slug);
-    const description =
-      product.story?.trim() ||
-      product.metafields?.productDetails?.trim() ||
-      `${product.name} on FreshTerra.`;
-    return {
-      title: product.name,
-      description,
-      alternates: { canonical: `/product/${slug}` },
-    };
+    return productPageMetadata({ product: await loadProduct(slug), slug });
   } catch {
     return { alternates: { canonical: `/product/${slug}` } };
   }

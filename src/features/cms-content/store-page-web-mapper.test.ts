@@ -157,3 +157,29 @@ describe("mapStorePageWebContent", () => {
     expect(content?.categories).toHaveLength(0);
   });
 });
+
+describe("mapStorePageWebContent seo", () => {
+  it("passes the marketing seo component through", () => {
+    const content = mapStorePageWebContent(
+      storePageWebContentSchema.parse({
+        ...liveApiPayload,
+        seo: {
+          metaTitle: "FreshTerra Gurugram Store | FreshTerra",
+          ogImageUrl: "https://cms/og-store.png",
+        },
+      }),
+    );
+
+    expect(content?.seo).toEqual({
+      title: "FreshTerra Gurugram Store | FreshTerra",
+      ogImage: "https://cms/og-store.png",
+    });
+  });
+
+  it("omits seo when the component is null", () => {
+    const content = mapStorePageWebContent(
+      storePageWebContentSchema.parse({ ...liveApiPayload, seo: null }),
+    );
+    expect(content).not.toHaveProperty("seo");
+  });
+});

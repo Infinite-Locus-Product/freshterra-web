@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 export const ourFoodPhilosophySourceSchema = z
   .object({
     title: z.string().optional(),
@@ -63,7 +65,9 @@ export const ourFoodPhilosophyContentSchema = z
   })
   .catchall(z.unknown());
 
-export type OurFoodPhilosophyContent = z.infer<typeof ourFoodPhilosophyContentSchema>;
+export type OurFoodPhilosophyContent = z.infer<
+  typeof ourFoodPhilosophyContentSchema
+>;
 
 export type FoodPhilosophyPartnershipTheme = "amber" | "olive" | "sky";
 
@@ -116,5 +120,6 @@ export type FoodPhilosophyPageContent = {
     title?: string;
     subtitle?: string;
     items: FoodPhilosophySustainabilityItem[];
-  };
+  }; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

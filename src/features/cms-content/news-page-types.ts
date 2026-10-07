@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 /** Dynamic-zone component ids emitted by the `news-page` single type. */
 export const NEWS_LISTING_COMPONENT = "component.news-listing";
 export const PUBLICATION_LOGO_COMPONENT = "component.publication-logo";
@@ -95,5 +97,6 @@ export type NewsPageContent = {
     title: string;
   };
   /** Rendered in CMS dynamic-zone order. */
-  sections: NewsPageSection[];
+  sections: NewsPageSection[]; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

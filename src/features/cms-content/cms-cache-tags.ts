@@ -37,3 +37,16 @@ export const CMS_STORE_PAGE_WEB_REVALIDATE_SECONDS = 600;
 export function isStorePageWebCmsCacheTag(tag: string): boolean {
   return (CMS_STORE_PAGE_WEB_TAGS as readonly string[]).includes(tag);
 }
+
+/** Next.js cache tags for `GET /api/v1/content/collections/:slug` (SEO). */
+export const CMS_COLLECTION_TAGS = [
+  "cms:collection",
+  "cms:collections",
+] as const;
+
+export const CMS_COLLECTION_REVALIDATE_SECONDS = 600;
+
+/** Per-entry tag so the webhook can bust a single collection. */
+export function cmsCollectionTag(slug: string): string {
+  return `cms:collection:${slug}`;
+}
