@@ -26,7 +26,7 @@ export type MarketingNavLink = Readonly<{
 const NAV_LINK_CLASS = marketingHeaderNavLinkLabelClass;
 
 export const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
-  { label: "Explore Products", href: "/c/products" },
+  { label: "Explore Products", href: "/c/vegetables-fruits" },
   { label: "Our Philosophy", href: "/food-philosophy" },
   { label: "About Us", href: "/about" },
   { label: "Careers", href: "/careers" },
