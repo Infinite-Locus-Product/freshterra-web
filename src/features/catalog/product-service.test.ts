@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getProduct } from "./product-service";
+import { getProduct, getProductBySlug } from "./product-service";
 
 const product = {
   id: "prd_01HX9",
@@ -212,5 +212,76 @@ describe("getProduct", () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+});
+
+describe("getProductBySlug", () => {
+  const originalFetch = globalThis.fetch;
+
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("hits /products/slug/:slug and parses the response", async () => {
+    const fetchSpy = vi.fn(async () => productResponse());
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const data = await getProductBySlug("heirloom-tomatoes-500g");
+    expect(data.name).toBe("Heirloom Tomatoes 500g");
+
+    const [url] = lastCall(fetchSpy);
+    expect(url.pathname).toBe(
+      "/bff/api/v1/products/slug/heirloom-tomatoes-500g",
+    );
+    expect(url.searchParams.has("polygonId")).toBe(false);
+  });
+
+  it("forwards polygonId and attaches the JWT when present", async () => {
+    window.localStorage.setItem("ft_access_token", "jwt-1");
+    const fetchSpy = vi.fn(async () => productResponse());
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await getProductBySlug("heirloom-tomatoes-500g", { polygonId: "poly_42" });
+
+    const [url, init] = lastCall(fetchSpy);
+    expect(url.searchParams.get("polygonId")).toBe("poly_42");
+    expect(init.headers).toMatchObject({ authorization: "Bearer jwt-1" });
+  });
+
+  it("rejects an empty slug before calling out", async () => {
+    const fetchSpy = vi.fn();
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await expect(getProductBySlug("  ")).rejects.toBeInstanceOf(Error);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("maps a 404 to NOT_FOUND and preserves PRODUCT_NOT_FOUND", async () => {
+    globalThis.fetch = vi.fn(async () =>
+      errorResponse(404, "PRODUCT_NOT_FOUND"),
+    ) as unknown as typeof fetch;
+
+    await expect(getProductBySlug("missing-slug")).rejects.toMatchObject({
+      code: "NOT_FOUND",
+      serverCode: "PRODUCT_NOT_FOUND",
+    });
+  });
+
+  it("propagates a typed UPSTREAM_UNAVAILABLE error on 502", async () => {
+    globalThis.fetch = vi.fn(async () =>
+      errorResponse(502, null),
+    ) as unknown as typeof fetch;
+
+    await expect(
+      getProductBySlug("heirloom-tomatoes-500g"),
+    ).rejects.toMatchObject({
+      code: "UPSTREAM_UNAVAILABLE",
+    });
   });
 });

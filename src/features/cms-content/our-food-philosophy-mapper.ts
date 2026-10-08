@@ -1,3 +1,12 @@
+import { readCmsString } from "./cms-readers";
+import { readCmsSeo } from "./cms-seo";
+import {
+  ourFoodPhilosophyFarmerBannerSchema,
+  ourFoodPhilosophyRelatedBannerSchema,
+  ourFoodPhilosophySourceSchema,
+  ourFoodPhilosophyTrustMarkerSchema,
+} from "./our-food-philosophy-types";
+
 import type {
   FoodPhilosophyCertificationItem,
   FoodPhilosophyPageContent,
@@ -7,12 +16,6 @@ import type {
   OurFoodPhilosophyContent,
 } from "./our-food-philosophy-types";
 import type { z } from "zod";
-import {
-  ourFoodPhilosophyFarmerBannerSchema,
-  ourFoodPhilosophyRelatedBannerSchema,
-  ourFoodPhilosophySourceSchema,
-  ourFoodPhilosophyTrustMarkerSchema,
-} from "./our-food-philosophy-types";
 
 type OurFoodPhilosophySource = z.infer<typeof ourFoodPhilosophySourceSchema>;
 type OurFoodPhilosophyTrustMarker = z.infer<
@@ -37,16 +40,6 @@ function isRecord(value: unknown): value is UnknownRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function readString(record: UnknownRecord, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
-
 function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
   for (const key of keys) {
     const value = record[key];
@@ -55,18 +48,18 @@ function readMediaUrl(record: UnknownRecord, ...keys: string[]): string {
     }
     if (!isRecord(value)) continue;
 
-    const direct = readString(value, "url", "src", "href");
+    const direct = readCmsString(value, "url", "src", "href");
     if (direct) return direct;
 
     const data = value.data;
     if (!isRecord(data)) continue;
 
-    const fromData = readString(data, "url", "src");
+    const fromData = readCmsString(data, "url", "src");
     if (fromData) return fromData;
 
     const attributes = data.attributes;
     if (isRecord(attributes)) {
-      const fromAttrs = readString(attributes, "url", "src");
+      const fromAttrs = readCmsString(attributes, "url", "src");
       if (fromAttrs) return fromAttrs;
     }
   }
@@ -90,20 +83,21 @@ function sortByOrder<T extends { sort_order?: number; order?: number }>(
   items: readonly T[],
   orderKey: "sort_order" | "order",
 ): T[] {
-  return [...items].sort(
-    (a, b) => (a[orderKey] ?? 0) - (b[orderKey] ?? 0),
-  );
+  return [...items].sort((a, b) => (a[orderKey] ?? 0) - (b[orderKey] ?? 0));
 }
 
 function mapSourceSection(
   raw: OurFoodPhilosophySource,
-): Pick<NonNullable<FoodPhilosophyPageContent["sourcing"]>, "title" | "subtitle" | "paragraphs"> | null {
+): Pick<
+  NonNullable<FoodPhilosophyPageContent["sourcing"]>,
+  "title" | "subtitle" | "paragraphs"
+> | null {
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
-  const title = readString(record, "title");
-  const subtitle = readString(record, "tagline", "subtitle");
-  const description = readString(record, "description");
+  const title = readCmsString(record, "title");
+  const subtitle = readCmsString(record, "tagline", "subtitle");
+  const description = readCmsString(record, "description");
   const paragraphs = description ? splitParagraphs(description) : [];
 
   if (!title && !subtitle && paragraphs.length === 0) return null;
@@ -121,7 +115,7 @@ function mapTrustMarker(
   const record = raw as UnknownRecord;
   if (!isActive(record)) return null;
 
-  const label = readString(record, "title", "label", "name");
+  const label = readCmsString(record, "title", "label", "name");
   const imageSrc = readMediaUrl(record, "icon", "image", "imageUrl");
   if (!label || !imageSrc) return null;
 
@@ -140,9 +134,9 @@ function mapFarmerBanner(
     readMediaUrl(record, "image_mweb", "image_mobile") || imageSrc;
   if (!imageSrc && !imageSrcMobile) return null;
 
-  const quote = readString(record, "quote", "testimonial");
-  const name = readString(record, "name", "farmer_name");
-  const location = readString(record, "location", "farmer_location");
+  const quote = readCmsString(record, "quote", "testimonial");
+  const name = readCmsString(record, "name", "farmer_name");
+  const location = readCmsString(record, "location", "farmer_location");
 
   return {
     imageSrc: imageSrc || imageSrcMobile,
@@ -166,8 +160,8 @@ function mapRelatedBanner(
     imageSrc;
   if (!imageSrc && !imageSrcMobile) return null;
 
-  const label = readString(record, "label", "title", "name");
-  const description = readString(record, "description", "subtitle");
+  const label = readCmsString(record, "label", "title", "name");
+  const description = readCmsString(record, "description", "subtitle");
 
   return {
     label,
@@ -203,7 +197,9 @@ export function mapOurFoodPhilosophyContent(
     "sort_order",
   )
     .map(mapSourceSection)
-    .filter((section): section is NonNullable<typeof section> => section !== null);
+    .filter(
+      (section): section is NonNullable<typeof section> => section !== null,
+    );
 
   if (philosophySections[0]) {
     result.sourcing = philosophySections[0];
@@ -240,21 +236,32 @@ export function mapOurFoodPhilosophyContent(
     };
   }
 
-  const sustainabilityItems = sortByOrder(input.related_banners ?? [], "sort_order")
+  const sustainabilityItems = sortByOrder(
+    input.related_banners ?? [],
+    "sort_order",
+  )
     .map(mapRelatedBanner)
     .filter((item): item is FoodPhilosophySustainabilityItem => item !== null);
 
-  const sustainabilityTitle = input.sustainability_section_heading?.trim() ?? "";
+  const sustainabilityTitle =
+    input.sustainability_section_heading?.trim() ?? "";
   const sustainabilitySubtitle =
     input.sustainability_section_tagline?.trim() ?? "";
 
-  if (sustainabilityTitle || sustainabilitySubtitle || sustainabilityItems.length > 0) {
+  if (
+    sustainabilityTitle ||
+    sustainabilitySubtitle ||
+    sustainabilityItems.length > 0
+  ) {
     result.sustainability = {
       ...(sustainabilityTitle ? { title: sustainabilityTitle } : {}),
       ...(sustainabilitySubtitle ? { subtitle: sustainabilitySubtitle } : {}),
       items: sustainabilityItems,
     };
   }
+
+  const seo = readCmsSeo(input);
+  if (seo) result.seo = seo;
 
   return result;
 }
@@ -264,14 +271,14 @@ export function hasFoodPhilosophyContent(
 ): boolean {
   return Boolean(
     content.hero?.title ||
-      content.hero?.imageSrc ||
-      content.hero?.imageSrcMobile ||
-      content.sourcing ||
-      (content.certifications &&
-        (content.certifications.title ||
-          content.certifications.paragraphs.length > 0 ||
-          content.certifications.items.length > 0)) ||
-      (content.partnerships && content.partnerships.items.length > 0) ||
-      (content.sustainability && content.sustainability.items.length > 0),
+    content.hero?.imageSrc ||
+    content.hero?.imageSrcMobile ||
+    content.sourcing ||
+    (content.certifications &&
+      (content.certifications.title ||
+        content.certifications.paragraphs.length > 0 ||
+        content.certifications.items.length > 0)) ||
+    (content.partnerships && content.partnerships.items.length > 0) ||
+    (content.sustainability && content.sustainability.items.length > 0),
   );
 }

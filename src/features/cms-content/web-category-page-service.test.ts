@@ -53,7 +53,8 @@ describe("getWebCategoryPage", () => {
             l3_tiles: [
               {
                 saleor_l3_category_id: "Q2F0ZWdvcnk6NA==",
-                image_url_web: "https://cms-stg.freshterra.in/uploads/fruits.png",
+                image_url_web:
+                  "https://cms-stg.freshterra.in/uploads/fruits.png",
                 position: 1,
                 is_active: true,
               },
@@ -67,11 +68,42 @@ describe("getWebCategoryPage", () => {
     const page = await getWebCategoryPage();
     expect(page.hero?.title).toBe("Five Star Quality @ WOW Prices");
     expect(page.sections[0]?.tagline).toBe("Fresh from the farm");
-    expect(page.sections[0]?.tiles[0]?.imageWeb).toContain("/uploads/fruits.png");
+    expect(page.sections[0]?.tiles[0]?.imageWeb).toContain(
+      "/uploads/fruits.png",
+    );
 
     const url = lastUrl(fetchSpy);
     expect(url.pathname).toBe("/bff/api/v1/content/single/web-category-page");
-    expect(url.search).toBe("");
+    expect(
+      url.searchParams.get(
+        "populate[l2_category][populate][l3_tiles][populate]",
+      ),
+    ).toBe("*");
+    expect(
+      url.searchParams.get("populate[category_hero_section][populate]"),
+    ).toBe("*");
+    expect(url.searchParams.get("populate[seo]")).toBe("*");
+  });
+
+  it("keeps the marketing seo component through normalization", async () => {
+    const fetchSpy = vi.fn(async () =>
+      pageResponse({
+        l2_category: [],
+        seo: {
+          metaTitle: "Explore the FreshTerra Catalog | FreshTerra",
+          metaDescription: "Every category in one place.",
+          canonicalUrl: "https://freshterra.in/c/explore-catalog",
+        },
+      }),
+    );
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const page = await getWebCategoryPage();
+    expect(page.seo).toEqual({
+      metaTitle: "Explore the FreshTerra Catalog | FreshTerra",
+      metaDescription: "Every category in one place.",
+      canonicalUrl: "https://freshterra.in/c/explore-catalog",
+    });
   });
 
   it("reads nested Strapi media objects on l3_tiles.image_url_web", async () => {
