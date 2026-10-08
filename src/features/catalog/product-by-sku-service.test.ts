@@ -44,7 +44,7 @@ function lastCall(fetchSpy: ReturnType<typeof vi.fn>): [URL, RequestInit] {
     string,
     RequestInit,
   ];
-  return [new URL(url), init];
+  return [new URL(url, "https://api.freshterra.in"), init];
 }
 
 describe("getProductBySku", () => {
@@ -70,7 +70,7 @@ describe("getProductBySku", () => {
     expect(data.regulatory?.organic).toBe(true);
 
     const [url] = lastCall(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/products/by-sku/FT-TOMATO-500G");
+    expect(url.pathname).toBe("/bff/api/v1/products/by-sku/FT-TOMATO-500G");
     expect(url.searchParams.has("polygonId")).toBe(false);
   });
 

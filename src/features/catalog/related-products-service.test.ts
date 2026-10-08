@@ -36,7 +36,7 @@ function errorResponse(status: number, code: string | null): Response {
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 describe("getRelatedProducts", () => {
@@ -62,7 +62,7 @@ describe("getRelatedProducts", () => {
     expect(data[0]?.name).toBe("Heirloom Tomatoes 500g");
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/products/prd_01HX9/related");
+    expect(url.pathname).toBe("/bff/api/v1/products/prd_01HX9/related");
     expect(url.searchParams.get("limit")).toBe("10");
     expect(url.searchParams.has("polygonId")).toBe(false);
   });

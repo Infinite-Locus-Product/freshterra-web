@@ -21,14 +21,18 @@ function entryResponse(data: unknown = entry): Response {
 
 function errorResponse(status: number, code: string | null): Response {
   return new Response(
-    JSON.stringify({ success: false, data: null, error: code ? { code } : null }),
+    JSON.stringify({
+      success: false,
+      data: null,
+      error: code ? { code } : null,
+    }),
     { status, headers: { "content-type": "application/json" } },
   );
 }
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 describe("getContentEntry", () => {
@@ -54,7 +58,7 @@ describe("getContentEntry", () => {
     expect(data.excerpt).toBe("How we deliver fresh.");
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/content/blog/farm-to-door");
+    expect(url.pathname).toBe("/bff/api/v1/content/blog/farm-to-door");
     expect(url.searchParams.get("locale")).toBe("en-IN");
   });
 
@@ -72,7 +76,7 @@ describe("getContentEntry", () => {
 
     await getContentEntry("blog", "guides/farm to door");
     expect(lastUrl(fetchSpy).pathname).toBe(
-      "/api/v1/content/blog/guides/farm%20to%20door",
+      "/bff/api/v1/content/blog/guides/farm%20to%20door",
     );
   });
 
@@ -81,7 +85,11 @@ describe("getContentEntry", () => {
       entryResponse({ slug: "x", title: "T", views: 42 }),
     ) as unknown as typeof fetch;
 
-    const schema = z.object({ slug: z.string(), title: z.string(), views: z.number() });
+    const schema = z.object({
+      slug: z.string(),
+      title: z.string(),
+      views: z.number(),
+    });
     const data = await getContentEntry("blog", "x", {}, { schema });
     expect(data.views).toBe(42);
   });

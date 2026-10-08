@@ -22,7 +22,7 @@ function errorResponse(status: number, code: string | null): Response {
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 const banner = (id: string, rank: number) => ({
@@ -57,7 +57,7 @@ describe("getBanners", () => {
     expect(data[0]?.ctaUrl).toBe("/c/seasonal");
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/content/banners");
+    expect(url.pathname).toBe("/bff/api/v1/content/banners");
     expect(url.searchParams.get("channel")).toBe("web");
     expect(url.searchParams.get("locale")).toBe("en-IN");
     expect(url.searchParams.has("polygonId")).toBe(false);
@@ -67,7 +67,11 @@ describe("getBanners", () => {
     const fetchSpy = vi.fn(async () => bannersResponse([]));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await getBanners({ polygonId: "poly_1", channel: "mobile", locale: "hi-IN" });
+    await getBanners({
+      polygonId: "poly_1",
+      channel: "mobile",
+      locale: "hi-IN",
+    });
 
     const url = lastUrl(fetchSpy);
     expect(url.searchParams.get("polygonId")).toBe("poly_1");
