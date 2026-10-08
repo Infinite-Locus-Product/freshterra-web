@@ -31,7 +31,9 @@ const personalModule = {
   },
 };
 
-function homeResponse(modules: unknown[] = [heroModule, personalModule]): Response {
+function homeResponse(
+  modules: unknown[] = [heroModule, personalModule],
+): Response {
   return new Response(
     JSON.stringify({
       success: true,
@@ -55,7 +57,7 @@ function errorResponse(status: number, code: string | null): Response {
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 describe("getHomeContent", () => {
@@ -92,7 +94,7 @@ describe("getHomeContent", () => {
     }
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/content/home");
+    expect(url.pathname).toBe("/bff/api/v1/content/home");
     expect(url.searchParams.get("polygon_id")).toBe("poly_1");
     expect(url.searchParams.get("store_id")).toBe("blr-channel");
     expect(url.searchParams.get("locale")).toBe("en-IN");

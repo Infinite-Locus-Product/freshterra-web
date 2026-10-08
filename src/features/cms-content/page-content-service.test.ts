@@ -22,7 +22,7 @@ function errorResponse(status: number, code: string | null): Response {
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 const aboutPage = {
@@ -56,7 +56,7 @@ describe("getPage", () => {
     expect(data.blocks[0]?.html).toContain("Farm-to-door");
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/content/pages/about");
+    expect(url.pathname).toBe("/bff/api/v1/content/pages/about");
     expect(url.searchParams.get("locale")).toBe("en-IN");
   });
 
@@ -69,7 +69,7 @@ describe("getPage", () => {
     await getPage("policies/refund", { locale: "hi-IN" });
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/content/pages/policies/refund");
+    expect(url.pathname).toBe("/bff/api/v1/content/pages/policies/refund");
     expect(url.searchParams.get("locale")).toBe("hi-IN");
   });
 
@@ -79,7 +79,7 @@ describe("getPage", () => {
 
     await getPage("/blog/farm-story/");
     expect(lastUrl(fetchSpy).pathname).toBe(
-      "/api/v1/content/pages/blog/farm-story",
+      "/bff/api/v1/content/pages/blog/farm-story",
     );
   });
 

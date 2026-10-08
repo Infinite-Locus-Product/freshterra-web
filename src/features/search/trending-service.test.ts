@@ -16,7 +16,7 @@ function trendingResponse(
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 describe("getTrendingTerms", () => {
@@ -51,7 +51,7 @@ describe("getTrendingTerms", () => {
     await getTrendingTerms();
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/search/trending");
+    expect(url.pathname).toBe("/bff/api/v1/search/trending");
     expect(url.searchParams.get("limit")).toBe("10");
     expect(url.searchParams.has("polygonId")).toBe(false);
   });

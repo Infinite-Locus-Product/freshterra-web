@@ -57,7 +57,7 @@ function errorResponse(status: number, code: string | null): Response {
 
 function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const [url] = fetchSpy.mock.calls.at(-1) as unknown as [string];
-  return new URL(url);
+  return new URL(url, "https://api.freshterra.in");
 }
 
 describe("getCollectionProducts", () => {
@@ -86,7 +86,9 @@ describe("getCollectionProducts", () => {
     expect(data.redirect_url).toBe("/c/seasonal");
 
     const url = lastUrl(fetchSpy);
-    expect(url.pathname).toBe("/api/v1/collections/seasonal-picks/products");
+    expect(url.pathname).toBe(
+      "/bff/api/v1/collections/seasonal-picks/products",
+    );
     expect(url.searchParams.get("polygonId")).toBe("poly_1");
     expect(url.searchParams.get("page")).toBe("1");
     expect(url.searchParams.get("pageSize")).toBe("20");
