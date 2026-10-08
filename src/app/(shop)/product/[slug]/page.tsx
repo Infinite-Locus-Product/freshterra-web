@@ -14,7 +14,12 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
-import { getProduct } from "@/features/catalog/product-service";
+import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
+import { productPageMetadata } from "@/features/catalog/product-seo";
+import {
+  getProduct,
+  getProductBySlug,
+} from "@/features/catalog/product-service";
 
 type Params = Promise<{ slug: string }>;
 
@@ -29,9 +34,14 @@ export function generateStaticParams() {
 /**
  * Store-neutral product fetch (web never displays per-store price/stock).
  * Deduped via `cache()` so generateMetadata + the page body share one request.
+ *
+ * `/product/{slug}` is the canonical URL going forward, but already
+ * published/bookmarked links may still carry the Saleor global id in that
+ * segment (the pre-slug-endpoint scheme) — route those to the by-id lookup
+ * so they keep resolving, and everything else to the by-slug lookup.
  */
 const loadProduct = cache((slug: string) =>
-  getProduct(
+  (isSaleorProductGlobalId(slug) ? getProduct : getProductBySlug)(
     slug,
     {},
     {
@@ -48,37 +58,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const product = await loadProduct(slug);
-    const description =
-      product.story?.trim() ||
-      product.metafields?.productDetails?.trim() ||
-      `${product.name} on FreshTerra.`;
-    const image = product.images[0]?.url
-      ? [
-          {
-            url: product.images[0].url,
-            alt: product.images[0].alt ?? product.name,
-          },
-        ]
-      : undefined;
-    return {
-      title: product.name,
-      description,
-      alternates: { canonical: `/product/${slug}` },
-      openGraph: {
-        title: product.name,
-        description,
-        url: `/product/${slug}`,
-        type: "website",
-        images: image,
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: product.name,
-        description,
-        images: image?.map((img) => img.url),
-      },
-    };
+    return productPageMetadata({ product: await loadProduct(slug), slug });
   } catch {
     return { alternates: { canonical: `/product/${slug}` } };
   }

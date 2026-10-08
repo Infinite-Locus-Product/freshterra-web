@@ -1,6 +1,6 @@
-import { Heading } from "@/components/ui/Heading";
-
 import { cn } from "@/lib/utils/cn";
+
+import { Heading } from "@/components/ui/Heading";
 
 import type {
   PolicyBlock,
@@ -23,17 +23,10 @@ export function PolicySectionRenderer({
   return (
     <section
       id={section.id}
-      className={cn(
-        "flex flex-col gap-4 [&>p+p]:-mt-4",
-        className,
-      )}
+      className={cn("flex flex-col gap-4 [&>p+p]:-mt-4", className)}
     >
       {section.heading ? (
-        <Heading
-          level={level}
-          variant="policySection"
-          className="mb-[9px]"
-        >
+        <Heading level={level} variant="policySection" className="mb-[9px]">
           {section.heading}
         </Heading>
       ) : null}
@@ -45,6 +38,15 @@ export function PolicySectionRenderer({
 }
 
 function BlockRenderer({ block }: { block: PolicyBlock }) {
+  if (block.type === "heading") {
+    return (
+      <Heading level={block.level} variant="policySubSection">
+        {block.spans.map((span, i) => (
+          <SpanRenderer key={i} span={span} />
+        ))}
+      </Heading>
+    );
+  }
   if (block.type === "paragraph") {
     return (
       <p className="text-text-primary font-sans text-sm leading-relaxed tracking-[0.2px]">

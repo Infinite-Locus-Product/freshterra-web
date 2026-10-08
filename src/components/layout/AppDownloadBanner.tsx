@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 
+import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
 import {
@@ -36,7 +37,7 @@ type AppDownloadBannerProps = Readonly<{
 export function AppDownloadBanner({
   messageLine1 = DEFAULT_MESSAGE_LINE_1,
   messageLine2 = DEFAULT_MESSAGE_LINE_2,
-  openAppHref = "/notify",
+  openAppHref = env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
   openAppLabel = "Open App",
   fullBleed = false,
   className,

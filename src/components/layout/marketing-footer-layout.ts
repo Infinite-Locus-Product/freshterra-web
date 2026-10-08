@@ -2,16 +2,19 @@
 export const MARKETING_FOOTER_WIDTH = 1440;
 export const MARKETING_FOOTER_HEIGHT = 374;
 
-/** Full-width green band; fixed height at lg matches the Figma frame. */
+/** Full-width green band. The Figma frame height is a FLOOR, not a ceiling —
+ *  a hard `lg:h-` here clipped the second grid row (Head Office / Download App)
+ *  at 1024–1159px, where the columns wrap into a 2 x 2 stack taller than 374px.
+ *  `overflow-hidden` stays: it clips the decorative art, not the content. */
 export const marketingFooterMainBandClass =
-  "relative w-full min-h-[12.5rem] overflow-hidden lg:h-[23.375rem] lg:min-h-[23.375rem]";
+  "relative w-full min-h-[12.5rem] overflow-hidden lg:min-h-[23.375rem]";
 
 /** Centered content shell inside the main band. Content is top-aligned with
  *  48px (pt-12) of padding from the top of the footer per Figma; horizontal
  *  padding follows the standard page gutter and aligns with the rest of the
  *  site. */
 export const marketingFooterContentShellClass =
-  "relative z-10 mx-auto flex h-full w-full max-w-content flex-col px-page pt-12 pb-10 lg:pb-0";
+  "relative z-10 mx-auto flex h-full w-full max-w-content flex-col px-page pt-12 pb-10";
 
 /** Bottom legal band shell — matches the page gutter so the copyright/legal
  *  links align with the columns above. */

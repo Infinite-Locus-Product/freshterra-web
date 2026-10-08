@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
 import { AppDownloadBanner } from "@/components/layout/AppDownloadBanner";
@@ -40,7 +41,7 @@ type MobileMarketingHeaderProps = Readonly<{
 export function MobileMarketingHeader({
   locationLabel = "FreshTerra Gurugram",
   navLinks = DEFAULT_NAV_LINKS,
-  downloadHref = "/notify",
+  downloadHref = env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
   bannerFullBleed = false,
   flushBelowSearch = false,
   className,
@@ -49,7 +50,10 @@ export function MobileMarketingHeader({
 
   return (
     <>
-      <AppDownloadBanner openAppHref={downloadHref} fullBleed={bannerFullBleed} />
+      <AppDownloadBanner
+        openAppHref={downloadHref}
+        fullBleed={bannerFullBleed}
+      />
 
       <div
         className={cn(

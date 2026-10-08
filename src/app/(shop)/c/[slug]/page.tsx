@@ -1,11 +1,9 @@
-import type { ReactNode } from "react";
+import { cache, type ReactNode } from "react";
 
 import type { Metadata } from "next";
 
 import Image from "next/image";
 import Link from "next/link";
-
-import { slugToTitle } from "@/lib/utils/slug";
 
 import {
   exploreCatalogBannerHeaderGapClass,
@@ -35,18 +33,70 @@ import {
 } from "@/features/catalog/category-service";
 import { CategoryPlpView } from "@/features/catalog/components/CategoryPlpView";
 import { ExploreCatalogView } from "@/features/catalog/components/ExploreCatalogView";
-import { getWebCategoryContent } from "@/features/cms-content/web-category-content-service";
+import {
+  categoryPageMetadata,
+  EXPLORE_CATALOG_SLUG,
+  exploreCatalogMetadata,
+  type CategoryPageData,
+} from "@/features/cms-content/category-page-seo";
+import { readCmsSeo } from "@/features/cms-content/cms-seo";
+import {
+  getWebCategoryContent,
+  type WebCategoryContent,
+} from "@/features/cms-content/web-category-content-service";
+import { getWebCategoryPage } from "@/features/cms-content/web-category-page-service";
+import {
+  resolveWebCategoryPlpContext,
+  type WebCategoryPlpContext,
+} from "@/features/cms-content/web-category-plp-resolver";
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ parent?: string }>;
 
-const EXPLORE_CATALOG_SLUG = "explore-catalog";
+const EMPTY_CATEGORY_PAGE_DATA: CategoryPageData = {
+  webCategory: null,
+  plpContext: null,
+};
 
-/** Store-neutral catalog content → ISR-cacheable. */
-export const revalidate = 300;
+/**
+ * Deduped via `cache()` so generateMetadata + the page body share one CMS
+ * resolution — the PLP resolver can fan out to several BFF calls.
+ */
+const loadCategoryPageData = cache(
+  async (
+    slug: string,
+    parent: string | undefined,
+  ): Promise<CategoryPageData> => {
+    let webCategory: WebCategoryContent | null = null;
+    try {
+      webCategory = await getWebCategoryContent(slug);
+    } catch {
+      // If slug is already an L3 route (or endpoint is unavailable), show PLP.
+    }
 
-export function generateStaticParams() {
-  return [];
-}
+    let plpContext: WebCategoryPlpContext | null = null;
+    if (!webCategory) {
+      try {
+        plpContext = await resolveWebCategoryPlpContext(slug, parent);
+      } catch {
+        // CMS PLP config is optional; client can retry if needed.
+      }
+    }
+
+    return { webCategory, plpContext };
+  },
+);
+
+/** Explore-catalog renders client-side; this one server call is for its SEO only. */
+const loadExploreCatalogSeo = cache(async () => {
+  try {
+    return readCmsSeo(await getWebCategoryPage());
+  } catch {
+    return null;
+  }
+});
+
+export const dynamic = "force-dynamic";
 
 function l3TileHref(
   tile: {
@@ -67,47 +117,36 @@ function l3TileHref(
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Params;
+  searchParams: SearchParams;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const title =
-    slug === EXPLORE_CATALOG_SLUG ? "Explore Catalog" : slugToTitle(slug);
-  const description =
-    slug === EXPLORE_CATALOG_SLUG
-      ? "Browse FreshTerra categories and discover products."
-      : `Browse ${title} on FreshTerra.`;
+  if (slug === EXPLORE_CATALOG_SLUG) {
+    return exploreCatalogMetadata(await loadExploreCatalogSeo());
+  }
 
-  return {
-    title,
-    description,
-    alternates: { canonical: `/c/${slug}` },
-    openGraph: {
-      title,
-      description,
-      url: `/c/${slug}`,
-      type: "website",
-      // Page-level openGraph replaces the inherited file-convention image,
-      // so re-attach the site banner explicitly.
-      images: ["/opengraph-image.png"],
-    },
-  };
+  const { parent } = await searchParams;
+  return categoryPageMetadata({
+    slug,
+    ...(await loadCategoryPageData(slug, parent)),
+  });
 }
 
 export default async function CategoryHubPage({
   params,
-}: Readonly<{ params: Params }>) {
+  searchParams,
+}: Readonly<{
+  params: Params;
+  searchParams: SearchParams;
+}>) {
   const { slug } = await params;
-  let webCategory: Awaited<ReturnType<typeof getWebCategoryContent>> | null =
-    null;
-
-  if (slug !== EXPLORE_CATALOG_SLUG) {
-    try {
-      webCategory = await getWebCategoryContent(slug);
-    } catch {
-      // If slug is already an L3 route (or endpoint is unavailable), show PLP.
-    }
-  }
+  const { parent } = await searchParams;
+  const { webCategory, plpContext: initialPlpContext } =
+    slug === EXPLORE_CATALOG_SLUG
+      ? EMPTY_CATEGORY_PAGE_DATA
+      : await loadCategoryPageData(slug, parent);
 
   let initialProducts = null;
   if (slug !== EXPLORE_CATALOG_SLUG && !webCategory) {
@@ -130,7 +169,12 @@ export default async function CategoryHubPage({
     contentNode = <WebCategoryLandingView content={webCategory} />;
   } else {
     contentNode = (
-      <CategoryPlpView slug={slug} initialProducts={initialProducts} />
+      <CategoryPlpView
+        slug={slug}
+        initialProducts={initialProducts}
+        initialPlpCms={initialPlpContext?.config ?? null}
+        initialParentSlug={initialPlpContext?.parentSlug ?? null}
+      />
     );
   }
 

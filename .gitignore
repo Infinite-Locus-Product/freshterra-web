@@ -60,3 +60,5 @@ src/types/saleor.ts
 .agents
 skills-lock.json
 qa/
+# Delivery Rule 6 test gate, machine-specific
+.test-gate.local.conf

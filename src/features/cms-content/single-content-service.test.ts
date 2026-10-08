@@ -21,7 +21,11 @@ function entryResponse(data: unknown = entry): Response {
 
 function errorResponse(status: number, code: string | null): Response {
   return new Response(
-    JSON.stringify({ success: false, data: null, error: code ? { code } : null }),
+    JSON.stringify({
+      success: false,
+      data: null,
+      error: code ? { code } : null,
+    }),
     { status, headers: { "content-type": "application/json" } },
   );
 }
@@ -38,7 +42,7 @@ function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const href = resolveFetchUrl(input);
   return href.startsWith("http")
     ? new URL(href)
-    : new URL(href, "https://api.stage.freshterra.in");
+    : new URL(href, "https://api.freshterra.in");
 }
 
 describe("getSingleContent", () => {
@@ -60,9 +64,7 @@ describe("getSingleContent", () => {
 
     const data = await getSingleContent("categories");
     expect(data.title).toBe("Categories");
-    expect(
-      (data as { categories: unknown[] }).categories,
-    ).toHaveLength(2);
+    expect((data as { categories: unknown[] }).categories).toHaveLength(2);
 
     const url = lastUrl(fetchSpy);
     expect(url.pathname).toBe("/bff/api/v1/content/single/categories");

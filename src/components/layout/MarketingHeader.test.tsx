@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { env } from "@/lib/config/env";
+
 import { AppDownloadBanner } from "./AppDownloadBanner";
 import { MarketingHeader } from "./MarketingHeader";
 
@@ -11,13 +13,11 @@ describe("AppDownloadBanner", () => {
 
   it("renders the two-line download message and Open App link", () => {
     render(<AppDownloadBanner />);
-    expect(
-      screen.getByText("Download the app for better"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Download the app for better")).toBeInTheDocument();
     expect(screen.getByText("experience")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /open app/i })).toHaveAttribute(
       "href",
-      "/notify",
+      env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
     );
   });
 
@@ -61,11 +61,11 @@ describe("MarketingHeader", () => {
     expect(nav.className).not.toContain("overflow-x-auto");
   });
 
-  it("renders the desktop download CTA linking to /notify", () => {
+  it("renders the desktop download CTA linking to the app download URL", () => {
     render(<MarketingHeader />);
     expect(
       screen.getByRole("link", { name: /download the app/i }),
-    ).toHaveAttribute("href", "/notify");
+    ).toHaveAttribute("href", env.NEXT_PUBLIC_APP_DOWNLOAD_URL);
   });
 
   it("links the location badge to the stores page", () => {

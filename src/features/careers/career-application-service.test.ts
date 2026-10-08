@@ -13,10 +13,10 @@ function makeFile(name: string, type: string, size: number): File {
 }
 
 function successEnvelope(data: unknown = null): Response {
-  return new Response(
-    JSON.stringify({ success: true, data, error: null }),
-    { status: 201, headers: { "content-type": "application/json" } },
-  );
+  return new Response(JSON.stringify({ success: true, data, error: null }), {
+    status: 201,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function resolveFetchUrl(input: unknown): string {
@@ -48,8 +48,8 @@ describe("mapCareerApplicationToPayload", () => {
     });
   });
 
-  it("throws when email is empty", () => {
-    expect(() =>
+  it("omits email from the payload when the field is empty", () => {
+    expect(
       mapCareerApplicationToPayload(
         {
           position: "Senior Backend Engineer",
@@ -60,7 +60,12 @@ describe("mapCareerApplicationToPayload", () => {
         },
         "uploads/resume/2b1c-f9.pdf",
       ),
-    ).toThrow();
+    ).toEqual({
+      position: "Senior Backend Engineer",
+      name: "Rahul Sharma",
+      phone: "+91 8793787393",
+      resume_key: "uploads/resume/2b1c-f9.pdf",
+    });
   });
 });
 
@@ -76,7 +81,10 @@ describe("submitCareerApplication", () => {
       headers: { "Content-Type": "application/pdf" },
       expires_in: 300,
     });
-    vi.spyOn(resumeUploadService, "uploadResumeToPresignedUrl").mockResolvedValue();
+    vi.spyOn(
+      resumeUploadService,
+      "uploadResumeToPresignedUrl",
+    ).mockResolvedValue();
   });
 
   afterEach(() => {
@@ -118,21 +126,29 @@ describe("submitCareerApplication", () => {
     });
   });
 
-  it("rejects submission when email is empty", async () => {
+  it("POSTs without email when the field is empty", async () => {
     const fetchSpy = vi.fn(async () => successEnvelope());
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
     const resume = makeFile("resume.pdf", "application/pdf", 1024);
-    await expect(
-      submitCareerApplication({
-        position: "Senior Backend Engineer",
-        name: "Rahul Sharma",
-        email: "",
-        phone: "+91 8793787393",
-        resume,
-      }),
-    ).rejects.toThrow();
+    await submitCareerApplication({
+      position: "Senior Backend Engineer",
+      name: "Rahul Sharma",
+      email: "",
+      phone: "+91 8793787393",
+      resume,
+    });
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    const applyNowCall = fetchSpy.mock.calls.find(([url]) =>
+      resolveFetchUrl(url).includes("/api/v1/forms/apply-now"),
+    );
+    expect(applyNowCall).toBeDefined();
+    const [, init] = applyNowCall as [string, RequestInit];
+    expect(JSON.parse(String(init.body))).toEqual({
+      position: "Senior Backend Engineer",
+      name: "Rahul Sharma",
+      phone: "+91 8793787393",
+      resume_key: "uploads/resume/2b1c-f9.pdf",
+    });
   });
 });

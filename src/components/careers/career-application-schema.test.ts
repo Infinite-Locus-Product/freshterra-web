@@ -26,19 +26,19 @@ describe("careerApplicationSchema", () => {
     expect(careerApplicationSchema.safeParse(validBase).success).toBe(true);
   });
 
-  it("rejects an empty email", () => {
+  it("accepts when email is empty (optional)", () => {
     const result = careerApplicationSchema.safeParse({
       ...validBase,
       email: "",
     });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.flatten().fieldErrors.email).toBeDefined();
-    }
+    expect(result.success).toBe(true);
   });
 
   it("rejects an empty name", () => {
-    const result = careerApplicationSchema.safeParse({ ...validBase, name: "" });
+    const result = careerApplicationSchema.safeParse({
+      ...validBase,
+      name: "",
+    });
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.flatten().fieldErrors.name).toBeDefined();

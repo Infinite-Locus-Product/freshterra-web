@@ -10,11 +10,12 @@ import {
   buildPlpTabHref,
   findAllL4Tab,
   mapPlpL4Tabs,
-  mapPlpL4TabsToPlpTabs,
   resolvePlpActiveTabValue,
   resolvePlpBannerForTab,
   resolvePlpProductSlug,
+  visiblePlpL4Tabs,
 } from "@/features/cms-content/web-category-plp-mapper";
+import type { WebCategoryPlpContent } from "@/features/cms-content/web-category-plp-service";
 
 import { resolveListingTitle } from "../plp-listing-meta";
 import { useCategoryProducts } from "../useCategoryProducts";
@@ -71,11 +72,15 @@ function facetsToTabs(facets: CategoryFacets): PlpTab[] | undefined {
 type CategoryPlpViewProps = {
   slug: string;
   initialProducts?: CategoryProductsData | null;
+  initialPlpCms?: WebCategoryPlpContent | null;
+  initialParentSlug?: string | null;
 };
 
 export function CategoryPlpView({
   slug,
   initialProducts = null,
+  initialPlpCms = null,
+  initialParentSlug = null,
 }: Readonly<CategoryPlpViewProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -91,6 +96,8 @@ export function CategoryPlpView({
   } = useWebCategoryPlp({
     categorySlug: slug,
     parentSlug: parentFromQuery || undefined,
+    initialContent: initialPlpCms,
+    initialResolvedParentSlug: initialParentSlug,
   });
 
   const parentSlug = resolvedParentSlug ?? parentFromQuery ?? slug;
@@ -101,9 +108,11 @@ export function CategoryPlpView({
   );
 
   const cmsTabs = useMemo(
-    () => (l4Tabs.length > 0 ? mapPlpL4TabsToPlpTabs(l4Tabs) : undefined),
-    [l4Tabs],
+    () => (plpCms ? visiblePlpL4Tabs(l4Tabs) : undefined),
+    [l4Tabs, plpCms],
   );
+
+  const hasCmsL4Tabs = Boolean(plpCms?.l4_tab?.length);
 
   const allL4TabValue = useMemo(
     () => findAllL4Tab(l4Tabs)?.value ?? null,
@@ -132,9 +141,12 @@ export function CategoryPlpView({
   });
 
   const tabs = useMemo(() => {
-    if (cmsTabs?.length) return cmsTabs;
+    if (hasCmsL4Tabs) {
+      return cmsTabs?.length ? cmsTabs : undefined;
+    }
+    if (plpLoading) return undefined;
     return facetsToTabs(baseCtrl.facets);
-  }, [cmsTabs, baseCtrl.facets]);
+  }, [cmsTabs, baseCtrl.facets, hasCmsL4Tabs, plpLoading]);
 
   useEffect(() => {
     if (!plpCms || parentFromQuery || !resolvedParentSlug) return;
@@ -254,6 +266,8 @@ export function CategoryPlpView({
       : undefined;
   }, [activeTab, effectiveL4Tab, l4Tabs.length, parentSlug, plpCms]);
 
+  const expectsBanner = Boolean(plpCms?.l4_tab?.length);
+
   const title = useMemo(
     () =>
       resolveListingTitle(slug, {
@@ -278,6 +292,7 @@ export function CategoryPlpView({
       titleLoading={(ctrl.loading || plpLoading) && !title}
       breadcrumbs={breadcrumbs}
       banner={banner}
+      bannerLoading={plpLoading && expectsBanner && !banner}
       tabs={tabs}
       activeTab={l4Tabs.length > 0 ? effectiveL4Tab : activeTab}
       onTabChange={(nextTab) => {

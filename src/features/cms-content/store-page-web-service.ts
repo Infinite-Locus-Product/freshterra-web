@@ -12,7 +12,10 @@ import {
   type StoresPageContent,
 } from "./store-page-web-types";
 
-import type { ContentEntryParams, ContentEntryRequestOptions } from "./content-entry-service";
+import type {
+  ContentEntryParams,
+  ContentEntryRequestOptions,
+} from "./content-entry-service";
 
 export const STORE_PAGE_WEB_CONTENT_TYPE = "store-page-webs";
 export const STORE_PAGE_WEB_DEFAULT_SLUG = "stores";
@@ -39,6 +42,7 @@ export async function getStorePageWebContent(
       schema: storePageWebContentSchema,
       signal: options.signal,
       token: options.token,
+      expectedErrorCodes: ["NOT_FOUND"],
       next: {
         tags: [...CMS_STORE_PAGE_WEB_TAGS],
         revalidate: CMS_STORE_PAGE_WEB_REVALIDATE_SECONDS,

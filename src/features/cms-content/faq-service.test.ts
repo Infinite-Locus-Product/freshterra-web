@@ -40,7 +40,7 @@ function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const href = resolveFetchUrl(input);
   return href.startsWith("http")
     ? new URL(href)
-    : new URL(href, "https://api.stage.freshterra.in");
+    : new URL(href, "https://api.freshterra.in");
 }
 
 describe("getFaqContent", () => {
@@ -63,6 +63,7 @@ describe("getFaqContent", () => {
     expect(url.searchParams.get("locale")).toBe("en-IN");
     expect(url.searchParams.get("populate[faq][populate]")).toBe("*");
     expect(url.searchParams.get("populate[pages]")).toBe("*");
+    expect(url.searchParams.get("populate[seo]")).toBe("*");
   });
 });
 
@@ -79,7 +80,9 @@ describe("fetchFaqContentSafe", () => {
   });
 
   it("returns mapped FAQ content on success", async () => {
-    globalThis.fetch = vi.fn(async () => entryResponse()) as unknown as typeof fetch;
+    globalThis.fetch = vi.fn(async () =>
+      entryResponse(),
+    ) as unknown as typeof fetch;
 
     const content = await fetchFaqContentSafe();
     expect(content?.hero.title).toBe("FAQs");

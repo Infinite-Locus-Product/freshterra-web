@@ -164,19 +164,16 @@ export const collectionCollectionSchema = z.object({
 });
 export type CollectionSummary = z.infer<typeof collectionCollectionSchema>;
 
-export const collectionProductsDataSchema = z.preprocess(
-  normalizeCollectionProductsPayload,
-  z.object({
-    items: z.array(plpProductSchema),
-    page: z.number(),
-    pageSize: z.number(),
-    total: z.number(),
-    facets: facetsSchema.default({}),
-    collection: collectionCollectionSchema.optional(),
-    expires_at: z.string().nullable().optional(),
-    redirect_url: z.string().nullable().optional(),
-  }),
-);
+export const collectionProductsDataSchema = z.object({
+  items: z.array(plpProductSchema),
+  page: z.number(),
+  pageSize: z.number(),
+  total: z.number(),
+  facets: facetsSchema.default({}),
+  collection: collectionCollectionSchema.optional(),
+  expires_at: z.string().nullable().optional(),
+  redirect_url: z.string().nullable().optional(),
+});
 export type CollectionProductsData = z.infer<
   typeof collectionProductsDataSchema
 >;
@@ -334,64 +331,17 @@ export const categoryProductsDataSchema = z.preprocess(
 export type CategoryProductsData = z.infer<typeof categoryProductsDataSchema>;
 
 /**
- * The BFF now returns collection facets in the same dynamic `{ key, options[] }[]`
- * array shape as category (one group per product attribute + dietary/health), but
- * the collection UI model uses `{ slug, count, name? }`. Mirror of
- * `normalizeCategoryFacets` emitting `slug` instead of `value`. (function
- * declarations are hoisted, so `collectionProductsDataSchema` above can reference this.)
+ * BFF-resolved SEO block on `GET /products/slug/:slug` (FRES-2213). The backend
+ * already applies the marketing → default fallbacks (title, ~160-char
+ * description, `/product/{slug}` canonical), so the web renders it as-is.
  */
-function normalizeCollectionFacets(facets: unknown): Facets {
-  if (!facets) return {};
-  if (isRecord(facets) && !Array.isArray(facets)) return facets as Facets;
-  if (!Array.isArray(facets)) return {};
-
-  const out: Facets = {};
-  for (const group of facets) {
-    if (!isRecord(group)) continue;
-    const key =
-      typeof group.key === "string"
-        ? group.key
-        : typeof group.slug === "string"
-          ? group.slug
-          : "";
-    if (!key) continue;
-
-    const options = Array.isArray(group.options) ? group.options : [];
-    const values = options
-      .map((option) => {
-        if (!isRecord(option)) return null;
-        const slug =
-          typeof option.value === "string"
-            ? option.value
-            : typeof option.slug === "string"
-              ? option.slug
-              : "";
-        if (!slug) return null;
-        const count =
-          typeof option.count === "number" && Number.isFinite(option.count)
-            ? option.count
-            : 0;
-        const name =
-          typeof option.label === "string"
-            ? option.label
-            : typeof option.name === "string"
-              ? option.name
-              : undefined;
-        return { slug, count, ...(name ? { name } : {}) };
-      })
-      .filter((entry): entry is FacetValue => entry !== null);
-
-    if (values.length > 0) out[key] = values;
-  }
-  return out;
-}
-
-function normalizeCollectionProductsPayload(input: unknown): unknown {
-  if (!input || typeof input !== "object" || Array.isArray(input)) return input;
-  const record = input as Record<string, unknown>;
-  if (!Array.isArray(record.items)) return input;
-  return { ...record, facets: normalizeCollectionFacets(record.facets) };
-}
+export const productSeoMetaSchema = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  canonicalUrl: z.string().nullish(),
+  ogImage: z.string().nullish(),
+});
+export type ProductSeoMeta = z.infer<typeof productSeoMetaSchema>;
 
 /**
  * The `data` payload returned inside the success envelope. Shared by both PDP
@@ -424,6 +374,8 @@ const productDetailDataSchema = z.object({
   productInformations: z.custom<ProductInformations>().optional(),
   /** Cross-sell rail from the PDP BFF payload (`similarProducts`). */
   similarProducts: z.array(plpProductSchema).default([]),
+  /** Marketing SEO with backend fallbacks applied — see {@link productSeoMetaSchema}. */
+  seoMeta: productSeoMetaSchema.optional(),
 });
 
 /** Validates + normalizes Saleor metadata from the BFF PDP payload. */

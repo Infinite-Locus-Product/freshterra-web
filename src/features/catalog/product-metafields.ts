@@ -9,7 +9,7 @@ import {
 } from "./product-informations";
 import { parseWeightGrams } from "./variant-meta";
 
-import type { ProductDetail, ProductRegulatory } from "./types";
+import type { ProductDetail, ProductRegulatory, ProductSeoMeta } from "./types";
 
 /**
  * Saleor product-level metadata keys configured in the dashboard.
@@ -510,6 +510,28 @@ function normalizeBffCatalogShape(input: UnknownRecord): UnknownRecord {
   return out;
 }
 
+const PRODUCT_SEO_META_KEYS = [
+  "title",
+  "description",
+  "canonicalUrl",
+  "ogImage",
+] as const;
+
+/**
+ * Keeps the BFF `seoMeta` block (string or null fields only) so a malformed
+ * value from an intermediate BFF can never fail the whole PDP parse.
+ */
+function normalizeSeoMeta(raw: unknown): ProductSeoMeta | undefined {
+  if (!isRecord(raw)) return undefined;
+  const out: ProductSeoMeta = {};
+  for (const key of PRODUCT_SEO_META_KEYS) {
+    const value = raw[key];
+    if (typeof value === "string") out[key] = value;
+    else if (value === null) out[key] = null;
+  }
+  return out;
+}
+
 /** Parses marketing pills — prefer `tags_json`; PLP cards often only send `tags[]`. */
 function tagPillsFromInput(input: UnknownRecord): string[] {
   const rawMeta = parseSaleorMetadataInput(
@@ -644,9 +666,11 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     description: _description,
     type: _type,
     saleorProductId: _saleorProductId,
-    seoMeta: _seoMeta,
+    seoMeta: rawSeoMeta,
     ...rest
   } = catalog;
+
+  const seoMeta = normalizeSeoMeta(rawSeoMeta);
 
   return {
     ...rest,
@@ -659,6 +683,7 @@ export function normalizeProductDetailPayload(input: unknown): unknown {
     nutrition,
     metafields: meta,
     ...(productInformations ? { productInformations } : {}),
+    ...(seoMeta ? { seoMeta } : {}),
   } satisfies Partial<ProductDetail>;
 }
 

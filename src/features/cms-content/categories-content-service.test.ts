@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getCategoriesContent } from "./categories-content-service";
 
 function categoriesResponse(data: unknown): Response {
-  return new Response(
-    JSON.stringify({ success: true, data, error: null }),
-    { status: 200, headers: { "content-type": "application/json" } },
-  );
+  return new Response(JSON.stringify({ success: true, data, error: null }), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function resolveFetchUrl(input: unknown): string {
@@ -21,7 +21,7 @@ function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const href = resolveFetchUrl(input);
   return href.startsWith("http")
     ? new URL(href)
-    : new URL(href, "https://api.stage.freshterra.in");
+    : new URL(href, "https://api.freshterra.in");
 }
 
 describe("getCategoriesContent", () => {

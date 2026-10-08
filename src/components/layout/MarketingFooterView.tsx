@@ -40,9 +40,10 @@ type MarketingFooterViewProps = Readonly<{
 }>;
 
 export function MarketingFooterView({ content }: MarketingFooterViewProps) {
-  const appStore = env.NEXT_PUBLIC_APP_STORE_URL ?? "/notify";
-  const playStore = env.NEXT_PUBLIC_PLAY_STORE_URL ?? "/notify";
-  const badgeHref = { appStore, playStore };
+  // One device-aware redirect serves both badges — the BFF resolves App Store
+  // vs Play Store from the visitor's user agent.
+  const downloadHref = env.NEXT_PUBLIC_APP_DOWNLOAD_URL;
+  const badgeHref = { appStore: downloadHref, playStore: downloadHref };
 
   const totalColumns = content.groups.length + (content.office ? 1 : 0) + 1;
 
@@ -57,8 +58,11 @@ export function MarketingFooterView({ content }: MarketingFooterViewProps) {
           <div
             className={cn(
               marketingFooterGridClass,
-              totalColumns === 3 && "xl:grid-cols-3",
-              totalColumns >= 4 && "xl:grid-cols-4",
+              totalColumns === 3 && "lg:grid-cols-3",
+              // 4 columns need >= 224px each to fit the store badge at its spec
+              // width — that lands at the custom `lgx` (1160px) breakpoint,
+              // earlier than xl but later than lg.
+              totalColumns >= 4 && "lgx:grid-cols-4",
             )}
           >
             {content.groups.map((group) => (

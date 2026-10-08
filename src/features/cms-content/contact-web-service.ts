@@ -1,13 +1,17 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
 
-import { mapContactWebGetInTouch, mapContactWebInquiryOptions } from "./contact-web-mapper";
-import { getSingleContent } from "./single-content-service";
-
+import { readCmsSeo } from "./cms-seo";
+import {
+  mapContactWebGetInTouch,
+  mapContactWebInquiryOptions,
+} from "./contact-web-mapper";
 import {
   contactWebContentSchema,
   type ContactGetInTouchItem,
   type ContactWebContent,
 } from "./contact-web-types";
+import { getSingleContent } from "./single-content-service";
 
 import type { ContentEntryParams } from "./content-entry-service";
 
@@ -16,6 +20,8 @@ export const CONTACT_WEB_CONTENT_TYPE = "contact-web";
 export type ContactWebPageData = {
   getInTouchItems: ContactGetInTouchItem[];
   inquiryOptions: string[];
+  /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };
 
 /**
@@ -25,11 +31,9 @@ export type ContactWebPageData = {
 export async function getContactWebContent(
   params: ContentEntryParams = {},
 ): Promise<ContactWebContent> {
-  return getSingleContent<ContactWebContent>(
-    CONTACT_WEB_CONTENT_TYPE,
-    params,
-    { schema: contactWebContentSchema },
-  );
+  return getSingleContent<ContactWebContent>(CONTACT_WEB_CONTENT_TYPE, params, {
+    schema: contactWebContentSchema,
+  });
 }
 
 /**
@@ -50,9 +54,11 @@ export async function fetchContactWebPageDataSafe(
 ): Promise<ContactWebPageData> {
   try {
     const entry = await getContactWebContent(params);
+    const seo = readCmsSeo(entry);
     return {
       getInTouchItems: mapContactWebGetInTouch(entry),
       inquiryOptions: mapContactWebInquiryOptions(entry),
+      ...(seo ? { seo } : {}),
     };
   } catch (error) {
     if (error instanceof FreshTerraApiError && error.code === "NOT_FOUND") {

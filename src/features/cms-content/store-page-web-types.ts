@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { SeoOverrides } from "@/lib/seo/pageMetadata";
+
 import { cmsBoolSchema } from "./cms-boolean";
 
 const cmsString = z.string().nullable().optional();
@@ -41,7 +43,9 @@ export const storePageWebContentSchema = z
     direction_slug: cmsString,
     store_category_heading: cmsString,
     information: z.array(storePageWebInformationSchema).optional(),
-    instore_category_images: z.array(storePageWebCategoryImageSchema).optional(),
+    instore_category_images: z
+      .array(storePageWebCategoryImageSchema)
+      .optional(),
   })
   .catchall(z.unknown());
 
@@ -78,5 +82,6 @@ export type StoresPageContent = {
   directionsUrl: string;
   categorySectionTitle: string;
   information: StorePageInformationRow[];
-  categories: StorePageCategoryTile[];
+  categories: StorePageCategoryTile[]; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  seo?: SeoOverrides | null;
 };

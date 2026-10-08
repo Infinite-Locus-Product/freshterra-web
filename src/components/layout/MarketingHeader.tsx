@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
 import {
@@ -55,7 +56,7 @@ export function MarketingHeader({
   taglineAs = "p",
   locationLabel = "FreshTerra Gurugram",
   navLinks = DEFAULT_NAV_LINKS,
-  downloadHref = "/notify",
+  downloadHref = env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
   downloadLabel = "Download the App",
   embedded = false,
   bannerFullBleed = false,
@@ -63,7 +64,9 @@ export function MarketingHeader({
   className,
 }: MarketingHeaderProps) {
   const desktopInner = (
-    <div className={`${PAGE_SHELL_INNER_CLASS} hidden flex-col gap-6 lg:flex md:gap-10`}>
+    <div
+      className={`${PAGE_SHELL_INNER_CLASS} hidden flex-col gap-6 md:gap-10 lg:flex`}
+    >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-3">
           <Logo tone="light" variant="header" priority linkToHome />

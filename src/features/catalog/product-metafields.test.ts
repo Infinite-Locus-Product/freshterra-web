@@ -318,6 +318,49 @@ describe("normalizeProductDetailPayload", () => {
   });
 });
 
+describe("normalizeProductDetailPayload seoMeta passthrough", () => {
+  const base = {
+    id: "prd_almond",
+    name: "Almond Butter Crunchy",
+    slug: "almond-butter-crunchy",
+    price: { list: 39900, mrp: 44900, currency: "INR" },
+    inStock: true,
+  };
+
+  it("keeps the BFF seoMeta block, including null fields", () => {
+    const normalized = productDetailSchema.parse({
+      ...base,
+      seoMeta: {
+        title: "Crunchy Almond Butter, Stone-Ground | FreshTerra",
+        description: "Stone-ground crunchy almond butter with no added sugar.",
+        canonicalUrl: "https://freshterra.in/product/almond-butter-crunchy",
+        ogImage: null,
+      },
+    });
+
+    expect(normalized.seoMeta).toEqual({
+      title: "Crunchy Almond Butter, Stone-Ground | FreshTerra",
+      description: "Stone-ground crunchy almond butter with no added sugar.",
+      canonicalUrl: "https://freshterra.in/product/almond-butter-crunchy",
+      ogImage: null,
+    });
+  });
+
+  it("leaves seoMeta undefined when the BFF does not send it", () => {
+    const normalized = productDetailSchema.parse(base);
+    expect(normalized.seoMeta).toBeUndefined();
+  });
+
+  it("drops a malformed seoMeta instead of failing the parse", () => {
+    expect(
+      productDetailSchema.parse({ ...base, seoMeta: "junk" }).seoMeta,
+    ).toBeUndefined();
+    expect(
+      productDetailSchema.parse({ ...base, seoMeta: { title: 42 } }).seoMeta,
+    ).toEqual({});
+  });
+});
+
 describe("normalizeBffListingProduct", () => {
   it("normalizes BFF PLP product cards for category listings", () => {
     const product = plpProductSchema.parse({

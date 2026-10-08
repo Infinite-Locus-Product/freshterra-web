@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  forwardRef,
-  useRef,
-  useState,
-  type InputHTMLAttributes,
-} from "react";
+import { forwardRef, useRef, useState, type InputHTMLAttributes } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -75,7 +70,8 @@ export function CareerApplicationForm({
       onSubmitted?.();
     } catch (error) {
       setSubmitError(
-        error instanceof FreshTerraApiError || error instanceof ResumeUploadError
+        error instanceof FreshTerraApiError ||
+          error instanceof ResumeUploadError
           ? error.message
           : "Something went wrong. Please try again.",
       );
@@ -110,7 +106,7 @@ export function CareerApplicationForm({
       />
 
       <LabeledInput
-        label="Email Address*"
+        label="Email Address (optional)"
         type="email"
         autoComplete="email"
         placeholder="your.email@example.com"
@@ -185,7 +181,10 @@ function controlErrorClass(hasError: boolean | undefined): string | undefined {
     : undefined;
 }
 
-function FieldError({ id, message }: Readonly<{ id: string; message: string }>) {
+function FieldError({
+  id,
+  message,
+}: Readonly<{ id: string; message: string }>) {
   return (
     <p id={id} role="alert" className="px-2 text-xs leading-tight text-red-600">
       {message}

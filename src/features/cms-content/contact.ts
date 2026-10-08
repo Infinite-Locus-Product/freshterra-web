@@ -12,9 +12,9 @@ export const contactPageStaticContent = {
     fields: {
       inquiryType: "Inquiry type*",
       name: "Name*",
-      email: "Email Address*",
+      email: "Email Address (optional)",
       phone: "Phone Number*",
-      message: "Message (Minimum 10 words)",
+      message: "Message (Minimum 30 words)",
     },
     ctaLabel: "Submit Application",
   },

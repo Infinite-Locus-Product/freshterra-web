@@ -6,10 +6,10 @@ import {
 } from "./contact-form-service";
 
 function successEnvelope(data: unknown = null): Response {
-  return new Response(
-    JSON.stringify({ success: true, data, error: null }),
-    { status: 200, headers: { "content-type": "application/json" } },
-  );
+  return new Response(JSON.stringify({ success: true, data, error: null }), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function resolveFetchUrl(input: unknown): string {
@@ -38,8 +38,8 @@ describe("mapContactFormToPayload", () => {
     });
   });
 
-  it("throws when email is empty", () => {
-    expect(() =>
+  it("omits email from the payload when the field is empty", () => {
+    expect(
       mapContactFormToPayload({
         inquiryType: "Partnership",
         name: "Rahul Sharma",
@@ -47,7 +47,12 @@ describe("mapContactFormToPayload", () => {
         phone: "+91 9876543210",
         message: "Wholesale partnership inquiry",
       }),
-    ).toThrow();
+    ).toEqual({
+      inquiry_type: "Partnership",
+      name: "Rahul Sharma",
+      phone: "+91 9876543210",
+      message: "Wholesale partnership inquiry",
+    });
   });
 });
 
@@ -92,23 +97,5 @@ describe("submitContactUsForm", () => {
       message:
         "I would like to discuss a wholesale supply partnership for organic produce across Bengaluru…",
     });
-  });
-
-  it("rejects submission when email is empty", async () => {
-    const fetchSpy = vi.fn(async () => successEnvelope());
-    globalThis.fetch = fetchSpy as unknown as typeof fetch;
-
-    await expect(
-      submitContactUsForm({
-        inquiryType: "General Query",
-        name: "Rahul Sharma",
-        email: "",
-        phone: "+91 9876543210",
-        message:
-          "This is a test message with at least ten words in it for validation purposes here.",
-      }),
-    ).rejects.toThrow();
-
-    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

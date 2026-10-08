@@ -17,6 +17,15 @@ export function isFooterCmsCacheTag(tag: string): boolean {
   return (CMS_WEB_FOOTER_TAGS as readonly string[]).includes(tag);
 }
 
+/** Next.js cache tags for `GET /api/v1/content/single/news-page`. */
+export const CMS_NEWS_PAGE_TAGS = ["cms:news-page", "cms:news"] as const;
+
+export const CMS_NEWS_PAGE_REVALIDATE_SECONDS = 600;
+
+export function isNewsPageCmsCacheTag(tag: string): boolean {
+  return (CMS_NEWS_PAGE_TAGS as readonly string[]).includes(tag);
+}
+
 /** Next.js cache tags for `GET /api/v1/content/store-page-webs/:slug`. */
 export const CMS_STORE_PAGE_WEB_TAGS = [
   "cms:store-page-web",
@@ -27,4 +36,17 @@ export const CMS_STORE_PAGE_WEB_REVALIDATE_SECONDS = 600;
 
 export function isStorePageWebCmsCacheTag(tag: string): boolean {
   return (CMS_STORE_PAGE_WEB_TAGS as readonly string[]).includes(tag);
+}
+
+/** Next.js cache tags for `GET /api/v1/content/collections/:slug` (SEO). */
+export const CMS_COLLECTION_TAGS = [
+  "cms:collection",
+  "cms:collections",
+] as const;
+
+export const CMS_COLLECTION_REVALIDATE_SECONDS = 600;
+
+/** Per-entry tag so the webhook can bust a single collection. */
+export function cmsCollectionTag(slug: string): string {
+  return `cms:collection:${slug}`;
 }

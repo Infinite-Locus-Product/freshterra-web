@@ -52,8 +52,7 @@ export const careerApplicationSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, { message: "Email is required." })
-    .refine((value) => EMAIL_REGEX.test(value), {
+    .refine((value) => value === "" || EMAIL_REGEX.test(value), {
       message: "Enter a valid email address.",
     }),
   phone: z

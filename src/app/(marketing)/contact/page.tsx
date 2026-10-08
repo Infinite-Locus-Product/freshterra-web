@@ -1,4 +1,8 @@
+import { cache } from "react";
+
 import type { Metadata } from "next";
+
+import { buildPageMetadata, siteTitle } from "@/lib/seo/pageMetadata";
 
 import { ContactPageLayout } from "@/components/contact/ContactPageLayout";
 
@@ -8,18 +12,29 @@ import { fetchContactWebPageDataSafe } from "@/features/cms-content/contact-web-
 /** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
 export const revalidate = 600;
 
-export const metadata: Metadata = {
-  title: "Contact Us | FreshTerra",
-  description:
-    "Get in touch with FreshTerra for support, partnerships, and store-related queries.",
-};
+const PAGE_DESCRIPTION =
+  "Get in touch with FreshTerra for support, partnerships, and store-related queries.";
+
+/** Deduped so generateMetadata + the page body share one BFF request. */
+const loadContactPage = cache(() => fetchContactWebPageDataSafe());
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await loadContactPage();
+
+  return buildPageMetadata({
+    path: "/contact",
+    fallbackTitle: siteTitle("Contact Us"),
+    fallbackDescription: PAGE_DESCRIPTION,
+    seo,
+  });
+}
 
 /**
  * Contact page — form chrome is static; Get In Touch rows and inquiry
  * options come from `GET /api/v1/content/single/contact-web`.
  */
 export default async function ContactPage() {
-  const { getInTouchItems, inquiryOptions } = await fetchContactWebPageDataSafe();
+  const { getInTouchItems, inquiryOptions } = await loadContactPage();
 
   return (
     <ContactPageLayout

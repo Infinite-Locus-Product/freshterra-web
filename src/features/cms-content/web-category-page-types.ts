@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { productCategorySchema } from "@/features/catalog/types";
 
+import { readCmsString } from "./cms-readers";
+
 const strapiBoolSchema = z
   .union([z.boolean(), z.string()])
   .optional()
@@ -11,18 +13,11 @@ const strapiBoolSchema = z
     return value.toLowerCase() !== "false";
   });
 
-function readString(record: Record<string, unknown>, ...keys: string[]): string {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return "";
-}
-
 /** Reads Strapi media as a plain URL string or nested `{ url }` / `{ data.attributes.url }`. */
-function readMediaUrl(record: Record<string, unknown>, ...keys: string[]): string {
+function readMediaUrl(
+  record: Record<string, unknown>,
+  ...keys: string[]
+): string {
   for (const key of keys) {
     const value = record[key];
     if (typeof value === "string" && value.trim().length > 0) {
@@ -31,7 +26,7 @@ function readMediaUrl(record: Record<string, unknown>, ...keys: string[]): strin
     if (!value || typeof value !== "object" || Array.isArray(value)) continue;
 
     const media = value as Record<string, unknown>;
-    const direct = readString(media, "url", "src", "href");
+    const direct = readCmsString(media, "url", "src", "href");
     if (direct) return direct;
 
     const data = media.data;
@@ -39,18 +34,29 @@ function readMediaUrl(record: Record<string, unknown>, ...keys: string[]): strin
 
     const dataRecord = data as Record<string, unknown>;
     const attributes = dataRecord.attributes;
-    if (attributes && typeof attributes === "object" && !Array.isArray(attributes)) {
-      const fromAttrs = readString(attributes as Record<string, unknown>, "url", "src");
+    if (
+      attributes &&
+      typeof attributes === "object" &&
+      !Array.isArray(attributes)
+    ) {
+      const fromAttrs = readCmsString(
+        attributes as Record<string, unknown>,
+        "url",
+        "src",
+      );
       if (fromAttrs) return fromAttrs;
     }
 
-    const fromData = readString(dataRecord, "url", "src");
+    const fromData = readCmsString(dataRecord, "url", "src");
     if (fromData) return fromData;
   }
   return "";
 }
 
-function readNumber(record: Record<string, unknown>, ...keys: string[]): number {
+function readNumber(
+  record: Record<string, unknown>,
+  ...keys: string[]
+): number {
   for (const key of keys) {
     const value = record[key];
     if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -65,8 +71,10 @@ function readNumber(record: Record<string, unknown>, ...keys: string[]): number 
 function readNestedCategory(
   record: Record<string, unknown>,
 ): z.infer<typeof productCategorySchema> | undefined {
-  const nested = record.category ?? record.saleorCategory ?? record.saleor_category;
-  if (!nested || typeof nested !== "object" || Array.isArray(nested)) return undefined;
+  const nested =
+    record.category ?? record.saleorCategory ?? record.saleor_category;
+  if (!nested || typeof nested !== "object" || Array.isArray(nested))
+    return undefined;
   const parsed = productCategorySchema.safeParse(nested);
   return parsed.success ? parsed.data : undefined;
 }
@@ -75,7 +83,7 @@ function normalizeL3Tile(raw: unknown) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const record = raw as Record<string, unknown>;
   const nested = readNestedCategory(record);
-  const saleorId = readString(
+  const saleorId = readCmsString(
     record,
     "saleor_l3_category_id",
     "saleorL3CategoryId",
@@ -83,11 +91,11 @@ function normalizeL3Tile(raw: unknown) {
     "category_id",
   );
   const name =
-    readString(record, "name", "title", "category_name", "categoryName") ||
+    readCmsString(record, "name", "title", "category_name", "categoryName") ||
     nested?.name ||
     "";
   const slug =
-    readString(record, "slug", "category_slug", "categorySlug") ||
+    readCmsString(record, "slug", "category_slug", "categorySlug") ||
     nested?.slug ||
     "";
   const imageWeb = readMediaUrl(
@@ -126,7 +134,7 @@ function normalizeL2Category(raw: unknown) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const record = raw as Record<string, unknown>;
   const nested = readNestedCategory(record);
-  const saleorId = readString(
+  const saleorId = readCmsString(
     record,
     "saleor_l2_category_id",
     "saleor_l2category_id",
@@ -135,14 +143,14 @@ function normalizeL2Category(raw: unknown) {
     "category_id",
   );
   const name =
-    readString(record, "name", "title", "category_name", "categoryName") ||
+    readCmsString(record, "name", "title", "category_name", "categoryName") ||
     nested?.name ||
     "";
   const slug =
-    readString(record, "slug", "category_slug", "categorySlug") ||
+    readCmsString(record, "slug", "category_slug", "categorySlug") ||
     nested?.slug ||
     "";
-  const tagline = readString(record, "tagline", "subtitle");
+  const tagline = readCmsString(record, "tagline", "subtitle");
   const isActive = strapiBoolSchema.parse(record.is_active ?? record.isActive);
   const position = readNumber(record, "position");
   const rawTiles = record.l3_tiles ?? record.l3Tiles ?? record.tiles;
@@ -173,8 +181,8 @@ function normalizeHero(raw: unknown) {
   if (!isActive) return undefined;
 
   return {
-    title: readString(record, "title", "headline"),
-    subtitle: readString(record, "subtitle"),
+    title: readCmsString(record, "title", "headline"),
+    subtitle: readCmsString(record, "subtitle"),
     imageWeb: readMediaUrl(
       record,
       "image_web",
@@ -182,7 +190,12 @@ function normalizeHero(raw: unknown) {
       "image_url_web",
       "imageUrlWeb",
     ),
-    imageMweb: readMediaUrl(record, "image_url_mweb", "imageUrlMweb", "image_mweb"),
+    imageMweb: readMediaUrl(
+      record,
+      "image_url_mweb",
+      "imageUrlMweb",
+      "image_mweb",
+    ),
   };
 }
 
@@ -193,7 +206,9 @@ function normalizeWebCategoryPage(input: unknown): unknown {
   const sections = Array.isArray(rawL2)
     ? rawL2
         .map(normalizeL2Category)
-        .filter((section): section is NonNullable<typeof section> => section !== null)
+        .filter(
+          (section): section is NonNullable<typeof section> => section !== null,
+        )
         .sort((a, b) => a.position - b.position)
     : [];
 
@@ -206,6 +221,8 @@ function normalizeWebCategoryPage(input: unknown): unknown {
   return {
     hero: normalizeHero(heroRaw),
     sections,
+    /** Marketing `seo` component — kept for `generateMetadata`. */
+    seo: record.seo,
   };
 }
 
@@ -227,7 +244,9 @@ export const webCategoryPageL2SectionSchema = z.object({
   position: z.number(),
   tiles: z.array(webCategoryPageL3TileSchema),
 });
-export type WebCategoryPageL2Section = z.infer<typeof webCategoryPageL2SectionSchema>;
+export type WebCategoryPageL2Section = z.infer<
+  typeof webCategoryPageL2SectionSchema
+>;
 
 export const webCategoryPageHeroSchema = z.object({
   title: z.string(),
@@ -243,6 +262,7 @@ export const webCategoryPageDataSchema = z.preprocess(
     .object({
       hero: webCategoryPageHeroSchema.optional(),
       sections: z.array(webCategoryPageL2SectionSchema).default([]),
+      seo: z.unknown().optional(),
     })
     .catchall(z.unknown()),
 );

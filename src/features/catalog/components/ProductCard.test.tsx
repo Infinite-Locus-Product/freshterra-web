@@ -26,7 +26,7 @@ describe("ProductCard", () => {
   it("links to the PDP and renders name + variant meta", () => {
     render(<ProductCard product={base} />);
     const link = screen.getByRole("link", { name: /heirloom tomatoes/i });
-    expect(link).toHaveAttribute("href", "/product/prd_1");
+    expect(link).toHaveAttribute("href", "/product/heirloom-tomatoes-500g");
     expect(screen.getByText("500g (2 Options)")).toBeInTheDocument();
   });
 

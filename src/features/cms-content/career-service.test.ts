@@ -21,7 +21,7 @@ function lastUrl(fetchSpy: ReturnType<typeof vi.fn>): URL {
   const href = resolveFetchUrl(input);
   return href.startsWith("http")
     ? new URL(href)
-    : new URL(href, "https://api.stage.freshterra.in");
+    : new URL(href, "https://api.freshterra.in");
 }
 
 const apiEntry = {
@@ -68,6 +68,7 @@ describe("getCareerContent", () => {
     expect(url.pathname).toBe("/bff/api/v1/content/single/career");
     expect(url.searchParams.get("populate[department][populate]")).toBe("*");
     expect(url.searchParams.get("populate[career_hero]")).toBe("*");
+    expect(url.searchParams.get("populate[seo]")).toBe("*");
   });
 });
 
@@ -84,7 +85,9 @@ describe("fetchCareerContentSafe", () => {
   });
 
   it("returns mapped careers content on success", async () => {
-    globalThis.fetch = vi.fn(async () => entryResponse(apiEntry)) as unknown as typeof fetch;
+    globalThis.fetch = vi.fn(async () =>
+      entryResponse(apiEntry),
+    ) as unknown as typeof fetch;
 
     const { fetchCareerContentSafe } = await import("./career-service");
     const content = await fetchCareerContentSafe();
