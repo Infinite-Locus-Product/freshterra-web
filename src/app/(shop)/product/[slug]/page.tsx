@@ -12,6 +12,7 @@ import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 import { JsonLd } from "@/components/seo/JsonLd";
 
+import { categoryPageHref } from "@/features/catalog/category-href";
 import { PdpView } from "@/features/catalog/components/PdpView";
 import type { Crumb } from "@/features/catalog/components/PlpView";
 import { isSaleorProductGlobalId } from "@/features/catalog/product-href";
@@ -23,13 +24,8 @@ import {
 
 type Params = Promise<{ slug: string }>;
 
-/** ISR window; webhook tag-busting (`product:{slug}`) handles freshness. */
-export const revalidate = 300;
-
-/** No build-time prerender; pages are generated on first request, then cached (ISR). */
-export function generateStaticParams() {
-  return [];
-}
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 /**
  * Store-neutral product fetch (web never displays per-store price/stock).
@@ -45,7 +41,7 @@ const loadProduct = cache((slug: string) =>
     slug,
     {},
     {
-      next: { tags: [`product:${slug}`], revalidate },
+      next: { tags: [`product:${slug}`], revalidate: 0 },
       expectedErrorCodes: ["NOT_FOUND"],
     },
   ),
@@ -86,7 +82,7 @@ export default async function ProductPage({
       ? [
           {
             label: product.category.name,
-            href: `/c/${product.category.slug}`,
+            href: categoryPageHref(product.category.slug),
           },
         ]
       : []),
@@ -103,7 +99,7 @@ export default async function ProductPage({
           ? [
               {
                 name: product.category.name,
-                path: `/c/${product.category.slug}`,
+                path: categoryPageHref(product.category.slug),
               },
             ]
           : []),

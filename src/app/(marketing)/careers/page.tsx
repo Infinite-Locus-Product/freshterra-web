@@ -10,8 +10,8 @@ import { CareersPageLayout } from "@/components/careers/CareersPageLayout";
 
 import { fetchCareerContentSafe } from "@/features/cms-content/career-service";
 
-/** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 const PAGE_DESCRIPTION =
   "Explore open roles at FreshTerra and join a team building the future of fresh, wholesome food retail.";

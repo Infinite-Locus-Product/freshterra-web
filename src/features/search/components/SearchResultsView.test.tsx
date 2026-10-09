@@ -95,7 +95,7 @@ describe("SearchResultsView", () => {
     expect(screen.getByText(/couldn’t find any results for “malt”/i)).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /browse categories/i }),
-    ).toHaveAttribute("href", "/c/explore-catalog");
+    ).toHaveAttribute("href", "/categories");
   });
 
   it("renders the error state and retries via reload", async () => {

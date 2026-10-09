@@ -10,8 +10,8 @@ import { FoodPhilosophyPageLayout } from "@/components/food-philosophy/FoodPhilo
 
 import { fetchOurFoodPhilosophyContentSafe } from "@/features/cms-content/our-food-philosophy-service";
 
-/** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 const PAGE_DESCRIPTION =
   "Learn how FreshTerra sources produce, upholds quality certifications, and partners with farmers.";

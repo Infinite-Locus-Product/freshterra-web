@@ -35,8 +35,25 @@ export const webFooterSocialSchema = z
   })
   .catchall(z.unknown());
 
+/** Header nav item — `web-footer.navbar.nav_item[]` (FRES-2399). */
+export const webNavItemSchema = z
+  .object({
+    id: z.union([z.string(), z.number()]).optional(),
+    title: cmsString,
+    redirection: cmsString,
+  })
+  .catchall(z.unknown());
+
+export const webNavbarSchema = z
+  .object({
+    nav_item: z.array(webNavItemSchema).nullable().optional(),
+  })
+  .catchall(z.unknown());
+
 export const webFooterContentSchema = z
   .object({
+    /** Header navigation; `null` on staging until it's filled in. */
+    navbar: webNavbarSchema.nullable().optional(),
     footer: z.array(webFooterColumnSchema).optional(),
     social: z.array(webFooterSocialSchema).optional(),
     legal: z.array(webFooterLabelSchema).optional(),

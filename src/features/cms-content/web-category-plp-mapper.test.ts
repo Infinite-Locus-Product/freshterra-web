@@ -77,9 +77,9 @@ describe("web-category-plp-mapper", () => {
 
   it("builds hrefs with parent query for L4 tabs", () => {
     expect(buildPlpTabHref("basmati-rice", "rice-2")).toBe(
-      "/c/basmati-rice?parent=rice-2",
+      "/category/basmati-rice?parent=rice-2",
     );
-    expect(buildPlpTabHref("rice-2", "rice-2")).toBe("/c/rice-2");
+    expect(buildPlpTabHref("rice-2", "rice-2")).toBe("/category/rice-2");
   });
 
   it("resolves product slug from the active L4 tab", () => {

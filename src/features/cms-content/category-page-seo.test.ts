@@ -41,7 +41,7 @@ describe("categoryPageMetadata", () => {
 
     expect(meta.title).toEqual({ absolute: "Dairy | FreshTerra" });
     expect(meta.description).toBe("Milk, curd, paneer and more.");
-    expect(meta.alternates?.canonical).toBe("/c/dairy");
+    expect(meta.alternates?.canonical).toBe("/category/dairy");
     expect(meta.openGraph).toMatchObject({
       images: ["https://cms/dairy-hero.png"],
     });
@@ -67,7 +67,7 @@ describe("categoryPageMetadata", () => {
     });
 
     expect(meta.title).toEqual({ absolute: "Basmati | FreshTerra" });
-    expect(meta.alternates?.canonical).toBe("/c/basmati-rice");
+    expect(meta.alternates?.canonical).toBe("/category/basmati-rice");
     expect(meta.description).toBe("Browse Basmati on FreshTerra.");
   });
 
@@ -90,7 +90,7 @@ describe("categoryPageMetadata", () => {
 
     expect(meta.title).toEqual({ absolute: "Cold Pressed Oils | FreshTerra" });
     expect(meta.description).toBe("Browse Cold Pressed Oils on FreshTerra.");
-    expect(meta.alternates?.canonical).toBe("/c/cold-pressed-oils");
+    expect(meta.alternates?.canonical).toBe("/category/cold-pressed-oils");
   });
 });
 
@@ -102,20 +102,20 @@ describe("exploreCatalogMetadata", () => {
     expect(meta.description).toBe(
       "Browse FreshTerra categories and discover products.",
     );
-    expect(meta.alternates?.canonical).toBe("/c/explore-catalog");
+    expect(meta.alternates?.canonical).toBe("/categories");
   });
 
   it("renders the web-category-page seo when set", () => {
     const meta = exploreCatalogMetadata({
       title: "Explore the Catalog | FreshTerra",
-      canonicalUrl: "https://freshterra.in/c/explore-catalog",
+      canonicalUrl: "https://freshterra.in/categories",
     });
 
     expect(meta.title).toEqual({
       absolute: "Explore the Catalog | FreshTerra",
     });
     expect(meta.alternates?.canonical).toBe(
-      "https://freshterra.in/c/explore-catalog",
+      "https://freshterra.in/categories",
     );
   });
 });

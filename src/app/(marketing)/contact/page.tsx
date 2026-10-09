@@ -9,8 +9,8 @@ import { ContactPageLayout } from "@/components/contact/ContactPageLayout";
 import { contactPageStaticContent } from "@/features/cms-content/contact";
 import { fetchContactWebPageDataSafe } from "@/features/cms-content/contact-web-service";
 
-/** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 const PAGE_DESCRIPTION =
   "Get in touch with FreshTerra for support, partnerships, and store-related queries.";

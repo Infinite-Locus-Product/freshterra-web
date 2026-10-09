@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
 import { useWebCategoryPlp } from "@/features/cms-content/useWebCategoryPlp";
 import {
   buildPlpTabHref,
@@ -13,17 +15,18 @@ import {
   resolvePlpProductSlug,
   visiblePlpL4Tabs,
 } from "@/features/cms-content/web-category-plp-mapper";
+import type { WebCategoryPlpContent } from "@/features/cms-content/web-category-plp-service";
 
-import { DEFAULT_CATEGORY_SORT } from "@/features/catalog/category-service";
-
+import { categoryPageHref } from "../category-href";
+import { visiblePlpFacetEntries } from "../plp-facet-config";
 import { resolveListingTitle } from "../plp-listing-meta";
 import { useCategoryProducts } from "../useCategoryProducts";
 
 import { PlpView, type Crumb, type PlpBanner, type PlpTab } from "./PlpView";
 
-import type { WebCategoryPlpContent } from "@/features/cms-content/web-category-plp-service";
 import type { CategoryFacets, CategoryProductsData } from "../types";
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
+
 
 function prettyLabel(value: string): string {
   return value
@@ -46,7 +49,7 @@ function singularToken(value: string): string {
 }
 
 function facetsToGroups(facets: CategoryFacets): PlpFilterGroup[] {
-  return Object.entries(facets).map(([key, values]) => ({
+  return visiblePlpFacetEntries(facets).map(([key, values]) => ({
     key,
     label: prettyLabel(key),
     options: values.map((v) => ({
@@ -155,7 +158,7 @@ export function CategoryPlpView({
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("parent", resolvedParentSlug);
-    router.replace(`/c/${slug}?${params.toString()}`);
+    router.replace(categoryPageHref(slug, params));
   }, [
     l4Tabs,
     parentFromQuery,
@@ -309,7 +312,7 @@ export function CategoryPlpView({
 
           const href = buildPlpTabHref(target.targetSlug, parentSlug);
           const query = searchParams.toString();
-          const currentHref = query ? `/c/${slug}?${query}` : `/c/${slug}`;
+          const currentHref = categoryPageHref(slug, query);
           if (href !== currentHref) {
             router.push(href);
           }
@@ -319,7 +322,7 @@ export function CategoryPlpView({
         setActiveTab(nextTab);
 
         if (nextTab === "all" && parentSlug !== slug) {
-          router.push(`/c/${parentSlug}`);
+          router.push(categoryPageHref(parentSlug));
         }
       }}
       items={ctrl.items}

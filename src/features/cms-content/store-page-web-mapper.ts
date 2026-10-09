@@ -11,9 +11,27 @@ import type {
   StorePageCategoryTile,
   StorePageInformationRow,
   StorePageResponsiveImage,
+  StorePageStore,
   StorePageWebContent,
   StoresPageContent,
 } from "./store-page-web-types";
+
+type InformationRow = NonNullable<StorePageWebContent["information"]>[number];
+type CmsStore = NonNullable<StorePageWebContent["store"]>[number];
+
+/** Store fields shared by the prod `store[]` entry and the legacy top level. */
+type StoreSource = {
+  key: string;
+  name: string;
+  heroImage1?: string;
+  heroImage1Mobile?: string;
+  heroImage2?: string;
+  directionCta?: string | null;
+  /** Strapi per-store `directions` link (prod `store[]` only). */
+  directions?: string | null;
+  directionSlug?: string | null;
+  info?: InformationRow[] | null;
+};
 
 function readMediaUrl(
   ...values: Array<string | null | undefined>
@@ -35,18 +53,31 @@ function splitDescriptionLines(
     .filter(Boolean);
 }
 
-function resolveDirectionsUrl(input: StorePageWebContent): string {
-  const fromSlug = normalizeCmsDeeplink(input.direction_slug);
-  if (fromSlug) return fromSlug;
+/** `directions` → `direction_slug` → Maps link to the store's Address row. */
+function resolveDirectionsUrl(
+  source: Pick<StoreSource, "directions" | "directionSlug">,
+  information: StorePageInformationRow[],
+): string {
+  const fromCms =
+    normalizeCmsDeeplink(source.directions) ??
+    normalizeCmsDeeplink(source.directionSlug);
+  if (fromCms) return fromCms;
+
+  const addressRow = information.find(
+    (row) => row.heading.trim().toLowerCase() === "address",
+  );
+  const address =
+    addressRow?.lines.join(", ").replace(/,\s*,/g, ",") ||
+    STORES_DIRECTIONS_FALLBACK_ADDRESS;
 
   return (
-    buildGoogleMapsDirectionsUrl(STORES_DIRECTIONS_FALLBACK_ADDRESS) ??
-    `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(STORES_DIRECTIONS_FALLBACK_ADDRESS)}`
+    buildGoogleMapsDirectionsUrl(address) ??
+    `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
   );
 }
 
 function mapInformationRow(
-  row: NonNullable<StorePageWebContent["information"]>[number],
+  row: InformationRow,
 ): StorePageInformationRow | null {
   if (!isCmsActive(row.is_active)) return null;
 
@@ -94,6 +125,66 @@ function mapResponsiveImage(
   return { imageWeb, imageMobile, imageAlt };
 }
 
+function mapStore(source: StoreSource): StorePageStore | null {
+  const primaryHeroImage = mapResponsiveImage(
+    source.heroImage1,
+    source.heroImage1Mobile ?? source.heroImage1,
+    source.name,
+  );
+  if (!primaryHeroImage) return null;
+
+  const secondaryHeroImage = mapResponsiveImage(
+    source.heroImage2,
+    source.heroImage2,
+    source.name,
+  );
+  const information = [...(source.info ?? [])]
+    .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
+    .map(mapInformationRow)
+    .filter((row): row is StorePageInformationRow => row !== null);
+
+  return {
+    key: source.key,
+    name: source.name,
+    primaryHeroImage,
+    ...(secondaryHeroImage ? { secondaryHeroImage } : {}),
+    directionsLabel: source.directionCta?.trim() ?? "",
+    directionsUrl: resolveDirectionsUrl(source, information),
+    information,
+  };
+}
+
+function storeSourceFromCms(store: CmsStore, index: number): StoreSource {
+  return {
+    key: String(store.id ?? `store-${index}`),
+    name: store.heading?.trim() ?? "",
+    heroImage1: readMediaUrl(store.heroimage_1),
+    heroImage1Mobile: readMediaUrl(store.heroimage_1_mweb),
+    heroImage2: readMediaUrl(store.heroimage_2),
+    directionCta: store.direction_cta,
+    directions: store.directions,
+    directionSlug: store.direction_slug,
+    info: store.info,
+  };
+}
+
+/** Staging (no `store[]`): the page's top-level fields describe the one store. */
+function storeSourceFromPage(
+  input: StorePageWebContent,
+  title: string,
+): StoreSource {
+  return {
+    key: "store-0",
+    name: title,
+    heroImage1: readMediaUrl(input.heroimage1),
+    heroImage1Mobile: readMediaUrl(input.heroimage1_mweb),
+    heroImage2: readMediaUrl(input.heroimage2),
+    directionCta: input.direction_cta,
+    directionSlug: input.direction_slug,
+    info: input.information,
+  };
+}
+
 /** Maps `store-page-webs` CMS payload into the stores page layout model. */
 export function mapStorePageWebContent(
   input: StorePageWebContent,
@@ -101,43 +192,27 @@ export function mapStorePageWebContent(
   const title = input.heading?.trim() ?? "";
   if (!title) return null;
 
-  const information = [...(input.information ?? [])]
-    .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
-    .map(mapInformationRow)
-    .filter((row): row is StorePageInformationRow => row !== null);
+  const sources =
+    input.store && input.store.length > 0
+      ? input.store.map(storeSourceFromCms)
+      : [storeSourceFromPage(input, title)];
+  const stores = sources
+    .map(mapStore)
+    .filter((store): store is StorePageStore => store !== null);
+  if (stores.length === 0) return null;
 
   const categories = [...(input.instore_category_images ?? [])]
     .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
     .map(mapCategoryTile)
     .filter((tile): tile is StorePageCategoryTile => tile !== null);
 
-  const primaryHeroImage = mapResponsiveImage(
-    readMediaUrl(input.heroimage1),
-    readMediaUrl(input.heroimage1_mweb, input.heroimage1),
-    title,
-  );
-
-  const secondaryHeroImage = mapResponsiveImage(
-    readMediaUrl(input.heroimage2),
-    readMediaUrl(input.heroimage2),
-    title,
-  );
-
-  if (!primaryHeroImage || !secondaryHeroImage) return null;
-
-  const directionsUrl = resolveDirectionsUrl(input);
-  const directionsLabel = input.direction_cta?.trim() ?? "";
   const categorySectionTitle = input.store_category_heading?.trim() ?? "";
   const seo = readCmsSeo(input);
 
   return {
     title,
-    primaryHeroImage,
-    secondaryHeroImage,
-    directionsLabel,
-    directionsUrl,
+    stores,
     categorySectionTitle,
-    information,
     categories,
     ...(seo ? { seo } : {}),
   };

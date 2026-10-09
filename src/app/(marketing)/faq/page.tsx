@@ -10,8 +10,8 @@ import { FaqPageLayout } from "@/components/faq/FaqPageLayout";
 
 import { fetchFaqContentSafe } from "@/features/cms-content/faq-service";
 
-/** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 const PAGE_DESCRIPTION =
   "Find answers to common questions about FreshTerra orders, delivery, quality, payments, returns, and support.";

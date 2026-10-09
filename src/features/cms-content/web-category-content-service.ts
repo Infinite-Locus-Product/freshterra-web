@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { categoryPageHref } from "@/features/catalog/category-href";
+
 import { slugToTitle } from "./cms-readers";
 import { getContentEntry } from "./content-entry-service";
 
@@ -103,7 +105,7 @@ export function mapWebCategoryContentToHomeCategories(
         key: tile.label?.trim() || `${slug}-${index}`,
         name,
         imageSrc,
-        href: `/c/${slug}`,
+        href: categoryPageHref(slug),
       },
     ];
   });

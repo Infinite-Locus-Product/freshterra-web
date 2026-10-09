@@ -4,7 +4,6 @@ import { useEffect, useId, useRef } from "react";
 
 import { createPortal } from "react-dom";
 
-import type { MarketingNavLink } from "@/components/layout/MarketingHeader";
 import { MarketingNavLinkLabel } from "@/components/layout/MarketingNavLinkLabel";
 import {
   mobileNavDrawerCloseButtonClass,
@@ -13,6 +12,7 @@ import {
   mobileNavDrawerLinksClass,
   mobileNavDrawerPanelClass,
 } from "@/components/layout/mobile-header-chrome";
+import type { MarketingNavLink } from "@/components/layout/nav-links";
 import { Logo } from "@/components/ui/Logo";
 
 type MobileNavDrawerProps = Readonly<{

@@ -1,3 +1,5 @@
+import { categoryPageHref } from "@/features/catalog/category-href";
+
 import { isCmsActive } from "./cms-boolean";
 
 import type { WebCategoryPlpContent } from "./web-category-plp-service";
@@ -198,10 +200,9 @@ export function buildPlpTabHref(
   parentSlug: string,
 ): string {
   if (targetSlug === parentSlug) {
-    return `/c/${parentSlug}`;
+    return categoryPageHref(parentSlug);
   }
   const params = new URLSearchParams();
   if (parentSlug) params.set("parent", parentSlug);
-  const query = params.toString();
-  return query ? `/c/${targetSlug}?${query}` : `/c/${targetSlug}`;
+  return categoryPageHref(targetSlug, params);
 }

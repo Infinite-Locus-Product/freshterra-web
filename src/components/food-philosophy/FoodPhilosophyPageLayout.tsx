@@ -236,7 +236,7 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                   <article
                     key={`${imageSrc}-${index}`}
                     style={{
-                      top: `calc(var(--stack-top) + ${index} * var(--stack-peek))`,
+                      top: `calc(var(--site-header-height, 0px) + var(--stack-top) + ${index} * var(--stack-peek))`,
                       zIndex: index + 1,
                     }}
                     className={foodPhilosophyPartnershipCardShellClass}

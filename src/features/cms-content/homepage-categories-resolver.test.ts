@@ -62,13 +62,13 @@ describe("buildHomepageL2CategoryTileItems", () => {
         key: "Q2F0ZWdvcnk6Mw==",
         name: "Fruits & Vegetables",
         imageSrc: "https://cms-stg.freshterra.in/uploads/fruits-web.png",
-        href: "/c/fruits-vegetable",
+        href: "/category/fruits-vegetable",
       },
       {
         key: "dairy-breads-eggs",
         name: "Dairy Breads Eggs",
         imageSrc: "https://cms-stg.freshterra.in/uploads/dairy-web.png",
-        href: "/c/dairy-breads-eggs",
+        href: "/category/dairy-breads-eggs",
       },
     ]);
   });
@@ -119,7 +119,7 @@ describe("resolveHomepageCategoryItems", () => {
     });
 
     expect(items).toHaveLength(1);
-    expect(items[0]?.href).toBe("/c/snacks");
+    expect(items[0]?.href).toBe("/category/snacks");
   });
 
   it("omits tile href when category slug and deeplink are missing", async () => {

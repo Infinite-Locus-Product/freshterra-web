@@ -1,12 +1,16 @@
+import { z } from "zod";
+
 import { apiFetch } from "@/lib/clients/freshterra-api";
 
 import { CMS_SEO_POPULATE } from "./cms-seo";
+import { mapWebCategoryGridPage } from "./web-category-grid-mapper";
 import {
   webCategoryPageDataSchema,
   type WebCategoryPageContent,
 } from "./web-category-page-types";
 
 import type { ContentEntryRequestOptions } from "./content-entry-service";
+import type { WebCategoryGridPage } from "./web-category-grid-types";
 
 const WEB_CATEGORY_PAGE_PATH = "/api/v1/content/single/web-category-page";
 
@@ -39,5 +43,21 @@ export async function getWebCategoryPage(
     signal: options.signal,
     token: options.token,
     schema: webCategoryPageDataSchema,
+  });
+}
+
+const webCategoryGridPageSchema = z
+  .record(z.string(), z.unknown())
+  .transform(mapWebCategoryGridPage);
+
+/** `/categories` grid. No populate params — prod 404s the legacy ones. */
+export async function getWebCategoryGridPage(
+  options: Omit<ContentEntryRequestOptions<WebCategoryGridPage>, "schema"> = {},
+): Promise<WebCategoryGridPage> {
+  return apiFetch<WebCategoryGridPage>(WEB_CATEGORY_PAGE_PATH, {
+    method: "GET",
+    signal: options.signal,
+    token: options.token,
+    schema: webCategoryGridPageSchema,
   });
 }

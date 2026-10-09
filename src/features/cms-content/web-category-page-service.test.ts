@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getWebCategoryPage } from "./web-category-page-service";
+import {
+  getWebCategoryGridPage,
+  getWebCategoryPage,
+} from "./web-category-page-service";
 
 function pageResponse(data: unknown): Response {
   return new Response(JSON.stringify({ success: true, data, error: null }), {
@@ -135,5 +138,52 @@ describe("getWebCategoryPage", () => {
     expect(page.sections[0]?.tiles[0]?.imageWeb).toBe(
       "https://cms-stg.freshterra.in/uploads/fruits-nested.png",
     );
+  });
+});
+
+describe("getWebCategoryGridPage", () => {
+  const originalFetch = globalThis.fetch;
+
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("requests the single type with no populate params (prod rejects l2_category ones)", async () => {
+    const fetchSpy = vi.fn(async () =>
+      pageResponse({
+        page_slug: "/categories",
+        seo: { metaTitle: "All Categories | FreshTerra" },
+        category_grid: [
+          {
+            id: 1,
+            title: "Pantry Staples",
+            tiles: [
+              {
+                id: 2,
+                label: "Atta",
+                imageUrl: "https://cms.example.com/atta.png",
+                action: { deeplink: "/category/atta" },
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const page = await getWebCategoryGridPage();
+
+    const url = lastUrl(fetchSpy);
+    expect(url.pathname).toBe("/bff/api/v1/content/single/web-category-page");
+    expect([...url.searchParams.keys()]).toEqual([]);
+    expect(page.hasCategoryGrid).toBe(true);
+    expect(page.sections[0]?.tiles[0]?.href).toBe("/category/atta");
+    expect(page.seo).toEqual({ metaTitle: "All Categories | FreshTerra" });
   });
 });

@@ -118,3 +118,15 @@ export const storesCategoryCardClass =
 /** Category card label — mWeb: Manrope 14px bold, 16px line-height. */
 export const storesCategoryCardLabelClass =
   "font-sans text-[14px] font-bold leading-4 tracking-[0] lg:text-sm lg:leading-tight lg:font-semibold";
+
+/** Store carousel track. No `touch-pan-x` — it blocks vertical scroll. */
+export const storesCarouselTrackClass =
+  "absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+export const storesCarouselSlideClass =
+  "relative h-full flex-[0_0_100%] snap-start snap-always";
+
+/** Store dots overlaid on the hero image (bottom centre). */
+export const storesCarouselDotsClass =
+  "absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-2 lg:bottom-5";
+

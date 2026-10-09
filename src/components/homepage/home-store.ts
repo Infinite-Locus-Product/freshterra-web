@@ -37,6 +37,17 @@ export const homeStoreMediaFrameClass =
 
 export const homeStoreMediaImageClass = "object-cover object-center";
 
+/** Store carousel track. No `touch-pan-x` — it blocks vertical scroll. */
+export const homeStoreTrackClass =
+  "absolute inset-0 flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+export const homeStoreSlideClass =
+  "relative h-full flex-[0_0_100%] snap-start snap-always";
+
+/** Store dots overlaid on the image (bottom centre), styled like the hero's. */
+export const homeStoreDotsClass =
+  "absolute inset-x-0 bottom-4 z-10 flex items-center justify-center gap-2 md:bottom-6";
+
 /** Store name, address, and CTAs — below the image, left-aligned to media width. */
 export const homeStoreDetailsClass =
   "mt-6 flex w-full max-w-content flex-col items-start gap-2.5";

@@ -76,7 +76,7 @@ describe("MobileNavDrawer", () => {
     );
     expect(
       screen.getByRole("link", { name: /explore products/i }),
-    ).toHaveAttribute("href", "/c/vegetables-fruits");
+    ).toHaveAttribute("href", "/categories");
   });
 
   it("calls onClose when the close button is clicked", () => {

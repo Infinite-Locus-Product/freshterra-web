@@ -28,6 +28,22 @@ export const storePageWebCategoryImageSchema = z
   })
   .catchall(z.unknown());
 
+/** One store in the prod `store` repeatable (FRES-2399). */
+export const storePageWebStoreSchema = z
+  .object({
+    id: z.union([z.number(), z.string()]).optional(),
+    heading: cmsString,
+    heroimage_1: cmsString,
+    heroimage_1_mweb: cmsString,
+    heroimage_2: cmsString,
+    direction_cta: cmsString,
+    /** Per-store directions link (e.g. a Google Maps `maps.app.goo.gl` URL). */
+    directions: cmsString,
+    direction_slug: cmsString,
+    info: z.array(storePageWebInformationSchema).nullable().optional(),
+  })
+  .catchall(z.unknown());
+
 /**
  * CMS collection entry — `GET /api/v1/content/store-page-webs/:slug`.
  * Validated loosely; {@link mapStorePageWebContent} normalizes to the page model.
@@ -46,6 +62,8 @@ export const storePageWebContentSchema = z
     instore_category_images: z
       .array(storePageWebCategoryImageSchema)
       .optional(),
+    /** One entry per store; unset (staging) → top-level fields. */
+    store: z.array(storePageWebStoreSchema).nullable().optional(),
   })
   .catchall(z.unknown());
 
@@ -70,18 +88,27 @@ export type StorePageCategoryTile = {
   href?: string;
 };
 
-/** CMS-driven stores page view model — no hardcoded fallbacks. */
+/** One store slide — image, info rows and directions follow the active store. */
+export type StorePageStore = {
+  key: string;
+  name: string;
+  /** `heroimage_1` — swiped in the carousel beside the store information. */
+  primaryHeroImage: StorePageResponsiveImage;
+  /** `heroimage_2` — beside the directions map. */
+  secondaryHeroImage?: StorePageResponsiveImage;
+  directionsLabel: string;
+  /** `directions`, else `direction_slug`, else Maps to the Address row. */
+  directionsUrl: string;
+  information: StorePageInformationRow[];
+};
+
+/** CMS-driven stores page view model. */
 export type StoresPageContent = {
   title: string;
-  /** `heroimage1` — section below the page title, beside store information. */
-  primaryHeroImage: StorePageResponsiveImage;
-  /** `heroimage2` — section below the address / store information block. */
-  secondaryHeroImage: StorePageResponsiveImage;
-  directionsLabel: string;
-  /** From CMS `direction_slug`, or Google Maps directions for the store address. */
-  directionsUrl: string;
+  /** Carousel slides — prod `store[]`, or the top-level fields as one store. */
+  stores: StorePageStore[];
   categorySectionTitle: string;
-  information: StorePageInformationRow[];
-  categories: StorePageCategoryTile[]; /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
+  categories: StorePageCategoryTile[];
+  /** Marketing `seo` component, when filled in Strapi (see `cms-seo.ts`). */
   seo?: SeoOverrides | null;
 };

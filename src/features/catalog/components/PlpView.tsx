@@ -172,7 +172,7 @@ export function PlpView({
         body="This page may have moved or is no longer available."
         action={
           <Button asChild caps={false}>
-            <Link href="/c/explore-catalog">Browse Categories</Link>
+            <Link href="/categories">Browse Categories</Link>
           </Button>
         }
       />
