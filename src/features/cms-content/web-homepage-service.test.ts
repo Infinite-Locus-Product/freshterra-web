@@ -6,13 +6,13 @@ import {
   CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS,
   CMS_WEB_HOMEPAGE_TAGS,
 } from "./cms-cache-tags";
+import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
+import { getSingleContent } from "./single-content-service";
 import {
   WEB_HOMEPAGE_CONTENT_TYPE,
   fetchWebHomepageContentSafe,
   getWebHomepageContent,
 } from "./web-homepage-service";
-import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
-import { getSingleContent } from "./single-content-service";
 
 vi.mock("./single-content-service", () => ({
   getSingleContent: vi.fn(),

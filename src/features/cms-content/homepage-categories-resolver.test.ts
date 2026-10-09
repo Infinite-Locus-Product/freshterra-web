@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
+import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
 import {
   buildHomepageL2CategoryTileItems,
   hasHomepageL2CategoryTiles,
 } from "./homepage-l2-category-tiles";
-import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
 
 vi.mock("@/features/catalog/category-lookup-server", () => ({
   buildCategoryLookup: vi.fn(),

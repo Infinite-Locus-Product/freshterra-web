@@ -1,13 +1,14 @@
-import type {
-  ContentEntryParams,
-  ContentEntryRequestOptions,
-} from "./content-entry-service";
 
 import {
   categoriesContentDataSchema,
   type CategoriesContent,
 } from "./categories-content-types";
 import { getSingleContent } from "./single-content-service";
+
+import type {
+  ContentEntryParams,
+  ContentEntryRequestOptions,
+} from "./content-entry-service";
 
 const CATEGORIES_CONTENT_TYPE = "categories";
 

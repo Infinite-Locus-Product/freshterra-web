@@ -417,40 +417,6 @@ export function PlpView({
   );
 }
 
-function PlpHeroBanner({ banner }: { banner: PlpBanner }) {
-  const usesDistinctAssets = banner.imageSrcMweb !== banner.imageSrcWeb;
-
-  return (
-    <>
-      <Image
-        src={banner.imageSrcMweb}
-        alt=""
-        aria-hidden
-        fill
-        priority
-        fetchPriority="high"
-        sizes="100vw"
-        className={cn(
-          categoryPlpBannerImageClass,
-          usesDistinctAssets && "lg:hidden",
-        )}
-      />
-      {usesDistinctAssets ? (
-        <Image
-          src={banner.imageSrcWeb}
-          alt=""
-          aria-hidden
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          className={cn(categoryPlpBannerImageClass, "hidden lg:block")}
-        />
-      ) : null}
-    </>
-  );
-}
-
 function CenteredState({
   title,
   body,

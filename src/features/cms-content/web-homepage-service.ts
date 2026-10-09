@@ -4,11 +4,9 @@ import {
   CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS,
   CMS_WEB_HOMEPAGE_TAGS,
 } from "./cms-cache-tags";
-
 import { resolveHomepageCategoryItems } from "./homepage-categories-resolver";
-import { mapWebHomepageContent } from "./web-homepage-mapper";
 import { getSingleContent } from "./single-content-service";
-
+import { mapWebHomepageContent } from "./web-homepage-mapper";
 import {
   webHomepageContentSchema,
   type HomePageContent,

@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { productDetailSchema } from "../types";
+
 import { PdpView } from "./PdpView";
 
 /** Saleor-shaped BFF payload for Milk Chocolate Bar (metadata from dashboard). */

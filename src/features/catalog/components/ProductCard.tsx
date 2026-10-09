@@ -23,8 +23,8 @@ import {
   pdpSimilarProductCardTagsRowClass,
 } from "@/components/category/pdp-page";
 
-import { productPageHref } from "../product-href";
 import { resolveProductDietaryType } from "../dietary-badge";
+import { productPageHref } from "../product-href";
 import { formatPlpVariantMeta } from "../variant-meta";
 
 import type { PlpProduct } from "../types";

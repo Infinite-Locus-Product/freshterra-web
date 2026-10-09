@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 
 import Image from "next/image";
+
 import { createPortal } from "react-dom";
 
 import { CareerApplicationForm } from "./CareerApplicationForm";

@@ -4,12 +4,13 @@ import { useCallback, useRef, useState } from "react";
 
 import Image from "next/image";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   pdpGalleryFrameClass,
   pdpGalleryScrollSlideClass,
   pdpGalleryScrollTrackClass,
 } from "@/components/category/pdp-page";
-import { cn } from "@/lib/utils/cn";
 
 import { ProductImageGalleryModal } from "./ProductImageGalleryModal";
 

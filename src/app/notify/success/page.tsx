@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 import { comingSoonContent } from "@/lib/MockData";
 
+import { HeroScreen } from "@/components/coming-soon/HeroScreen";
 import { MOBILE_STACK_FRAME_CLASS } from "@/components/layout/layout-classes";
 
-import { HeroScreen } from "@/components/coming-soon/HeroScreen";
 
 export const metadata: Metadata = {
   title: "You're on the list!",

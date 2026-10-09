@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
-import { HomeTestimonialCard } from "@/components/homepage/HomeTestimonialCard";
 import {
   homeTestimonialsEdgeSpacerClass,
   homeTestimonialsGridClass,
 } from "@/components/homepage/home-testimonials";
+import { HomeTestimonialCard } from "@/components/homepage/HomeTestimonialCard";
 
 type HomeTestimonialItem = Readonly<{
   name: string;

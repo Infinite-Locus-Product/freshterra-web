@@ -1,6 +1,7 @@
+import { cn } from "@/lib/utils/cn";
+
 import { Heading } from "@/components/ui/Heading";
 
-import { cn } from "@/lib/utils/cn";
 
 import type {
   PolicyBlock,

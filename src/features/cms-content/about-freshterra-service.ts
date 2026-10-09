@@ -1,12 +1,12 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
 import { mapAboutFreshterraContent } from "./about-freshterra-mapper";
-import { getSingleContent } from "./single-content-service";
-
 import {
   aboutFreshterraContentSchema,
   type AboutFreshterraContent,
 } from "./about-freshterra-types";
+import { getSingleContent } from "./single-content-service";
+
 
 import type { AboutPageContent } from "./about-freshterra-types";
 import type { ContentEntryParams } from "./content-entry-service";

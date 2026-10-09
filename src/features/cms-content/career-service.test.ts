@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
-
 function entryResponse(data: unknown): Response {
   return new Response(JSON.stringify({ success: true, data, error: null }), {
     status: 200,

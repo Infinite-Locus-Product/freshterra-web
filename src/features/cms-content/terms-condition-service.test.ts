@@ -2,12 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
+import { getSingleContent } from "./single-content-service";
 import {
   TERMS_CONDITION_CONTENT_TYPE,
   fetchTermsConditionDocumentSafe,
   getTermsConditionContent,
 } from "./terms-condition-service";
-import { getSingleContent } from "./single-content-service";
 
 vi.mock("./single-content-service", () => ({
   getSingleContent: vi.fn(),

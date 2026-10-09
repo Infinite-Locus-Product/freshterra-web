@@ -1,15 +1,15 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
 import { mapPrivacyPolicyContent } from "./privacy-policy-mapper";
-import { getSingleContent } from "./single-content-service";
-
 import {
   privacyPolicyContentSchema,
   type PrivacyPolicyContent,
 } from "./privacy-policy-types";
+import { getSingleContent } from "./single-content-service";
 
-import type { PolicyDocument } from "./types";
+
 import type { ContentEntryParams } from "./content-entry-service";
+import type { PolicyDocument } from "./types";
 
 export const PRIVACY_POLICY_CONTENT_TYPE = "privacy-policy";
 
