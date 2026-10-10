@@ -164,16 +164,62 @@ export const collectionCollectionSchema = z.object({
 });
 export type CollectionSummary = z.infer<typeof collectionCollectionSchema>;
 
-export const collectionProductsDataSchema = z.object({
-  items: z.array(plpProductSchema),
-  page: z.number(),
-  pageSize: z.number(),
-  total: z.number(),
-  facets: facetsSchema.default({}),
-  collection: collectionCollectionSchema.optional(),
-  expires_at: z.string().nullable().optional(),
-  redirect_url: z.string().nullable().optional(),
-});
+/** Collection facets reuse the category normalizer, re-keyed `value` → `slug`. */
+function normalizeCollectionFacets(facets: unknown): Facets {
+  if (isRecord(facets)) return facets as Facets;
+  const out: Facets = {};
+  for (const [key, values] of Object.entries(
+    normalizeCategoryFacets(facets),
+  )) {
+    out[key] = values.map(({ value, ...rest }) => ({ slug: value, ...rest }));
+  }
+  return out;
+}
+
+const COLLECTION_ENDPOINT_SLUG = /\/collections\/([^/?#]+)/;
+
+/** Prod BFF omits `collection` — derive it from `seoMeta.title` + `dataEndpoint`. */
+function inferCollectionFromListingPayload(
+  record: Record<string, unknown>,
+): CollectionSummary | undefined {
+  const seo = isRecord(record.seoMeta) ? record.seoMeta : {};
+  const name =
+    typeof seo.title === "string"
+      ? (seo.title.split("—")[0]?.split("|")[0]?.trim() ?? "")
+      : "";
+  const endpointSlug =
+    typeof record.dataEndpoint === "string"
+      ? COLLECTION_ENDPOINT_SLUG.exec(record.dataEndpoint)?.[1]
+      : undefined;
+  const slug = endpointSlug ? decodeURIComponent(endpointSlug) : "";
+  if (!name || !slug) return undefined;
+  return { slug, name };
+}
+
+function normalizeCollectionProductsPayload(input: unknown): unknown {
+  if (!isRecord(input)) return input;
+  return {
+    ...input,
+    facets: normalizeCollectionFacets(input.facets),
+    collection: input.collection ?? inferCollectionFromListingPayload(input),
+    expires_at: input.expires_at ?? input.expiresAt,
+    redirect_url: input.redirect_url ?? input.redirectUrl,
+  };
+}
+
+export const collectionProductsDataSchema = z.preprocess(
+  normalizeCollectionProductsPayload,
+  z.object({
+    items: z.array(plpProductSchema),
+    page: z.number(),
+    pageSize: z.number(),
+    total: z.number(),
+    facets: facetsSchema.default({}),
+    collection: collectionCollectionSchema.optional(),
+    expires_at: z.string().nullable().optional(),
+    redirect_url: z.string().nullable().optional(),
+  }),
+);
 export type CollectionProductsData = z.infer<
   typeof collectionProductsDataSchema
 >;

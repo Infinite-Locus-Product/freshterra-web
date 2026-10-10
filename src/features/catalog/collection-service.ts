@@ -79,6 +79,9 @@ export async function getCollectionProducts(
     1,
     MAX_PLP_PAGE_SIZE,
   );
+  // The BFF rejects `sort=relevance` (enum is popular|price_asc|price_desc|new);
+  // omitting it keeps its default order, matching the unsorted server seed.
+  const sort = params.sort !== "relevance" ? params.sort : undefined;
 
   return apiFetch(
     `${COLLECTIONS_PATH}/${encodeURIComponent(collectionSlug)}/products`,
@@ -88,7 +91,7 @@ export async function getCollectionProducts(
         polygonId,
         page,
         pageSize,
-        sort: params.sort,
+        sort,
         filters: params.filters ? JSON.stringify(params.filters) : undefined,
       },
       signal: options.signal,

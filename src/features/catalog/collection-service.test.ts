@@ -130,6 +130,17 @@ describe("getCollectionProducts", () => {
     expect(requestUrl).not.toContain("polygonId");
   });
 
+  it("omits sort=relevance — the BFF rejects it (400 VALIDATION_FAILED)", async () => {
+    const fetchSpy = vi.fn(async () => collectionResponse());
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await getCollectionProducts("seasonal", { page: 2, sort: "relevance" });
+
+    const [requestUrl] = fetchSpy.mock.calls.at(-1) as unknown as [string];
+    expect(requestUrl).toContain("page=2");
+    expect(requestUrl).not.toContain("sort=");
+  });
+
   it("rejects a missing slug before calling out", async () => {
     const fetchSpy = vi.fn();
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
