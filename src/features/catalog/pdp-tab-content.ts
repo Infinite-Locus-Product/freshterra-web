@@ -1,9 +1,10 @@
-import type { ProductDetail, ProductMetafields } from "./types";
 import {
   healthBenefitsFromInformations,
   regulatoryInformationHasContent,
   type ProductInformations,
 } from "./product-informations";
+
+import type { ProductDetail, ProductMetafields } from "./types";
 
 export type PdpTabKey = "details" | "instructions" | "regulatory";
 

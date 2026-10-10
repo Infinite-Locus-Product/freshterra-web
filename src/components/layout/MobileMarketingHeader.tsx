@@ -2,14 +2,10 @@
 
 import { useState } from "react";
 
-import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
-import { AppDownloadBanner } from "@/components/layout/AppDownloadBanner";
 import { HEADER_EDGE_PADDING_CLASS } from "@/components/layout/header-chrome";
 import { PAGE_SHELL_INNER_CLASS } from "@/components/layout/layout-classes";
-import type { MarketingNavLink } from "@/components/layout/MarketingHeader";
-import { DEFAULT_NAV_LINKS } from "@/components/layout/MarketingHeader";
 import {
   mobileHeaderLocationBadgeClass,
   mobileHeaderLogoClass,
@@ -21,6 +17,7 @@ import {
   mobileHeaderTopRowClass,
 } from "@/components/layout/mobile-header-chrome";
 import { MobileNavDrawer } from "@/components/layout/MobileNavDrawer";
+import { DEFAULT_NAV_LINKS, type MarketingNavLink } from "@/components/layout/nav-links";
 import { HeaderLocationBadge } from "@/components/ui/HeaderLocationBadge";
 import { Logo } from "@/components/ui/Logo";
 
@@ -31,7 +28,7 @@ const MOBILE_SEARCH_PLACEHOLDER = "Search groceries...";
 type MobileMarketingHeaderProps = Readonly<{
   locationLabel?: string;
   navLinks?: readonly MarketingNavLink[];
-  downloadHref?: string;
+  /** Homepage mWeb — parent shell paints the mint gradient. */
   bannerFullBleed?: boolean;
   /** Category hub mWeb — no padding below search before hero banner. */
   flushBelowSearch?: boolean;
@@ -41,7 +38,6 @@ type MobileMarketingHeaderProps = Readonly<{
 export function MobileMarketingHeader({
   locationLabel = "FreshTerra Gurugram",
   navLinks = DEFAULT_NAV_LINKS,
-  downloadHref = env.NEXT_PUBLIC_APP_DOWNLOAD_URL,
   bannerFullBleed = false,
   flushBelowSearch = false,
   className,
@@ -50,8 +46,6 @@ export function MobileMarketingHeader({
 
   return (
     <>
-      <AppDownloadBanner openAppHref={downloadHref} fullBleed={bannerFullBleed} />
-
       <div
         className={cn(
           mobileHeaderShellClass,

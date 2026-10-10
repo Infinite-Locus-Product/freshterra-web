@@ -95,6 +95,7 @@
 
 html {
   font-size: 100%;
+  scroll-padding-top: var(--site-header-height, 0px);
 }
 
 html,

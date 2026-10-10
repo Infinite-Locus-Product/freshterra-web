@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   plpMobileFiltersSheetApplyButtonClass,
   plpMobileFiltersSheetBackdropClass,
@@ -25,7 +27,6 @@ import {
   plpMobileFiltersSheetTitleClass,
 } from "@/components/category/category-plp-filters-sheet";
 import { categoryPlpFilterCheckboxInputClass } from "@/components/category/category-plp-page";
-import { cn } from "@/lib/utils/cn";
 
 import type { FilterSelections, PlpFilterGroup } from "./PlpFilters";
 

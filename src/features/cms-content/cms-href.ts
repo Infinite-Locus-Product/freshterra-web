@@ -1,11 +1,27 @@
+import {
+  CATEGORIES_PATH,
+  categoryPageHref,
+} from "@/features/catalog/category-href";
+
+const LEGACY_CATEGORY_PATH = /^\/c\/([^/?#]+)(.*)$/;
+
+/** Rewrites legacy CMS `/c/{slug}` links to skip the 308 hop. */
+function rewriteLegacyCategoryPath(path: string): string {
+  const match = LEGACY_CATEGORY_PATH.exec(path);
+  if (!match) return path;
+  const [, slug = "", rest = ""] = match;
+  if (slug === "explore-catalog") return CATEGORIES_PATH;
+  return `${categoryPageHref(decodeURIComponent(slug))}${rest}`;
+}
+
 /** Normalizes a CMS slug into an internal route. */
 export function normalizeCmsSlugHref(
   slug: string | null | undefined,
 ): string | undefined {
   if (!slug?.trim()) return undefined;
   const trimmed = slug.trim();
-  if (trimmed.startsWith("/")) return trimmed;
-  return `/c/${encodeURIComponent(trimmed)}`;
+  if (trimmed.startsWith("/")) return rewriteLegacyCategoryPath(trimmed);
+  return categoryPageHref(trimmed);
 }
 
 /** Resolves CMS deeplink strings — absolute URLs, site paths, or category slugs. */
@@ -15,8 +31,10 @@ export function normalizeCmsDeeplink(
   if (!value?.trim()) return undefined;
   const trimmed = value.trim();
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  if (trimmed.startsWith("/")) return trimmed;
-  if (trimmed.includes("/")) return `/${trimmed.replace(/^\/+/, "")}`;
+  if (trimmed.startsWith("/")) return rewriteLegacyCategoryPath(trimmed);
+  if (trimmed.includes("/")) {
+    return rewriteLegacyCategoryPath(`/${trimmed.replace(/^\/+/, "")}`);
+  }
   return normalizeCmsSlugHref(trimmed);
 }
 

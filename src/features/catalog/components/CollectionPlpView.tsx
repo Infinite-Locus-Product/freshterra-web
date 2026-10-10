@@ -6,6 +6,7 @@ import type { Route } from "next";
 
 import { useRouter } from "next/navigation";
 
+import { visiblePlpFacetEntries } from "../plp-facet-config";
 import { useCollectionProducts } from "../useCollectionProducts";
 
 import { PlpView, type Crumb } from "./PlpView";
@@ -25,7 +26,7 @@ function prettyLabel(slug: string): string {
 
 /** Build filter groups from the collection's `{ slug, count }` facets. */
 function facetsToGroups(facets: Facets): PlpFilterGroup[] {
-  return Object.entries(facets).map(([key, values]) => ({
+  return visiblePlpFacetEntries(facets).map(([key, values]) => ({
     key,
     label: prettyLabel(key),
     options: values.map((v) => ({

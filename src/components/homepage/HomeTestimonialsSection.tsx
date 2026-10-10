@@ -1,4 +1,3 @@
-import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 import {
   homeTestimonialsCarouselBleedClass,
   homeTestimonialsSectionClass,
@@ -6,6 +5,7 @@ import {
   homeTestimonialsSubtitleClass,
   homeTestimonialsTitleClass,
 } from "@/components/homepage/home-testimonials";
+import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 
 import type { HomePageContent } from "@/features/cms-content/web-homepage-types";
 

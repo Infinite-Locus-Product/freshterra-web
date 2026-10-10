@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { DEFAULT_NAV_LINKS } from "./MarketingHeader";
 import {
   MOBILE_APP_DOWNLOAD_BANNER_HEIGHT,
   MOBILE_APP_DOWNLOAD_BANNER_WIDTH,
@@ -17,7 +18,6 @@ import {
   mobileNavDrawerLinksClass,
   mobileNavDrawerPanelClass,
 } from "./mobile-header-chrome";
-import { DEFAULT_NAV_LINKS } from "./MarketingHeader";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 
 describe("mobile-header-chrome", () => {
@@ -76,7 +76,7 @@ describe("MobileNavDrawer", () => {
     );
     expect(
       screen.getByRole("link", { name: /explore products/i }),
-    ).toHaveAttribute("href", "/c/vegetables-fruits");
+    ).toHaveAttribute("href", "/categories");
   });
 
   it("calls onClose when the close button is clicked", () => {

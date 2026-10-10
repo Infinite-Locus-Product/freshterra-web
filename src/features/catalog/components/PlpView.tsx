@@ -172,7 +172,7 @@ export function PlpView({
         body="This page may have moved or is no longer available."
         action={
           <Button asChild caps={false}>
-            <Link href="/c/explore-catalog">Browse Categories</Link>
+            <Link href="/categories">Browse Categories</Link>
           </Button>
         }
       />
@@ -414,40 +414,6 @@ export function PlpView({
         />
       ) : null}
     </div>
-  );
-}
-
-function PlpHeroBanner({ banner }: { banner: PlpBanner }) {
-  const usesDistinctAssets = banner.imageSrcMweb !== banner.imageSrcWeb;
-
-  return (
-    <>
-      <Image
-        src={banner.imageSrcMweb}
-        alt=""
-        aria-hidden
-        fill
-        priority
-        fetchPriority="high"
-        sizes="100vw"
-        className={cn(
-          categoryPlpBannerImageClass,
-          usesDistinctAssets && "lg:hidden",
-        )}
-      />
-      {usesDistinctAssets ? (
-        <Image
-          src={banner.imageSrcWeb}
-          alt=""
-          aria-hidden
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          className={cn(categoryPlpBannerImageClass, "hidden lg:block")}
-        />
-      ) : null}
-    </>
   );
 }
 

@@ -31,12 +31,12 @@ import {
   aboutStorySubtitleClass,
   aboutStoryTitleClass,
 } from "@/components/about/about-page";
-import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 import {
   homeTestimonialsStoriesSectionClass,
   homeTestimonialsSubtitleClass,
   homeTestimonialsTitleClass,
 } from "@/components/homepage/home-testimonials";
+import { HomeTestimonialsCarousel } from "@/components/homepage/HomeTestimonialsCarousel";
 import { PageShell } from "@/components/layout/PageShell";
 
 import type { AboutPageContent } from "@/features/cms-content/about-freshterra-types";

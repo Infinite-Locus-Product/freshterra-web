@@ -13,12 +13,8 @@ import { fetchCollectionSeoSafe } from "@/features/cms-content/collection-conten
 
 type Params = Promise<{ slug: string }>;
 
-/** Store-neutral catalog content → ISR-cacheable. */
-export const revalidate = 300;
-
-export function generateStaticParams() {
-  return [];
-}
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 /** Deduped so generateMetadata + the page body share one catalogue request. */
 const loadCollection = cache((slug: string) =>

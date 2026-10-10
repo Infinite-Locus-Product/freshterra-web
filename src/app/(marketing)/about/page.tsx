@@ -10,8 +10,8 @@ import { AboutPageLayout } from "@/components/about/AboutPageLayout";
 
 import { fetchAboutFreshterraContentSafe } from "@/features/cms-content/about-freshterra-service";
 
-/** ISR: re-fetch CMS content every 10 min (matches the BFF's 600s cache). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 const PAGE_DESCRIPTION =
   "Discover FreshTerra's story, values, sourcing philosophy, and the team behind our fresh-first promise.";

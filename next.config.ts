@@ -41,6 +41,22 @@ const nextConfig: NextConfig = {
       process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.freshterra.in";
     return [{ source: "/bff/:path*", destination: `${apiOrigin}/:path*` }];
   },
+  async redirects() {
+    // Real 308s need config: root `loading.tsx` streams before pages run.
+    return [
+      {
+        source: "/c/explore-catalog",
+        destination: "/categories",
+        permanent: true,
+      },
+      // Old category route; query strings carry over.
+      {
+        source: "/c/:slug",
+        destination: "/category/:slug",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     if (isProdHost()) return [];
     return [

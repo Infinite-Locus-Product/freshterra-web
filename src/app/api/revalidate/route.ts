@@ -2,8 +2,9 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { isHomepageCmsCacheTag } from "@/features/cms-content/cms-cache-tags";
 import { env } from "@/lib/config/env";
+
+import { isHomepageCmsCacheTag } from "@/features/cms-content/cms-cache-tags";
 
 /**
  * Webhook target for Strapi/Saleor. Verifies a shared secret then busts

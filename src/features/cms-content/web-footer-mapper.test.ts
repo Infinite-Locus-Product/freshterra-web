@@ -100,9 +100,10 @@ describe("mapWebFooterContent", () => {
       ],
     });
 
+    // Legacy `/c/explore-catalog` CMS links are rewritten (FRES-2399).
     expect(content.groups[0]?.links[0]).toEqual({
       label: "Explore Catalog",
-      url: "/c/explore-catalog",
+      url: "/categories",
     });
   });
 

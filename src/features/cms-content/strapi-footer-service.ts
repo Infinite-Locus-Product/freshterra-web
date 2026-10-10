@@ -1,5 +1,5 @@
-import { env } from "@/lib/config/env";
 import { StrapiError, strapiPublic } from "@/lib/clients/strapi";
+import { env } from "@/lib/config/env";
 
 import {
   DEFAULT_STRAPI_FOOTER_SLUG,

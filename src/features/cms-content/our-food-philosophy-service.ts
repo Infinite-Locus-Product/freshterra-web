@@ -4,13 +4,13 @@ import {
   hasFoodPhilosophyContent,
   mapOurFoodPhilosophyContent,
 } from "./our-food-philosophy-mapper";
-import { getSingleContent } from "./single-content-service";
-
 import {
   ourFoodPhilosophyContentSchema,
   type FoodPhilosophyPageContent,
   type OurFoodPhilosophyContent,
 } from "./our-food-philosophy-types";
+import { getSingleContent } from "./single-content-service";
+
 
 import type { ContentEntryParams } from "./content-entry-service";
 

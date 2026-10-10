@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { env } from "@/lib/config/env";
 
 import { AppDownloadBanner } from "./AppDownloadBanner";
-import { MarketingHeader } from "./MarketingHeader";
+import { MarketingHeaderView as MarketingHeader } from "./MarketingHeader";
 
 describe("AppDownloadBanner", () => {
   beforeEach(() => {
@@ -75,6 +75,32 @@ describe("MarketingHeader", () => {
     expect(
       screen.getAllByRole("link", { name: /freshterra gurugram/i })[0],
     ).toHaveAttribute("href", "/stores");
+  });
+
+  it("sticks to the top of the viewport on desktop and mWeb (FRES-2399)", () => {
+    render(<MarketingHeader />);
+    const banner = screen.getByRole("banner");
+    expect(banner).toHaveAttribute("data-site-header");
+    expect(banner.className).toMatch(/(^|\s)sticky(\s|$)/);
+    expect(banner.className).toMatch(/(^|\s)top-0(\s|$)/);
+  });
+
+  it("keeps the mWeb app download strip outside the sticky header", () => {
+    sessionStorage.clear();
+    render(<MarketingHeader />);
+    const strip = screen.getByText("Download the app for better");
+    expect(screen.getByRole("banner")).not.toContainElement(strip);
+  });
+
+  it("embedded mode leaves stickiness and the app strip to the parent", () => {
+    sessionStorage.clear();
+    render(<MarketingHeader embedded />);
+    const banner = screen.getByRole("banner");
+    expect(banner).not.toHaveAttribute("data-site-header");
+    expect(banner.className).not.toMatch(/(^|\s)sticky(\s|$)/);
+    expect(
+      screen.queryByText("Download the app for better"),
+    ).not.toBeInTheDocument();
   });
 
   it("exposes a mobile hamburger menu trigger wired to the drawer", () => {

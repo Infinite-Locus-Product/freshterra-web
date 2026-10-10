@@ -1,3 +1,5 @@
+import { CATEGORIES_PATH } from "@/features/catalog/category-href";
+
 import { isCmsActive } from "./cms-boolean";
 import {
   buildGoogleMapsSearchUrl,
@@ -8,7 +10,6 @@ import {
 import { readCmsString } from "./cms-readers";
 import { richTextToHtml, richTextToPlainText } from "./cms-rich-text";
 import { readCmsSeo } from "./cms-seo";
-import { resolveL2CategoryViewAllHref } from "./homepage-l2-category-tiles";
 import {
   webHomepageHeroSchema,
   webHomepageSourceSchema,
@@ -19,9 +20,12 @@ import {
 import type {
   HomeHeroSlide,
   HomePageContent,
+  HomeStoreItem,
   WebHomepageContent,
 } from "./web-homepage-types";
 import type { z } from "zod";
+
+const DEFAULT_CATEGORIES_CTA_LABEL = "View All";
 
 type WebHomepageHero = z.infer<typeof webHomepageHeroSchema>;
 type WebHomepageSource = z.infer<typeof webHomepageSourceSchema>;
@@ -36,13 +40,6 @@ const EMPTY_SOURCING: HomePageContent["sourcing"] = {
   mediaOverlay: "",
   paragraphs: [],
   ctaLabel: "",
-};
-
-const EMPTY_STORE: HomePageContent["store"] = {
-  title: "",
-  name: "",
-  primaryCtaLabel: "",
-  secondaryCtaLabel: "",
 };
 
 function isRecord(value: unknown): value is UnknownRecord {
@@ -107,8 +104,13 @@ function mapHeroSlide(
 ): HomeHeroSlide | null {
   const record = raw as UnknownRecord;
   const imageWeb = readMediaUrl(record, "image");
-  const imageMobile =
-    readMediaUrl(record, "iamge_mweb", "image_mweb", "imageMobile") || imageWeb;
+  const mobileArt = readMediaUrl(
+    record,
+    "iamge_mweb",
+    "image_mweb",
+    "imageMobile",
+  );
+  const imageMobile = mobileArt || imageWeb;
   if (!imageWeb && !imageMobile) return null;
 
   const heading = readCmsString(record, "heading");
@@ -130,6 +132,7 @@ function mapHeroSlide(
     id,
     imageWeb: imageWeb || imageMobile,
     imageMobile: imageMobile || imageWeb,
+    hasMobileArt: Boolean(mobileArt),
     imageAlt: heading,
     ...(heading ? { heading } : {}),
     ...(href ? { href } : {}),
@@ -202,10 +205,7 @@ function resolveLocateUsHref(
   return buildGoogleMapsSearchUrl(mapsQuery);
 }
 
-function mapStore(
-  raw: WebHomepageStore,
-  sectionTitle: string,
-): HomePageContent["store"] {
+function mapStore(raw: WebHomepageStore, index: number): HomeStoreItem | null {
   const record = raw as UnknownRecord;
   const addressRaw = record.store_address;
   const addressHtml = richTextToHtml(addressRaw);
@@ -229,9 +229,14 @@ function mapStore(
     Boolean(secondaryCtaLabel),
   );
 
+  const name = readCmsString(record, "store_name");
+  const hasContent =
+    name || addressHtml || mediaImage || primaryCtaLabel || secondaryCtaLabel;
+  if (!hasContent) return null;
+
   return {
-    title: sectionTitle,
-    name: readCmsString(record, "store_name"),
+    key: readCmsString(record, "id") || String(record.id ?? `store-${index}`),
+    name,
     ...(addressHtml ? { addressHtml } : {}),
     primaryCtaLabel,
     secondaryCtaLabel,
@@ -269,10 +274,23 @@ function mapSource(raw: WebHomepageSource): HomePageContent["sourcing"] {
   };
 }
 
+/** Needs `autoplay_banner` on and a positive interval; no fallback. */
+function readHeroAutoplayIntervalMs(
+  input: WebHomepageContent,
+): number | undefined {
+  if (input.autoplay_banner !== true) return undefined;
+  const raw = input.autoplayintervalms;
+  const value = typeof raw === "string" ? Number(raw.trim()) : raw;
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : undefined;
+}
+
 /** Maps `web-homepage` CMS payload into the homepage view model (CMS fields only). */
 export function mapWebHomepageContent(
   input: WebHomepageContent,
 ): HomePageContent {
+  const heroAutoplayIntervalMs = readHeroAutoplayIntervalMs(input);
   const heroSlides = (input.web_herosection ?? [])
     .filter((slide) => isCmsActive(slide.is_active))
     .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
@@ -288,17 +306,16 @@ export function mapWebHomepageContent(
         item !== null,
     );
 
-  const storeEntry = [...(input.our_store ?? [])].sort(
-    (a, b) => (a.position ?? 0) - (b.position ?? 0),
-  )[0];
+  const stores = [...(input.our_store ?? [])]
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map(mapStore)
+    .filter((store): store is HomeStoreItem => store !== null);
 
   const l2 = input.l2_category;
   const l2SectionActive = Boolean(l2 && isCmsActive(l2.is_active));
-  const categoriesViewAllHref = l2SectionActive
-    ? resolveL2CategoryViewAllHref(l2)
-    : undefined;
+  // View All always opens `/categories`; the CMS deeplink is ignored.
   const categoriesCtaLabel = l2SectionActive
-    ? (l2?.view_all_cta?.trim() ?? "")
+    ? l2?.view_all_cta?.trim() || DEFAULT_CATEGORIES_CTA_LABEL
     : "";
 
   const storeSectionTitle = input.store_section_heading?.trim() ?? "";
@@ -311,6 +328,7 @@ export function mapWebHomepageContent(
       ctaLabel: "",
     },
     heroSlides,
+    ...(heroAutoplayIntervalMs ? { heroAutoplayIntervalMs } : {}),
     nav: { locationLabel: "", links: [] },
     categories: l2SectionActive
       ? {
@@ -318,9 +336,7 @@ export function mapWebHomepageContent(
           subtitle: l2?.tagline?.trim() ?? "",
           ctaLabel: categoriesCtaLabel,
           items: [],
-          ...(categoriesViewAllHref
-            ? { viewAllHref: categoriesViewAllHref }
-            : {}),
+          viewAllHref: CATEGORIES_PATH,
         }
       : {
           title: "",
@@ -337,11 +353,7 @@ export function mapWebHomepageContent(
       subtitle: input.stories_section_title?.trim() ?? "",
       items: stories,
     },
-    store: storeEntry
-      ? mapStore(storeEntry, storeSectionTitle)
-      : storeSectionTitle
-        ? { ...EMPTY_STORE, title: storeSectionTitle }
-        : EMPTY_STORE,
+    storeSection: { title: storeSectionTitle, stores },
     footer: {
       aboutLinks: [],
       quickLinks: [],

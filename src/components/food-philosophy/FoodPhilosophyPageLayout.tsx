@@ -236,32 +236,42 @@ function PhilosophyBody({ content }: Readonly<FoodPhilosophyPageLayoutProps>) {
                   <article
                     key={`${imageSrc}-${index}`}
                     style={{
-                      top: `calc(var(--stack-top) + ${index} * var(--stack-peek))`,
+                      top: `calc(var(--site-header-height, 0px) + var(--stack-top) + ${index} * var(--stack-peek))`,
                       zIndex: index + 1,
                     }}
                     className={foodPhilosophyPartnershipCardShellClass}
                   >
-                    {useSplitAssets ? (
+                    {useSplitAssets && imageSrc && imageSrcMobile ? (
                       <>
-                        <img
+                        <Image
                           src={imageSrcMobile}
                           alt={imageAlt}
+                          width={0}
+                          height={0}
+                          sizes="(max-width: 767px) 360px, 50vw"
                           className={
                             foodPhilosophyPartnershipCardCompositeImageMobileClass
                           }
                         />
-                        <img
+                        <Image
                           src={imageSrc}
                           alt={imageAlt}
+                          width={0}
+                          height={0}
+                          sizes="(max-width: 767px) 360px, 50vw"
                           className={
                             foodPhilosophyPartnershipCardCompositeImageWebClass
                           }
                         />
                       </>
                     ) : imageSrc ? (
-                      <img
+                      // Natural size (w-full h-auto): CMS banners are full composite cards.
+                      <Image
                         src={imageSrc}
                         alt={imageAlt}
+                        width={0}
+                        height={0}
+                        sizes="(max-width: 767px) 360px, 50vw"
                         className={foodPhilosophyPartnershipCardCompositeImageClass}
                       />
                     ) : null}

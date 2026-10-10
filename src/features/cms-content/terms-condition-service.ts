@@ -1,15 +1,14 @@
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
-import { mapTermsConditionContent } from "./terms-condition-mapper";
 import { getSingleContent } from "./single-content-service";
-
+import { mapTermsConditionContent } from "./terms-condition-mapper";
 import {
   termsConditionContentSchema,
   type TermsConditionContent,
 } from "./terms-condition-types";
 
-import type { PolicyDocument } from "./types";
 import type { ContentEntryParams } from "./content-entry-service";
+import type { PolicyDocument } from "./types";
 
 export const TERMS_CONDITION_CONTENT_TYPE = "terms-condition";
 

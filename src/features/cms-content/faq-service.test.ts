@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
-
 import { fetchFaqContentSafe, getFaqContent } from "./faq-service";
 
 const apiEntry = {

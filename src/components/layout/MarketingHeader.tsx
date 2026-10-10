@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { env } from "@/lib/config/env";
 import { cn } from "@/lib/utils/cn";
 
+import { AppDownloadBanner } from "@/components/layout/AppDownloadBanner";
 import {
   HEADER_EDGE_PADDING_CLASS,
   marketingHeaderNavClass,
@@ -11,29 +12,20 @@ import {
 import { PAGE_SHELL_INNER_CLASS } from "@/components/layout/layout-classes";
 import { MarketingNavLinkLabel } from "@/components/layout/MarketingNavLinkLabel";
 import { MobileMarketingHeader } from "@/components/layout/MobileMarketingHeader";
+import { SiteHeaderHeightSync } from "@/components/layout/SiteHeaderHeightSync";
 import { BrandTagline } from "@/components/ui/BrandTagline";
 import { HeaderDownloadAppButton } from "@/components/ui/HeaderDownloadAppButton";
 import { HeaderLocationBadge } from "@/components/ui/HeaderLocationBadge";
 import { Logo } from "@/components/ui/Logo";
 
+import { fetchWebNavLinksSafe } from "@/features/cms-content/web-footer-service";
 import { SearchBox } from "@/features/search/components/SearchBox";
 
-export type MarketingNavLink = Readonly<{
-  label: string;
-  href: string;
-}>;
+import { DEFAULT_NAV_LINKS, type MarketingNavLink } from "./nav-links";
+
+export { DEFAULT_NAV_LINKS, type MarketingNavLink } from "./nav-links";
 
 const NAV_LINK_CLASS = marketingHeaderNavLinkLabelClass;
-
-export const DEFAULT_NAV_LINKS: readonly MarketingNavLink[] = [
-  { label: "Explore Products", href: "/c/vegetables-fruits" },
-  { label: "Our Philosophy", href: "/food-philosophy" },
-  { label: "About Us", href: "/about" },
-  { label: "Careers", href: "/careers" },
-  { label: "Our Stores", href: "/stores" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "FAQ", href: "/faq" },
-] as const;
 
 export type MarketingHeaderProps = Readonly<{
   tagline?: ReactNode;
@@ -42,7 +34,7 @@ export type MarketingHeaderProps = Readonly<{
   navLinks?: readonly MarketingNavLink[];
   downloadHref?: string;
   downloadLabel?: string;
-  /** When true, omits outer gradient shell (parent section provides it). */
+  /** Parent provides the shell, stickiness and mWeb app strip. */
   embedded?: boolean;
   /** Homepage mWeb — app download strip spans full viewport width. */
   bannerFullBleed?: boolean;
@@ -51,7 +43,17 @@ export type MarketingHeaderProps = Readonly<{
   className?: string;
 }>;
 
-export function MarketingHeader({
+/** Site header; nav from Strapi `web-footer.navbar`, else built-in links. */
+export async function MarketingHeader(props: MarketingHeaderProps) {
+  const navLinks =
+    props.navLinks ??
+    (await fetchWebNavLinksSafe().then((links) =>
+      links.length > 0 ? links : undefined,
+    ));
+  return <MarketingHeaderView {...props} navLinks={navLinks} />;
+}
+
+export function MarketingHeaderView({
   tagline,
   taglineAs = "p",
   locationLabel = "FreshTerra Gurugram",
@@ -104,7 +106,6 @@ export function MarketingHeader({
       <MobileMarketingHeader
         locationLabel={locationLabel}
         navLinks={navLinks}
-        downloadHref={downloadHref}
         bannerFullBleed={bannerFullBleed}
         flushBelowSearch={mwebFlushBelowSearch}
       />
@@ -114,6 +115,7 @@ export function MarketingHeader({
   if (embedded) {
     return (
       <header role="banner" className={cn(className)}>
+        <SiteHeaderHeightSync />
         {mobileInner}
         <div className={HEADER_EDGE_PADDING_CLASS}>{desktopInner}</div>
       </header>
@@ -121,15 +123,26 @@ export function MarketingHeader({
   }
 
   return (
-    <header
-      role="banner"
-      className={cn(
-        "text-text-primary lg:from-header-tint lg:bg-linear-to-b lg:to-white lg:pt-6 lg:pb-6 md:lg:pt-8 md:lg:pb-6",
-        className,
-      )}
-    >
-      {mobileInner}
-      <div className={HEADER_EDGE_PADDING_CLASS}>{desktopInner}</div>
-    </header>
+    <>
+      {/* mWeb app strip scrolls away; only the header below it sticks. */}
+      <div className="lg:hidden">
+        <AppDownloadBanner
+          openAppHref={downloadHref}
+          fullBleed={bannerFullBleed}
+        />
+      </div>
+      <header
+        role="banner"
+        data-site-header
+        className={cn(
+          "text-text-primary sticky top-0 z-40 bg-white lg:from-header-tint lg:bg-linear-to-b lg:to-white lg:pt-6 lg:pb-6 md:lg:pt-8 md:lg:pb-6",
+          className,
+        )}
+      >
+        <SiteHeaderHeightSync />
+        {mobileInner}
+        <div className={HEADER_EDGE_PADDING_CLASS}>{desktopInner}</div>
+      </header>
+    </>
   );
 }

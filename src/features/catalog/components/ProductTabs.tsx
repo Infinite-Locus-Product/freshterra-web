@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import Image from "next/image";
 
+import { cn } from "@/lib/utils/cn";
+
 import {
   pdpDetailsBodyTextClass,
   pdpDetailsRowLabelClass,
@@ -35,7 +37,6 @@ import {
   pdpTabsSectionClass,
   pdpContentShellClass,
 } from "@/components/category/pdp-page";
-import { cn } from "@/lib/utils/cn";
 
 import {
   type PdpTabKey,
@@ -47,6 +48,7 @@ import {
   regulatoryInformationHasContent,
   type ProductInformations,
 } from "../product-informations";
+
 import type { ProductDetail, ProductMetafields } from "../types";
 
 const TAB_LABELS: Record<PdpTabKey, string> = {
@@ -304,7 +306,6 @@ function HealthBenefitsSection({
 
 function NutritionDetailsSection({
   product,
-  meta,
   info,
 }: {
   product: ProductDetail;

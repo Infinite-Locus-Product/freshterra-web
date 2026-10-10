@@ -1,5 +1,5 @@
-import { getWebFooterContent } from "./web-footer-service";
 import { mapWebFooterContent } from "./web-footer-mapper";
+import { getWebFooterContent } from "./web-footer-service";
 
 import type { FooterContent } from "./footer-content-types";
 

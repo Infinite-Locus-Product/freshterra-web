@@ -6,13 +6,19 @@ import {
   type SeoOverrides,
 } from "@/lib/seo/pageMetadata";
 
+import {
+  CATEGORIES_PATH,
+  categoryPageHref,
+} from "@/features/catalog/category-href";
+
 import { slugToTitle } from "./cms-readers";
 import { readCmsSeo } from "./cms-seo";
 
 import type { WebCategoryContent } from "./web-category-content-service";
 import type { WebCategoryPlpContext } from "./web-category-plp-resolver";
 
-export const EXPLORE_CATALOG_SLUG = "explore-catalog";
+/** Re-exported for existing imports; defined with the other route helpers. */
+export { CATEGORIES_PATH } from "@/features/catalog/category-href";
 
 export type CategoryPageData = {
   /** Strapi `web` entry (L2 landing) for this slug, when one exists. */
@@ -40,7 +46,7 @@ function l4TabLabel(
 }
 
 /**
- * `/c/[slug]` metadata for L2 landings and L3/L4 PLPs.
+ * `/category/[slug]` metadata for L2 landings and L3/L4 PLPs.
  *
  * A PLP config's SEO — above all its canonical — belongs to its own page, so it
  * applies only when this route *is* that config's page; an L4 child resolved
@@ -66,7 +72,7 @@ export function categoryPageMetadata({
     slugToTitle(slug);
 
   return buildPageMetadata({
-    path: `/c/${slug}`,
+    path: categoryPageHref(slug),
     fallbackTitle: siteTitle(label),
     fallbackDescription:
       hero?.subtitle?.trim() || `Browse ${label} on FreshTerra.`,
@@ -75,10 +81,10 @@ export function categoryPageMetadata({
   });
 }
 
-/** `/c/explore-catalog` metadata; `seo` comes from the `web-category-page` single type. */
+/** `/categories` metadata; `seo` comes from the `web-category-page` single type. */
 export function exploreCatalogMetadata(seo: SeoOverrides | null): Metadata {
   return buildPageMetadata({
-    path: `/c/${EXPLORE_CATALOG_SLUG}`,
+    path: CATEGORIES_PATH,
     fallbackTitle: siteTitle("Explore Catalog"),
     fallbackDescription: "Browse FreshTerra categories and discover products.",
     seo,

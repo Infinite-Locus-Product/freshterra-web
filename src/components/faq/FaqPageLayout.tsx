@@ -19,9 +19,9 @@ import {
   faqSupportCtaTitleClass,
   faqPageSectionClass,
 } from "@/components/faq/faq-page";
+import { PageShell } from "@/components/layout/PageShell";
 import { Body } from "@/components/ui/Body";
 import { Button } from "@/components/ui/Button";
-import { PageShell } from "@/components/layout/PageShell";
 import { Heading } from "@/components/ui/Heading";
 
 import type { FaqPageContent } from "@/features/cms-content/faq-types";

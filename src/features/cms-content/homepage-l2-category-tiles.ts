@@ -1,7 +1,8 @@
+import { categoryPageHref } from "@/features/catalog/category-href";
 import { buildCategoryLookup } from "@/features/catalog/category-lookup-server";
 
 import { isCmsActive } from "./cms-boolean";
-import { normalizeCmsDeeplink, normalizeCmsSlugHref } from "./cms-href";
+import { normalizeCmsDeeplink } from "./cms-href";
 import { slugToTitle } from "./cms-readers";
 
 import type { CategoryLookup } from "./web-category-page-mapper";
@@ -70,31 +71,13 @@ function tileKey(tile: WebHomepageL2CategoryTile, index: number): string {
   return `homepage-l2-tile-${index}`;
 }
 
-function normalizeViewAllHref(
-  slug: string | null | undefined,
-): string | undefined {
-  return normalizeCmsSlugHref(slug) ?? normalizeCmsDeeplink(slug) ?? undefined;
-}
-
-/** Resolves the l2_category "View all" link from CMS deeplink or legacy slug. */
-export function resolveL2CategoryViewAllHref(
-  l2: WebHomepageContent["l2_category"],
-): string | undefined {
-  if (!l2) return undefined;
-
-  const deeplink = normalizeCmsDeeplink(l2.view_all_cta_deeplink);
-  if (deeplink) return deeplink;
-
-  return normalizeViewAllHref(l2.slug);
-}
-
 function resolveTileHref(
   tile: WebHomepageL2CategoryTile,
   categorySlug: string | undefined,
 ): string | undefined {
   const deeplink = normalizeCmsDeeplink(tile.deeplink);
   if (deeplink) return deeplink;
-  if (categorySlug) return `/c/${categorySlug}`;
+  if (categorySlug) return categoryPageHref(categorySlug);
   return undefined;
 }
 

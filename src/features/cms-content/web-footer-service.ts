@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { FreshTerraApiError } from "@/lib/clients/freshterra-api";
 
 import {
@@ -10,6 +12,7 @@ import {
   mapWebFooterContent,
 } from "./web-footer-mapper";
 import { webFooterContentSchema, type WebFooterContent } from "./web-footer-types";
+import { mapWebNavbarLinks, type WebNavLink } from "./web-navbar-mapper";
 
 import type { ContentEntryParams, ContentEntryRequestOptions } from "./content-entry-service";
 import type { FooterContent } from "./footer-content-types";
@@ -40,11 +43,16 @@ export async function getWebFooterContent(
   });
 }
 
+/** One `web-footer` request per render, shared by header and footer. */
+const loadWebFooterEntry = cache(() => getWebFooterContent());
+
 export async function fetchWebFooterContentSafe(
   params: ContentEntryParams = {},
 ): Promise<FooterContent> {
   try {
-    const entry = await getWebFooterContent(params);
+    const entry = await (params.locale
+      ? getWebFooterContent(params)
+      : loadWebFooterEntry());
     return mapWebFooterContent(entry);
   } catch (error) {
     if (!(error instanceof FreshTerraApiError && error.code === "NOT_FOUND")) {
@@ -54,5 +62,20 @@ export async function fetchWebFooterContentSafe(
       );
     }
     return EMPTY_FOOTER_CONTENT;
+  }
+}
+
+/** Header nav from `web-footer.navbar`; `[]` → header uses defaults. */
+export async function fetchWebNavLinksSafe(): Promise<WebNavLink[]> {
+  try {
+    return mapWebNavbarLinks(await loadWebFooterEntry());
+  } catch (error) {
+    if (!(error instanceof FreshTerraApiError && error.code === "NOT_FOUND")) {
+      console.warn(
+        "[web-footer] navbar fetch failed; using default nav links:",
+        error instanceof Error ? error.message : error,
+      );
+    }
+    return [];
   }
 }

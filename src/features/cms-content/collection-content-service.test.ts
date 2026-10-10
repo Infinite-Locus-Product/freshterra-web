@@ -121,7 +121,7 @@ describe("fetchCollectionSeoSafe cache tags", () => {
             "cms:collections",
             "cms:collection:summer-picks",
           ],
-          revalidate: 600,
+          revalidate: 0,
         },
       }),
     );

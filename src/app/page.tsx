@@ -8,8 +8,8 @@ import { HomepageLayout } from "@/components/homepage/HomepageLayout";
 
 import { fetchWebHomepageContentSafe } from "@/features/cms-content/web-homepage-service";
 
-/** ISR fallback (keep in sync with `CMS_WEB_HOMEPAGE_REVALIDATE_SECONDS`). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 /** Brand line rather than a `{Page} | FreshTerra` title — kept verbatim. */
 const PAGE_TITLE = "FreshTerra — Fresh, Wholesome, Gourmet.";

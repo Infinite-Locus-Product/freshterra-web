@@ -40,7 +40,7 @@ export function SearchNoResults({ query }: { query: string }) {
       body={`We couldn’t find any results for “${query}”. Try a different search term.`}
       action={
         <Button asChild caps={false}>
-          <Link href="/c/explore-catalog">Browse Categories</Link>
+          <Link href="/categories">Browse Categories</Link>
         </Button>
       }
     />

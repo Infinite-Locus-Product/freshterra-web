@@ -34,7 +34,6 @@ export function useCategoryMetadataMap(
 ): UseCategoryMetadataMapResult {
   const { ids, enabled = true } = args;
   const idList = useMemo(() => stableIdList(ids), [ids]);
-  const idKey = idList.join("|");
 
   const [lookup, setLookup] = useState<CategoryLookup>({});
   const [loading, setLoading] = useState(false);
@@ -96,7 +95,7 @@ export function useCategoryMetadataMap(
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
-  }, [enabled, idKey, idList]);
+  }, [enabled, idList]);
 
   useEffect(() => {
     void fetchLookup();

@@ -82,30 +82,29 @@ describe("mapStorePageWebContent", () => {
 
     expect(content).not.toBeNull();
     expect(content?.title).toBe("FreshTerra Gurugram");
-    expect(content?.directionsLabel).toBe("Directions");
+    expect(content?.stores[0]?.directionsLabel).toBe("Directions");
     expect(content?.categorySectionTitle).toBe("In-Store Categories");
-    expect(content?.directionsUrl).toContain("google.com/maps/dir");
-    expect(content?.directionsUrl).toContain(
-      encodeURIComponent(
-        "Hilton Gurugram Baani City Centre, Sector 63 Gurugram, 122101",
-      ),
+    expect(content?.stores[0]?.directionsUrl).toContain("google.com/maps/dir");
+    // Directions follow the store's own Address row (FRES-2399).
+    expect(decodeURIComponent(content?.stores[0]?.directionsUrl ?? "")).toContain(
+      "Golf Course Road, Sector 5, Gurgaon, Haryana  - 122011",
     );
-    expect(content?.primaryHeroImage.imageWeb).toContain(
+    expect(content?.stores[0]?.primaryHeroImage?.imageWeb).toContain(
       "Chat_GPT_Image_Jun_25_2026",
     );
-    expect(content?.primaryHeroImage.imageMobile).toContain(
+    expect(content?.stores[0]?.primaryHeroImage?.imageMobile).toContain(
       "Fresh_Terra_Outdoor1_Hi_Res_2",
     );
-    expect(content?.secondaryHeroImage.imageWeb).toContain(
+    expect(content?.stores[0]?.secondaryHeroImage?.imageWeb).toContain(
       "Fresh_Terra_Outdoor1_Hi_Res_1",
     );
-    expect(content?.information).toHaveLength(4);
-    expect(content?.information[0]?.heading).toBe("Address");
-    expect(content?.information[0]?.lines).toEqual([
+    expect(content?.stores[0]?.information).toHaveLength(4);
+    expect(content?.stores[0]?.information[0]?.heading).toBe("Address");
+    expect(content?.stores[0]?.information[0]?.lines).toEqual([
       "Golf Course Road, Sector 5",
       "Gurgaon, Haryana  - 122011",
     ]);
-    expect(content?.information[0]?.iconSrc).toContain("Shape_0c6d1355a8.png");
+    expect(content?.stores[0]?.information[0]?.iconSrc).toContain("Shape_0c6d1355a8.png");
     expect(content?.categories).toHaveLength(2);
     expect(content?.categories[0]?.label).toBe("Fresh & Organic");
   });
@@ -121,7 +120,7 @@ describe("mapStorePageWebContent", () => {
       direction_cta: "Directions",
     });
 
-    expect(content?.directionsUrl).toBe(
+    expect(content?.stores[0]?.directionsUrl).toBe(
       "https://www.google.com/maps/search/?api=1&query=FreshTerra+Gurugram",
     );
   });
@@ -182,4 +181,114 @@ describe("mapStorePageWebContent seo", () => {
     );
     expect(content).not.toHaveProperty("seo");
   });
+
+  describe("multiple stores (prod `store[]`, FRES-2399)", () => {
+    const info = (address: string) => [
+      { id: 2, sort_order: 2, info_heading: "Opening Hours", description: "All days: 7 AM – 10 PM", icon: "https://cms.example.com/clock.png" },
+      { id: 1, sort_order: 1, info_heading: "Address", description: address, icon: "https://cms.example.com/pin.png" },
+    ];
+    const prodPage = () =>
+      storePageWebContentSchema.parse({
+        slug: "stores",
+        heading: "FreshTerra ",
+        heroimage1: "https://cms.example.com/top-hero.png",
+        heroimage2: "https://cms.example.com/top-hero-2.png",
+        direction_cta: "Get Directions",
+        direction_slug: null,
+        store_category_heading: "Explore In-Store",
+        information: info("Top-level address"),
+        store: [
+          {
+            id: 4,
+            heading: "FreshTerra ",
+            heroimage_1: "https://cms.example.com/baani-1.png",
+            heroimage_2: "https://cms.example.com/baani-2.png",
+            direction_cta: "Get Directions",
+            info: info("Hilton Gurugram Baani City Centre, \nSector 63 Gurugram, 122101"),
+          },
+          {
+            id: 5,
+            heading: "FreshTerra Elan",
+            heroimage_1: "https://cms.example.com/elan-1.png",
+            heroimage_2: "https://cms.example.com/elan-2.png",
+            direction_cta: "Get Directions",
+            info: info("Elan Town Centre, Sector 67 Gurugram"),
+          },
+        ],
+      });
+
+    it("maps each store entry to its own slide data", () => {
+      const content = mapStorePageWebContent(prodPage());
+
+      expect(content?.title).toBe("FreshTerra");
+      expect(content?.stores).toHaveLength(2);
+      const [baani, elan] = content?.stores ?? [];
+      expect(baani).toMatchObject({
+        key: "4",
+        name: "FreshTerra",
+        directionsLabel: "Get Directions",
+        primaryHeroImage: { imageWeb: "https://cms.example.com/baani-1.png" },
+        secondaryHeroImage: { imageWeb: "https://cms.example.com/baani-2.png" },
+      });
+      expect(baani?.information.map((row) => row.heading)).toEqual([
+        "Address",
+        "Opening Hours",
+      ]);
+      expect(elan).toMatchObject({
+        key: "5",
+        name: "FreshTerra Elan",
+        primaryHeroImage: { imageWeb: "https://cms.example.com/elan-1.png" },
+      });
+      expect(elan?.information[0]?.lines).toEqual([
+        "Elan Town Centre, Sector 67 Gurugram",
+      ]);
+    });
+
+    it("builds each store's directions from its own Address row", () => {
+      const [baani, elan] = mapStorePageWebContent(prodPage())?.stores ?? [];
+
+      expect(baani?.directionsUrl).toContain("google.com/maps/dir");
+      expect(decodeURIComponent(baani?.directionsUrl ?? "")).toContain(
+        "Baani City Centre",
+      );
+      expect(decodeURIComponent(elan?.directionsUrl ?? "")).toContain(
+        "Elan Town Centre, Sector 67 Gurugram",
+      );
+    });
+
+    it("uses each store's Strapi `directions` link when set", () => {
+      const page = prodPage();
+      const [baani, elan] = page.store as Record<string, unknown>[];
+      baani!.directions = "https://maps.app.goo.gl/3ywbkjsiKBC2xNKJ9";
+      elan!.directions = " https://maps.app.goo.gl/jUH5tAHnZwThZCNQ8 ";
+
+      const stores = mapStorePageWebContent(page)?.stores ?? [];
+
+      expect(stores.map((store) => store.directionsUrl)).toEqual([
+        "https://maps.app.goo.gl/3ywbkjsiKBC2xNKJ9",
+        "https://maps.app.goo.gl/jUH5tAHnZwThZCNQ8",
+      ]);
+    });
+
+    it("falls back to the Address row when `directions` is empty", () => {
+      const page = prodPage();
+      (page.store as Record<string, unknown>[])[0]!.directions = null;
+
+      const [baani] = mapStorePageWebContent(page)?.stores ?? [];
+
+      expect(decodeURIComponent(baani?.directionsUrl ?? "")).toContain(
+        "Baani City Centre",
+      );
+    });
+
+    it("skips a store with no image", () => {
+      const page = prodPage();
+      (page.store as Record<string, unknown>[])[1]!.heroimage_1 = null;
+
+      expect(mapStorePageWebContent(page)?.stores.map((s) => s.key)).toEqual([
+        "4",
+      ]);
+    });
+  });
 });
+

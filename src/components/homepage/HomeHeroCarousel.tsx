@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import type { ReactNode } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -20,23 +14,28 @@ import {
   homeHeroBannerHeadingClass,
   homeHeroBannerHeadingWrapClass,
   homeHeroBannerImageClass,
+  homeHeroBannerMwebArtAspectClass,
   homeHeroBannerOuterClass,
   homeHeroBannerShellClass,
   homeHeroBannerSlideFrameClass,
   homeHeroBannerTrackClass,
+  homeHeroBannerWebArtAspectClass,
 } from "@/components/homepage/home-hero-banner";
 
 import type { HomeHeroSlide } from "@/features/cms-content/web-homepage-types";
 
+import { useCarouselAutoplay } from "@/hooks/useCarouselAutoplay";
+import { useSnapCarousel } from "@/hooks/useSnapCarousel";
+
+
 type HomeHeroCarouselProps = Readonly<{
   slides: readonly HomeHeroSlide[];
+  /** Strapi auto-swipe interval; unset → no auto-swipe (no default). */
+  autoplayIntervalMs?: number;
   className?: string;
 }>;
 
 const SLIDE_SELECTOR = "[data-hero-banner-slide]";
-
-/** Auto-advance interval for the hero carousel (only when >1 slide). */
-const AUTOPLAY_INTERVAL_MS = 5000;
 
 function isExternalHref(href: string): boolean {
   return /^https?:\/\//i.test(href);
@@ -73,88 +72,33 @@ function HeroBannerLink({
   );
 }
 
-export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeIndexRef = useRef(0);
-  const [autoplayPaused, setAutoplayPaused] = useState(false);
-
-  const syncActiveIndexFromScroll = useCallback(() => {
-    const track = trackRef.current;
-    if (!track || slides.length === 0) return;
-
-    const slideNodes = track.querySelectorAll<HTMLElement>(SLIDE_SELECTOR);
-    if (slideNodes.length === 0) return;
-
-    const trackCenter = track.scrollLeft + track.clientWidth / 2;
-    let closestIndex = 0;
-    let closestDistance = Number.POSITIVE_INFINITY;
-
-    slideNodes.forEach((node, index) => {
-      const slideCenter = node.offsetLeft + node.offsetWidth / 2;
-      const distance = Math.abs(slideCenter - trackCenter);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestIndex = index;
-      }
-    });
-
-    setActiveIndex(closestIndex);
-  }, [slides.length]);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    const onScroll = () => syncActiveIndexFromScroll();
-    track.addEventListener("scroll", onScroll, { passive: true });
-    syncActiveIndexFromScroll();
-
-    return () => track.removeEventListener("scroll", onScroll);
-  }, [syncActiveIndexFromScroll]);
-
-  const scrollToSlide = useCallback((index: number) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const slide = track.querySelectorAll<HTMLElement>(SLIDE_SELECTOR)[index];
-    if (!slide) return;
-    track.scrollTo({
-      left: slide.offsetLeft + slide.offsetWidth / 2 - track.clientWidth / 2,
-      behavior: "smooth",
-    });
-  }, []);
-
-  // Keep a ref of the active index so the autoplay timer reads the latest
-  // position without resetting on every slide change.
-  useEffect(() => {
-    activeIndexRef.current = activeIndex;
-  }, [activeIndex]);
-
-  // Auto-advance when there is more than one slide. Pauses on hover/focus and
-  // when the tab is hidden, and is disabled under reduced-motion.
-  useEffect(() => {
-    if (slides.length <= 1 || autoplayPaused) return;
-    if (typeof window === "undefined") return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-
-    const id = window.setInterval(() => {
-      if (typeof document !== "undefined" && document.hidden) return;
-      scrollToSlide((activeIndexRef.current + 1) % slides.length);
-    }, AUTOPLAY_INTERVAL_MS);
-
-    return () => window.clearInterval(id);
-  }, [slides.length, autoplayPaused, scrollToSlide]);
+export function HomeHeroCarousel({
+  slides,
+  autoplayIntervalMs,
+  className,
+}: HomeHeroCarouselProps) {
+  const { trackRef, activeIndex, scrollToSlide } = useSnapCarousel(
+    SLIDE_SELECTOR,
+    slides.length,
+  );
+  // Auto-advance on the Strapi interval (no default) — web and mWeb alike.
+  const autoplayPauseHandlers = useCarouselAutoplay({
+    slideCount: slides.length,
+    intervalMs: autoplayIntervalMs,
+    activeIndex,
+    scrollToSlide,
+  });
 
   if (slides.length === 0) return null;
+
+  // Shared frame height: use mWeb art only if every slide has it.
+  const useMobileArt = slides.every((slide) => slide.hasMobileArt);
 
   return (
     <div className={cn(homeHeroBannerShellClass, className)}>
       <div
         className={homeHeroBannerOuterClass}
-        onMouseEnter={() => setAutoplayPaused(true)}
-        onMouseLeave={() => setAutoplayPaused(false)}
-        onFocusCapture={() => setAutoplayPaused(true)}
-        onBlurCapture={() => setAutoplayPaused(false)}
+        {...autoplayPauseHandlers}
       >
         <div
           ref={trackRef}
@@ -166,7 +110,7 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
             const imageBlock = (
               <>
                 <Image
-                  src={slide.imageMobile}
+                  src={useMobileArt ? slide.imageMobile : slide.imageWeb}
                   alt={slide.imageAlt}
                   fill
                   priority={index === 0}
@@ -188,7 +132,12 @@ export function HomeHeroCarousel({ slides, className }: HomeHeroCarouselProps) {
               <div
                 key={`${slide.id}-${index}`}
                 data-hero-banner-slide
-                className={homeHeroBannerSlideFrameClass}
+                className={cn(
+                  homeHeroBannerSlideFrameClass,
+                  useMobileArt
+                    ? homeHeroBannerMwebArtAspectClass
+                    : homeHeroBannerWebArtAspectClass,
+                )}
               >
                 {slide.href ? (
                   <HeroBannerLink href={slide.href} ariaLabel={slide.imageAlt}>

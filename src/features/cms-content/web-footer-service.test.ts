@@ -6,12 +6,12 @@ import {
   CMS_WEB_FOOTER_REVALIDATE_SECONDS,
   CMS_WEB_FOOTER_TAGS,
 } from "./cms-cache-tags";
+import { getSingleContent } from "./single-content-service";
 import {
   WEB_FOOTER_CONTENT_TYPE,
   fetchWebFooterContentSafe,
   getWebFooterContent,
 } from "./web-footer-service";
-import { getSingleContent } from "./single-content-service";
 
 vi.mock("./single-content-service", () => ({
   getSingleContent: vi.fn(),

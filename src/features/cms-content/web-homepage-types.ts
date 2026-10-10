@@ -123,6 +123,10 @@ export const webHomepageContentSchema = z
     store_section_tagline: cmsString,
     stories_section_title: cmsString,
     stories_section_tagline: cmsString,
+    /** Hero carousel auto-swipe on/off (web + mWeb). */
+    autoplay_banner: cmsBoolSchema.optional(),
+    /** Hero carousel auto-swipe interval in ms; no fallback when unset. */
+    autoplayintervalms: z.union([z.number(), z.string()]).nullable().optional(),
   })
   .catchall(z.unknown());
 
@@ -132,9 +136,24 @@ export type HomeHeroSlide = Readonly<{
   id: string;
   imageWeb: string;
   imageMobile: string;
+  /** False when CMS has no mWeb art and `imageMobile` is the web banner. */
+  hasMobileArt: boolean;
   imageAlt: string;
   heading?: string;
   href?: string;
+}>;
+
+/** One store slide: its image, address, and View Store / Locate Us links. */
+export type HomeStoreItem = Readonly<{
+  key: string;
+  name: string;
+  addressHtml?: string;
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  primaryCtaHref?: string;
+  secondaryCtaHref?: string;
+  mediaImage?: string;
+  mediaImageMobile?: string;
 }>;
 
 export type HomePageContent = Readonly<{
@@ -144,6 +163,8 @@ export type HomePageContent = Readonly<{
     ctaLabel: string;
   };
   heroSlides: readonly HomeHeroSlide[];
+  /** Strapi auto-swipe interval; unset → no auto-swipe. */
+  heroAutoplayIntervalMs?: number;
   nav: {
     locationLabel: string;
     links: readonly { label: string; href: string }[];
@@ -177,16 +198,10 @@ export type HomePageContent = Readonly<{
       quote: string;
     }[];
   };
-  store: {
+  /** "Visit Our Stores" carousel — every `our_store` entry, by position. */
+  storeSection: {
     title: string;
-    name: string;
-    addressHtml?: string;
-    primaryCtaLabel: string;
-    secondaryCtaLabel: string;
-    primaryCtaHref?: string;
-    secondaryCtaHref?: string;
-    mediaImage?: string;
-    mediaImageMobile?: string;
+    stores: readonly HomeStoreItem[];
   };
   footer: {
     aboutLinks: readonly string[];

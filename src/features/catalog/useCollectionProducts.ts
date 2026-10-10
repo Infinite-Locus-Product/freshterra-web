@@ -71,7 +71,6 @@ export function useCollectionProducts(
 ): UseCollectionProductsResult {
   const {
     slug,
-    polygonId,
     sort,
     pageSize,
     enabled = true,

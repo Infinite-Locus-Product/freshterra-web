@@ -10,8 +10,8 @@ import { StoresPageLayout } from "@/components/stores/StoresPageLayout";
 
 import { fetchStorePageWebContentSafe } from "@/features/cms-content/store-page-web-service";
 
-/** ISR: re-fetch CMS content every 10 min (matches the BFF cache). */
-export const revalidate = 600;
+/** Uncached so Strapi publishes show immediately (FRES-2399). */
+export const dynamic = "force-dynamic";
 
 /** Deduped so generateMetadata + the page body share one BFF request. */
 const loadStoresPage = cache(() => fetchStorePageWebContentSafe());

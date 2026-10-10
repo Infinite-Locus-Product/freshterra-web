@@ -1,4 +1,3 @@
-import type { FooterContent, FooterSocial } from "./footer-content-types";
 import {
   strapiFooterColumnSchema,
   strapiFooterEntrySchema,
@@ -7,6 +6,8 @@ import {
   type StrapiFooterEntry,
   type StrapiSocialLink,
 } from "./strapi-footer-types";
+
+import type { FooterContent, FooterSocial } from "./footer-content-types";
 
 export const DEFAULT_STRAPI_FOOTER_SLUG = "footer-en";
 

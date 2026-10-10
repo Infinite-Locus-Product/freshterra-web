@@ -208,7 +208,6 @@ export function mapSaleorMetadataToProductMetafields(
   raw: Record<string, string>,
 ): ProductMetafields {
   const healthRaw = lookupMetadata(raw, "health_benefits");
-  const tagsRaw = lookupMetadata(raw, "tags_json");
 
   return {
     brand: lookupMetadata(raw, "brand"),
