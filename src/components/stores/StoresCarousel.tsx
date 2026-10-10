@@ -5,12 +5,16 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { cn } from "@/lib/utils/cn";
 
 import {
   homeHeroBannerDotActiveClass,
   homeHeroBannerDotInactiveClass,
 } from "@/components/homepage/home-hero-banner";
 import {
+  storesCarouselChevronClass,
+  storesCarouselChevronNextClass,
+  storesCarouselChevronPrevClass,
   storesCarouselDotsClass,
   storesCarouselSlideClass,
   storesCarouselTrackClass,
@@ -39,15 +43,11 @@ import type {
   StorePageStore,
 } from "@/features/cms-content/store-page-web-types";
 
-import { useCarouselAutoplay } from "@/hooks/useCarouselAutoplay";
 import { useSnapCarousel } from "@/hooks/useSnapCarousel";
 
-
 const SLIDE_SELECTOR = "[data-store-slide]";
-/** Same cadence as the homepage store carousel (FRES-2399). */
-const STORE_AUTOPLAY_INTERVAL_MS = 4000;
 
-/** Our Stores carousel; info, directions and images follow the store. */
+/** Our Stores carousel (chevrons, dots, swipe); details follow the store. */
 export function StoresCarousel({
   stores,
 }: Readonly<{ stores: readonly StorePageStore[] }>) {
@@ -55,18 +55,12 @@ export function StoresCarousel({
     SLIDE_SELECTOR,
     stores.length,
   );
-  const autoplayPauseHandlers = useCarouselAutoplay({
-    slideCount: stores.length,
-    intervalMs: STORE_AUTOPLAY_INTERVAL_MS,
-    activeIndex,
-    scrollToSlide,
-  });
   const active = stores[activeIndex] ?? stores[0];
   if (!active) return null;
   const showStoreName = stores.length > 1 && Boolean(active.name);
 
   return (
-    <div {...autoplayPauseHandlers}>
+    <div>
       <div className="mb-4 grid gap-4 lg:grid-cols-2">
         <div className={storesHeroImageShellClass}>
           <div className={storesHeroImageClass}>
@@ -114,6 +108,35 @@ export function StoresCarousel({
                   />
                 ))}
               </div>
+            ) : null}
+
+            {stores.length > 1 ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Previous store"
+                  disabled={activeIndex === 0}
+                  onClick={() => scrollToSlide(activeIndex - 1)}
+                  className={cn(
+                    storesCarouselChevronClass,
+                    storesCarouselChevronPrevClass,
+                  )}
+                >
+                  <ChevronIcon direction="left" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next store"
+                  disabled={activeIndex === stores.length - 1}
+                  onClick={() => scrollToSlide(activeIndex + 1)}
+                  className={cn(
+                    storesCarouselChevronClass,
+                    storesCarouselChevronNextClass,
+                  )}
+                >
+                  <ChevronIcon direction="right" />
+                </button>
+              </>
             ) : null}
           </div>
         </div>
@@ -246,5 +269,23 @@ function DirectionsLink({
     <Link href={href} className={className} aria-label={ariaLabel}>
       {children}
     </Link>
+  );
+}
+
+function ChevronIcon({ direction }: Readonly<{ direction: "left" | "right" }>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={20}
+      height={20}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d={direction === "left" ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6"} />
+    </svg>
   );
 }

@@ -86,21 +86,43 @@ describe("StoresCarousel (Our Stores page, FRES-2399)", () => {
     ).not.toBeNull();
   });
 
-  it("auto-swipes every 4s and the dots jump to a store", () => {
+  it("does not auto-swipe; the dots jump to a store", () => {
     render(<StoresCarousel stores={[baani, elan]} />);
     layOutTrack(656);
 
-    act(() => vi.advanceTimersByTime(4000));
+    act(() => vi.advanceTimersByTime(20_000));
+    expect(scrollTo).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Show store 2 of 2" }));
+    expect(scrollTo).toHaveBeenLastCalledWith({ left: 656, behavior: "smooth" });
+  });
+
+  it("chevrons step between stores and disable at the ends", () => {
+    render(<StoresCarousel stores={[baani, elan]} />);
+    const track = layOutTrack(656);
+    const prev = screen.getByRole("button", { name: "Previous store" });
+    const next = screen.getByRole("button", { name: "Next store" });
+
+    expect(prev).toBeDisabled();
+    expect(next).toBeEnabled();
+    fireEvent.click(next);
     expect(scrollTo).toHaveBeenLastCalledWith({ left: 656, behavior: "smooth" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Show store 1 of 2" }));
+    act(() => {
+      track.scrollLeft = 656;
+      fireEvent.scroll(track);
+    });
+    expect(next).toBeDisabled();
+    expect(prev).toBeEnabled();
+    fireEvent.click(prev);
     expect(scrollTo).toHaveBeenLastCalledWith({ left: 0, behavior: "smooth" });
   });
 
-  it("a single store has no dots, no auto-swipe and no extra store heading", () => {
+  it("a single store has no dots, chevrons or extra store heading", () => {
     render(<StoresCarousel stores={[baani]} />);
 
     expect(screen.queryByRole("button", { name: /show store/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /(previous|next) store/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { level: 2 })).not.toBeInTheDocument();
     act(() => vi.advanceTimersByTime(12_000));
     expect(scrollTo).not.toHaveBeenCalled();

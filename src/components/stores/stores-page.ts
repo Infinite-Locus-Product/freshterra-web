@@ -130,3 +130,11 @@ export const storesCarouselSlideClass =
 export const storesCarouselDotsClass =
   "absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-2 lg:bottom-5";
 
+/** Prev/next store chevrons on the hero image (vertically centred). */
+export const storesCarouselChevronClass =
+  "absolute top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-text-primary shadow-[0_2px_8px_rgba(16,24,40,0.16)] transition-opacity hover:bg-white focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-0 lg:size-11";
+
+export const storesCarouselChevronPrevClass = "left-3 lg:left-4";
+
+export const storesCarouselChevronNextClass = "right-3 lg:right-4";
+
