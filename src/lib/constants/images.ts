@@ -5,9 +5,9 @@
 
 // Hero / brand-reveal background (used on `/` and `/notify/success`).
 export const HERO_DESKTOP_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143854/a0d5861924be94b5426aa6a96e75025583c1f4dc_bzuq9z.png";
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1781610797/Background_Full_Bleed_Desktop_1_iem9m4.png";
 export const HERO_MOBILE_URL =
-  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1778143855/ef49e1f68f7667eeaf65ae07fe69bb0da7e640d6_olcsac.png";
+  "https://res.cloudinary.com/ddv2p9obt/image/upload/v1781610797/ChatGPT_Image_Jun_16_2026_at_02_56_34_PM_1_1_raxe4c.png";
 
 // Notify form background (used on `/notify`).
 export const FORM_IMAGE_DESKTOP_URL =
