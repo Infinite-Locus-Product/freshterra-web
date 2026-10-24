@@ -10,6 +10,7 @@ import { isIndexable } from "@/lib/config/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
 
 import { GoogleTagManager } from "@/components/analytics/GoogleTagManager";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 import { InitialLoader } from "@/components/layout/InitialLoader";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <JsonLd data={organizationJsonLd({ baseUrl: APP_URL })} />
         <JsonLd data={websiteJsonLd({ baseUrl: APP_URL })} />
         <GoogleTagManager />
+        <MetaPixel />
         <Providers>{children}</Providers>
         <InitialLoader />
       </body>
