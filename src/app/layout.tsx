@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import type { Metadata } from "next";
 
-import { Manrope, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 
 import { isIndexable } from "@/lib/config/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonLd";
@@ -17,16 +17,23 @@ import { Providers } from "./providers";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://freshterra.in/";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
+/**
+ * Self-hosted Google Fonts (latin subset, variable weight). `next/font/google`
+ * downloads at build time, and the Docker build host received font URLs the
+ * loader cannot parse (next/font loader.js: "Cannot read properties of null
+ * (reading '1')"), so the files live in `./fonts` instead — no network needed
+ * to build, and the fonts never change under us.
+ */
+const manrope = localFont({
+  src: "./fonts/manrope-latin.woff2",
+  weight: "200 800",
   variable: "--font-manrope",
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["500", "600"],
+const playfair = localFont({
+  src: "./fonts/playfair-display-latin.woff2",
+  weight: "400 900",
   variable: "--font-playfair",
   display: "swap",
 });
