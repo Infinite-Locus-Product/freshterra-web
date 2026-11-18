@@ -2,11 +2,10 @@ import { cache } from "react";
 
 import type { Metadata } from "next";
 
-import { buildPageMetadata, siteTitle } from "@/lib/seo/pageMetadata";
-
 import { MarketingFooter } from "@/components/layout/MarketingFooter";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 
+import { collectionPageMetadata } from "@/features/catalog/collection-seo";
 import { getCollectionProducts } from "@/features/catalog/collection-service";
 import { CollectionPlpView } from "@/features/catalog/components/CollectionPlpView";
 import { fetchCollectionSeoSafe } from "@/features/cms-content/collection-content-service";
@@ -33,7 +32,7 @@ export async function generateMetadata({
   const path = `/collection/${slug}`;
 
   // Independent endpoints — fetch in parallel. The SEO fetch never throws.
-  const [collection, seo] = await Promise.all([
+  const [collection, cmsSeo] = await Promise.all([
     loadCollection(slug).catch(() => null),
     loadCollectionSeo(slug),
   ]);
@@ -43,11 +42,12 @@ export async function generateMetadata({
     return { alternates: { canonical: path } };
   }
 
-  return buildPageMetadata({
-    path,
-    fallbackTitle: siteTitle(name),
-    fallbackDescription: `Browse ${name} on FreshTerra.`,
-    seo,
+  // Saleor (BFF seoMeta) → Strapi → derived from the name, per field.
+  return collectionPageMetadata({
+    slug,
+    name,
+    seoMeta: collection?.seoMeta,
+    cmsSeo,
   });
 }
 
