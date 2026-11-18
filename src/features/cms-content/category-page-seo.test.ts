@@ -7,6 +7,8 @@ import {
 import { webCategoryContentSchema } from "./web-category-content-service";
 import { webCategoryPlpContentSchema } from "./web-category-plp-service";
 
+import type { WebCategoryGridPage } from "./web-category-grid-types";
+
 const riceConfig = webCategoryPlpContentSchema.parse({
   slug: "rice-2",
   label: "Rice & Grains",
@@ -20,7 +22,126 @@ const riceConfig = webCategoryPlpContentSchema.parse({
   },
 });
 
+/** Mapped `web-category-page` grid (shape of `mapWebCategoryGridPage`). */
+const gridPage: WebCategoryGridPage = {
+  hasCategoryGrid: true,
+  sections: [
+    {
+      key: "1496",
+      title: "Vegetables & Fruits",
+      subtitle: "Fresh from the farm",
+      seo: {
+        metaTitle: "Fresh Vegetables & Fruits Online | FreshTerra",
+        metaDescription: "Farm-fresh produce delivered daily.",
+      },
+      tiles: [
+        {
+          key: "14654",
+          label: "Fruits",
+          slug: "fruits",
+          href: "/category/fruits",
+          seo: { metaDescription: "Seasonal fruits delivered fresh." },
+        },
+        {
+          key: "14655",
+          label: "Leafy & Microgreens",
+          href: "/category/leafy-microgreens",
+        },
+      ],
+    },
+    {
+      key: "1497",
+      title: "Pantry Staples",
+      subtitle: "",
+      viewAllHref: "/category/staples",
+      seo: { canonicalUrl: "https://freshterra.in/category/staples" },
+      tiles: [],
+    },
+  ],
+};
+
 describe("categoryPageMetadata", () => {
+  it("uses a grid tile's (tagged category) seo and label for its slug", () => {
+    const meta = categoryPageMetadata({
+      slug: "fruits",
+      webCategory: null,
+      plpContext: null,
+      gridPage,
+    });
+
+    expect(meta.title).toEqual({ absolute: "Fruits | FreshTerra" });
+    expect(meta.description).toBe("Seasonal fruits delivered fresh.");
+    expect(meta.alternates?.canonical).toBe("/category/fruits");
+  });
+
+  it("matches a grid tile by its deeplink when it has no slug", () => {
+    const meta = categoryPageMetadata({
+      slug: "leafy-microgreens",
+      webCategory: null,
+      plpContext: null,
+      gridPage,
+    });
+
+    expect(meta.title).toEqual({
+      absolute: "Leafy & Microgreens | FreshTerra",
+    });
+    expect(meta.description).toBe("Browse Leafy & Microgreens on FreshTerra.");
+  });
+
+  it("uses a grid section's (tagged category page) seo via its slugified title", () => {
+    const meta = categoryPageMetadata({
+      slug: "vegetables-fruits",
+      webCategory: null,
+      plpContext: null,
+      gridPage,
+    });
+
+    expect(meta.title).toEqual({
+      absolute: "Fresh Vegetables & Fruits Online | FreshTerra",
+    });
+    expect(meta.description).toBe("Farm-fresh produce delivered daily.");
+    expect(meta.alternates?.canonical).toBe("/category/vegetables-fruits");
+  });
+
+  it("matches a grid section by its View All deeplink", () => {
+    const meta = categoryPageMetadata({
+      slug: "staples",
+      webCategory: null,
+      plpContext: null,
+      gridPage,
+    });
+
+    expect(meta.title).toEqual({ absolute: "Pantry Staples | FreshTerra" });
+    expect(meta.alternates?.canonical).toBe(
+      "https://freshterra.in/category/staples",
+    );
+  });
+
+  it("prefers the web entry / PLP config seo over the grid", () => {
+    const meta = categoryPageMetadata({
+      slug: "fruits",
+      webCategory: webCategoryContentSchema.parse({
+        label: "Fruits",
+        seo: { metaDescription: "From the web entry." },
+      }),
+      plpContext: null,
+      gridPage,
+    });
+
+    expect(meta.description).toBe("From the web entry.");
+  });
+
+  it("ignores the grid for slugs it does not list", () => {
+    const meta = categoryPageMetadata({
+      slug: "cold-pressed-oils",
+      webCategory: null,
+      plpContext: null,
+      gridPage,
+    });
+
+    expect(meta.title).toEqual({ absolute: "Cold Pressed Oils | FreshTerra" });
+  });
+
   it("uses the web (L2) entry's seo, label and hero", () => {
     const webCategory = webCategoryContentSchema.parse({
       label: "Dairy",
@@ -114,8 +235,6 @@ describe("exploreCatalogMetadata", () => {
     expect(meta.title).toEqual({
       absolute: "Explore the Catalog | FreshTerra",
     });
-    expect(meta.alternates?.canonical).toBe(
-      "https://freshterra.in/categories",
-    );
+    expect(meta.alternates?.canonical).toBe("https://freshterra.in/categories");
   });
 });
