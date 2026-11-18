@@ -75,6 +75,24 @@ describe("collectionProductsDataSchema", () => {
     });
   });
 
+  it("keeps the BFF seoMeta block", () => {
+    const data = collectionProductsDataSchema.parse(PROD_PAYLOAD);
+
+    expect(data.seoMeta).toEqual({
+      title: "Navratri Specials — FreshTerra",
+      canonicalUrl: "https://freshterra.in/c/navratri-specials",
+    });
+  });
+
+  it("drops non-string seoMeta fields instead of failing the parse", () => {
+    const data = collectionProductsDataSchema.parse({
+      ...PROD_PAYLOAD,
+      seoMeta: { title: 42, description: null, ogImage: { url: "x" } },
+    });
+
+    expect(data.seoMeta).toEqual({ description: null });
+  });
+
   it("maps camelCase expiry fields", () => {
     const data = collectionProductsDataSchema.parse(PROD_PAYLOAD);
 

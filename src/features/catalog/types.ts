@@ -158,6 +158,18 @@ export type Facets = z.infer<typeof facetsSchema>;
  * the server still returns products plus the redirect target, which the FE
  * follows on the next navigation.
  */
+/**
+ * BFF `seoMeta` block shared by the PDP and the listing endpoints. The backend
+ * resolves marketing → Saleor defaults into it.
+ */
+export const productSeoMetaSchema = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  canonicalUrl: z.string().nullish(),
+  ogImage: z.string().nullish(),
+});
+export type ProductSeoMeta = z.infer<typeof productSeoMetaSchema>;
+
 export const collectionCollectionSchema = z.object({
   slug: z.string(),
   name: z.string(),
@@ -168,9 +180,7 @@ export type CollectionSummary = z.infer<typeof collectionCollectionSchema>;
 function normalizeCollectionFacets(facets: unknown): Facets {
   if (isRecord(facets)) return facets as Facets;
   const out: Facets = {};
-  for (const [key, values] of Object.entries(
-    normalizeCategoryFacets(facets),
-  )) {
+  for (const [key, values] of Object.entries(normalizeCategoryFacets(facets))) {
     out[key] = values.map(({ value, ...rest }) => ({ slug: value, ...rest }));
   }
   return out;
@@ -196,12 +206,34 @@ function inferCollectionFromListingPayload(
   return { slug, name };
 }
 
+/**
+ * Keeps the listing `seoMeta` block (string or null fields only) so a malformed
+ * value can never fail the whole collection parse. The BFF resolves Saleor's
+ * collection name / SEO fields into it; `description` may be EditorJS JSON.
+ */
+function normalizeListingSeoMeta(raw: unknown): ProductSeoMeta | undefined {
+  if (!isRecord(raw)) return undefined;
+  const out: ProductSeoMeta = {};
+  for (const key of [
+    "title",
+    "description",
+    "canonicalUrl",
+    "ogImage",
+  ] as const) {
+    const value = raw[key];
+    if (typeof value === "string") out[key] = value;
+    else if (value === null) out[key] = null;
+  }
+  return out;
+}
+
 function normalizeCollectionProductsPayload(input: unknown): unknown {
   if (!isRecord(input)) return input;
   return {
     ...input,
     facets: normalizeCollectionFacets(input.facets),
     collection: input.collection ?? inferCollectionFromListingPayload(input),
+    seoMeta: normalizeListingSeoMeta(input.seoMeta),
     expires_at: input.expires_at ?? input.expiresAt,
     redirect_url: input.redirect_url ?? input.redirectUrl,
   };
@@ -216,6 +248,8 @@ export const collectionProductsDataSchema = z.preprocess(
     total: z.number(),
     facets: facetsSchema.default({}),
     collection: collectionCollectionSchema.optional(),
+    /** Saleor-derived SEO from the BFF — see {@link productSeoMetaSchema}. */
+    seoMeta: productSeoMetaSchema.optional(),
     expires_at: z.string().nullable().optional(),
     redirect_url: z.string().nullable().optional(),
   }),
@@ -381,13 +415,6 @@ export type CategoryProductsData = z.infer<typeof categoryProductsDataSchema>;
  * already applies the marketing → default fallbacks (title, ~160-char
  * description, `/product/{slug}` canonical), so the web renders it as-is.
  */
-export const productSeoMetaSchema = z.object({
-  title: z.string().nullish(),
-  description: z.string().nullish(),
-  canonicalUrl: z.string().nullish(),
-  ogImage: z.string().nullish(),
-});
-export type ProductSeoMeta = z.infer<typeof productSeoMetaSchema>;
 
 /**
  * The `data` payload returned inside the success envelope. Shared by both PDP
