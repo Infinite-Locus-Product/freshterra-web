@@ -93,6 +93,30 @@ describe("collectionProductsDataSchema", () => {
     expect(data.seoMeta).toEqual({ description: null });
   });
 
+  it("parses Saleor collection metadata from a record or a key/value list", () => {
+    expect(
+      collectionProductsDataSchema.parse({
+        ...PROD_PAYLOAD,
+        metadata: { SEO_TITLE: "Navratri", empty: "" },
+      }).metadata,
+    ).toEqual({ SEO_TITLE: "Navratri" });
+
+    expect(
+      collectionProductsDataSchema.parse({
+        ...PROD_PAYLOAD,
+        collection: {
+          slug: "navratri-specials",
+          name: "Navratri Specials",
+          metadata: [{ key: "SEO_TITLE", value: "Navratri" }],
+        },
+      }).metadata,
+    ).toEqual({ SEO_TITLE: "Navratri" });
+
+    expect(
+      collectionProductsDataSchema.parse(PROD_PAYLOAD).metadata,
+    ).toBeUndefined();
+  });
+
   it("maps camelCase expiry fields", () => {
     const data = collectionProductsDataSchema.parse(PROD_PAYLOAD);
 

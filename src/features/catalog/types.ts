@@ -4,6 +4,7 @@ import { type ProductInformations } from "./product-informations";
 import {
   normalizeBffListingProduct,
   normalizeProductDetailEnvelope,
+  parseSaleorMetadataInput,
 } from "./product-metafields";
 
 export type { ProductInformations } from "./product-informations";
@@ -227,6 +228,20 @@ function normalizeListingSeoMeta(raw: unknown): ProductSeoMeta | undefined {
   return out;
 }
 
+/**
+ * Saleor collection `metadata` (e.g. `SEO_TITLE`), forwarded by the BFF as a
+ * key → value record (PDP shape) or Saleor's `[{ key, value }]` list; read
+ * from the payload root or the nested `collection`.
+ */
+function normalizeCollectionMetadata(
+  input: Record<string, unknown>,
+): Record<string, string> | undefined {
+  const nested = isRecord(input.collection) ? input.collection : {};
+  const raw = input.metadata ?? input.metafields ?? nested.metadata;
+  const parsed = parseSaleorMetadataInput(raw);
+  return Object.keys(parsed).length > 0 ? parsed : undefined;
+}
+
 function normalizeCollectionProductsPayload(input: unknown): unknown {
   if (!isRecord(input)) return input;
   return {
@@ -234,6 +249,7 @@ function normalizeCollectionProductsPayload(input: unknown): unknown {
     facets: normalizeCollectionFacets(input.facets),
     collection: input.collection ?? inferCollectionFromListingPayload(input),
     seoMeta: normalizeListingSeoMeta(input.seoMeta),
+    metadata: normalizeCollectionMetadata(input),
     expires_at: input.expires_at ?? input.expiresAt,
     redirect_url: input.redirect_url ?? input.redirectUrl,
   };
@@ -250,6 +266,8 @@ export const collectionProductsDataSchema = z.preprocess(
     collection: collectionCollectionSchema.optional(),
     /** Saleor-derived SEO from the BFF — see {@link productSeoMetaSchema}. */
     seoMeta: productSeoMetaSchema.optional(),
+    /** Saleor collection metadata (`SEO_TITLE` drives the page title). */
+    metadata: z.record(z.string(), z.string()).optional(),
     expires_at: z.string().nullable().optional(),
     redirect_url: z.string().nullable().optional(),
   }),

@@ -42,11 +42,13 @@ export async function generateMetadata({
     return { alternates: { canonical: path } };
   }
 
-  // Saleor (BFF seoMeta) → Strapi → derived from the name, per field.
+  // Saleor (metadata SEO_TITLE/SEO_DESCRIPTION, then BFF seoMeta) → Strapi →
+  // derived from the name, per field.
   return collectionPageMetadata({
     slug,
     name,
     seoMeta: collection?.seoMeta,
+    metadata: collection?.metadata,
     cmsSeo,
   });
 }

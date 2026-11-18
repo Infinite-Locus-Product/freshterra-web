@@ -51,6 +51,32 @@ describe("collectionSeoFromMeta", () => {
     });
   });
 
+  it("lets Saleor SEO_TITLE metadata win over the seoMeta title only", () => {
+    expect(
+      collectionSeoFromMeta(SEO_META, {
+        SEO_TITLE: "Navratri",
+        SEO_DESCRIPTION: "Not mapped on web.",
+        brand: "FreshTerra",
+      }),
+    ).toEqual({
+      title: "Navratri | FreshTerra",
+      description: "Navratri fasting SKUs Kuttu, sabudana and more.",
+    });
+  });
+
+  it("uses metadata alone when the BFF sends no seoMeta block", () => {
+    expect(collectionSeoFromMeta(undefined, { SEO_TITLE: "Navratri" })).toEqual(
+      { title: "Navratri | FreshTerra" },
+    );
+  });
+
+  it("ignores a blank SEO_TITLE and falls back to seoMeta", () => {
+    expect(collectionSeoFromMeta(SEO_META, { SEO_TITLE: "  " })).toEqual({
+      title: "Navratri Specials | FreshTerra",
+      description: "Navratri fasting SKUs Kuttu, sabudana and more.",
+    });
+  });
+
   it("returns null for a missing or all-blank block", () => {
     expect(collectionSeoFromMeta(undefined)).toBeNull();
     expect(collectionSeoFromMeta(null)).toBeNull();
@@ -77,6 +103,20 @@ describe("collectionPageMetadata", () => {
       title: "Navratri Specials | FreshTerra",
       url: "/collection/navratri-specials",
     });
+  });
+
+  it("prefers Saleor metadata over the generated seoMeta title", () => {
+    const meta = collectionPageMetadata({
+      slug: "navratri-specials",
+      name: "Navratri Specials",
+      seoMeta: SEO_META,
+      metadata: { SEO_TITLE: "Navratri" },
+    });
+
+    expect(meta.title).toEqual({ absolute: "Navratri | FreshTerra" });
+    expect(meta.description).toBe(
+      "Navratri fasting SKUs Kuttu, sabudana and more.",
+    );
   });
 
   it("fills blank Saleor fields from Strapi, then from the collection name", () => {

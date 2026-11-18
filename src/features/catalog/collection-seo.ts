@@ -13,33 +13,61 @@ import type { ProductSeoMeta } from "./types";
 /** Trailing "— FreshTerra" / "| FreshTerra" in any casing / spacing. */
 const SITE_SUFFIX_PATTERN = /\s*[—–|-]\s*fresh\s*terra\s*$/i;
 
+/** Saleor collection metadata key for the page title, set in the dashboard. */
+const SEO_TITLE_KEYS = ["SEO_TITLE", "seo_title", "seoTitle"];
+
 function clean(value: string | null | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
 }
 
+/** `SEO_TITLE` / `seo-title` / `seoTitle` compare equal. */
+function normalizeKey(key: string): string {
+  return key.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function lookupMetadata(
+  metadata: Readonly<Record<string, string>> | null | undefined,
+  keys: readonly string[],
+): string | undefined {
+  if (!metadata) return undefined;
+  const wanted = new Set(keys.map(normalizeKey));
+  for (const [key, value] of Object.entries(metadata)) {
+    if (wanted.has(normalizeKey(key))) {
+      const cleaned = clean(value);
+      if (cleaned) return cleaned;
+    }
+  }
+  return undefined;
+}
+
 /**
- * Saleor-sourced SEO for a collection PLP, normalised from the BFF listing
- * `seoMeta` block into {@link SeoOverrides}.
+ * Saleor-sourced SEO for a collection PLP, normalised into
+ * {@link SeoOverrides}.
  *
- * - `title` arrives as `"{name} — FreshTerra"`; the suffix is stripped and
- *   re-applied through {@link siteTitle} so collections share the site format.
- * - `description` is Saleor's rich-text (EditorJS JSON) field, reduced to
- *   plain text.
- * - `canonicalUrl` is dropped: the BFF emits the category path (`/c/:slug`),
- *   which would canonicalise every collection onto the wrong route.
+ * - `title`: the collection `metadata` `SEO_TITLE` (set in the Saleor
+ *   dashboard) when the BFF forwards it; otherwise `seoMeta.title`, which
+ *   arrives as `"{name} — FreshTerra"`. Either way the suffix is stripped and
+ *   re-applied through {@link siteTitle}.
+ * - `description`: `seoMeta.description`, Saleor's rich-text (EditorJS JSON)
+ *   field, reduced to plain text. Metadata is not consulted.
+ * - `seoMeta.canonicalUrl` is dropped: the BFF emits the category path
+ *   (`/c/:slug`), which would canonicalise every collection onto the wrong
+ *   route.
  */
 export function collectionSeoFromMeta(
   seoMeta: ProductSeoMeta | null | undefined,
+  metadata?: Readonly<Record<string, string>> | null,
 ): SeoOverrides | null {
-  if (!seoMeta) return null;
+  if (!seoMeta && !metadata) return null;
 
-  const rawTitle = clean(seoMeta.title);
+  const rawTitle =
+    lookupMetadata(metadata, SEO_TITLE_KEYS) ?? clean(seoMeta?.title);
   const title = rawTitle
     ? siteTitle(rawTitle.replace(SITE_SUFFIX_PATTERN, ""))
     : undefined;
-  const description = plainTextFromDescription(seoMeta.description);
-  const ogImage = clean(seoMeta.ogImage);
+  const description = plainTextFromDescription(seoMeta?.description);
+  const ogImage = clean(seoMeta?.ogImage);
 
   if (!title && !description && !ogImage) return null;
 
@@ -75,24 +103,27 @@ function mergeSeo(
 /**
  * Collection PLP `generateMetadata` payload.
  *
- * Source order per field: Saleor (BFF `seoMeta`) → Strapi `collections` SEO
- * component → derived from the collection name.
+ * Source order per field: Saleor (`SEO_TITLE` metadata for the title, then
+ * BFF `seoMeta`) → Strapi `collections` SEO component → derived from the
+ * collection name.
  */
 export function collectionPageMetadata({
   slug,
   name,
   seoMeta,
+  metadata,
   cmsSeo,
 }: {
   slug: string;
   name: string;
   seoMeta?: ProductSeoMeta | null;
+  metadata?: Readonly<Record<string, string>> | null;
   cmsSeo?: SeoOverrides | null;
 }): Metadata {
   return buildPageMetadata({
     path: `/collection/${slug}`,
     fallbackTitle: siteTitle(name),
     fallbackDescription: `Browse ${name} on FreshTerra.`,
-    seo: mergeSeo(collectionSeoFromMeta(seoMeta), cmsSeo),
+    seo: mergeSeo(collectionSeoFromMeta(seoMeta, metadata), cmsSeo),
   });
 }
