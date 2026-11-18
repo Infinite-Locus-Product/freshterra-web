@@ -42,6 +42,7 @@ import {
   getWebCategoryContent,
   type WebCategoryContent,
 } from "@/features/cms-content/web-category-content-service";
+import { getWebCategoryGridPage } from "@/features/cms-content/web-category-page-service";
 import {
   resolveWebCategoryPlpContext,
   type WebCategoryPlpContext,
@@ -59,12 +60,15 @@ const loadCategoryPageData = cache(
     slug: string,
     parent: string | undefined,
   ): Promise<CategoryPageData> => {
-    let webCategory: WebCategoryContent | null = null;
-    try {
-      webCategory = await getWebCategoryContent(slug);
-    } catch {
-      // If slug is already an L3 route (or endpoint is unavailable), show PLP.
-    }
+    // Independent endpoints — fetched in parallel; both are best-effort.
+    const [webCategory, gridPage] = await Promise.all([
+      getWebCategoryContent(slug).catch(
+        // If slug is already an L3 route (or endpoint is unavailable), show PLP.
+        (): WebCategoryContent | null => null,
+      ),
+      // `web-category-page` grid: per-tile / per-section SEO for this slug.
+      getWebCategoryGridPage().catch(() => null),
+    ]);
 
     let plpContext: WebCategoryPlpContext | null = null;
     if (!webCategory) {
@@ -75,7 +79,7 @@ const loadCategoryPageData = cache(
       }
     }
 
-    return { webCategory, plpContext };
+    return { webCategory, plpContext, gridPage };
   },
 );
 
@@ -214,10 +218,7 @@ function WebCategoryLandingView({
               </p>
             ) : null}
           </div>
-          <Link
-            href={CATEGORIES_PATH}
-            className={categorySectionCtaLinkClass}
-          >
+          <Link href={CATEGORIES_PATH} className={categorySectionCtaLinkClass}>
             <span className={categorySectionCtaLabelClass}>View All</span>
             <Image
               src="/Shape.svg"

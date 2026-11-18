@@ -52,7 +52,10 @@ function readColor(record: UnknownRecord, key: string): string | undefined {
   return HEX_COLOR.test(value) ? value : undefined;
 }
 
-function mapTile(record: UnknownRecord, index: number): CategoryGridTile | null {
+function mapTile(
+  record: UnknownRecord,
+  index: number,
+): CategoryGridTile | null {
   const label = readCmsString(record, "label");
   if (!label) return null;
 
@@ -61,12 +64,15 @@ function mapTile(record: UnknownRecord, index: number): CategoryGridTile | null 
     normalizeCmsDeeplink(readCmsString(action, "deeplink", "url")) ||
     normalizeCmsSlugHref(readCmsString(record, "slug"));
   const imageSrc = readCmsString(record, "imageUrl", "image_url");
+  const slug = readCmsString(record, "slug");
 
   return {
     key: readCmsString(record, "id") || String(record.id ?? `tile-${index}`),
     label,
+    ...(slug ? { slug } : {}),
     ...(imageSrc ? { imageSrc } : {}),
     ...(href ? { href } : {}),
+    ...(record.seo !== undefined ? { seo: record.seo } : {}),
   };
 }
 
@@ -103,6 +109,7 @@ function mapSection(
     ...(ANCHOR_ID.test(anchorId) ? { anchorId } : {}),
     ...(viewAllHref ? { viewAllHref } : {}),
     tiles,
+    ...(record.seo !== undefined ? { seo: record.seo } : {}),
   };
 }
 
@@ -124,8 +131,9 @@ function mapHero(raw: unknown): CategoryGridHero | undefined {
 export function mapWebCategoryGridPage(input: unknown): WebCategoryGridPage {
   const record = isRecord(input) ? input : {};
   const hasCategoryGrid = Array.isArray(record.category_grid);
-  const sections = sortByOptionalOrder(records(record.category_grid), (section) =>
-    readOrder(section, "componentOrder"),
+  const sections = sortByOptionalOrder(
+    records(record.category_grid),
+    (section) => readOrder(section, "componentOrder"),
   )
     .map(mapSection)
     .filter((section): section is CategoryGridSection => section !== null);

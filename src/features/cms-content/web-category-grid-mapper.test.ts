@@ -49,7 +49,10 @@ function prodPayload(): Record<string, unknown> {
             imageUrl: "https://cms.example.com/Frame_veg.png",
             targetType: "category_page",
             position: null,
-            action: { actionType: "redirect", deeplink: "/category/vegetables" },
+            action: {
+              actionType: "redirect",
+              deeplink: "/category/vegetables",
+            },
           },
         ],
       },
@@ -99,16 +102,37 @@ describe("mapWebCategoryGridPage", () => {
       {
         key: "14654",
         label: "Fruits",
+        slug: "fruits",
         imageSrc: "https://cms.example.com/Frame_fruits.png",
         href: "/category/fruits",
       },
       {
         key: "14655",
         label: "Vegetables",
+        slug: "vegetables",
         imageSrc: "https://cms.example.com/Frame_veg.png",
         href: "/category/vegetables",
       },
     ]);
+  });
+
+  it("passes the raw seo component through on sections and tiles", () => {
+    const payload = prodPayload();
+    const grid = payload.category_grid as Record<string, unknown>[];
+    grid[0]!.seo = { metaTitle: "Fresh Vegetables & Fruits | FreshTerra" };
+    (grid[0]!.tiles as Record<string, unknown>[])[0]!.seo = {
+      metaDescription: "Seasonal fruits delivered fresh.",
+    };
+
+    const page = mapWebCategoryGridPage(payload);
+
+    expect(page.sections[0]?.seo).toEqual({
+      metaTitle: "Fresh Vegetables & Fruits | FreshTerra",
+    });
+    expect(page.sections[0]?.tiles[0]?.seo).toEqual({
+      metaDescription: "Seasonal fruits delivered fresh.",
+    });
+    expect(page.sections[0]?.tiles[1]).not.toHaveProperty("seo");
   });
 
   it("orders sections by componentOrder, keeping unordered ones in CMS order after", () => {
@@ -127,7 +151,9 @@ describe("mapWebCategoryGridPage", () => {
 
   it("orders tiles by position when CMS sets it", () => {
     const payload = prodPayload();
-    const [veg] = payload.category_grid as { tiles: Record<string, unknown>[] }[];
+    const [veg] = payload.category_grid as {
+      tiles: Record<string, unknown>[];
+    }[];
     veg!.tiles[0]!.position = 2;
     veg!.tiles[1]!.position = 1;
 
@@ -154,7 +180,9 @@ describe("mapWebCategoryGridPage", () => {
 
   it("falls back to the tile slug when a tile has no action deeplink", () => {
     const payload = prodPayload();
-    const [veg] = payload.category_grid as { tiles: Record<string, unknown>[] }[];
+    const [veg] = payload.category_grid as {
+      tiles: Record<string, unknown>[];
+    }[];
     veg!.tiles[0]!.action = null;
 
     const page = mapWebCategoryGridPage(payload);
@@ -180,7 +208,10 @@ describe("mapWebCategoryGridPage", () => {
 
     const page = mapWebCategoryGridPage(payload);
 
-    expect(page.sections[1]).toMatchObject({ title: "Pantry Staples", tiles: [] });
+    expect(page.sections[1]).toMatchObject({
+      title: "Pantry Staples",
+      tiles: [],
+    });
   });
 
   it("only passes through valid hex colours and anchor ids", () => {
@@ -211,7 +242,8 @@ describe("mapWebCategoryGridPage", () => {
 
   it("drops an inactive hero", () => {
     const payload = prodPayload();
-    (payload.category_hero_section as Record<string, unknown>).is_active = false;
+    (payload.category_hero_section as Record<string, unknown>).is_active =
+      false;
 
     expect(mapWebCategoryGridPage(payload).hero).toBeUndefined();
   });

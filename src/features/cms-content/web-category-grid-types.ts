@@ -3,8 +3,12 @@
 export type CategoryGridTile = Readonly<{
   key: string;
   label: string;
+  /** Saleor category slug as entered in CMS (tagged category). */
+  slug?: string;
   imageSrc?: string;
   href?: string;
+  /** Raw Strapi `seo` component for `/category/[slug]`, read with `readCmsSeo`. */
+  seo?: unknown;
 }>;
 
 export type CategoryGridSection = Readonly<{
@@ -19,6 +23,8 @@ export type CategoryGridSection = Readonly<{
   /** Present only when CMS enables View All and gives it a target. */
   viewAllHref?: string;
   tiles: readonly CategoryGridTile[];
+  /** Raw Strapi `seo` component for the section's (tagged category page) route. */
+  seo?: unknown;
 }>;
 
 export type CategoryGridHero = Readonly<{

@@ -50,12 +50,25 @@ const webCategoryGridPageSchema = z
   .record(z.string(), z.unknown())
   .transform(mapWebCategoryGridPage);
 
-/** `/categories` grid. No populate params — prod 404s the legacy ones. */
+/**
+ * Populate for the `category_grid` schema. Without it the BFF omits the `seo`
+ * component on each section and tile (the legacy `l2_category` populate
+ * 404s on prod, so only `category_grid` paths are listed here).
+ */
+const WEB_CATEGORY_GRID_POPULATE = {
+  "populate[category_grid][populate][tiles][populate]": "*",
+  "populate[category_grid][populate][seo]": "*",
+  "populate[category_hero_section][populate]": "*",
+  ...CMS_SEO_POPULATE,
+} as const;
+
+/** `/categories` grid + per-section / per-tile SEO for `/category/[slug]`. */
 export async function getWebCategoryGridPage(
   options: Omit<ContentEntryRequestOptions<WebCategoryGridPage>, "schema"> = {},
 ): Promise<WebCategoryGridPage> {
   return apiFetch<WebCategoryGridPage>(WEB_CATEGORY_PAGE_PATH, {
     method: "GET",
+    searchParams: { ...WEB_CATEGORY_GRID_POPULATE },
     signal: options.signal,
     token: options.token,
     schema: webCategoryGridPageSchema,

@@ -154,7 +154,7 @@ describe("getWebCategoryGridPage", () => {
     vi.restoreAllMocks();
   });
 
-  it("requests the single type with no populate params (prod rejects l2_category ones)", async () => {
+  it("populates category_grid seo (sections + tiles) but no legacy l2_category params", async () => {
     const fetchSpy = vi.fn(async () =>
       pageResponse({
         page_slug: "/categories",
@@ -181,7 +181,18 @@ describe("getWebCategoryGridPage", () => {
 
     const url = lastUrl(fetchSpy);
     expect(url.pathname).toBe("/bff/api/v1/content/single/web-category-page");
-    expect([...url.searchParams.keys()]).toEqual([]);
+    expect(
+      url.searchParams.get(
+        "populate[category_grid][populate][tiles][populate]",
+      ),
+    ).toBe("*");
+    expect(url.searchParams.get("populate[category_grid][populate][seo]")).toBe(
+      "*",
+    );
+    expect(url.searchParams.get("populate[seo]")).toBe("*");
+    expect(
+      [...url.searchParams.keys()].some((key) => key.includes("l2_category")),
+    ).toBe(false);
     expect(page.hasCategoryGrid).toBe(true);
     expect(page.sections[0]?.tiles[0]?.href).toBe("/category/atta");
     expect(page.seo).toEqual({ metaTitle: "All Categories | FreshTerra" });
