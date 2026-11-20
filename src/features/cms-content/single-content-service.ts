@@ -7,7 +7,6 @@ import {
   type ContentEntryParams,
   type ContentEntryRequestOptions,
 } from "./content-entry-service";
-
 import {
   contentEntryDataSchema,
   type ContentEntry,
@@ -42,5 +41,6 @@ export async function getSingleContent<T = ContentEntry>(
     token: options.token,
     schema,
     next: options.next,
+    expectedErrorCodes: options.expectedErrorCodes,
   });
 }
