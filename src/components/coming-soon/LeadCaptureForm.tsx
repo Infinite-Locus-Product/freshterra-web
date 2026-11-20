@@ -64,18 +64,42 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+/** Field labels, placeholders and CTA — CMS-driven on `/notify`. */
+export type LeadCaptureFormContent = Readonly<{
+  phoneLabel: string;
+  /** Omitted → the input shows no placeholder. */
+  phonePlaceholder?: string;
+  emailLabel: string;
+  /** Omitted → the input shows no placeholder. */
+  emailPlaceholder?: string;
+  consent: string;
+  cta: string;
+}>;
+
+const DEFAULT_FORM_CONTENT: LeadCaptureFormContent = {
+  phoneLabel: comingSoonContent.notify.fields.phone.label,
+  phonePlaceholder: comingSoonContent.notify.fields.phone.placeholder,
+  emailLabel: comingSoonContent.notify.fields.email.label,
+  emailPlaceholder: comingSoonContent.notify.fields.email.placeholder,
+  consent: comingSoonContent.notify.fields.consent,
+  cta: comingSoonContent.notify.cta,
+};
+
 type LeadCaptureFormProps = {
   /** Background color of the surface the inputs sit on (for floating label punch-through). */
   surfaceClass?: string;
   className?: string;
   /** Where to navigate after a successful submission. Defaults to /notify/success. */
   successHref?: string;
+  /** Visible copy; defaults to the built-in notify copy. */
+  content?: LeadCaptureFormContent;
 };
 
 export function LeadCaptureForm({
   surfaceClass = "bg-gray-6",
   className,
   successHref = "/notify/success",
+  content = DEFAULT_FORM_CONTENT,
 }: LeadCaptureFormProps) {
   const { notify } = comingSoonContent;
   const router = useRouter();
@@ -128,7 +152,6 @@ export function LeadCaptureForm({
     defaultValues: { email: "", phone: "", consent: false, _hp: "" },
     mode: "onSubmit",
   });
-
 
   const phoneValue = watch("phone") ?? "";
   const emailValue = watch("email") ?? "";
@@ -219,13 +242,13 @@ export function LeadCaptureForm({
       className={["flex flex-col gap-4", className].filter(Boolean).join(" ")}
     >
       <Input
-        label={notify.fields.phone.label}
+        label={content.phoneLabel}
         type="tel"
         inputMode="numeric"
         autoComplete="tel"
         // "+91 " (4 chars) + 10 digits = 14
         maxLength={PHONE_PREFIX.length + MAX_LOCAL_DIGITS}
-        placeholder={notify.fields.phone.placeholder}
+        placeholder={content.phonePlaceholder}
         error={errors.phone?.message}
         labelBgClass={surfaceClass}
         {...phoneRegister}
@@ -288,10 +311,10 @@ export function LeadCaptureForm({
         }}
       />
       <Input
-        label={notify.fields.email.label}
+        label={content.emailLabel}
         type="email"
         autoComplete="email"
-        placeholder={notify.fields.email.placeholder}
+        placeholder={content.emailPlaceholder}
         error={errors.email?.message}
         labelBgClass={surfaceClass}
         {...register("email")}
@@ -329,7 +352,7 @@ export function LeadCaptureForm({
           for `text-align`). `md:text-left` reverts to the desktop layout.
         */}
         <Checkbox
-          label={notify.fields.consent}
+          label={content.consent}
           error={errors.consent?.message}
           className="text-center md:text-left [&_span]:h-[18px] [&_span]:w-[226px] [&_span]:text-sm [&_span]:leading-[18px] md:[&_span]:h-auto md:[&_span]:w-auto md:[&_span]:text-base md:[&_span]:leading-tight"
           {...register("consent")}
@@ -350,7 +373,7 @@ export function LeadCaptureForm({
         disabled={!isFormValid}
         className="disabled:text-text-secondary mt-2 self-center disabled:bg-gray-200 disabled:opacity-100 disabled:hover:bg-gray-200 disabled:active:bg-gray-200 md:w-full"
       >
-        {notify.cta}
+        {content.cta}
       </Button>
     </form>
   );

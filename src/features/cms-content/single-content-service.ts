@@ -41,5 +41,6 @@ export async function getSingleContent<T = ContentEntry>(
     token: options.token,
     schema,
     next: options.next,
+    expectedErrorCodes: options.expectedErrorCodes,
   });
 }
