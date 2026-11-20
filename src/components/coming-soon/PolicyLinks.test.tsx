@@ -49,4 +49,26 @@ describe("PolicyLinks", () => {
       source_section: "footer",
     });
   });
+
+  it("renders CMS-provided links instead of the defaults", () => {
+    render(
+      <PolicyLinks
+        links={[
+          { label: "Terms of Use", href: "/terms" },
+          { label: "Cookie Policy", href: "/cookies" },
+        ]}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Terms of Use" })).toHaveAttribute(
+      "href",
+      "/terms",
+    );
+    expect(screen.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute(
+      "href",
+      "/cookies",
+    );
+    expect(
+      screen.queryByRole("link", { name: /privacy policy/i }),
+    ).not.toBeInTheDocument();
+  });
 });

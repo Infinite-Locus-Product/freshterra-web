@@ -36,6 +36,35 @@ describe("LeadCaptureForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders CMS-provided labels, placeholders and CTA", () => {
+    render(
+      <LeadCaptureForm
+        content={{
+          phoneLabel: "Mobile number",
+          phonePlaceholder: "10-digit mobile",
+          emailLabel: "Email ID",
+          emailPlaceholder: "you@example.com",
+          consent: "Send me launch news.",
+          cta: "Notify me",
+        }}
+      />,
+    );
+    expect(screen.getByLabelText("Mobile number")).toHaveAttribute(
+      "placeholder",
+      "10-digit mobile",
+    );
+    expect(screen.getByLabelText("Email ID")).toHaveAttribute(
+      "placeholder",
+      "you@example.com",
+    );
+    expect(
+      screen.getByRole("checkbox", { name: "Send me launch news." }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Notify me" }),
+    ).toBeInTheDocument();
+  });
+
   it("keeps submit disabled on an empty form (no validation alerts until submit is possible)", () => {
     render(<LeadCaptureForm />);
     const submit = screen.getByRole("button", { name: /get notified/i });
